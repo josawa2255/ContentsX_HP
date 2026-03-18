@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContentsX | 「伝える」を、再発明する。</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body data-theme="cyber-green">
+
+  <!-- ===== テーマ切替パネル ===== -->
+  <div class="theme-switcher" id="themeSwitcher">
+    <button class="theme-toggle" id="themeToggle" aria-label="テーマ切替">
+      <span class="theme-toggle-icon">🎨</span>
+    </button>
+    <div class="theme-panel" id="themePanel">
+      <p class="theme-panel-title">Accent Color</p>
+      <button class="theme-btn" data-theme="cx-orange">
+        <span class="theme-swatch" style="background: #E8640A"></span>
+        CX Orange
+      </button>
+      <button class="theme-btn" data-theme="apple-blue">
+        <span class="theme-swatch" style="background: #0071e3"></span>
+        Apple Blue
+      </button>
+      <button class="theme-btn active" data-theme="cyber-green">
+        <span class="theme-swatch" style="background: #6fc31c"></span>
+        Cyber Green
+      </button>
+      <button class="theme-btn" data-theme="deep-navy">
+        <span class="theme-swatch" style="background: #1E3A5F"></span>
+        Deep Navy
+      </button>
+      <button class="theme-btn" data-theme="violet">
+        <span class="theme-swatch" style="background: #7C3AED"></span>
+        Violet
+      </button>
+      <button class="theme-btn" data-theme="crimson">
+        <span class="theme-swatch" style="background: #DC2626"></span>
+        Crimson
+      </button>
+      <button class="theme-btn" data-theme="teal">
+        <span class="theme-swatch" style="background: #0D9488"></span>
+        Teal
+      </button>
+      <button class="theme-btn" data-theme="slate">
+        <span class="theme-swatch" style="background: #475569"></span>
+        Slate
+      </button>
+      <p class="theme-panel-title" style="margin-top:10px">Blue</p>
+      <button class="theme-btn" data-theme="royal-blue">
+        <span class="theme-swatch" style="background: #2563EB"></span>
+        Royal Blue
+      </button>
+      <button class="theme-btn" data-theme="sky-blue">
+        <span class="theme-swatch" style="background: #0EA5E9"></span>
+        Sky Blue
+      </button>
+      <button class="theme-btn" data-theme="indigo">
+        <span class="theme-swatch" style="background: #4F46E5"></span>
+        Indigo
+      </button>
+      <p class="theme-panel-title" style="margin-top:10px">Green</p>
+      <button class="theme-btn" data-theme="emerald">
+        <span class="theme-swatch" style="background: #059669"></span>
+        Emerald
+      </button>
+      <button class="theme-btn" data-theme="lime-green">
+        <span class="theme-swatch" style="background: #65A30D"></span>
+        Lime Green
+      </button>
+      <button class="theme-btn" data-theme="forest">
+        <span class="theme-swatch" style="background: #15803D"></span>
+        Forest
+      </button>
+      <p class="theme-panel-title" style="margin-top:10px">Purple</p>
+      <button class="theme-btn" data-theme="purple">
+        <span class="theme-swatch" style="background: #9333EA"></span>
+        Purple
+      </button>
+      <button class="theme-btn" data-theme="fuchsia">
+        <span class="theme-swatch" style="background: #C026D3"></span>
+        Fuchsia
+      </button>
+      <button class="theme-btn" data-theme="plum">
+        <span class="theme-swatch" style="background: #6D28D9"></span>
+        Plum
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <img src="images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav">
+        <a href="#about" class="nav-link">会社概要</a>
+        <a href="#about" class="nav-link">サービス</a>
+        <a href="#strength" class="nav-link">強み</a>
+        <a href="#works" class="nav-link">実績</a>
+        <a href="#contact" class="nav-link nav-cta">お問い合わせ</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="メニュー">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== ヒーロー ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-image hero-bg-image--base" id="heroBgBase"></div>
+    <div class="hero-bg-image hero-bg-image--reveal" id="heroBgReveal"></div>
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-content">
+      <p class="hero-sub">Reinventing Communication</p>
+      <h1 class="hero-title">
+        <span class="hero-title-accent">「伝える」</span>を、<br>再発明する。
+      </h1>
+      <p class="hero-desc">
+        情報が多すぎて、伝わらなくなった時代。<br>
+        ContentsXは、漫画・AI・クリエイティブの力で<br>
+        企業の「伝える」を根本から変えます。
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">無料相談する</a>
+        <a href="#about" class="btn btn-outline">サービスを見る</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 事業ポートフォリオ ===== -->
+  <section class="portfolio" id="about">
+    <div class="container">
+      <p class="section-label">Business Portfolio</p>
+      <h2 class="section-title text-center">3つの事業領域</h2>
+      <div class="portfolio-grid">
+        <a href="https://bizmanga.com/" target="_blank" rel="noopener noreferrer" class="portfolio-item portfolio-item--hero">
+          <div class="portfolio-item-bg" style="background-image: url('images/bizmanga/ip_platform_card_03.webp')"></div>
+          <div class="portfolio-item-overlay"></div>
+          <div class="portfolio-item-content">
+            <img src="images/bizmanga/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
+            <p class="portfolio-tag">確実な収益基盤</p>
+            <p class="portfolio-desc">ビジネス特化型漫画制作で、企業の課題を解決する主力事業。</p>
+          </div>
+        </a>
+        <div class="portfolio-item portfolio-item--hero">
+          <div class="portfolio-item-bg" style="background-image: url('images/AI school/aischool_lightblue.webp')"></div>
+          <div class="portfolio-item-overlay"></div>
+          <div class="portfolio-item-content">
+            <img src="images/AI school/ai_school_logo_blue.webp" alt="ニューマンガアカデミー" class="portfolio-logo">
+            <p class="portfolio-tag">人材育成・制作拡張</p>
+            <p class="portfolio-desc">次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。</p>
+          </div>
+        </div>
+        <div class="portfolio-item portfolio-item--hero">
+          <div class="portfolio-item-bg" style="background-image: url('images/IP platform/ipplatform_yellow.webp')"></div>
+          <div class="portfolio-item-overlay"></div>
+          <div class="portfolio-item-content">
+            <img src="images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
+            <p class="portfolio-tag">爆発的成長</p>
+            <p class="portfolio-desc">Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 強み ===== -->
+  <section class="strength" id="strength">
+    <div class="container">
+      <p class="section-label">Our Strength</p>
+      <h2 class="section-title text-center">信頼の制作体制 — 技術の3本柱</h2>
+
+      <div class="strength-grid">
+        <div class="strength-card">
+          <div class="strength-card-img">
+            <img src="images/3post/pillar2_cost_char_a_fixed2.webp" alt="コスト1/5">
+          </div>
+          <div class="strength-card-content">
+            <h3>コスト <span class="accent">1/5</span></h3>
+            <p>AI活用で大幅圧縮</p>
+            <p class="strength-desc">最新AIツールの最適化により、従来比で圧倒的なコストダウンを実現。</p>
+          </div>
+        </div>
+        <div class="strength-card">
+          <div class="strength-card-img">
+            <img src="images/3post/pillar2_legal_nochar_b.webp" alt="法的リスクゼロ">
+          </div>
+          <div class="strength-card-content">
+            <h3>法的リスク <span class="accent">ゼロ</span></h3>
+            <p>原画資産方式</p>
+            <p class="strength-desc">学習データに依存しない「原画資産方式」を採用し、著作権リスクを完全に排除。</p>
+          </div>
+        </div>
+        <div class="strength-card">
+          <div class="strength-card-img">
+            <img src="images/3post/pillar2_factory_char_a.webp" alt="工場AI">
+          </div>
+          <div class="strength-card-content">
+            <h3>工場AI</h3>
+            <p>全工程AI連携</p>
+            <p class="strength-desc">企画から納品まで、全工程AIがシームレスに連携する制作ラインを構築。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 制作フロー -->
+      <div class="flow">
+        <h3 class="flow-title">制作フロー — 最短2週間のワンストップ対応</h3>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-step-num">1</div>
+            <p>ヒアリング</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-num">2</div>
+            <p>シナリオ</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-num">3</div>
+            <p>ネーム</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-num">4</div>
+            <p>AI制作+監修</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-step-num">5</div>
+            <p>納品</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 制作実績 ===== -->
+  <section class="works" id="works">
+    <div class="container">
+      <p class="section-label">Works</p>
+      <h2 class="section-title text-center">制作実績</h2>
+
+      <div class="showcase-brand">
+        <img src="images/bizmanga/bizmanga-logo.webp" alt="BizManga" class="showcase-brand-logo">
+        <span class="showcase-brand-x">×</span>
+        <span class="showcase-brand-client">一戸ホーム</span>
+      </div>
+
+      <div class="showcase">
+        <!-- 左：説明 -->
+        <div class="showcase-info">
+          <span class="showcase-category">営業</span>
+          <h3 class="showcase-title">一戸ホーム</h3>
+          <div class="showcase-tags">
+            <span class="showcase-tag">#住宅</span>
+            <span class="showcase-tag">#紹介</span>
+          </div>
+          <p class="showcase-desc">住宅メーカーの魅力をストーリー漫画で伝える営業ツール。漫画ならではの没入感で、お客様の理解と共感を引き出します。</p>
+          <div class="showcase-meta">
+            <span class="showcase-pages">全22ページ</span>
+          </div>
+        </div>
+
+        <!-- 右：漫画ビューア StPageFlip -->
+        <div class="showcase-viewer" id="showcaseViewer">
+          <div class="flipbook-wrap">
+            <div id="flipbook"></div>
+            <div class="flipbook-spine" id="flipbookSpine"></div>
+            <!-- クリックゾーン ヒント -->
+            <div class="flipbook-zone flipbook-zone--left" id="flipZoneLeft">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <div class="flipbook-zone flipbook-zone--right" id="flipZoneRight">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+            </div>
+          </div>
+          <div class="sc-slider" id="scSlider">
+            <span class="sc-slider-total" id="scSliderTotal">22</span>
+            <div class="sc-slider-track" id="scSliderTrack">
+              <div class="sc-slider-fill" id="scSliderFill"></div>
+              <div class="sc-slider-thumb" id="scSliderThumb"></div>
+            </div>
+            <span class="sc-slider-page" id="scSliderPage">1</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <h2 class="cta-title">物語で、世界の理解を拡張する。</h2>
+      <p class="cta-desc">まずは無料でご相談ください。</p>
+      <div class="cta-actions">
+        <a href="#" class="btn btn-primary btn-lg">お問い合わせ</a>
+        <a href="#" class="btn btn-outline btn-lg">資料ダウンロード</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company">株式会社Manga X</p>
+          <p class="footer-address">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="footer-links">
+          <a href="#about">会社概要</a>
+          <a href="#about">サービス</a>
+          <a href="#strength">強み</a>
+          <a href="#works">実績</a>
+          <a href="#contact">お問い合わせ</a>
+          <a href="#">プライバシーポリシー</a>
+        </div>
+      </div>
+      <p class="footer-copy">© Manga X Co.,Ltd. 2025 All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/page-flip.browser.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
