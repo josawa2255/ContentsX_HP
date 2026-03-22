@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <rect width="120" height="120" rx="20" fill="#003C71"/>
+  <text x="60" y="58" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="40" fill="#fff" letter-spacing="2">DM</text>
+  <text x="60" y="85" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="15" fill="rgba(255,255,255,0.9)" letter-spacing="1">SOLUTIONS</text>
+</svg>

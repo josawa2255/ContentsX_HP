@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選ばれる理由 | ContentsX</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    /* ===== Why Contents X — ページ専用スタイル ===== */
+    .why-hero {
+      padding: 140px 24px 80px;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .why-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 40%, rgba(255,107,53,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(0,188,212,0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .why-hero-label {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 20px;
+    }
+    .why-hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .why-hero h1 span {
+      color: var(--accent, #FF6B35);
+    }
+    .why-hero-sub {
+      font-size: 17px;
+      color: rgba(255,255,255,0.75);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.9;
+    }
+    .why-hero-mission {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+    .why-hero-mission-item {
+      text-align: center;
+    }
+    .why-hero-mission-item .label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+    }
+    .why-hero-mission-item p {
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.6;
+    }
+
+    /* セクション共通 */
+    .why-section {
+      padding: 100px 24px;
+    }
+    .why-section:nth-child(even) {
+      background: var(--bg-light, #f8f9fa);
+    }
+    .why-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .why-section-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 12px;
+    }
+    .why-section-title {
+      font-size: clamp(24px, 3.5vw, 36px);
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 48px;
+      line-height: 1.4;
+    }
+
+    /* 3者比較テーブル */
+    .compare-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      margin-bottom: 32px;
+    }
+    .compare-table thead th {
+      padding: 18px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      border-bottom: 2px solid var(--border, #e5e5e7);
+    }
+    .compare-table thead th:first-child {
+      background: var(--bg-light, #f8f9fa);
+      text-align: left;
+    }
+    .compare-table thead th:nth-child(2) {
+      background: #f0f0f0;
+      color: var(--text-secondary, #666);
+    }
+    .compare-table thead th:nth-child(3) {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .compare-table thead th:nth-child(4) {
+      background: var(--accent, #FF6B35);
+      color: #fff;
+      font-size: 15px;
+    }
+    .compare-table td {
+      padding: 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border, #e5e5e7);
+      text-align: center;
+      color: var(--text-secondary, #444);
+      background: #fff;
+    }
+    .compare-table td:first-child {
+      font-weight: 700;
+      text-align: left;
+      background: var(--bg-light, #fafafa);
+      color: var(--text-primary, #1d1d1f);
+    }
+    .compare-table td:nth-child(4) {
+      font-weight: 700;
+      color: var(--accent, #FF6B35);
+      background: #fff8f4;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    .compare-check { color: #2e7d32; font-weight: 700; }
+    .compare-warn { color: #e65100; }
+    .compare-bad { color: #c62828; }
+
+    /* 2列比較テーブル（出版社モデル） */
+    .compare-table-2col {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      margin-bottom: 32px;
+    }
+    .compare-table-2col thead th {
+      padding: 18px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      border-bottom: 2px solid var(--border, #e5e5e7);
+    }
+    .compare-table-2col thead th:first-child {
+      background: var(--bg-light, #f8f9fa);
+      text-align: left;
+      width: 15%;
+    }
+    .compare-table-2col thead th:nth-child(2) {
+      background: #f0f0f0;
+      color: var(--text-secondary, #666);
+      width: 42.5%;
+    }
+    .compare-table-2col thead th:nth-child(3) {
+      background: var(--accent, #FF6B35);
+      color: #fff;
+      width: 42.5%;
+    }
+    .compare-table-2col td {
+      padding: 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border, #e5e5e7);
+      color: var(--text-secondary, #444);
+      background: #fff;
+      vertical-align: top;
+    }
+    .compare-table-2col td:first-child {
+      font-weight: 700;
+      background: var(--bg-light, #fafafa);
+      color: var(--text-primary, #1d1d1f);
+    }
+    .compare-table-2col td:nth-child(3) {
+      font-weight: 600;
+      color: var(--accent, #FF6B35);
+      background: #fff8f4;
+    }
+    .compare-table-2col tr:last-child td { border-bottom: none; }
+
+    /* 数値インパクトカード */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .stat-num {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--accent, #FF6B35);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .stat-unit {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary, #666);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .stat-source {
+      font-size: 11px;
+      color: var(--text-muted, #aaa);
+      margin-top: 4px;
+    }
+
+    /* 大数値カード（市場規模用） */
+    .market-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+    .market-col {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 32px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    }
+    .market-col-label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .market-col-label--b2b {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    .market-col-label--b2c {
+      background: #fce4ec;
+      color: #c62828;
+    }
+    .market-col h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary, #666);
+      margin-bottom: 4px;
+    }
+    .market-big-num {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .market-big-num .unit {
+      font-size: 20px;
+    }
+    .market-sub {
+      font-size: 12px;
+      color: var(--text-muted, #999);
+      margin-bottom: 20px;
+    }
+    .market-item {
+      padding: 12px 0;
+      border-top: 1px solid var(--border, #eee);
+    }
+    .market-item h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary, #555);
+      margin-bottom: 2px;
+    }
+    .market-item .num {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+    }
+    .market-item .num .unit {
+      font-size: 14px;
+    }
+    .market-item .note {
+      font-size: 11px;
+      color: var(--text-muted, #999);
+    }
+
+    /* 強みリスト */
+    .strength-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+    .strength-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 28px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .strength-item:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .strength-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    .strength-item h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 12px;
+    }
+    .strength-item p {
+      font-size: 14px;
+      color: var(--text-secondary, #555);
+      line-height: 1.8;
+    }
+
+    /* ゼロクリック比較 */
+    .zero-click-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      margin-top: 36px;
+      align-items: start;
+    }
+    .zero-click-col {
+      padding: 20px;
+    }
+    .zero-click-col h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted, #999);
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    .zero-click-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+    }
+    .zero-click-row .tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted, #aaa);
+      width: 64px;
+      flex-shrink: 0;
+    }
+    .zero-click-row .desc {
+      font-size: 14px;
+      color: var(--text-secondary, #555);
+    }
+    .zero-click-row .desc--strong {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary, #1d1d1f);
+    }
+    .zero-click-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 48px;
+      gap: 28px;
+      font-size: 24px;
+      color: var(--accent, #FF6B35);
+    }
+
+    /* ファネル */
+    .funnel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 36px;
+    }
+    .funnel-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .funnel-step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      background: #fff;
+      border: 1px solid var(--border, #e5e5e7);
+      position: relative;
+    }
+    .funnel-step:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+    .funnel-step:last-child {
+      border-radius: 0 0 12px 12px;
+      background: #1a1a2e;
+      color: #fff;
+      border-color: #1a1a2e;
+    }
+    .funnel-step:last-child .funnel-label { color: rgba(255,255,255,0.7); }
+    .funnel-step:last-child .funnel-num { color: #fff; }
+    .funnel-step + .funnel-step { border-top: none; }
+    .funnel-label {
+      font-size: 13px;
+      color: var(--text-secondary, #666);
+      width: 140px;
+      flex-shrink: 0;
+    }
+    .funnel-num {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-left: auto;
+    }
+    .funnel-pct {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted, #999);
+      margin-left: 8px;
+    }
+    .novel-stats h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 20px;
+    }
+    .novel-stat-item {
+      margin-bottom: 20px;
+    }
+    .novel-stat-item .label {
+      font-size: 12px;
+      color: var(--text-muted, #999);
+    }
+    .novel-stat-item .big {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      line-height: 1.2;
+    }
+    .novel-stat-item .big .unit {
+      font-size: 16px;
+    }
+    .novel-stat-item .note {
+      font-size: 12px;
+      color: var(--text-secondary, #666);
+    }
+
+    /* 2つの道 */
+    .two-roads {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .road-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 28px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    }
+    .road-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 12px;
+    }
+    .road-card h3 {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .road-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+    }
+    .road-card ul li {
+      font-size: 14px;
+      color: var(--text-secondary, #555);
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    .road-card ul li::before {
+      content: '■';
+      position: absolute;
+      left: 0;
+      color: var(--accent, #FF6B35);
+      font-size: 10px;
+      top: 9px;
+    }
+    .road-card .bottom-line {
+      padding-top: 16px;
+      border-top: 1px solid var(--border, #e5e5e7);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      text-align: center;
+    }
+    .academy-bar {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 28px 32px;
+      text-align: center;
+      color: #fff;
+    }
+    .academy-bar h3 {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .academy-bar p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* グローバルプラットフォーム */
+    .platform-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 36px;
+    }
+    .platform-col h4 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent, #FF6B35);
+    }
+    .platform-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border, #eee);
+    }
+    .platform-item .name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary, #1d1d1f);
+    }
+    .platform-item .info {
+      font-size: 13px;
+      color: var(--text-secondary, #666);
+      text-align: right;
+    }
+    .platform-countries {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .platform-country {
+      text-align: center;
+    }
+    .platform-country .num {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+    }
+    .platform-country .num .unit {
+      font-size: 14px;
+    }
+    .platform-country .label {
+      font-size: 12px;
+      color: var(--text-muted, #999);
+    }
+    .platform-total {
+      text-align: center;
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--accent, #FF6B35);
+      color: #fff;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .platform-total .num {
+      font-size: 48px;
+      font-weight: 900;
+    }
+    .platform-total .unit {
+      font-size: 18px;
+    }
+    .platform-total .label {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    /* 理解度比較 */
+    .bar-chart {
+      max-width: 600px;
+      margin: 0 auto 48px;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .bar-label {
+      width: 100px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: right;
+      color: var(--text-primary, #1d1d1f);
+      flex-shrink: 0;
+    }
+    .bar-track {
+      flex: 1;
+      height: 36px;
+      background: var(--bg-light, #f0f0f0);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      transition: width 1s ease;
+    }
+    .bar-fill--manga { background: var(--accent, #FF6B35); }
+    .bar-fill--text { background: #9e9e9e; }
+    .bar-fill--chart { background: #bdbdbd; }
+    .bar-group-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted, #888);
+      margin-bottom: 8px;
+      margin-top: 24px;
+    }
+
+    /* プロセスフロー */
+    .process-flow {
+      display: flex;
+      gap: 0;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .process-step {
+      flex: 1;
+      min-width: 160px;
+      max-width: 220px;
+      text-align: center;
+      position: relative;
+      padding: 0 12px;
+    }
+    .process-step::after {
+      content: '→';
+      position: absolute;
+      right: -8px;
+      top: 28px;
+      font-size: 24px;
+      color: var(--accent, #FF6B35);
+      font-weight: 900;
+    }
+    .process-step:last-child::after { display: none; }
+    .process-num {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent, #FF6B35);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .process-step h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 8px;
+    }
+    .process-step p {
+      font-size: 13px;
+      color: var(--text-secondary, #666);
+      line-height: 1.7;
+    }
+    .process-specs {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 36px;
+      padding: 24px;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--border, #e5e5e7);
+    }
+    .process-spec-item {
+      text-align: center;
+    }
+    .process-spec-item .num {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--accent, #FF6B35);
+    }
+    .process-spec-item .num .unit {
+      font-size: 14px;
+    }
+    .process-spec-item .label {
+      font-size: 12px;
+      color: var(--text-muted, #999);
+    }
+
+    /* ロードマップ */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+    .roadmap-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      position: relative;
+    }
+    .roadmap-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent, #FF6B35);
+      border-radius: 16px 16px 0 0;
+    }
+    .roadmap-year {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 4px;
+    }
+    .roadmap-phase {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 16px;
+    }
+    .roadmap-item ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .roadmap-item ul li {
+      font-size: 13px;
+      color: var(--text-secondary, #555);
+      padding: 6px 0;
+      padding-left: 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .roadmap-item ul li::before {
+      content: '■';
+      position: absolute;
+      left: 0;
+      color: var(--accent, #FF6B35);
+      font-size: 8px;
+      top: 10px;
+    }
+
+    /* CTA */
+    .why-cta {
+      padding: 80px 24px;
+      background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+      text-align: center;
+      color: #fff;
+    }
+    .why-cta h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+    .why-cta p {
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 36px;
+      font-size: 15px;
+    }
+    .why-cta-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      background: var(--accent, #FF6B35);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .why-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255,107,53,0.4);
+    }
+
+    /* フッター */
+    .why-footer {
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted, #888);
+      background: var(--bg-white, #fff);
+      border-top: 1px solid var(--border, #e5e5e7);
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .compare-table { font-size: 12px; }
+      .compare-table td, .compare-table th { padding: 10px 8px; }
+      .compare-table-2col { font-size: 12px; }
+      .compare-table-2col td, .compare-table-2col th { padding: 10px 8px; }
+      .stat-num { font-size: 36px; }
+      .process-flow { flex-direction: column; align-items: center; }
+      .process-step::after { display: none; }
+      .process-step { max-width: 100%; }
+      .market-grid { grid-template-columns: 1fr; }
+      .funnel-grid { grid-template-columns: 1fr; }
+      .two-roads { grid-template-columns: 1fr; }
+      .platform-grid { grid-template-columns: 1fr; }
+      .roadmap { grid-template-columns: 1fr; }
+      .zero-click-grid { grid-template-columns: 1fr; }
+      .zero-click-arrow { flex-direction: row; padding-top: 0; }
+      .process-specs { flex-wrap: wrap; gap: 24px; }
+      .market-big-num { font-size: 36px; }
+    }
+  </style>
+</head>
+<body data-theme="cyber-green">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ヒーロー ===== -->
+  <section class="why-hero">
+    <div class="why-inner">
+      <p class="why-hero-label" data-ja="Why Choose Us" data-en="Why Choose Us">Why Choose Us</p>
+      <h1 data-ja="Contents Xが選ばれる理由" data-en="Why Contents X Is the Right Choice"><span>Contents X</span>が<br>選ばれる理由</h1>
+      <p class="why-hero-sub" data-ja="次世代ニューマンガで企業の「伝わらない」を解決する。従来制作の1/5のコスト、最短2週間、著作権リスクゼロ。" data-en="Solving corporate communication challenges with next-generation manga. 1/5 the cost of traditional production, 2 weeks minimum turnaround, zero copyright risk.">次世代ニューマンガで企業の「伝わらない」を解決する。<br>従来制作の1/5のコスト、最短2週間、著作権リスクゼロ。</p>
+    </div>
+  </section>
+
+  <!-- ===== 情報過多の現実 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Why Now" data-en="Why Now">Why Now</p>
+      <h2 class="why-section-title" data-ja="届かない。企業の想いが、顧客に届かない時代。" data-en="Messages not reaching. An era where corporate messages don't reach customers.">届かない。企業の想いが、顧客に届かない時代。</h2>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num">90<span class="stat-unit" data-ja="%" data-en="%">%</span></div>
+          <p class="stat-label" data-ja="過去2年間で生成された世界のデータ量の割合" data-en="Share of global data generated in the past 2 years">過去2年間で生成された<br>世界のデータ量の割合</p>
+          <p class="stat-source" data-ja="IBM/IDC" data-en="IBM/IDC">IBM/IDC</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">8<span class="stat-unit" data-ja="秒" data-en="seconds">秒</span></div>
+          <p class="stat-label" data-ja="人の平均注意持続時間" data-en="Average human attention span">人の平均注意持続時間</p>
+          <p class="stat-source" data-ja="Microsoft調査" data-en="Microsoft Study">Microsoft調査</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">445<span class="stat-unit" data-ja="分" data-en="minutes">分</span></div>
+          <p class="stat-label" data-ja="日本人1日あたりのメディア総接触時間" data-en="Average daily media exposure time per Japanese person">日本人1日あたりの<br>メディア総接触時間</p>
+          <p class="stat-source" data-ja="博報堂DY 2022年" data-en="Hakuhodo DY 2022">博報堂DY 2022年</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">0.06<span class="stat-unit" data-ja="%" data-en="%">%</span></div>
+          <p class="stat-label" data-ja="Z世代のバナー広告CTR" data-en="Gen Z banner ad click-through rate">Z世代の<br>バナー広告CTR</p>
+        </div>
+      </div>
+
+      <!-- ゼロクリック時代 -->
+      <div style="background:#fff;border-radius:20px;padding:36px;border:1px solid var(--border,#e5e5e7);box-shadow:0 2px 16px rgba(0,0,0,0.04);">
+        <h3 style="font-size:20px;font-weight:900;color:var(--text-primary);margin-bottom:24px;" data-ja="ゼロクリック時代の到来" data-en="The Era of Zero-Click Searches">ゼロクリック時代の到来</h3>
+        <div class="zero-click-grid">
+          <div class="zero-click-col">
+            <h4 data-ja="以前" data-en="Before">以前</h4>
+            <div class="zero-click-row">
+              <span class="tag" data-ja="流入" data-en="Traffic">流入</span>
+              <span class="desc" data-ja="企業サイトへ訪問" data-en="Visitors to company website">企業サイトへ訪問</span>
+            </div>
+            <div class="zero-click-row">
+              <span class="tag" data-ja="SEO" data-en="SEO">SEO</span>
+              <span class="desc" data-ja="上位表示＝集客" data-en="Top ranking = Customer acquisition">上位表示＝集客</span>
+            </div>
+            <div class="zero-click-row">
+              <span class="tag" data-ja="コンテンツ" data-en="Content">コンテンツ</span>
+              <span class="desc" data-ja="作れば届いた" data-en="Created content reached audiences">作れば届いた</span>
+            </div>
+          </div>
+          <div class="zero-click-arrow">
+            <span>→</span><span>→</span><span>→</span>
+          </div>
+          <div class="zero-click-col">
+            <h4 data-ja="2026年（今）" data-en="2026 (Today)">2026年（今）</h4>
+            <div class="zero-click-row">
+              <span class="tag" data-ja="流入" data-en="Traffic">流入</span>
+              <span class="desc--strong" data-ja="検索画面でAIが回答" data-en="AI answers on search results page">検索画面でAIが回答</span>
+            </div>
+            <div class="zero-click-row">
+              <span class="tag" data-ja="SEO" data-en="SEO">SEO</span>
+              <span class="desc--strong" data-ja="上位表示でもクリックされない" data-en="Top ranking doesn't generate clicks">上位表示でもクリックされない</span>
+            </div>
+            <div class="zero-click-row">
+              <span class="tag" data-ja="コンテンツ" data-en="Content">コンテンツ</span>
+              <span class="desc--strong" data-ja="作っても読まれない" data-en="Created content goes unread">作っても読まれない</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding:16px 20px;background:#f8f9fa;border-radius:10px;border-left:4px solid var(--accent,#FF6B35);display:flex;gap:32px;flex-wrap:wrap;">
+          <p style="font-size:14px;color:var(--text-secondary);" data-ja="検索のゼロクリック率 約70%" data-en="Search zero-click rate: ~70%"><strong>検索のゼロクリック率 約70%</strong><span style="font-size:11px;color:var(--text-muted);margin-left:4px;" data-ja="(2026年/Similarweb推計)" data-en="(2026 / Similarweb estimate)">(2026年/Similarweb推計)</span></p>
+          <p style="font-size:14px;font-weight:700;color:var(--text-primary);" data-ja="問題はコンテンツの量ではない。届くかどうか。" data-en="The problem isn't the volume of content. It's whether it reaches the audience.">問題はコンテンツの量ではない。届くかどうか。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== マンガの力 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Power of Manga" data-en="Power of Manga">Power of Manga</p>
+      <h2 class="why-section-title" data-ja="マンガが突破する4つの壁" data-en="Four Barriers That Manga Breaks Through">マンガが突破する4つの壁</h2>
+      <div class="strength-list">
+        <div class="strength-item">
+          <div class="strength-icon">👁️</div>
+          <h3 data-ja="認知の壁" data-en="Recognition Barrier">認知の壁</h3>
+          <p data-ja="絵が「面白そう」と感じさせ、無意識に目を止める。広告ブラインドネスを突破します。" data-en="Images feel engaging, causing unconscious eye-catching. Breaks through advertisement blindness.">絵が「面白そう」と感じさせ、無意識に目を止める。広告ブラインドネスを突破します。</p>
+        </div>
+        <div class="strength-item">
+          <div class="strength-icon">🛡️</div>
+          <h3 data-ja="回避の壁" data-en="Avoidance Barrier">回避の壁</h3>
+          <p data-ja="ストーリーへの没入感が「広告だ」という意識を消す。読み物として自然に受け入れられます。" data-en="Immersion in the story eliminates the awareness of being an advertisement. Naturally accepted as reading material.">ストーリーへの没入感が「広告だ」という意識を消す。読み物として自然に受け入れられます。</p>
+        </div>
+        <div class="strength-item">
+          <div class="strength-icon">❤️</div>
+          <h3 data-ja="感情の壁" data-en="Emotion Barrier">感情の壁</h3>
+          <p data-ja="キャラクターへの感情移入で「自分ごと化」。デュアルコーディング理論により言語と視覚の同時処理が起きます。" data-en="Emotional connection to characters creates personal relevance. Dual coding theory enables simultaneous language and visual processing.">キャラクターへの感情移入で「自分ごと化」。デュアルコーディング理論により言語と視覚の同時処理が起きます。</p>
+        </div>
+        <div class="strength-item">
+          <div class="strength-icon">🧠</div>
+          <h3 data-ja="記憶の壁" data-en="Memory Barrier">記憶の壁</h3>
+          <p data-ja="エピソード記憶として長期定着。ストーリーは事実の最大22倍記憶に残りやすいと報告されています。" data-en="Long-term retention as episodic memory. Stories are reported to be up to 22 times more memorable than facts.">エピソード記憶として長期定着。ストーリーは事実の最大22倍記憶に残りやすいと報告されています。</p>
+        </div>
+      </div>
+
+      <!-- 理解度バーチャート -->
+      <h3 style="text-align:center;font-size:20px;font-weight:800;margin-top:60px;margin-bottom:8px;color:var(--text-primary);" data-ja="理解度・記憶定着の比較" data-en="Comparison of Comprehension and Memory Retention">理解度・記憶定着の比較</h3>
+      <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:32px;" data-ja="同一情報を異なる形式で伝達した場合の比較" data-en="Comparison of conveying the same information in different formats">同一情報を異なる形式で伝達した場合の比較</p>
+      <div class="bar-chart">
+        <p class="bar-group-title" data-ja="直後の理解度" data-en="Immediate Comprehension">直後の理解度</p>
+        <div class="bar-row">
+          <span class="bar-label" data-ja="マンガ" data-en="Manga">マンガ</span>
+          <div class="bar-track"><div class="bar-fill bar-fill--manga" style="width:79%">79%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label" data-ja="文章" data-en="Text">文章</span>
+          <div class="bar-track"><div class="bar-fill bar-fill--text" style="width:63%">63%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label" data-ja="図解" data-en="Diagrams">図解</span>
+          <div class="bar-track"><div class="bar-fill bar-fill--chart" style="width:61%">61%</div></div>
+        </div>
+
+        <p class="bar-group-title" data-ja="1週間後の理解度" data-en="Comprehension After 1 Week">1週間後の理解度</p>
+        <div class="bar-row">
+          <span class="bar-label" data-ja="マンガ" data-en="Manga">マンガ</span>
+          <div class="bar-track"><div class="bar-fill bar-fill--manga" style="width:79%">79%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label" data-ja="文章" data-en="Text">文章</span>
+          <div class="bar-track"><div class="bar-fill bar-fill--text" style="width:39%">39%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label" data-ja="図解" data-en="Diagrams">図解</span>
+          <div class="bar-track"><div class="bar-fill bar-fill--chart" style="width:27%">27%</div></div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:14px;color:var(--text-secondary);line-height:1.8;" data-ja="マンガは1週間後も理解度が変わらない唯一の形式。文章は-27%、図解は-34%低下するのに対し、マンガは±0%。" data-en="Manga is the only format where comprehension remains unchanged after one week. Text declines by -27%, diagrams by -34%, while manga stays at ±0%.">マンガは1週間後も理解度が変わらない唯一の形式。<br>文章は-27%、図解は-34%低下するのに対し、マンガは±0%。</p>
+    </div>
+  </section>
+
+  <!-- ===== 実績データ ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Proven Results" data-en="Proven Results">Proven Results</p>
+      <h2 class="why-section-title" data-ja="数字が証明する、ビズマンガの効果" data-en="The Proven Impact of Business Manga, by the Numbers">数字が証明する、ビズマンガの効果</h2>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num">5.4<span class="stat-unit" data-ja="倍" data-en="x">倍</span></div>
+          <p class="stat-label" data-ja="CVR（コンバージョン率）" data-en="CVR (Conversion Rate)">CVR（コンバージョン率）</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">25<span class="stat-unit" data-ja="倍" data-en="x">倍</span></div>
+          <p class="stat-label" data-ja="CTR（クリック率）最大" data-en="CTR (Click-Through Rate) Maximum">CTR（クリック率）最大</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">1/3</div>
+          <p class="stat-label" data-ja="CPA（獲得コスト）削減" data-en="CPA (Customer Acquisition Cost) Reduction">CPA（獲得コスト）削減</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">58<span class="stat-unit" data-ja="%" data-en="%">%</span></div>
+          <p class="stat-label" data-ja="スカウト返信率" data-en="Recruitment Response Rate"><span data-ja="スカウト返信率" data-en="Recruitment Response Rate">スカウト返信率</span><br><small style="color:var(--text-muted);font-size:11px;" data-ja="業界平均 7〜16%" data-en="Industry average: 7-16%">業界平均 7〜16%</small></p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">1.8<span class="stat-unit" data-ja="倍" data-en="x">倍</span></div>
+          <p class="stat-label" data-ja="採用応募数" data-en="Job Application Volume">採用応募数</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">-80<span class="stat-unit" data-ja="%" data-en="%">%</span></div>
+          <p class="stat-label" data-ja="研修時間の削減" data-en="Training Time Reduction">研修時間の削減</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">40<span class="stat-unit" data-ja="倍" data-en="x">倍</span></div>
+          <p class="stat-label" data-ja="PV（ページビュー）" data-en="PV (Page Views)">PV（ページビュー）</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">22<span class="stat-unit" data-ja="倍" data-en="x">倍</span></div>
+          <p class="stat-label" data-ja="記憶定着率" data-en="Memory Retention"><span data-ja="記憶定着率" data-en="Memory Retention">記憶定着率</span><br><small style="color:var(--text-muted);font-size:11px;" data-ja="エピソード記憶効果" data-en="Episodic memory effect">エピソード記憶効果</small></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3者比較 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Comparison" data-en="Comparison">Comparison</p>
+      <h2 class="why-section-title" data-ja="3者比較: なぜContents Xが最適解か" data-en="Three-Way Comparison: Why Contents X is the Optimal Solution">3者比較: なぜContents Xが最適解か</h2>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th data-ja="項目" data-en="Category">項目</th>
+            <th data-ja="従来の制作会社" data-en="Traditional Production Company">従来の制作会社</th>
+            <th data-ja="AI Only（自動生成）" data-en="AI Only (Auto-generated)">AI Only<br>（自動生成）</th>
+            <th data-ja="Contents X" data-en="Contents X">Contents X</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-ja="コスト" data-en="Cost">コスト</td>
+            <td class="compare-bad" data-ja="高い（7〜10万円/P）" data-en="High (70,000-100,000 yen/page)">高い（7〜10万円/P）</td>
+            <td class="compare-check" data-ja="安い" data-en="Affordable">安い</td>
+            <td data-ja="14,700円〜/P（1/5）" data-en="14,700 yen~/ page (1/5)">14,700円〜/P（1/5）</td>
+          </tr>
+          <tr>
+            <td data-ja="品質" data-en="Quality">品質</td>
+            <td class="compare-check" data-ja="高い" data-en="High">高い</td>
+            <td class="compare-bad" data-ja="不安定" data-en="Unstable">不安定</td>
+            <td data-ja="高品質（プロ監修6回チェック）" data-en="High quality (6 professional reviews)">高品質（プロ監修6回チェック）</td>
+          </tr>
+          <tr>
+            <td data-ja="スピード" data-en="Speed">スピード</td>
+            <td class="compare-bad" data-ja="1〜3ヶ月" data-en="1-3 months">1〜3ヶ月</td>
+            <td class="compare-check" data-ja="数時間" data-en="Hours">数時間</td>
+            <td data-ja="最短2週間" data-en="Minimum 2 weeks">最短2週間</td>
+          </tr>
+          <tr>
+            <td data-ja="著作権リスク" data-en="Copyright Risk">著作権リスク</td>
+            <td data-ja="低い" data-en="Low">低い</td>
+            <td class="compare-bad" data-ja="高い（学習データ問題）" data-en="High (training data issues)">高い（学習データ問題）</td>
+            <td data-ja="ゼロ（原画資産方式）" data-en="Zero (original asset method)">ゼロ（原画資産方式）</td>
+          </tr>
+          <tr>
+            <td data-ja="キャラ一貫性" data-en="Character Consistency">キャラ一貫性</td>
+            <td data-ja="属人的" data-en="Person-dependent">属人的</td>
+            <td class="compare-bad" data-ja="不安定" data-en="Unstable">不安定</td>
+            <td data-ja="固定技術で一貫" data-en="Consistent with fixed technology">固定技術で一貫</td>
+          </tr>
+          <tr>
+            <td data-ja="IP資産価値" data-en="IP Asset Value">IP資産価値</td>
+            <td data-ja="中" data-en="Medium">中</td>
+            <td class="compare-bad" data-ja="低い" data-en="Low">低い</td>
+            <td data-ja="高い（IP蓄積・展開可能）" data-en="High (IP accumulation and expansion possible)">高い（IP蓄積・展開可能）</td>
+          </tr>
+          <tr>
+            <td data-ja="戦略設計" data-en="Strategic Design">戦略設計</td>
+            <td data-ja="制作のみ" data-en="Production only">制作のみ</td>
+            <td class="compare-bad" data-ja="なし" data-en="None">なし</td>
+            <td data-ja="コンサルティング込み" data-en="Including consulting">コンサルティング込み</td>
+          </tr>
+          <tr>
+            <td data-ja="メディア展開" data-en="Media Expansion">メディア展開</td>
+            <td data-ja="別途依頼" data-en="Separate request">別途依頼</td>
+            <td class="compare-bad" data-ja="なし" data-en="None">なし</td>
+            <td data-ja="一気通貫（動画・DM・LP）" data-en="End-to-end (video, DM, LP)">一気通貫（動画・DM・LP）</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="text-align:center;font-size:15px;color:var(--text-secondary);line-height:1.8;" data-ja="Contents Xは「コスト」「品質」「スピード」のトリレンマを人間7割 × AI3割のハイブリッド体制で解決しています。" data-en="Contents X solves the trilemma of cost, quality, and speed with a hybrid system of 70% human work and 30% AI.">Contents Xは「コスト」「品質」「スピード」のトリレンマを<br>人間7割 × AI3割のハイブリッド体制で解決しています。</p>
+    </div>
+  </section>
+
+  <!-- ===== 出版社モデルとの比較 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="vs Publishing Model" data-en="vs Publishing Model">vs Publishing Model</p>
+      <h2 class="why-section-title" data-ja="既存の出版モデルが変えられなかったことを、Contents Xが変える。" data-en="Contents X Changes What Traditional Publishing Models Couldn't.">既存の出版モデルが変えられなかったことを、Contents Xが変える。</h2>
+      <table class="compare-table-2col">
+        <thead>
+          <tr>
+            <th data-ja="比較軸" data-en="Comparison Axis">比較軸</th>
+            <th data-ja="従来（出版社経由）" data-en="Traditional (via Publishers)">従来（出版社経由）</th>
+            <th data-ja="Contents X" data-en="Contents X">Contents X</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-ja="作品の発表機会" data-en="Publishing Opportunity">作品の発表機会</td>
+            <td data-ja="編集者の承認が必要。認められなければ世に出せない" data-en="Requires editor approval. Rejected works cannot be published.">編集者の承認が必要。認められなければ世に出せない</td>
+            <td data-ja="テイストや表現スタイルを問わず、あらゆる作品に発表の場を提供" data-en="Provides publishing opportunities for all works regardless of style or taste.">テイストや表現スタイルを問わず、あらゆる作品に発表の場を提供</td>
+          </tr>
+          <tr>
+            <td data-ja="海外展開" data-en="International Expansion">海外展開</td>
+            <td data-ja="国内でヒットした後、出版社の判断で選別的に展開" data-en="After domestic success, selectively expanded at publisher's discretion.">国内でヒットした後、出版社の判断で選別的に展開</td>
+            <td data-ja="制作段階から多市場を想定。同時多言語展開が可能" data-en="Considers multiple markets from production stage. Simultaneous multi-language expansion possible.">制作段階から多市場を想定。同時多言語展開が可能</td>
+          </tr>
+          <tr>
+            <td data-ja="市場マッチング" data-en="Market Matching">市場マッチング</td>
+            <td data-ja="編集者の経験と感覚に依存（属人的）" data-en="Depends on editor's experience and intuition (personal judgment).">編集者の経験と感覚に依存（属人的）</td>
+            <td data-ja="読者のSNS評価を活用 ＋ 海外プラットフォームへのオファーで選定" data-en="Uses reader SNS feedback + international platform offers for selection.">読者のSNS評価を活用 ＋ 海外プラットフォームへのオファーで選定</td>
+          </tr>
+          <tr>
+            <td data-ja="収益配分" data-en="Revenue Sharing">収益配分</td>
+            <td data-ja="印税は売上の約1割。出版社が大部分を受け取る構造" data-en="Royalties are ~10% of sales. Publishers take the majority.">印税は売上の約1割。出版社が大部分を受け取る構造</td>
+            <td data-ja="貢献度に応じた配分を実現。漫画家により多く還元できる仕組み" data-en="Fair distribution based on contribution. Mangaka receive more returns.">貢献度に応じた配分を実現。漫画家により多く還元できる仕組み</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="background:#f8f9fa;border-radius:16px;padding:28px 32px;margin-top:24px;">
+        <p style="font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:16px;" data-ja="漫画家個人には不可能なことを、Contents Xが代わりにやる。" data-en="Contents X does what individual mangaka cannot do alone.">漫画家個人には不可能なことを、Contents Xが代わりにやる。</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="font-size:14px;color:var(--text-secondary);padding:12px 16px;background:#fff;border-radius:10px;border:1px solid var(--border,#e5e5e7);">
+            <span style="font-weight:800;color:var(--accent);">01</span> <span data-ja=" 世界100以上のプラットフォームへの接続・掲載交渉" data-en="Connection and publication negotiation with 100+ global platforms"> 世界100以上のプラットフォームへの接続・掲載交渉</span>
+          </div>
+          <div style="font-size:14px;color:var(--text-secondary);padding:12px 16px;background:#fff;border-radius:10px;border:1px solid var(--border,#e5e5e7);">
+            <span style="font-weight:800;color:var(--accent);">02</span> <span data-ja=" 制作段階からの同時多言語翻訳（英・韓・仏・西・タイ語）" data-en="Simultaneous multi-language translation from production (EN, KO, FR, ES, TH)"> 制作段階からの同時多言語翻訳（英・韓・仏・西・タイ語）</span>
+          </div>
+          <div style="font-size:14px;color:var(--text-secondary);padding:12px 16px;background:#fff;border-radius:10px;border:1px solid var(--border,#e5e5e7);">
+            <span style="font-weight:800;color:var(--accent);">03</span> <span data-ja=" 各SNSに最適化したプロモーション戦略の設計" data-en="Promotion strategy design optimized for each SNS"> 各SNSに最適化したプロモーション戦略の設計</span>
+          </div>
+          <div style="font-size:14px;color:var(--text-secondary);padding:12px 16px;background:#fff;border-radius:10px;border:1px solid var(--border,#e5e5e7);">
+            <span style="font-weight:800;color:var(--accent);">04</span> <span data-ja=" アニメ化・映像化・ゲーム化などIPバリューチェーン展開" data-en="IP value chain expansion: anime, video, gaming"> アニメ化・映像化・ゲーム化などIPバリューチェーン展開</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 制作フロー ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Production Flow" data-en="Production Flow">Production Flow</p>
+      <h2 class="why-section-title" data-ja="ただの漫画制作じゃない。コンサルティング。" data-en="Not Just Manga Production. Consulting.">ただの漫画制作じゃない。コンサルティング。</h2>
+      <div class="process-flow">
+        <div class="process-step">
+          <div class="process-num">1</div>
+          <h4 data-ja="ヒアリング" data-en="Hearing">ヒアリング</h4>
+          <p data-ja="課題発掘コンサルティング" data-en="Issue discovery consulting">課題発掘コンサルティング</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">2</div>
+          <h4 data-ja="あらすじ" data-en="Synopsis">あらすじ</h4>
+          <p data-ja="ストーリー構成設計" data-en="Story structure design">ストーリー構成設計</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">3</div>
+          <h4 data-ja="シナリオ" data-en="Scenario">シナリオ</h4>
+          <p data-ja="脚本家・漫画家チェック" data-en="Screenwriter and mangaka review">脚本家・漫画家チェック</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">4</div>
+          <h4 data-ja="画風決定" data-en="Art Style Selection">画風決定</h4>
+          <p data-ja="キャラ・世界観設計" data-en="Character and world design">キャラ・世界観設計</p>
+        </div>
+      </div>
+      <div class="process-flow" style="margin-top:24px;">
+        <div class="process-step">
+          <div class="process-num">5</div>
+          <h4 data-ja="ネーム" data-en="Name">ネーム</h4>
+          <p data-ja="コマ割り・演出設計" data-en="Panel division and staging design">コマ割り・演出設計</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">6</div>
+          <h4 data-ja="漫画制作" data-en="Manga Production">漫画制作</h4>
+          <p data-ja="人7割×AI3割" data-en="70% human x 30% AI">人7割×AI3割</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">7</div>
+          <h4 data-ja="初稿確認" data-en="Draft Review">初稿確認</h4>
+          <p data-ja="お客様確認・修正" data-en="Client review and revisions">お客様確認・修正</p>
+        </div>
+        <div class="process-step">
+          <div class="process-num">8</div>
+          <h4 data-ja="最終納品" data-en="Final Delivery">最終納品</h4>
+          <p data-ja="品質チェック完了" data-en="Quality check complete">品質チェック完了</p>
+        </div>
+      </div>
+      <div class="process-specs">
+        <div class="process-spec-item">
+          <div class="num">19<span class="unit" data-ja="万円〜" data-en="~">万円〜</span></div>
+          <div class="label" data-ja="制作費" data-en="Production Cost">制作費</div>
+        </div>
+        <div class="process-spec-item">
+          <div class="num">2〜4<span class="unit" data-ja="週間" data-en="weeks">週間</span></div>
+          <div class="label" data-ja="標準納期" data-en="Standard Turnaround">標準納期</div>
+        </div>
+        <div class="process-spec-item">
+          <div class="num">1/6</div>
+          <div class="label" data-ja="業界比コスパ" data-en="Cost-benefit vs Industry">業界比コスパ</div>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:24px;font-size:14px;color:var(--text-muted);" data-ja="全工程で6回のチェックを実施。125項目の品質チェックリストを運用しています。" data-en="Six checkpoints throughout all processes. Operating a 125-item quality checklist.">全工程で6回のチェックを実施。125項目の品質チェックリストを運用しています。</p>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="why-cta">
+    <h2 data-ja="まずはお気軽にご相談ください" data-en="Feel free to contact us today">まずはお気軽にご相談ください</h2>
+    <p data-ja="御社の課題に最適な漫画活用プランをご提案します。" data-en="We'll propose a manga utilization plan tailored to your company's needs.">御社の課題に最適な漫画活用プランをご提案します。</p>
+    <a href="index.html#contact" class="why-cta-btn" data-ja="お問い合わせはこちら" data-en="Contact us here">お問い合わせはこちら</a>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer class="why-footer">
+    <p data-ja="&copy; 2026 Contents X Inc. All rights reserved." data-en="© 2026 Contents X Inc. All rights reserved.">&copy; 2026 Contents X Inc. All rights reserved.</p>
+  </footer>
+
+  <script src="js/nav.js"></script>
+</body>
+</html>

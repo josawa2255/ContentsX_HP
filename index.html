@@ -4,10 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ContentsX | 「伝える」を、再発明する。</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <!-- 初期表示漫画の表紙をプリロード -->
+  <link rel="preload" href="material/manga/ichinohe-home/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="material/manga/ichinohe-home/02.webp" as="image" type="image/webp">
+  <link rel="preload" href="js/page-flip.browser.js" as="script">
+  <link rel="stylesheet" href="css/hero-new.css">
 </head>
 <body data-theme="cyber-green">
 
@@ -96,40 +101,130 @@
   <header class="header" id="header">
     <div class="header-inner">
       <a href="#" class="logo">
-        <img src="images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
       </a>
-      <nav class="nav" id="nav">
-        <a href="#about" class="nav-link">会社概要</a>
-        <a href="#about" class="nav-link">サービス</a>
-        <a href="#strength" class="nav-link">強み</a>
-        <a href="#works" class="nav-link">実績</a>
-        <a href="#contact" class="nav-link nav-cta">お問い合わせ</a>
-      </nav>
-      <button class="hamburger" id="hamburger" aria-label="メニュー">
-        <span></span><span></span><span></span>
-      </button>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <!-- 言語ボタンは nav.js が自動生成 -->
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- ===== ヒーロー ===== -->
-  <section class="hero" id="hero">
-    <div class="hero-bg-image hero-bg-image--base" id="heroBgBase"></div>
-    <div class="hero-bg-image hero-bg-image--reveal" id="heroBgReveal"></div>
-    <div class="hero-bg-pattern"></div>
-    <div class="hero-content">
-      <p class="hero-sub">Reinventing Communication</p>
-      <h1 class="hero-title">
-        <span class="hero-title-accent">「伝える」</span>を、<br>再発明する。
-      </h1>
-      <p class="hero-desc">
-        情報が多すぎて、伝わらなくなった時代。<br>
-        ContentsXは、漫画・AI・クリエイティブの力で<br>
-        企業の「伝える」を根本から変えます。
-      </p>
-      <div class="hero-actions">
-        <a href="#contact" class="btn btn-primary">無料相談する</a>
-        <a href="#about" class="btn btn-outline">サービスを見る</a>
+  <!-- ===== HERO: ZOON + 集英社 スタイル ===== -->
+<section class="hero" id="hero">
+  <!-- ===== イントロオーバーレイ（hero内） ===== -->
+  <div class="hero-intro-overlay" id="heroIntroOverlay">
+    <div class="hero-intro-text" id="heroIntroText">
+      <span class="hero-intro-line" id="heroIntroLine1">埋もれていた物語に、</span>
+      <span class="hero-intro-line" id="heroIntroLine2">光を当てる。</span>
+    </div>
+  </div>
+
+  <!-- 鎖アニメーション（フルスクリーンオーバーレイ） -->
+  <div class="hero-chains" id="heroChains">
+    <img src="material/images/hero/chain_turq.webp" class="hero-chain hero-chain--turq" alt="">
+    <img src="material/images/hero/chain_orange.webp" class="hero-chain hero-chain--orange" alt="">
+  </div>
+
+  <!-- Phase 1: ビズちゃんアニメーション背景 -->
+  <div class="hero-bizchar" id="heroBizchar">
+    <img src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="">
+    <img src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" alt="">
+    <img src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img" alt="">
+  </div>
+
+  <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->
+  <div class="hero-works-bg" id="heroWorksBg">
+    <div class="hero-works-row hero-works-row--1" id="heroWorksRow1"></div>
+    <div class="hero-works-row hero-works-row--2" id="heroWorksRow2"></div>
+    <div class="hero-works-row hero-works-row--3" id="heroWorksRow3"></div>
+  </div>
+
+  <!-- オーバーレイ（ロゴ可読性） -->
+  <div class="hero-overlay"></div>
+
+  <!-- 中央ロゴ (ZOONスタイル) -->
+  <div class="hero-center" id="heroCenter">
+    <img src="material/images/hero/ContentsX_hero.webp" class="hero-logo-main" id="heroLogoMain" alt="ContentsX">
+  </div>
+
+  <!-- SCROLL indicator -->
+  <div class="hero-scroll-hint" id="heroScrollHint">
+    <span>SCROLL</span>
+    <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+      <path d="M7.3 18.3L1.7 12.7 0.3 14.1 8 21.8l7.7-7.7-1.4-1.4L8.7 18.3V0H7.3v18.3z" fill="currentColor"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ===== 制作事例モーダル (BizMangaスタイル) ===== -->
+<div class="work-detail-overlay" id="workDetailOverlay">
+  <button class="work-detail-close" id="workDetailClose">&times;</button>
+  <div class="work-detail-content">
+    <div class="work-detail-left">
+      <div class="work-detail-carousel-wrap">
+        <button class="work-detail-arrow work-detail-prev" id="workDetailPrev">&#8249;</button>
+        <div class="work-detail-carousel" id="workDetailCarousel"></div>
+        <button class="work-detail-arrow work-detail-next" id="workDetailNext">&#8250;</button>
       </div>
+      <div class="work-detail-dots" id="workDetailDots"></div>
+    </div>
+    <div class="work-detail-right">
+      <h2 class="work-detail-title" id="workDetailTitle"></h2>
+      <span class="work-detail-category" id="workDetailCategory"></span>
+      <div class="work-detail-section">
+        <h3 class="work-detail-heading">使用媒体</h3>
+        <ul class="work-detail-list" id="workDetailMedia"></ul>
+      </div>
+      <div class="work-detail-section">
+        <h3 class="work-detail-heading">導入内容</h3>
+        <ul class="work-detail-list" id="workDetailSpec"></ul>
+      </div>
+      <div class="work-detail-divider"></div>
+      <div class="work-detail-section">
+        <h3 class="work-detail-heading">演出ポイント</h3>
+        <p class="work-detail-text" id="workDetailPoint"></p>
+      </div>
+      <div class="work-detail-divider"></div>
+      <div class="work-detail-section">
+        <h3 class="work-detail-heading">客先コメント</h3>
+        <p class="work-detail-quote" id="workDetailComment"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <!-- ===== ニュース ===== -->
+  <section class="news-section" id="news">
+    <div class="container">
+      <div class="news-header">
+        <h2 class="news-heading">News</h2>
+        <a href="#" class="news-more">一覧を見る →</a>
+      </div>
+      <ul class="news-list">
+        <li class="news-item">
+          <time class="news-date">2026.03.20</time>
+          <span class="news-tag">お知らせ</span>
+          <a href="#" class="news-link" data-ja="コーポレートサイトをリニューアルしました" data-en="Corporate website has been renewed">コーポレートサイトをリニューアルしました</a>
+        </li>
+        <li class="news-item">
+          <time class="news-date">2026.03.03</time>
+          <span class="news-tag">プレスリリース</span>
+          <a href="#" class="news-link" data-ja="コンテンツエックス株式会社を設立しました" data-en="Contents X Co., Ltd. has been established">コンテンツエックス株式会社を設立しました</a>
+        </li>
+        <li class="news-item">
+          <time class="news-date">2026.02.15</time>
+          <span class="news-tag">サービス</span>
+          <a href="#" class="news-link" data-ja="ビズマンガの新プランを開始しました" data-en="BizManga new plan has launched">ビズマンガの新プランを開始しました</a>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -140,28 +235,28 @@
       <h2 class="section-title text-center">3つの事業領域</h2>
       <div class="portfolio-grid">
         <a href="https://bizmanga.com/" target="_blank" rel="noopener noreferrer" class="portfolio-item portfolio-item--hero">
-          <div class="portfolio-item-bg" style="background-image: url('images/bizmanga/ip_platform_card_03.webp')"></div>
+          <div class="portfolio-item-bg" style="background-image: url('material/images/bizmanga/ip_platform_card_03.webp')"></div>
           <div class="portfolio-item-overlay"></div>
           <div class="portfolio-item-content">
-            <img src="images/bizmanga/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
+            <img src="material/images/bizmanga/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
             <p class="portfolio-tag">確実な収益基盤</p>
             <p class="portfolio-desc">ビジネス特化型漫画制作で、企業の課題を解決する主力事業。</p>
           </div>
         </a>
         <div class="portfolio-item portfolio-item--hero">
-          <div class="portfolio-item-bg" style="background-image: url('images/AI school/aischool_lightblue.webp')"></div>
+          <div class="portfolio-item-bg" style="background-image: url('material/images/AI school/aischool_lightblue.webp')"></div>
           <div class="portfolio-item-overlay"></div>
           <div class="portfolio-item-content">
-            <img src="images/AI school/ai_school_logo_blue.webp" alt="ニューマンガアカデミー" class="portfolio-logo">
+            <img src="material/images/AI school/new_manga_school_logo.webp" alt="ニューマンガアカデミー" class="portfolio-logo portfolio-logo--large">
             <p class="portfolio-tag">人材育成・制作拡張</p>
             <p class="portfolio-desc">次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。</p>
           </div>
         </div>
         <div class="portfolio-item portfolio-item--hero">
-          <div class="portfolio-item-bg" style="background-image: url('images/IP platform/ipplatform_yellow.webp')"></div>
+          <div class="portfolio-item-bg" style="background-image: url('material/images/IP platform/ipplatform_yellow.webp')"></div>
           <div class="portfolio-item-overlay"></div>
           <div class="portfolio-item-content">
-            <img src="images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
+            <img src="material/images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
             <p class="portfolio-tag">爆発的成長</p>
             <p class="portfolio-desc">Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。</p>
           </div>
@@ -169,6 +264,63 @@
       </div>
     </div>
   </section>
+
+  <!-- ===== 新作情報 ===== -->
+  <section class="new-works" id="new-works">
+    <div class="container">
+      <div class="new-works-header">
+        <h2 class="new-works-heading" data-ja="新作情報" data-en="Latest Works">新作情報</h2>
+        <div class="new-works-nav">
+          <button class="new-works-arrow new-works-arrow--prev" id="worksArrowPrev" aria-label="前へ">‹</button>
+          <button class="new-works-arrow new-works-arrow--next" id="worksArrowNext" aria-label="次へ">›</button>
+        </div>
+      </div>
+      <div class="new-works-track-wrapper">
+        <div class="new-works-track" id="newWorksTrack">
+          <!-- JSONから動的に生成されます -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 漫画ビューア モーダル ===== -->
+  <div class="manga-viewer-overlay" id="mangaViewerOverlay">
+    <div class="manga-viewer">
+      <button class="manga-viewer-close" id="mangaViewerClose">×</button>
+
+      <!-- PC: フリップブック表示（制作実績と同じUI） -->
+      <div class="manga-viewer-flipbook-mode" id="mangaViewerFlipMode">
+        <h3 class="mv-title" id="mvTitle"></h3>
+        <div class="manga-viewer-flipbook-wrap">
+          <div class="mv-guide mv-guide--left" id="mvGuideLeft">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>次のページ</span>
+          </div>
+          <div class="flipbook-wrap">
+            <div id="mangaViewerFlipbook"></div>
+            <div class="flipbook-spine mv-spine" id="mvSpine"></div>
+          </div>
+          <div class="mv-guide mv-guide--right" id="mvGuideRight">
+            <span>前のページ</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </div>
+        </div>
+        <div class="mv-slider">
+          <span class="mv-slider-total" id="mvSliderTotal">1</span>
+          <div class="mv-slider-track" id="mvSliderTrack">
+            <div class="mv-slider-fill" id="mvSliderFill"></div>
+            <div class="mv-slider-thumb" id="mvSliderThumb"></div>
+          </div>
+          <span class="mv-slider-page" id="mvSliderPage">1</span>
+        </div>
+      </div>
+
+      <!-- スマホ or 縦長ページ: 縦スクロール表示 -->
+      <div class="manga-viewer-scroll-mode" id="mangaViewerScrollMode">
+        <div class="manga-viewer-scroll-inner" id="mangaViewerScrollInner"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== 強み ===== -->
   <section class="strength" id="strength">
@@ -179,7 +331,7 @@
       <div class="strength-grid">
         <div class="strength-card">
           <div class="strength-card-img">
-            <img src="images/3post/pillar2_cost_char_a_fixed2.webp" alt="コスト1/5">
+            <img src="material/images/3post/pillar2_cost_char_a_fixed2.webp" alt="コスト1/5">
           </div>
           <div class="strength-card-content">
             <h3>コスト <span class="accent">1/5</span></h3>
@@ -189,7 +341,7 @@
         </div>
         <div class="strength-card">
           <div class="strength-card-img">
-            <img src="images/3post/pillar2_legal_nochar_b.webp" alt="法的リスクゼロ">
+            <img src="material/images/3post/pillar2_legal_nochar_b.webp" alt="法的リスクゼロ">
           </div>
           <div class="strength-card-content">
             <h3>法的リスク <span class="accent">ゼロ</span></h3>
@@ -199,7 +351,7 @@
         </div>
         <div class="strength-card">
           <div class="strength-card-img">
-            <img src="images/3post/pillar2_factory_char_a.webp" alt="工場AI">
+            <img src="material/images/3post/pillar2_factory_char_a.webp" alt="工場AI">
           </div>
           <div class="strength-card-content">
             <h3>工場AI</h3>
@@ -248,24 +400,30 @@
       <p class="section-label">Works</p>
       <h2 class="section-title text-center">制作実績</h2>
 
-      <div class="showcase-brand">
-        <img src="images/bizmanga/bizmanga-logo.webp" alt="BizManga" class="showcase-brand-logo">
+      <!-- 漫画セレクター -->
+      <div class="manga-selector" id="mangaSelector">
+        <button class="manga-sel-btn active" data-manga="ichinohe-home">一戸ホーム</button>
+        <button class="manga-sel-btn" data-manga="omatome-ninja">おまとめ忍者</button>
+        <button class="manga-sel-btn" data-manga="diamond">DIAMOND</button>
+      </div>
+
+      <div class="showcase-brand" id="showcaseBrand">
+        <img src="material/images/bizmanga/bizmanga-logo.webp" alt="BizManga" class="showcase-brand-logo">
         <span class="showcase-brand-x">×</span>
-        <span class="showcase-brand-client">一戸ホーム</span>
+        <span class="showcase-brand-client" id="brandClient">一戸ホーム</span>
       </div>
 
       <div class="showcase">
         <!-- 左：説明 -->
-        <div class="showcase-info">
-          <span class="showcase-category">営業</span>
-          <h3 class="showcase-title">一戸ホーム</h3>
-          <div class="showcase-tags">
+        <div class="showcase-info" id="showcaseInfo">
+          <span class="showcase-category" id="scCategory">営業</span>
+          <div class="showcase-tags" id="scTags">
             <span class="showcase-tag">#住宅</span>
             <span class="showcase-tag">#紹介</span>
           </div>
-          <p class="showcase-desc">住宅メーカーの魅力をストーリー漫画で伝える営業ツール。漫画ならではの没入感で、お客様の理解と共感を引き出します。</p>
+          <p class="showcase-desc" id="scDesc">住宅メーカーの魅力をストーリー漫画で伝える営業ツール。漫画ならではの没入感で、お客様の理解と共感を引き出します。</p>
           <div class="showcase-meta">
-            <span class="showcase-pages">全22ページ</span>
+            <span class="showcase-pages" id="scPageCount">全22ページ</span>
           </div>
         </div>
 
@@ -296,6 +454,104 @@
     </div>
   </section>
 
+<!-- ===== 会社概要 ===== -->
+  <section class="company" id="company">
+    <div class="container">
+      <p class="section-label">Company</p>
+      <h2 class="section-title" style="margin-bottom: 48px;">会社概要</h2>
+
+      <div class="company-inner">
+        <!-- 左：ロゴ + 説明 -->
+        <div class="company-left">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="company-logo">
+          <p class="company-description" data-ja="コンテンツエックスは、次世代ニューマンガの力で企業と人をつなぐコンテンツスタジオです。ビジネス特化型漫画制作から、IPコンテンツ開発、クリエイター教育まで、一気通貫で手がけています。" data-en="Contents X is a content studio connecting businesses and people through next-generation New Manga. From business-specialized manga production to IP content development and creator education, we handle everything end-to-end.">
+            コンテンツエックスは、次世代ニューマンガの力で企業と人をつなぐコンテンツスタジオです。ビジネス特化型漫画制作から、IPコンテンツ開発、クリエイター教育まで、一気通貫で手がけています。
+          </p>
+        </div>
+        <!-- 右：会社情報テーブル -->
+        <div class="company-right">
+          <dl class="company-info">
+            <div class="company-info-row">
+              <dt data-ja="運営会社" data-en="Company">運営会社</dt>
+              <dd data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="代表" data-en="CEO">代表</dt>
+              <dd data-ja="黒宮 大貴" data-en="Daiki Kuromiya">黒宮 大貴</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="設立" data-en="Founded">設立</dt>
+              <dd data-ja="2026年 3月 3日" data-en="March 3, 2026">2026年 3月 3日</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="事業内容" data-en="Business">事業内容</dt>
+              <dd data-ja="漫画・アニメーションの企画制作、AIスクール事業の運営、IPコンテンツの企画・制作・販売、広告宣伝・マーケティング事業" data-en="Manga & animation production, AI school operations, IP content development & sales, advertising & marketing services">漫画・アニメーションの企画制作、AIスクール事業の運営、IPコンテンツの企画・制作・販売、広告宣伝・マーケティング事業</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="住所" data-en="Address">住所</dt>
+              <dd data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 事業提携パートナー ===== -->
+  <section class="partners" id="partners">
+    <div class="container">
+      <h2 class="partners-title" data-ja="事業提携パートナー" data-en="Business Partners">事業提携パートナー</h2>
+    </div>
+
+    <div class="partners-layout">
+      <!-- ビズちゃんキャラクター -->
+      <div class="partners-character" id="partnersCharacter">
+        <div class="partners-character-inner">
+          <img src="material/images/characters/bizchan_partner.webp" alt="ビズちゃん" class="partners-character-img">
+        </div>
+      </div>
+
+      <!-- パートナーカード一覧 -->
+      <div class="partners-cards">
+          <!-- ASOBI SYSTEM -->
+          <div class="partner-card partner-card--orange">
+            <div class="partner-card-logo">
+              <img src="material/images/partners/asobi-system.webp" alt="ASOBI SYSTEM" class="partner-logo">
+              <span class="partner-badge partner-badge--green" data-ja="最重要戦略パートナー" data-en="Strategic Partner">最重要戦略パートナー</span>
+            </div>
+            <div class="partner-card-body">
+              <p class="partner-desc" data-ja="エンタメ業界のリーディングカンパニー。共同プロジェクト「ASOBI ORIGINAL STORY PROJECT」や漫画コンテスト「ネームSHOW!」を展開。きゃりーぱみゅぱみゅ漫画の共同制作や、共同スタジオ会社の設立を計画中。" data-en="A leading entertainment company. Joint projects include 'ASOBI ORIGINAL STORY PROJECT' and manga contest 'Name SHOW!'.">エンタメ業界のリーディングカンパニー。共同プロジェクト「ASOBI ORIGINAL STORY PROJECT」や漫画コンテスト「ネームSHOW!」を展開。きゃりーぱみゅぱみゅ漫画の共同制作や、共同スタジオ会社の設立を計画中。</p>
+              <a href="https://asobisystem.com/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
+            </div>
+          </div>
+
+          <!-- DM Solutions -->
+          <div class="partner-card partner-card--cyan">
+            <div class="partner-card-logo">
+              <img src="material/images/partners/dm-solutions.webp" alt="DM Solutions" class="partner-logo">
+              <span class="partner-badge partner-badge--green" data-ja="コアパートナー" data-en="Core Partner">コアパートナー</span>
+            </div>
+            <div class="partner-card-body">
+              <p class="partner-desc" data-ja="ダイレクトメール業界大手。「漫画でDM」サービスを共同展開し、従来30万円の漫画DM制作を13.8万円〜と半額以下で実現。A4圧着はがき・大判はがきに対応。" data-en="A major direct mail company. Co-developing 'Manga DM' service.">ダイレクトメール業界大手。「漫画でDM」サービスを共同展開し、従来30万円の漫画DM制作を13.8万円〜と半額以下で実現。A4圧着はがき・大判はがきに対応。</p>
+              <a href="https://www.dm-s.co.jp/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
+            </div>
+          </div>
+
+          <!-- KIRINZ -->
+          <div class="partner-card partner-card--purple">
+            <div class="partner-card-logo">
+              <img src="material/images/partners/kirinz.webp" alt="KIRINZ" class="partner-logo">
+              <span class="partner-badge partner-badge--purple" data-ja="出資・事業協力" data-en="Investment &amp; Cooperation">出資・事業協力</span>
+            </div>
+            <div class="partner-card-body">
+              <p class="partner-desc" data-ja="共同創業者・鵜池航太氏が率いるインフルエンサーマーケティング企業。出資を通じた事業基盤の強化と、SNS・インフルエンサー領域での事業協力を推進。" data-en="An influencer marketing company led by co-founder Kota Uike.">共同創業者・鵜池航太氏が率いるインフルエンサーマーケティング企業。出資を通じた事業基盤の強化と、SNS・インフルエンサー領域での事業協力を推進。</p>
+              <a href="https://kirinz.jp/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+
   <!-- ===== CTA ===== -->
   <section class="cta" id="contact">
     <div class="container">
@@ -313,12 +569,12 @@
     <div class="container">
       <div class="footer-inner">
         <div class="footer-brand">
-          <img src="images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
-          <p class="footer-company">株式会社Manga X</p>
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company">コンテンツエックス株式会社</p>
           <p class="footer-address">東京都目黒区目黒2-11-15 8階</p>
         </div>
         <div class="footer-links">
-          <a href="#about">会社概要</a>
+          <a href="#company">会社概要</a>
           <a href="#about">サービス</a>
           <a href="#strength">強み</a>
           <a href="#works">実績</a>
@@ -326,11 +582,16 @@
           <a href="#">プライバシーポリシー</a>
         </div>
       </div>
-      <p class="footer-copy">© Manga X Co.,Ltd. 2025 All rights reserved.</p>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="js/page-flip.browser.js"></script>
-  <script src="script.js"></script>
+  <script src="js/page-flip.browser.js" defer></script>
+  <script src="js/nav.js" defer></script>
+  <script src="js/data/new-works.js" defer></script>
+  <script src="js/data/works-detail.js" defer></script>
+  <script src="js/script.js" defer></script>
+  <script src="js/hero-new.js" defer></script>
+  <!-- ビズちゃん追従はCSS stickyで実装 -->
 </body>
 </html>

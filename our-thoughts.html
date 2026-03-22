@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>伝えたい思い | ContentsX</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    /* ===== 伝えたい思い — ページ専用スタイル ===== */
+    .why-hero {
+      padding: 140px 24px 80px;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .why-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 40%, rgba(255,107,53,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(0,188,212,0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .why-hero-label {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 20px;
+    }
+    .why-hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .why-hero h1 span {
+      color: var(--accent, #FF6B35);
+    }
+    .why-hero-sub {
+      font-size: 17px;
+      color: rgba(255,255,255,0.75);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.9;
+    }
+    .why-hero-mission {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+    .why-hero-mission-item {
+      text-align: center;
+    }
+    .why-hero-mission-item .label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+    }
+    .why-hero-mission-item p {
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.6;
+    }
+
+    /* セクション共通 */
+    .why-section {
+      padding: 100px 24px;
+    }
+    .why-section:nth-child(even) {
+      background: var(--bg-light, #f8f9fa);
+    }
+    .why-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .why-section-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 12px;
+    }
+    .why-section-title {
+      font-size: clamp(24px, 3.5vw, 36px);
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 48px;
+      line-height: 1.4;
+    }
+
+    /* 強みリスト */
+    .strength-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+    .strength-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 28px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .strength-item:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .strength-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    .strength-item h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 12px;
+    }
+    .strength-item p {
+      font-size: 14px;
+      color: var(--text-secondary, #555);
+      line-height: 1.8;
+    }
+
+    /* ファネル */
+    .funnel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 36px;
+    }
+    .funnel-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .funnel-step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      background: #fff;
+      border: 1px solid var(--border, #e5e5e7);
+      position: relative;
+    }
+    .funnel-step:first-child { border-radius: 12px 12px 0 0; }
+    .funnel-step:last-child {
+      border-radius: 0 0 12px 12px;
+      background: #1a1a2e;
+      color: #fff;
+      border-color: #1a1a2e;
+    }
+    .funnel-step:last-child .funnel-label { color: rgba(255,255,255,0.7); }
+    .funnel-step:last-child .funnel-num { color: #fff; }
+    .funnel-step + .funnel-step { border-top: none; }
+    .funnel-label {
+      font-size: 13px;
+      color: var(--text-secondary, #666);
+      width: 140px;
+      flex-shrink: 0;
+    }
+    .funnel-num {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-left: auto;
+    }
+    .funnel-pct {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted, #999);
+      margin-left: 8px;
+    }
+    .novel-stats h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 20px;
+    }
+    .novel-stat-item { margin-bottom: 20px; }
+    .novel-stat-item .label { font-size: 12px; color: var(--text-muted, #999); }
+    .novel-stat-item .big { font-size: 36px; font-weight: 900; color: var(--text-primary, #1d1d1f); line-height: 1.2; }
+    .novel-stat-item .big .unit { font-size: 16px; }
+    .novel-stat-item .note { font-size: 12px; color: var(--text-secondary, #666); }
+
+    /* 2つの道 */
+    .two-roads {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .road-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 28px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    }
+    .road-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--accent, #FF6B35);
+      margin-bottom: 12px;
+    }
+    .road-card h3 {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text-primary, #1d1d1f);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .road-card ul { list-style: none; padding: 0; margin: 0 0 20px; }
+    .road-card ul li {
+      font-size: 14px;
+      color: var(--text-secondary, #555);
+      padding: 6px 0 6px 20px;
+      position: relative;
+    }
+    .road-card ul li::before {
+      content: '■';
+      position: absolute;
+      left: 0;
+      color: var(--accent, #FF6B35);
+      font-size: 10px;
+      top: 9px;
+    }
+    .road-card .bottom-line {
+      padding-top: 16px;
+      border-top: 1px solid var(--border, #e5e5e7);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary, #1d1d1f);
+      text-align: center;
+    }
+    .academy-bar {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 28px 32px;
+      text-align: center;
+      color: #fff;
+    }
+    .academy-bar h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+    .academy-bar p { font-size: 14px; color: rgba(255,255,255,0.7); }
+
+    /* ロードマップ */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+    .roadmap-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      border: 1px solid var(--border, #e5e5e7);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      position: relative;
+    }
+    .roadmap-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--accent, #FF6B35);
+      border-radius: 16px 16px 0 0;
+    }
+    .roadmap-year { font-size: 28px; font-weight: 900; color: var(--text-primary, #1d1d1f); margin-bottom: 4px; }
+    .roadmap-phase { font-size: 14px; font-weight: 700; color: var(--accent, #FF6B35); margin-bottom: 16px; }
+    .roadmap-item ul { list-style: none; padding: 0; margin: 0; }
+    .roadmap-item ul li {
+      font-size: 13px;
+      color: var(--text-secondary, #555);
+      padding: 6px 0 6px 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .roadmap-item ul li::before {
+      content: '■';
+      position: absolute;
+      left: 0;
+      color: var(--accent, #FF6B35);
+      font-size: 8px;
+      top: 10px;
+    }
+
+    /* CTA */
+    .why-cta {
+      padding: 80px 24px;
+      background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+      text-align: center;
+      color: #fff;
+    }
+    .why-cta h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 900; margin-bottom: 20px; }
+    .why-cta p { color: rgba(255,255,255,0.7); margin-bottom: 36px; font-size: 15px; }
+    .why-cta-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      background: var(--accent, #FF6B35);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .why-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255,107,53,0.4);
+    }
+
+    /* フッター */
+    .why-footer {
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted, #888);
+      background: var(--bg-white, #fff);
+      border-top: 1px solid var(--border, #e5e5e7);
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .funnel-grid { grid-template-columns: 1fr; }
+      .two-roads { grid-template-columns: 1fr; }
+      .roadmap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-theme="cyber-green">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ヒーロー ===== -->
+  <section class="why-hero">
+    <div class="why-inner">
+      <p class="why-hero-label" data-ja="Our Thoughts" data-en="Our Thoughts">Our Thoughts</p>
+      <h1 data-ja="埋もれていた物語に、光を当てる。" data-en="Shine light on stories that have been buried.">埋もれていた物語に、<br><span>光を当てる。</span></h1>
+      <p class="why-hero-sub" data-ja="企業の想いを、届くコンテンツに。クリエイターの才能を、届く作品に。" data-en="Turn corporate vision into content that reaches. Transform creator talent into work that resonates.">企業の想いを、届くコンテンツに。<br>クリエイターの才能を、届く作品に。</p>
+      <div class="why-hero-mission">
+        <div class="why-hero-mission-item">
+          <div class="label" data-ja="Mission" data-en="Mission">Mission</div>
+          <p data-ja="想いを、届くコンテンツに。才能を、届く作品に。" data-en="Turn vision into content that reaches. Turn talent into work that resonates.">想いを、届くコンテンツに。<br>才能を、届く作品に。</p>
+        </div>
+        <div class="why-hero-mission-item">
+          <div class="label" data-ja="Vision" data-en="Vision">Vision</div>
+          <p data-ja="人とテクノロジーで、『創る』も『届ける』も次の時代へ。" data-en="With people and technology, both 'creating' and 'delivering' into the next era.">人とテクノロジーで、<br>『創る』も『届ける』も<br>次の時代へ。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 才能が埋もれている現実 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Creator Democratization" data-en="Creator Democratization">Creator Democratization</p>
+      <h2 class="why-section-title" data-ja="才能は、仕組みがなければ埋もれる。" data-en="Without the right system, talent gets buried.">才能は、仕組みがなければ埋もれる。</h2>
+      <div class="funnel-grid">
+        <div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text-primary);padding-left:12px;border-left:4px solid var(--accent,#FF6B35);" data-ja="漫画家キャリアファネル" data-en="Manga Artist Career Funnel">漫画家キャリアファネル</h3>
+          <div class="funnel-steps">
+            <div class="funnel-step">
+              <span class="funnel-label" data-ja="志望者（全体）" data-en="Aspiring Artists (Total)">志望者（全体）</span>
+              <span class="funnel-num" data-ja="数万〜10万人" data-en="Tens of thousands to 100,000">数万〜10万人</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label" data-ja="担当付き（ジャンプのみ）" data-en="With Editor (Jump Only)">担当付き（ジャンプのみ）</span>
+              <span class="funnel-num" data-ja="約2,000人" data-en="~2,000">約2,000人</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label" data-ja="新人賞デビュー" data-en="Newcomer Award Debut">新人賞デビュー</span>
+              <span class="funnel-num" data-ja="約200名/年" data-en="~200/year">約200名/年</span>
+              <span class="funnel-pct" data-ja="(0.2%)" data-en="(0.2%)">(0.2%)</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label" data-ja="連載獲得" data-en="Serialization Acquired">連載獲得</span>
+              <span class="funnel-num" data-ja="約1人/1,000人" data-en="~1 per 1,000">約1人/1,000人</span>
+              <span class="funnel-pct" data-ja="(0.1%)" data-en="(0.1%)">(0.1%)</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label" data-ja="3年後に生存" data-en="Survival After 3 Years">3年後に生存</span>
+              <span class="funnel-num" data-ja="20〜30%" data-en="20-30%">20〜30%</span>
+            </div>
+          </div>
+        </div>
+        <div class="novel-stats">
+          <h4 style="padding-left:12px;border-left:4px solid var(--accent,#FF6B35);" data-ja="小説家の現実" data-en="Reality of Novelists">小説家の現実</h4>
+          <div class="novel-stat-item">
+            <div class="label" data-ja="五大誌合計 約10,248作品応募" data-en="~10,248 submissions to major publications">五大誌合計 約10,248作品応募</div>
+            <div class="big" data-ja="0.05〜0.10%" data-en="0.05-0.10%">0.05〜0.10<span class="unit">%</span></div>
+            <div class="note" data-ja="受賞率（受賞7〜9名）" data-en="Award rate (7-9 winners)">受賞率（受賞7〜9名）</div>
+          </div>
+          <div class="novel-stat-item">
+            <div class="label" data-ja="デビューしても続かない" data-en="Most debut authors don't continue">デビューしても続かない</div>
+            <div class="big" data-ja="約5%" data-en="~5%">約5<span class="unit">%</span></div>
+            <div class="note" data-ja="小説家の5年生存率" data-en="5-year survival rate for novelists">小説家の5年生存率</div>
+          </div>
+          <div class="novel-stat-item">
+            <div class="label" data-ja="「小説家になろう」登録者 287万人" data-en="'Become a Novelist' registered users: 2.87M">「小説家になろう」登録者 287万人</div>
+            <div class="big" data-ja="0.09〜0.55%" data-en="0.09-0.55%">0.09〜0.55<span class="unit">%</span></div>
+            <div class="note" data-ja="書籍化率" data-en="Book publication rate">書籍化率</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#f8f9fa;border-radius:16px;padding:32px;border-left:4px solid var(--accent,#FF6B35);text-align:center;">
+        <p style="font-size:18px;font-weight:900;color:var(--text-primary);margin-bottom:8px;" data-ja="Contents Xは、この構造を変える。" data-en="Contents X changes this structure.">Contents Xは、この構造を変える。</p>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;" data-ja="編集者のゲートに阻まれることなく、才能ある全てのクリエイターに制作・発表・収益化の機会を提供します。" data-en="Without facing editor gatekeepers, we provide all talented creators with opportunities to produce, publish, and monetize.">編集者のゲートに阻まれることなく、才能ある全てのクリエイターに<br>制作・発表・収益化の機会を提供します。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2つの道 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Two Paths" data-en="Two Paths">Two Paths</p>
+      <h2 class="why-section-title" data-ja="企業の想いを届け、才能を世界へ届ける。" data-en="Deliver corporate vision, bring talent to the world.">企業の想いを届け、才能を世界へ届ける。</h2>
+      <div class="two-roads">
+        <div class="road-card">
+          <div class="road-label" data-ja="道① ｜ 企業向け" data-en="Path 1 | For Businesses">道① ｜ 企業向け</div>
+          <h3 data-ja="企業の「想い」を、届くコンテンツに変える。" data-en="Transform corporate vision into content that reaches.">企業の「想い」を、<br>届くコンテンツに変える。</h3>
+          <ul>
+            <li data-ja="採用・研修・営業・PR漫画" data-en="Recruitment, training, sales, and PR manga">採用・研修・営業・PR漫画</li>
+            <li data-ja="コンテンツセールス（月額30万円〜）" data-en="Content sales (from 300k yen/month)">コンテンツセールス（月額30万円〜）</li>
+            <li data-ja="漫画LP・広告漫画" data-en="Manga landing pages and advertising manga">漫画LP・広告漫画</li>
+          </ul>
+          <div class="bottom-line" data-ja="安定したストック収益が基盤" data-en="Stable recurring revenue foundation">安定したストック収益が基盤</div>
+        </div>
+        <div class="road-card">
+          <div class="road-label" data-ja="道② ｜ TO C / グローバル" data-en="Path 2 | B2C / Global">道② ｜ TO C / グローバル</div>
+          <h3 data-ja="クリエイターの「才能」を、世界に届く作品に変える。" data-en="Transform creator talent into work that reaches the world.">クリエイターの「才能」を、<br>世界に届く作品に変える。</h3>
+          <ul>
+            <li data-ja="原作者・漫画家の発掘・育成（ネームSHOW!）" data-en="Discover and develop writers and manga artists (Name SHOW!)">原作者・漫画家の発掘・育成（ネームSHOW!）</li>
+            <li data-ja="Webtoon制作" data-en="Webtoon production">Webtoon制作</li>
+            <li data-ja="世界プラットフォームの代理業" data-en="Representation for global platforms">世界プラットフォームの代理業</li>
+            <li data-ja="1つの原作がドラマ・映画化のIPコンテンツへ" data-en="Single original concept becomes multi-media IP">1つの原作がドラマ・映画化のIPコンテンツへ</li>
+          </ul>
+          <div class="bottom-line" data-ja="長期IP資産" data-en="Long-term IP assets">長期IP資産</div>
+        </div>
+      </div>
+      <div class="academy-bar">
+        <h3 data-ja="ニューマンガアカデミー（漫画スクール）" data-en="New Manga Academy (Comic School)">ニューマンガアカデミー（漫画スクール）</h3>
+        <p data-ja="企業向け漫画を担う制作人材を育て、世界で戦るIPを創るクリエイターを発掘して育てる。" data-en="Develop production talent for corporate manga and discover and cultivate creators who build IP that competes globally.">企業向け漫画を担う制作人材を育て、世界で戦るIPを創るクリエイターを発掘して育てる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 制作の哲学 ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Our Philosophy" data-en="Our Philosophy">Our Philosophy</p>
+      <h2 class="why-section-title" data-ja="道具は変わっても、物語を作るのは人間です。" data-en="Tools change, but humans create stories.">道具は変わっても、物語を作るのは人間です。</h2>
+      <div class="strength-list" style="margin-bottom:48px;">
+        <div class="strength-item">
+          <div class="strength-icon">✍️</div>
+          <h3 data-ja="人間が担う7割" data-en="70% Human-Driven">人間が担う7割</h3>
+          <p data-ja="シナリオ設計、ネーム・コマ割り、赤ペン校正、ストーリー・感情設計。物語の核心は全てプロのクリエイターが設計します。" data-en="Script design, script composition, panel layout, red-pen editing, story and emotion design. The heart of every story is crafted by professional creators.">シナリオ設計、ネーム・コマ割り、赤ペン校正、ストーリー・感情設計。物語の核心は全てプロのクリエイターが設計します。</p>
+        </div>
+        <div class="strength-item">
+          <div class="strength-icon">⚡</div>
+          <h3 data-ja="AIが支える3割" data-en="30% AI-Supported">AIが支える3割</h3>
+          <p data-ja="線画・背景の生成、制作時間の大幅短縮。AIは「道具」としてクリエイターの生産性を最大化します。" data-en="Line art and background generation, dramatically reduced production time. AI as a 'tool' maximizes creator productivity.">線画・背景の生成、制作時間の大幅短縮。AIは「道具」としてクリエイターの生産性を最大化します。</p>
+        </div>
+        <div class="strength-item">
+          <div class="strength-icon">🔒</div>
+          <h3 data-ja="著作権リスクゼロ" data-en="Zero Copyright Risk">著作権リスクゼロ</h3>
+          <p data-ja="原画資産方式を採用。既存IPや実在人物の画像は一切使用せず、全てオリジナルで制作。弁護士によるリーガルチェック体制。" data-en="Original artwork asset approach. No use of existing IP or real-person images. All content created as original. Legal review by attorneys.">原画資産方式を採用。既存IPや実在人物の画像は一切使用せず、全てオリジナルで制作。弁護士によるリーガルチェック体制。</p>
+        </div>
+      </div>
+      <div style="background:#f8f9fa;border-radius:16px;padding:36px;border-left:4px solid var(--accent,#FF6B35);max-width:700px;margin:0 auto;">
+        <p style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:12px;" data-ja="「ネームがないと、絶対に再現できない。」" data-en="\"Without a script, it's impossible to recreate.\"">「ネームがないと、絶対に再現できない。」</p>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;" data-ja="AIは背景を塗れても、物語を作ることはできません。アナログからデジタルへ、ペンタブからAIへ。道具の進化は品質を上げてきました。次世代ニューマンガは、その延長線上にあります。" data-en="AI can color backgrounds, but it cannot create stories. From analog to digital, from pen tablets to AI. Tools have always improved quality. Next-generation New Manga stands in this same line of progression.">AIは背景を塗れても、物語を作ることはできません。アナログからデジタルへ、ペンタブからAIへ。道具の進化は品質を上げてきました。次世代ニューマンガは、その延長線上にあります。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ロードマップ ===== -->
+  <section class="why-section">
+    <div class="why-inner">
+      <p class="why-section-label" data-ja="Roadmap" data-en="Roadmap">Roadmap</p>
+      <h2 class="why-section-title" data-ja="共に、日本の才能を世界へ。" data-en="Together, bringing Japanese talent to the world.">共に、日本の才能を世界へ。</h2>
+      <div class="roadmap">
+        <div class="roadmap-item">
+          <div class="roadmap-year" data-ja="2026" data-en="2026">2026</div>
+          <div class="roadmap-phase" data-ja="基盤構築" data-en="Foundation Building">基盤構築</div>
+          <ul>
+            <li data-ja="BtoB事業（ビズマンガ）の拡大" data-en="Expand B2B business (BizManga)">BtoB事業（ビズマンガ）の拡大</li>
+            <li data-ja="ニューマンガアカデミー開校" data-en="Launch New Manga Academy">ニューマンガアカデミー開校</li>
+            <li data-ja="クリエイター2,000名ネットワーク構築" data-en="Build 2,000-creator network">クリエイター2,000名ネットワーク構築</li>
+          </ul>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-year" data-ja="2027" data-en="2027">2027</div>
+          <div class="roadmap-phase" data-ja="IP創出・海外展開" data-en="IP Creation & Global Expansion">IP創出・海外展開</div>
+          <ul>
+            <li data-ja="自社エージェント業立ち上げ・Webtoon制作" data-en="Launch in-house agency and Webtoon production">自社エージェント業立ち上げ・Webtoon制作</li>
+            <li data-ja="海外プラットフォームとの連携強化" data-en="Strengthen partnerships with global platforms">海外プラットフォームとの連携強化</li>
+            <li data-ja="アカデミー海外校の開校準備" data-en="Prepare international academy expansion">アカデミー海外校の開校準備</li>
+          </ul>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-year" data-ja="2028" data-en="2028">2028</div>
+          <div class="roadmap-phase" data-ja="グローバルエコシステム確立" data-en="Establish Global Ecosystem">グローバルエコシステム確立</div>
+          <ul>
+            <li data-ja="多言語同時配信体制の完全稼働" data-en="Full multilingual simultaneous distribution">多言語同時配信体制の完全稼働</li>
+            <li data-ja="IPメディアミックス（映像化・ゲーム化）" data-en="IP media mix (film, gaming)">IPメディアミックス（映像化・ゲーム化）</li>
+            <li data-ja="クリエイター10,000名体制の実現" data-en="Scale to 10,000-creator network">クリエイター10,000名体制の実現</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="why-cta">
+    <h2 data-ja="一緒に、届ける物語を創りませんか" data-en="Create stories that reach together with us">一緒に、届ける物語を創りませんか</h2>
+    <p data-ja="企業の想い、クリエイターの才能。どちらも、届く形にします。" data-en="Corporate vision, creator talent. We make both reach their audience.">企業の想い、クリエイターの才能。どちらも、届く形にします。</p>
+    <a href="index.html#contact" class="why-cta-btn" data-ja="お問い合わせはこちら" data-en="Contact us">お問い合わせはこちら</a>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer class="why-footer">
+    <p data-ja="&copy; 2026 Contents X Inc. All rights reserved." data-en="&copy; 2026 Contents X Inc. All rights reserved.">&copy; 2026 Contents X Inc. All rights reserved.</p>
+  </footer>
+
+  <script src="js/nav.js"></script>
+</body>
+</html>
