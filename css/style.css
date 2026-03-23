@@ -1484,21 +1484,22 @@ section { padding: 100px 0; }
     flex-direction: column;
   }
   .flow-steps-vertical {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 8px;
+    justify-items: center;
+    width: 100%;
   }
   .flow-step-num {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
   }
   .flow-step p {
     font-size: 10px;
   }
   .flow-arrow-v {
-    transform: rotate(-90deg);
+    display: none;
   }
   .flow-gallery {
     margin-left: 0;
@@ -1538,12 +1539,13 @@ section { padding: 100px 0; }
     margin-bottom: 20px;
   }
   .flow-steps-vertical {
-    gap: 1px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 6px;
   }
   .flow-step-num {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
   .flow-step p {
     font-size: 9px;
