@@ -1505,7 +1505,7 @@ section { padding: 100px 0; }
     margin-left: 0;
   }
   .flow-gallery-item img {
-    height: 280px;
+    height: 340px;
     padding: 8px;
     border-width: 2px;
     outline-width: 3px;
@@ -1516,6 +1516,9 @@ section { padding: 100px 0; }
   }
   .flow-gallery-label {
     font-size: 0.85rem;
+  }
+  .flow-gallery-track {
+    gap: 16px;
   }
   .flow-specs {
     gap: 24px;
@@ -1551,7 +1554,7 @@ section { padding: 100px 0; }
     font-size: 9px;
   }
   .flow-gallery-item img {
-    height: 220px;
+    height: 300px;
     padding: 6px;
   }
   .flow-gallery-label {

@@ -98,13 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
       track.style.paddingRight = Math.max(0, padRight) + 'px';
     }
     updateTrackPadding();
-    window.addEventListener('resize', updateTrackPadding);
+    // 初期位置をセンタリング
+    var initX = getItemOffset(0);
+    track.style.transform = 'translateX(' + (-initX) + 'px)';
+    window.addEventListener('resize', function() {
+      updateTrackPadding();
+      var x = getItemOffset(currentIndex);
+      track.style.transform = 'translateX(' + (-x) + 'px)';
+    });
+
+    function getTrackGap() {
+      return parseFloat(getComputedStyle(track).gap) || 20;
+    }
 
     function getItemOffset(index) {
       // 画像をギャラリー中央に配置して前後の画像を均等にチラ見せ
+      var gap = getTrackGap();
       var offset = parseFloat(track.style.paddingLeft) || 0;
       for (var i = 0; i < index; i++) {
-        offset += items[i].offsetWidth + 20;
+        offset += items[i].offsetWidth + gap;
       }
       var itemWidth = items[index].offsetWidth;
       var centered = offset - (gallery.offsetWidth - itemWidth) / 2;
