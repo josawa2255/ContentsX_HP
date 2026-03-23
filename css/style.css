@@ -2080,6 +2080,7 @@ section { padding: 100px 0; }
    Responsive
    ============================================ */
 @media (max-width: 768px) {
+  html, body { overflow-x: hidden; }
   .nav { display: none; }
   .hamburger { display: flex; }
 
@@ -2387,6 +2388,7 @@ section { padding: 100px 0; }
 
 @media (max-width: 768px) {
   .partners-recruit {
+    margin-top: 40px;
     padding: 32px 24px 60px;
     align-items: center;
     text-align: center;
@@ -2409,7 +2411,7 @@ section { padding: 100px 0; }
 @media (max-width: 480px) {
   .partners-title { font-size: 24px; margin-bottom: 32px; }
   .partners-character { width: 160px; }
-  .partners-cards { padding-bottom: 360px; gap: 16px; }
+  .partners-cards { padding-bottom: 0; gap: 16px; }
   .partner-card { padding: 20px 16px; }
   .partner-desc { font-size: 12.5px; }
   .partners-recruit {
