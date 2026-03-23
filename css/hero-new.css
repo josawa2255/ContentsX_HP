@@ -472,15 +472,15 @@
     width: 60%;
   }
   .hero-works-cover {
-    width: 100px;
-    height: 140px;
+    width: 120px;
+    height: 168px;
   }
   .hero-works-row--4,
   .hero-works-row--5 {
     display: flex;
   }
   .hero-works-bg {
-    gap: 4px;
+    gap: 5px;
     padding-top: 60px;
   }
   .hero-chain--turq,
@@ -509,11 +509,11 @@
     object-position: 70% center;
   }
   .hero-works-cover {
-    width: 80px;
-    height: 112px;
+    width: 100px;
+    height: 140px;
   }
   .hero-works-bg {
-    gap: 3px;
+    gap: 4px;
     padding-top: 50px;
   }
   .hero-logo-main {
