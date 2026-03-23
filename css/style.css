@@ -2292,8 +2292,13 @@ section { padding: 100px 0; }
     align-items: center;
   }
   .partners-character {
-    width: 220px;
-    position: static;
+    display: none;
+  }
+  .partners-cards {
+    padding-bottom: 0;
+  }
+  .partners-recruit {
+    margin-top: 40px;
   }
   .partner-card {
     grid-template-columns: 1fr;

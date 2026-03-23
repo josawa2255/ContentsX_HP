@@ -155,12 +155,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const row1 = document.getElementById('heroWorksRow1');
     const row2 = document.getElementById('heroWorksRow2');
     const row3 = document.getElementById('heroWorksRow3');
+    const row4 = document.getElementById('heroWorksRow4');
+    const row5 = document.getElementById('heroWorksRow5');
     if (!row1 || !row2 || !row3) return;
 
-    const rows = [[], [], []];
-    works.forEach((w, i) => rows[i % 3].push(w));
+    const rowEls = [row1, row2, row3, row4, row5].filter(Boolean);
+    const numRows = rowEls.length;
+    const rows = Array.from({ length: numRows }, () => []);
+    works.forEach((w, i) => rows[i % numRows].push(w));
 
-    [row1, row2, row3].forEach((rowEl, ri) => {
+    rowEls.forEach((rowEl, ri) => {
       const items = rows[ri];
       if (items.length === 0) return;
       rowEl.innerHTML = '';
