@@ -6,12 +6,20 @@
 (function() {
   // ===== メニュー定義（ここだけ変えれば全ページ反映） =====
   var NAV_ITEMS = [
-    { label: 'サービス',    labelEn: 'Services',     href: '#about',              indexHref: '#about' },
-    { label: '実績',        labelEn: 'Works',        href: '#works',              indexHref: '#works' },
-    { label: '会社概要',    labelEn: 'Company',      href: '#company',            indexHref: '#company' },
+    { label: 'ホーム', labelEn: 'Home', href: 'index.html', indexHref: '#hero',
+      children: [
+        { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
+        { label: 'サービス',         labelEn: 'Services',      href: '#about' },
+        { label: '信頼の制作体制',    labelEn: 'Production',    href: '#strength' },
+        { label: '漫画制作フロー',    labelEn: 'Workflow',      href: '#flow' },
+        { label: '事業提携パートナー', labelEn: 'Partners',      href: '#partners' },
+        { label: '会社概要',         labelEn: 'Company',       href: '#company' }
+      ]
+    },
     { label: '選ばれる理由', labelEn: 'Why Us',       href: 'why-contentsx.html',  indexHref: 'why-contentsx.html' },
     { label: '伝えたい思い', labelEn: 'Our Thoughts', href: 'our-thoughts.html',   indexHref: 'our-thoughts.html' },
-    { label: 'お問い合わせ', labelEn: 'Contact',      href: '#contact',            indexHref: '#contact', cta: true }
+    { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit.html',        indexHref: 'recruit.html' },
+    { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact.html',        indexHref: 'contact.html', cta: true }
   ];
 
   // 現在のファイル名を取得
@@ -30,32 +38,75 @@
   // 既存のリンクをクリア
   nav.innerHTML = '';
 
+  // href解決ヘルパー
+  function resolveHref(rawHref) {
+    if (rawHref.startsWith('#')) {
+      return isIndex ? rawHref : 'index.html' + rawHref;
+    }
+    return rawHref;
+  }
+
   // リンク生成
   NAV_ITEMS.forEach(function(item) {
-    var a = document.createElement('a');
+    // ドロップダウン（childrenあり）
+    if (item.children && item.children.length > 0) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'nav-dropdown';
 
-    // hrefの解決: indexページならそのまま、他ページならindex.html付き
-    var rawHref = item.href;
-    if (rawHref.startsWith('#')) {
-      a.href = isIndex ? rawHref : 'index.html' + rawHref;
+      // 親リンク
+      var a = document.createElement('a');
+      var rawHref = isIndex && item.indexHref ? item.indexHref : item.href;
+      a.href = resolveHref(rawHref);
+      a.className = 'nav-link nav-dropdown-toggle';
+      if (!rawHref.startsWith('#') && rawHref === currentFile) {
+        a.className += ' active';
+      }
+      a.setAttribute('data-ja', item.label);
+      a.setAttribute('data-en', item.labelEn);
+      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+
+      // ▼ アイコン
+      var arrow = document.createElement('span');
+      arrow.className = 'nav-dropdown-arrow';
+      arrow.textContent = '▾';
+      a.appendChild(arrow);
+
+      wrapper.appendChild(a);
+
+      // サブメニュー
+      var sub = document.createElement('div');
+      sub.className = 'nav-dropdown-menu';
+      item.children.forEach(function(child) {
+        var ca = document.createElement('a');
+        var childHref = child.href;
+        ca.href = resolveHref(childHref);
+        ca.className = 'nav-dropdown-item';
+        ca.setAttribute('data-ja', child.label);
+        ca.setAttribute('data-en', child.labelEn);
+        ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+        sub.appendChild(ca);
+      });
+      wrapper.appendChild(sub);
+      nav.appendChild(wrapper);
     } else {
-      a.href = rawHref;
+      // 通常リンク（変更なし）
+      var a = document.createElement('a');
+      var rawHref = item.href;
+      if (rawHref.startsWith('#')) {
+        a.href = isIndex ? rawHref : 'index.html' + rawHref;
+      } else {
+        a.href = rawHref;
+      }
+      a.className = 'nav-link';
+      if (item.cta) a.className += ' nav-cta';
+      if (!rawHref.startsWith('#') && rawHref === currentFile) {
+        a.className += ' active';
+      }
+      a.setAttribute('data-ja', item.label);
+      a.setAttribute('data-en', item.labelEn);
+      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+      nav.appendChild(a);
     }
-
-    // クラス設定
-    a.className = 'nav-link';
-    if (item.cta) a.className += ' nav-cta';
-
-    // activeクラス（現在のページと一致する場合）
-    if (!rawHref.startsWith('#') && rawHref === currentFile) {
-      a.className += ' active';
-    }
-
-    // 言語対応: data属性にJP/EN両方持たせる
-    a.setAttribute('data-ja', item.label);
-    a.setAttribute('data-en', item.labelEn);
-    a.textContent = currentLang === 'en' ? item.labelEn : item.label;
-    nav.appendChild(a);
   });
 
   // ===== 言語切替ボタンの挿入 =====
@@ -93,7 +144,19 @@
 
     // data-ja / data-en を持つ全要素のテキストを切替
     document.querySelectorAll('[data-ja][data-en]').forEach(function(el) {
-      el.textContent = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ja');
+      var newText = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ja');
+      // ドロップダウントグルの場合、矢印spanを保持
+      var arrow = el.querySelector('.nav-dropdown-arrow');
+      if (arrow) {
+        el.firstChild.textContent = newText;
+      } else {
+        el.textContent = newText;
+      }
+    });
+
+    // placeholder切替 (data-ph-ja / data-ph-en)
+    document.querySelectorAll('[data-ph-ja][data-ph-en]').forEach(function(el) {
+      el.placeholder = lang === 'en' ? el.getAttribute('data-ph-en') : el.getAttribute('data-ph-ja');
     });
 
     // html lang 属性も更新
@@ -119,7 +182,7 @@
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
     });
-    nav.querySelectorAll('.nav-link').forEach(function(link) {
+    nav.querySelectorAll('.nav-link, .nav-dropdown-item').forEach(function(link) {
       link.addEventListener('click', function() {
         nav.classList.remove('open');
         hamburger.classList.remove('active');

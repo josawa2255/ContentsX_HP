@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お問い合わせ | ContentsX</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/form.css">
+  <link rel="stylesheet" href="css/contact.css">
+</head>
+<body data-theme="cyber-green">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ===== メインコンテンツ ===== -->
+  <div class="contact-main">
+    <!-- 左：フォーム -->
+    <div class="contact-form-section">
+      <h2 data-ja="お問い合わせフォーム" data-en="Contact Form">お問い合わせフォーム</h2>
+      <p data-ja="以下のフォームにご記入の上、送信してください。2営業日以内にご返信いたします。" data-en="Please fill in the form below. We will reply within 2 business days.">以下のフォームにご記入の上、送信してください。2営業日以内にご返信いたします。</p>
+
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="lastName"><span data-ja="姓" data-en="Last Name">姓</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+            <input class="form-input" type="text" id="lastName" name="lastName" placeholder="佐藤" data-ph-ja="佐藤" data-ph-en="Sato" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="firstName"><span data-ja="名" data-en="First Name">名</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+            <input class="form-input" type="text" id="firstName" name="firstName" placeholder="太郎" data-ph-ja="太郎" data-ph-en="Taro" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="lastNameKana"><span data-ja="セイ（フリガナ）" data-en="Last Name (Kana)">セイ（フリガナ）</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+            <input class="form-input" type="text" id="lastNameKana" name="lastNameKana" placeholder="サトウ" data-ph-ja="サトウ" data-ph-en="Sato" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="firstNameKana"><span data-ja="メイ（フリガナ）" data-en="First Name (Kana)">メイ（フリガナ）</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+            <input class="form-input" type="text" id="firstNameKana" name="firstNameKana" placeholder="タロウ" data-ph-ja="タロウ" data-ph-en="Taro" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="company"><span data-ja="会社名" data-en="Company">会社名</span></label>
+            <input class="form-input" type="text" id="company" name="company" placeholder="コンテンツエックス株式会社" data-ph-ja="コンテンツエックス株式会社" data-ph-en="Contents X Co., Ltd.">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="position"><span data-ja="役職" data-en="Position">役職</span></label>
+            <input class="form-input" type="text" id="position" name="position" placeholder="マーケティング部長" data-ph-ja="マーケティング部長" data-ph-en="Marketing Director">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email"><span data-ja="メールアドレス" data-en="Email">メールアドレス</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <input class="form-input" type="email" id="email" name="email" placeholder="example@company.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone"><span data-ja="電話番号" data-en="Phone Number">電話番号</span></label>
+          <input class="form-input" type="tel" id="phone" name="phone" placeholder="03-0000-0000" data-ph-ja="03-0000-0000" data-ph-en="+81-3-0000-0000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category"><span data-ja="お問い合わせ種別" data-en="Category">お問い合わせ種別</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <select class="form-select" id="category" name="category" required>
+            <option value="" disabled selected data-ja="選択してください" data-en="Please select">選択してください</option>
+            <option value="manga" data-ja="漫画制作のご依頼" data-en="Manga Production Request">漫画制作のご依頼</option>
+            <option value="partner" data-ja="パートナー提携のご相談" data-en="Partnership Inquiry">パートナー提携のご相談</option>
+            <option value="ip" data-ja="IP・コンテンツ開発" data-en="IP & Content Development">IP・コンテンツ開発</option>
+            <option value="school" data-ja="ニューマンガアカデミーについて" data-en="About New Manga Academy">ニューマンガアカデミーについて</option>
+            <option value="other" data-ja="その他のお問い合わせ" data-en="Other Inquiries">その他のお問い合わせ</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="message"><span data-ja="お問い合わせ内容" data-en="Message">お問い合わせ内容</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <textarea class="form-textarea" id="message" name="message" placeholder="ご質問やご要望をご記入ください" data-ph-ja="ご質問やご要望をご記入ください" data-ph-en="Please describe your inquiry" required></textarea>
+        </div>
+
+        <button type="submit" class="form-submit" data-ja="送信する" data-en="Send Message">送信する</button>
+      </form>
+    </div>
+
+    <!-- 右：会社情報 -->
+    <aside class="contact-sidebar">
+      <div class="contact-card">
+        <h3 data-ja="会社情報" data-en="Company Info">会社情報</h3>
+        <dl class="contact-info-list">
+          <div class="contact-info-item">
+            <div class="contact-info-icon">🏢</div>
+            <div class="contact-info-text">
+              <dt>Company</dt>
+              <dd data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</dd>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon">👤</div>
+            <div class="contact-info-text">
+              <dt>CEO</dt>
+              <dd data-ja="黒宮 大貴" data-en="Daiki Kuromiya">黒宮 大貴</dd>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon">📍</div>
+            <div class="contact-info-text">
+              <dt>Address</dt>
+              <dd data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo">東京都目黒区目黒2-11-15 8階</dd>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon">✉️</div>
+            <div class="contact-info-text">
+              <dt>Email</dt>
+              <dd><a href="mailto:kuromiya2618@gmail.com">kuromiya2618@gmail.com</a></dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+
+      <div class="contact-dl-banner">
+        <p data-ja="サービス資料をダウンロード" data-en="Download our brochure">サービス資料をダウンロード</p>
+        <a href="material/ContentsX_アライアンス提案書.pdf" download data-ja="資料ダウンロード" data-en="Download PDF">資料ダウンロード</a>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company">コンテンツエックス株式会社</p>
+          <p class="footer-address">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html#new-works">新作情報</a>
+          <a href="index.html#about">サービス</a>
+          <a href="index.html#strength">制作体制</a>
+          <a href="index.html#flow">制作フロー</a>
+          <a href="index.html#partners">パートナー</a>
+          <a href="index.html#company">会社概要</a>
+          <a href="contact.html">お問い合わせ</a>
+        </div>
+      </div>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/contact.js" defer></script>
+</body>
+</html>

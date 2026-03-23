@@ -1,0 +1,205 @@
+/* ===== 伝えたい思い — エディトリアル / マニフェスト スタイル ===== */
+
+/* ヒーロー */
+.ot-hero {
+  padding: 180px 24px 100px;
+  background: url('../material/images/cx2_bg_global.webp') center/cover no-repeat;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ot-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,20,0.5) 0%, rgba(10,10,20,0.7) 100%);
+  z-index: 0;
+}
+.ot-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.ot-hero-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent, #6fc31c);
+  margin-bottom: 24px;
+}
+.ot-hero h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 900;
+  line-height: 1.4;
+  margin-bottom: 28px;
+}
+.ot-hero h1 span {
+  color: var(--accent, #6fc31c);
+}
+.ot-hero-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+  line-height: 2;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ===== セクション共通 ===== */
+.ot-inner {
+  max-width: 780px;
+  margin: 0 auto;
+}
+.ot-section {
+  padding: 100px 24px;
+}
+
+/* ダーク（紺系） */
+.ot-section--dark {
+  background: linear-gradient(170deg, #0c0c1d 0%, #151530 100%);
+  color: #fff;
+}
+.ot-section--dark .ot-num {
+  color: rgba(255,255,255,0.12);
+}
+.ot-section--dark .ot-title {
+  color: #fff;
+}
+.ot-section--dark .ot-prose p {
+  color: rgba(255,255,255,0.78);
+}
+.ot-section--dark .ot-highlight {
+  color: #fff;
+  border-left-color: var(--accent, #6fc31c);
+}
+
+/* ライト */
+.ot-section--light {
+  background: #fafafa;
+  color: var(--text-primary, #1d1d1f);
+}
+.ot-section--light .ot-num {
+  color: rgba(0,0,0,0.06);
+}
+.ot-section--light .ot-title {
+  color: var(--text-primary, #1d1d1f);
+}
+.ot-section--light .ot-prose p {
+  color: var(--text-secondary, #444);
+}
+.ot-section--light .ot-highlight {
+  color: var(--text-primary, #1d1d1f);
+  border-left-color: var(--accent, #6fc31c);
+}
+
+/* セクション番号 */
+.ot-num {
+  display: block;
+  font-size: clamp(72px, 10vw, 120px);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+  user-select: none;
+}
+
+/* セクションタイトル */
+.ot-title {
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 900;
+  line-height: 1.45;
+  margin-bottom: 48px;
+  letter-spacing: -0.01em;
+}
+
+/* 本文 */
+.ot-prose {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.ot-prose p {
+  font-size: 16px;
+  line-height: 2.1;
+  letter-spacing: 0.02em;
+}
+
+/* ハイライト文 */
+.ot-highlight {
+  font-size: 18px !important;
+  font-weight: 700;
+  line-height: 1.9;
+  padding-left: 20px;
+  border-left: 4px solid var(--accent, #6fc31c);
+  margin-top: 8px;
+}
+
+/* ===== CTA ===== */
+.ot-cta {
+  padding: 100px 24px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  text-align: center;
+  color: #fff;
+}
+.ot-cta h2 {
+  font-size: clamp(26px, 3.5vw, 40px);
+  font-weight: 900;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+.ot-cta p {
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 40px;
+  font-size: 16px;
+  line-height: 1.8;
+}
+.ot-cta-btn {
+  display: inline-block;
+  padding: 18px 56px;
+  background: var(--accent, #6fc31c);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.ot-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(var(--accent-rgb, 111,195,28), 0.4);
+}
+
+/* ===== フッター ===== */
+.ot-footer {
+  padding: 32px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted, #888);
+  background: #fff;
+  border-top: 1px solid var(--border, #e5e5e7);
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+  .ot-hero {
+    padding: 140px 20px 72px;
+  }
+  .ot-section {
+    padding: 72px 20px;
+  }
+  .ot-num {
+    font-size: 64px;
+  }
+  .ot-prose p {
+    font-size: 15px;
+    line-height: 2;
+  }
+  .ot-highlight {
+    font-size: 16px !important;
+  }
+  .ot-cta {
+    padding: 72px 20px;
+  }
+}

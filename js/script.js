@@ -59,6 +59,170 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== JP/EN 言語切替は nav.js に統合済み =====
 
 
+  // ===== フローギャラリー: 横スクロールでスナップ移動 + STEP連動 =====
+  (function() {
+    var gallery = document.getElementById('flowGallery');
+    var track   = document.getElementById('flowGalleryTrack');
+    if (!gallery || !track) return;
+
+    var items = track.querySelectorAll('.flow-gallery-item');
+    var totalItems = items.length;
+    if (totalItems === 0) return;
+
+    var flowSteps = document.querySelectorAll('.flow-step[data-step]');
+    var currentIndex = 0;
+    var animating = false;
+
+    // --- STEP連動ハイライト ---
+    function clearHighlight() {
+      flowSteps.forEach(function(el) { el.classList.remove('flow-hover'); });
+    }
+
+    function highlightStep(stepNum) {
+      clearHighlight();
+      flowSteps.forEach(function(el) {
+        if (el.getAttribute('data-step') === String(stepNum)) el.classList.add('flow-hover');
+      });
+    }
+
+    // 初期状態: STEP1をハイライト
+    highlightStep(1);
+
+    // トラック両端にパディングを入れて全画像を中央配置可能にする
+    function updateTrackPadding() {
+      var firstW = items[0] ? items[0].offsetWidth : 0;
+      var lastW = items[totalItems - 1] ? items[totalItems - 1].offsetWidth : 0;
+      var padLeft = (gallery.offsetWidth - firstW) / 2;
+      var padRight = (gallery.offsetWidth - lastW) / 2;
+      track.style.paddingLeft = Math.max(0, padLeft) + 'px';
+      track.style.paddingRight = Math.max(0, padRight) + 'px';
+    }
+    updateTrackPadding();
+    window.addEventListener('resize', updateTrackPadding);
+
+    function getItemOffset(index) {
+      // 画像をギャラリー中央に配置して前後の画像を均等にチラ見せ
+      var offset = parseFloat(track.style.paddingLeft) || 0;
+      for (var i = 0; i < index; i++) {
+        offset += items[i].offsetWidth + 20;
+      }
+      var itemWidth = items[index].offsetWidth;
+      var centered = offset - (gallery.offsetWidth - itemWidth) / 2;
+      return Math.max(0, centered);
+    }
+
+    function snapTo(index) {
+      if (animating) return;
+      index = Math.max(0, Math.min(index, totalItems - 1));
+      if (index === currentIndex) return;
+      currentIndex = index;
+      animating = true;
+
+      // 左のステップを連動ハイライト
+      highlightStep(currentIndex + 1);
+
+      var targetX = getItemOffset(index);
+      track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      track.style.transform = 'translateX(' + (-targetX) + 'px)';
+
+      setTimeout(function() {
+        track.style.transition = '';
+        animating = false;
+      }, 420);
+    }
+
+    // 左のステップをクリック → その画像にスナップ
+    flowSteps.forEach(function(el) {
+      el.addEventListener('click', function() {
+        var step = parseInt(el.getAttribute('data-step'), 10);
+        if (step >= 1 && step <= totalItems) {
+          snapTo(step - 1);
+        }
+      });
+    });
+
+    // ホバー連動（一時的にホバー先を強調、離すと現在のindexに戻る）
+    flowSteps.forEach(function(el) {
+      el.addEventListener('mouseenter', function() { highlightStep(el.getAttribute('data-step')); });
+      el.addEventListener('mouseleave', function() { highlightStep(currentIndex + 1); });
+    });
+    items.forEach(function(el) {
+      el.addEventListener('mouseenter', function() { highlightStep(el.getAttribute('data-step')); });
+      el.addEventListener('mouseleave', function() { highlightStep(currentIndex + 1); });
+    });
+
+    // 画像クリックで進む/戻る（右半分クリック=次、左半分クリック=前）
+    gallery.addEventListener('click', function(e) {
+      if (animating) return;
+      var rect = gallery.getBoundingClientRect();
+      var clickX = e.clientX - rect.left;
+      if (clickX > rect.width / 2) {
+        if (currentIndex < totalItems - 1) { snapTo(currentIndex + 1); resetAuto(); }
+      } else {
+        if (currentIndex > 0) { snapTo(currentIndex - 1); resetAuto(); }
+      }
+    });
+
+    // 横スクロール（deltaX）のみキャッチ — 1操作で必ず1ページだけ
+    var cooldown = false;
+    gallery.addEventListener('wheel', function(e) {
+      if (Math.abs(e.deltaX) < 10) return;
+      e.preventDefault();
+      if (animating || cooldown) return;
+
+      cooldown = true;
+      setTimeout(function() { cooldown = false; }, 700);
+
+      if (e.deltaX > 0 && currentIndex < totalItems - 1) {
+        snapTo(currentIndex + 1);
+      } else if (e.deltaX < 0 && currentIndex > 0) {
+        snapTo(currentIndex - 1);
+      }
+    }, { passive: false });
+
+    // タッチ: 横スワイプのみ
+    var touchStartX = 0;
+    gallery.addEventListener('touchstart', function(e) {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    gallery.addEventListener('touchend', function(e) {
+      if (animating) return;
+      var dx = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(dx) < 40) return;
+      if (dx > 0 && currentIndex < totalItems - 1) {
+        snapTo(currentIndex + 1);
+      } else if (dx < 0 && currentIndex > 0) {
+        snapTo(currentIndex - 1);
+      }
+    }, { passive: true });
+
+    // 2秒ごとに自動スクロール（最後まで行ったら最初に戻る）
+    var autoInterval = setInterval(function() {
+      if (currentIndex < totalItems - 1) {
+        snapTo(currentIndex + 1);
+      } else {
+        snapTo(0);
+      }
+    }, 4000);
+
+    // ユーザー操作時に自動スクロールをリセット（操作後また3秒で再開）
+    function resetAuto() {
+      clearInterval(autoInterval);
+      autoInterval = setInterval(function() {
+        if (currentIndex < totalItems - 1) {
+          snapTo(currentIndex + 1);
+        } else {
+          snapTo(0);
+        }
+      }, 4000);
+    }
+    gallery.addEventListener('wheel', resetAuto);
+    gallery.addEventListener('touchstart', resetAuto);
+    flowSteps.forEach(function(el) { el.addEventListener('click', resetAuto); });
+  })();
+
+
   // ===== ナビリンク：現在セクションのアクティブ表示 =====
   const navLinks = document.querySelectorAll('.nav-link:not(.nav-cta)');
   const sections = [];
@@ -450,6 +614,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let sliderDragging = false;
 
+  if (!scSliderTrack) {
+    // 制作実績セクションが存在しない場合はスライダー処理をスキップ
+  } else {
   scSliderTrack.addEventListener('mousedown', function(e) {
     if (!pageFlip) return;
     e.preventDefault();
@@ -497,6 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
       scSlider.classList.remove('dragging');
     }
   });
+  } // end scSliderTrack null check
 
   // 漫画ビューアの左側クリック=次ページ、右側クリック=前ページ
   // ※ページ配列が逆順なのでflipPrev=読み進める、flipNext=戻る
@@ -545,10 +713,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scPageCount) scPageCount.textContent = `全${showcaseData.totalPages}ページ`;
 
     // スライダー total テキスト更新
-    scSliderTotal.textContent = showcaseData.totalPages;
+    if (scSliderTotal) scSliderTotal.textContent = showcaseData.totalPages;
 
     // ビューアを再初期化
-    initFlipbook();
+    if (flipbookEl) initFlipbook();
   }
 
   // セレクターボタンのイベント
@@ -628,17 +796,18 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(err => console.warn('new-works data not available:', err));
   }
 
-  if (worksTrack && prevBtn && nextBtn) {
+  if (prevBtn && nextBtn) {
     const scrollAmount = 224;
-
     nextBtn.addEventListener('click', () => {
       worksTrack.parentElement.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     });
     prevBtn.addEventListener('click', () => {
       worksTrack.parentElement.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     });
+  }
 
-    // ドラッグスクロール
+  // ドラッグスクロール（ボタン有無に関係なく動作）
+  if (worksTrack) {
     let isDragging = false;
     let startX, scrollLeft;
     const wrapper = worksTrack.parentElement;
@@ -958,5 +1127,88 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'ArrowRight') mvPageFlip.flipNext();
     }
   });
+
+  // ===== セクションサイドナビ（ZOON風スクロールスパイ） =====
+  var sectionDots = document.getElementById('sectionDots');
+  if (sectionDots) {
+    var dots = sectionDots.querySelectorAll('.section-dot');
+    var activeLabel = document.getElementById('sectionActiveLabel');
+    var navUp = document.getElementById('sectionNavUp');
+    var navDown = document.getElementById('sectionNavDown');
+    var sectionIds = [];
+    dots.forEach(function(dot) { sectionIds.push(dot.getAttribute('data-section')); });
+
+    var heroEl = document.getElementById('hero');
+    var currentIdx = -1;
+
+    function updateDots() {
+      // ヒーロー下まで来たら表示
+      if (heroEl) {
+        var heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
+        if (window.scrollY + window.innerHeight * 0.3 > heroBottom) {
+          sectionDots.classList.add('visible');
+        } else {
+          sectionDots.classList.remove('visible');
+        }
+      } else {
+        sectionDots.classList.add('visible');
+      }
+
+      // 現在セクション判定
+      var newIdx = -1;
+      var scrollY = window.scrollY + window.innerHeight * 0.4;
+      for (var i = sectionIds.length - 1; i >= 0; i--) {
+        var el = document.getElementById(sectionIds[i]);
+        if (el && el.offsetTop <= scrollY) {
+          newIdx = i;
+          break;
+        }
+      }
+      if (newIdx !== currentIdx) {
+        currentIdx = newIdx;
+        dots.forEach(function(dot, idx) {
+          if (idx === currentIdx) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+        // アクティブラベル更新
+        if (activeLabel && currentIdx >= 0) {
+          activeLabel.textContent = dots[currentIdx].getAttribute('data-label');
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateDots, { passive: true });
+    updateDots();
+
+    // ドットクリック
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.getElementById(dot.getAttribute('data-section'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // 上下矢印
+    if (navUp) {
+      navUp.addEventListener('click', function(e) {
+        e.preventDefault();
+        var prev = Math.max(0, currentIdx - 1);
+        var target = document.getElementById(sectionIds[prev]);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    if (navDown) {
+      navDown.addEventListener('click', function(e) {
+        e.preventDefault();
+        var next = Math.min(sectionIds.length - 1, currentIdx + 1);
+        var target = document.getElementById(sectionIds[next]);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
 
 });

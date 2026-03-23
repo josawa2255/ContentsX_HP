@@ -113,14 +113,30 @@
     </div>
   </header>
 
+  <!-- ===== セクションサイドナビ（ZOON風） ===== -->
+  <nav class="section-dots" id="sectionDots">
+    <div class="section-dots-track">
+      <a href="#new-works" class="section-dot" data-section="new-works" data-label="新作情報"></a>
+      <a href="#about" class="section-dot" data-section="about" data-label="サービス"></a>
+      <a href="#strength" class="section-dot" data-section="strength" data-label="制作体制"></a>
+      <a href="#flow" class="section-dot" data-section="flow" data-label="フロー"></a>
+      <a href="#partners" class="section-dot" data-section="partners" data-label="パートナー"></a>
+      <a href="#company" class="section-dot" data-section="company" data-label="会社概要"></a>
+      <a href="#contact" class="section-dot" data-section="contact" data-label="お問い合わせ"></a>
+    </div>
+    <a class="section-nav-arrow" id="sectionNavUp" aria-label="前のセクション">&#8963;</a>
+    <span class="section-active-label" id="sectionActiveLabel"></span>
+    <a class="section-nav-arrow" id="sectionNavDown" aria-label="次のセクション">&#8964;</a>
+  </nav>
+
   <!-- ===== ヒーロー ===== -->
   <!-- ===== HERO: ZOON + 集英社 スタイル ===== -->
 <section class="hero" id="hero">
   <!-- ===== イントロオーバーレイ（hero内） ===== -->
   <div class="hero-intro-overlay" id="heroIntroOverlay">
     <div class="hero-intro-text" id="heroIntroText">
-      <span class="hero-intro-line" id="heroIntroLine1">埋もれていた物語に、</span>
-      <span class="hero-intro-line" id="heroIntroLine2">光を当てる。</span>
+      <span class="hero-intro-line" id="heroIntroLine1" data-ja="埋もれていた物語に、" data-en="Shine light on stories">埋もれていた物語に、</span>
+      <span class="hero-intro-line" id="heroIntroLine2" data-ja="光を当てる。" data-en="that have been buried.">光を当てる。</span>
     </div>
   </div>
 
@@ -177,21 +193,21 @@
       <h2 class="work-detail-title" id="workDetailTitle"></h2>
       <span class="work-detail-category" id="workDetailCategory"></span>
       <div class="work-detail-section">
-        <h3 class="work-detail-heading">使用媒体</h3>
+        <h3 class="work-detail-heading" data-ja="使用媒体" data-en="Media Used">使用媒体</h3>
         <ul class="work-detail-list" id="workDetailMedia"></ul>
       </div>
       <div class="work-detail-section">
-        <h3 class="work-detail-heading">導入内容</h3>
+        <h3 class="work-detail-heading" data-ja="導入内容" data-en="Implementation">導入内容</h3>
         <ul class="work-detail-list" id="workDetailSpec"></ul>
       </div>
       <div class="work-detail-divider"></div>
       <div class="work-detail-section">
-        <h3 class="work-detail-heading">演出ポイント</h3>
+        <h3 class="work-detail-heading" data-ja="演出ポイント" data-en="Direction Highlights">演出ポイント</h3>
         <p class="work-detail-text" id="workDetailPoint"></p>
       </div>
       <div class="work-detail-divider"></div>
       <div class="work-detail-section">
-        <h3 class="work-detail-heading">客先コメント</h3>
+        <h3 class="work-detail-heading" data-ja="客先コメント" data-en="Client Comment">客先コメント</h3>
         <p class="work-detail-quote" id="workDetailComment"></p>
       </div>
     </div>
@@ -206,62 +222,25 @@
     <div class="container">
       <div class="news-header">
         <h2 class="news-heading">News</h2>
-        <a href="#" class="news-more">一覧を見る →</a>
+        <a href="#" class="news-more" data-ja="一覧を見る →" data-en="View All →">一覧を見る →</a>
       </div>
       <ul class="news-list">
         <li class="news-item">
           <time class="news-date">2026.03.20</time>
-          <span class="news-tag">お知らせ</span>
+          <span class="news-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
           <a href="#" class="news-link" data-ja="コーポレートサイトをリニューアルしました" data-en="Corporate website has been renewed">コーポレートサイトをリニューアルしました</a>
         </li>
         <li class="news-item">
           <time class="news-date">2026.03.03</time>
-          <span class="news-tag">プレスリリース</span>
+          <span class="news-tag" data-ja="プレスリリース" data-en="Press Release">プレスリリース</span>
           <a href="#" class="news-link" data-ja="コンテンツエックス株式会社を設立しました" data-en="Contents X Co., Ltd. has been established">コンテンツエックス株式会社を設立しました</a>
         </li>
         <li class="news-item">
           <time class="news-date">2026.02.15</time>
-          <span class="news-tag">サービス</span>
+          <span class="news-tag" data-ja="サービス" data-en="Service">サービス</span>
           <a href="#" class="news-link" data-ja="ビズマンガの新プランを開始しました" data-en="BizManga new plan has launched">ビズマンガの新プランを開始しました</a>
         </li>
       </ul>
-    </div>
-  </section>
-
-  <!-- ===== 事業ポートフォリオ ===== -->
-  <section class="portfolio" id="about">
-    <div class="container">
-      <p class="section-label">Business Portfolio</p>
-      <h2 class="section-title text-center">3つの事業領域</h2>
-      <div class="portfolio-grid">
-        <a href="https://bizmanga.com/" target="_blank" rel="noopener noreferrer" class="portfolio-item portfolio-item--hero">
-          <div class="portfolio-item-bg" style="background-image: url('material/images/bizmanga/ip_platform_card_03.webp')"></div>
-          <div class="portfolio-item-overlay"></div>
-          <div class="portfolio-item-content">
-            <img src="material/images/bizmanga/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
-            <p class="portfolio-tag">確実な収益基盤</p>
-            <p class="portfolio-desc">ビジネス特化型漫画制作で、企業の課題を解決する主力事業。</p>
-          </div>
-        </a>
-        <div class="portfolio-item portfolio-item--hero">
-          <div class="portfolio-item-bg" style="background-image: url('material/images/AI school/aischool_lightblue.webp')"></div>
-          <div class="portfolio-item-overlay"></div>
-          <div class="portfolio-item-content">
-            <img src="material/images/AI school/new_manga_school_logo.webp" alt="ニューマンガアカデミー" class="portfolio-logo portfolio-logo--large">
-            <p class="portfolio-tag">人材育成・制作拡張</p>
-            <p class="portfolio-desc">次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。</p>
-          </div>
-        </div>
-        <div class="portfolio-item portfolio-item--hero">
-          <div class="portfolio-item-bg" style="background-image: url('material/images/IP platform/ipplatform_yellow.webp')"></div>
-          <div class="portfolio-item-overlay"></div>
-          <div class="portfolio-item-content">
-            <img src="material/images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
-            <p class="portfolio-tag">爆発的成長</p>
-            <p class="portfolio-desc">Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。</p>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -270,14 +249,48 @@
     <div class="container">
       <div class="new-works-header">
         <h2 class="new-works-heading" data-ja="新作情報" data-en="Latest Works">新作情報</h2>
-        <div class="new-works-nav">
-          <button class="new-works-arrow new-works-arrow--prev" id="worksArrowPrev" aria-label="前へ">‹</button>
-          <button class="new-works-arrow new-works-arrow--next" id="worksArrowNext" aria-label="次へ">›</button>
-        </div>
+        <a href="https://bizmanga.com/biz-library/" target="_blank" rel="noopener noreferrer" class="new-works-more-link" data-ja="ビズ書庫 →" data-en="Biz Library →">ビズ書庫 →</a>
       </div>
       <div class="new-works-track-wrapper">
         <div class="new-works-track" id="newWorksTrack">
           <!-- JSONから動的に生成されます -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 事業ポートフォリオ ===== -->
+  <section class="portfolio" id="about">
+    <div class="container">
+      <p class="section-label">Business Portfolio</p>
+      <h2 class="section-title text-center" data-ja="3つの事業領域" data-en="3 Business Domains">3つの事業領域</h2>
+      <div class="portfolio-grid">
+        <a href="https://bizmanga.com/" target="_blank" rel="noopener noreferrer" class="portfolio-item portfolio-item--hero">
+          <div class="portfolio-item-bg" style="background-image: url('material/images/bizmanga/ip_platform_card_03.webp')"></div>
+          <div class="portfolio-item-overlay"></div>
+          <div class="portfolio-item-content">
+            <img src="material/images/bizmanga/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
+            <p class="portfolio-tag" data-ja="確実な収益基盤" data-en="Stable Revenue Base">確実な収益基盤</p>
+            <p class="portfolio-desc" data-ja="ビジネス特化型漫画制作で、企業の課題を解決する主力事業。" data-en="Core business solving corporate challenges through business-specialized manga production.">ビジネス特化型漫画制作で、企業の課題を解決する主力事業。</p>
+          </div>
+        </a>
+        <div class="portfolio-item portfolio-item--hero">
+          <div class="portfolio-item-bg" style="background-image: url('material/images/AI school/aischool_lightblue.webp')"></div>
+          <div class="portfolio-item-overlay"></div>
+          <div class="portfolio-item-content">
+            <img src="material/images/AI school/new_manga_school_logo.webp" alt="ニューマンガアカデミー" class="portfolio-logo portfolio-logo--large">
+            <p class="portfolio-tag" data-ja="人材育成・制作拡張" data-en="Talent Development & Production Scaling">人材育成・制作拡張</p>
+            <p class="portfolio-desc" data-ja="次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。" data-en="Education business for next-gen New Manga creators. Achieving tuition revenue and production resource growth simultaneously.">次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。</p>
+          </div>
+        </div>
+        <div class="portfolio-item portfolio-item--hero">
+          <div class="portfolio-item-bg" style="background-image: url('material/images/IP platform/ipplatform_yellow.webp')"></div>
+          <div class="portfolio-item-overlay"></div>
+          <div class="portfolio-item-content">
+            <img src="material/images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
+            <p class="portfolio-tag" data-ja="爆発的成長" data-en="Explosive Growth">爆発的成長</p>
+            <p class="portfolio-desc" data-ja="Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。" data-en="New initiatives including Webtoon serialization, MangaX Tool, and personalized picture books.">Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。</p>
+          </div>
         </div>
       </div>
     </div>
@@ -294,14 +307,14 @@
         <div class="manga-viewer-flipbook-wrap">
           <div class="mv-guide mv-guide--left" id="mvGuideLeft">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            <span>次のページ</span>
+            <span data-ja="次のページ" data-en="Next Page">次のページ</span>
           </div>
           <div class="flipbook-wrap">
             <div id="mangaViewerFlipbook"></div>
             <div class="flipbook-spine mv-spine" id="mvSpine"></div>
           </div>
           <div class="mv-guide mv-guide--right" id="mvGuideRight">
-            <span>前のページ</span>
+            <span data-ja="前のページ" data-en="Previous Page">前のページ</span>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
           </div>
         </div>
@@ -326,7 +339,7 @@
   <section class="strength" id="strength">
     <div class="container">
       <p class="section-label">Our Strength</p>
-      <h2 class="section-title text-center">信頼の制作体制 — 技術の3本柱</h2>
+      <h2 class="section-title text-center" data-ja="信頼の制作体制 — 技術の3本柱" data-en="Trusted Production System — 3 Technical Pillars">信頼の制作体制 — 技術の3本柱</h2>
 
       <div class="strength-grid">
         <div class="strength-card">
@@ -334,9 +347,10 @@
             <img src="material/images/3post/pillar2_cost_char_a_fixed2.webp" alt="コスト1/5">
           </div>
           <div class="strength-card-content">
-            <h3>コスト <span class="accent">1/5</span></h3>
-            <p>AI活用で大幅圧縮</p>
-            <p class="strength-desc">最新AIツールの最適化により、従来比で圧倒的なコストダウンを実現。</p>
+
+            <div class="strength-card-number" data-ja="1/5" data-en="1/5">1/5</div>
+            <h3 data-ja="従来比コストを大幅削減" data-en="Dramatically Lower Than Traditional Cost">従来比コストを大幅削減</h3>
+            <p class="strength-desc" data-ja="AI最適化で約80%のコスト削減。高品質を維持しながら圧倒的なコストパフォーマンスを実現します。" data-en="Approximately 80% cost reduction through AI optimization, delivering outstanding cost performance while maintaining high quality.">AI最適化で約80%のコスト削減。高品質を維持しながら圧倒的なコストパフォーマンスを実現します。</p>
           </div>
         </div>
         <div class="strength-card">
@@ -344,9 +358,10 @@
             <img src="material/images/3post/pillar2_legal_nochar_b.webp" alt="法的リスクゼロ">
           </div>
           <div class="strength-card-content">
-            <h3>法的リスク <span class="accent">ゼロ</span></h3>
-            <p>原画資産方式</p>
-            <p class="strength-desc">学習データに依存しない「原画資産方式」を採用し、著作権リスクを完全に排除。</p>
+
+            <div class="strength-card-number" data-ja="リスク 0" data-en="Risk 0">リスク 0</div>
+            <h3 data-ja="著作権問題を完全に排除" data-en="Copyright Issues Completely Eliminated">著作権問題を完全に排除</h3>
+            <p class="strength-desc" data-ja="独自の「原画資産方式」で全イラストがオリジナル。学習データに依存せず、安心してビジネスに活用できます。" data-en="All illustrations are original through our proprietary 'Original Art Method.' No reliance on training data — use with complete peace of mind.">独自の「原画資産方式」で全イラストがオリジナル。学習データに依存せず、安心してビジネスに活用できます。</p>
           </div>
         </div>
         <div class="strength-card">
@@ -354,148 +369,103 @@
             <img src="material/images/3post/pillar2_factory_char_a.webp" alt="工場AI">
           </div>
           <div class="strength-card-content">
-            <h3>工場AI</h3>
-            <p>全工程AI連携</p>
-            <p class="strength-desc">企画から納品まで、全工程AIがシームレスに連携する制作ラインを構築。</p>
+
+            <div class="strength-card-number" data-ja="2週間" data-en="2 Weeks">2週間</div>
+            <h3 data-ja="企画から納品までワンストップ" data-en="One-stop From Planning to Delivery">企画から納品までワンストップ</h3>
+            <p class="strength-desc" data-ja="全工程をAIがシームレスに連携。従来数ヶ月かかっていた制作を最短2週間で完了します。" data-en="AI seamlessly integrates across all processes. Production that traditionally took months is completed in as fast as 2 weeks.">全工程をAIがシームレスに連携。従来数ヶ月かかっていた制作を最短2週間で完了します。</p>
           </div>
         </div>
       </div>
 
       <!-- 制作フロー -->
-      <div class="flow">
-        <h3 class="flow-title">制作フロー — 最短2週間のワンストップ対応</h3>
-        <div class="flow-steps">
-          <div class="flow-step">
-            <div class="flow-step-num">1</div>
-            <p>ヒアリング</p>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step">
-            <div class="flow-step-num">2</div>
-            <p>シナリオ</p>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step">
-            <div class="flow-step-num">3</div>
-            <p>ネーム</p>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step">
-            <div class="flow-step-num">4</div>
-            <p>AI制作+監修</p>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step">
-            <div class="flow-step-num">5</div>
-            <p>納品</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== 制作実績 ===== -->
-  <section class="works" id="works">
-    <div class="container">
-      <p class="section-label">Works</p>
-      <h2 class="section-title text-center">制作実績</h2>
-
-      <!-- 漫画セレクター -->
-      <div class="manga-selector" id="mangaSelector">
-        <button class="manga-sel-btn active" data-manga="ichinohe-home">一戸ホーム</button>
-        <button class="manga-sel-btn" data-manga="omatome-ninja">おまとめ忍者</button>
-        <button class="manga-sel-btn" data-manga="diamond">DIAMOND</button>
-      </div>
-
-      <div class="showcase-brand" id="showcaseBrand">
-        <img src="material/images/bizmanga/bizmanga-logo.webp" alt="BizManga" class="showcase-brand-logo">
-        <span class="showcase-brand-x">×</span>
-        <span class="showcase-brand-client" id="brandClient">一戸ホーム</span>
-      </div>
-
-      <div class="showcase">
-        <!-- 左：説明 -->
-        <div class="showcase-info" id="showcaseInfo">
-          <span class="showcase-category" id="scCategory">営業</span>
-          <div class="showcase-tags" id="scTags">
-            <span class="showcase-tag">#住宅</span>
-            <span class="showcase-tag">#紹介</span>
-          </div>
-          <p class="showcase-desc" id="scDesc">住宅メーカーの魅力をストーリー漫画で伝える営業ツール。漫画ならではの没入感で、お客様の理解と共感を引き出します。</p>
-          <div class="showcase-meta">
-            <span class="showcase-pages" id="scPageCount">全22ページ</span>
-          </div>
-        </div>
-
-        <!-- 右：漫画ビューア StPageFlip -->
-        <div class="showcase-viewer" id="showcaseViewer">
-          <div class="flipbook-wrap">
-            <div id="flipbook"></div>
-            <div class="flipbook-spine" id="flipbookSpine"></div>
-            <!-- クリックゾーン ヒント -->
-            <div class="flipbook-zone flipbook-zone--left" id="flipZoneLeft">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <div class="flow" id="flow">
+        <h3 class="flow-title" data-ja="漫画制作フロー" data-en="Manga Production Flow">漫画制作フロー</h3>
+        <div class="flow-layout">
+          <!-- 左: 縦ステップリスト -->
+          <div class="flow-steps-vertical">
+            <div class="flow-step" data-step="1">
+              <div class="flow-step-num">1</div>
+              <p data-ja="ヒアリング" data-en="Hearing">ヒアリング</p>
             </div>
-            <div class="flipbook-zone flipbook-zone--right" id="flipZoneRight">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="2">
+              <div class="flow-step-num">2</div>
+              <p data-ja="あらすじ" data-en="Synopsis">あらすじ</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="3">
+              <div class="flow-step-num">3</div>
+              <p data-ja="シナリオ" data-en="Script">シナリオ</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="4">
+              <div class="flow-step-num">4</div>
+              <p data-ja="画風決定" data-en="Art Style">画風決定</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="5">
+              <div class="flow-step-num">5</div>
+              <p data-ja="ネーム" data-en="Storyboard">ネーム</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="6">
+              <div class="flow-step-num">6</div>
+              <p data-ja="漫画制作" data-en="Production">漫画制作</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="7">
+              <div class="flow-step-num">7</div>
+              <p data-ja="初稿確認" data-en="Review">初稿確認</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="8">
+              <div class="flow-step-num">8</div>
+              <p data-ja="最終納品" data-en="Delivery">最終納品</p>
             </div>
           </div>
-          <div class="sc-slider" id="scSlider">
-            <span class="sc-slider-total" id="scSliderTotal">22</span>
-            <div class="sc-slider-track" id="scSliderTrack">
-              <div class="sc-slider-fill" id="scSliderFill"></div>
-              <div class="sc-slider-thumb" id="scSliderThumb"></div>
+
+          <!-- 右: 画像ギャラリー -->
+          <div class="flow-gallery" id="flowGallery">
+            <div class="flow-gallery-track" id="flowGalleryTrack">
+              <div class="flow-gallery-item" data-step="1">
+                <img src="material/images/flow/step1_hearing.webp" alt="ヒアリング" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP1 ヒアリング" data-en="STEP1 Hearing">STEP1 ヒアリング</span>
+              </div>
+              <div class="flow-gallery-item" data-step="2">
+                <img src="material/images/flow/step2_arasuji.webp" alt="あらすじ" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP2 あらすじ" data-en="STEP2 Synopsis">STEP2 あらすじ</span>
+              </div>
+              <div class="flow-gallery-item" data-step="3">
+                <img src="material/images/flow/step3_scenario.webp" alt="シナリオ" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP3 シナリオ" data-en="STEP3 Scenario">STEP3 シナリオ</span>
+              </div>
+              <div class="flow-gallery-item" data-step="4">
+                <img src="material/images/flow/step4_gafu.webp" alt="画風決定" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP4 画風決定" data-en="STEP4 Art Style">STEP4 画風決定</span>
+              </div>
+              <div class="flow-gallery-item" data-step="5">
+                <img src="material/images/flow/step5_name.webp" alt="ネーム" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP5 ネーム" data-en="STEP5 Storyboard">STEP5 ネーム</span>
+              </div>
+              <div class="flow-gallery-item" data-step="6">
+                <img src="material/images/flow/step6_seisaku.webp" alt="漫画制作" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP6 漫画制作" data-en="STEP6 Production">STEP6 漫画制作</span>
+              </div>
+              <div class="flow-gallery-item" data-step="7">
+                <img src="material/images/flow/step7_kakunin.webp" alt="初稿確認" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP7 初稿確認" data-en="STEP7 Draft Review">STEP7 初稿確認</span>
+              </div>
+              <div class="flow-gallery-item" data-step="8">
+                <img src="material/images/flow/step8_nouhin.webp" alt="最終納品" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP8 最終納品" data-en="STEP8 Final Delivery">STEP8 最終納品</span>
+              </div>
             </div>
-            <span class="sc-slider-page" id="scSliderPage">1</span>
           </div>
-        </div>
-      </div>
+        </div><!-- /.flow-layout -->
 
     </div>
   </section>
 
-<!-- ===== 会社概要 ===== -->
-  <section class="company" id="company">
-    <div class="container">
-      <p class="section-label">Company</p>
-      <h2 class="section-title" style="margin-bottom: 48px;">会社概要</h2>
-
-      <div class="company-inner">
-        <!-- 左：ロゴ + 説明 -->
-        <div class="company-left">
-          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="company-logo">
-          <p class="company-description" data-ja="コンテンツエックスは、次世代ニューマンガの力で企業と人をつなぐコンテンツスタジオです。ビジネス特化型漫画制作から、IPコンテンツ開発、クリエイター教育まで、一気通貫で手がけています。" data-en="Contents X is a content studio connecting businesses and people through next-generation New Manga. From business-specialized manga production to IP content development and creator education, we handle everything end-to-end.">
-            コンテンツエックスは、次世代ニューマンガの力で企業と人をつなぐコンテンツスタジオです。ビジネス特化型漫画制作から、IPコンテンツ開発、クリエイター教育まで、一気通貫で手がけています。
-          </p>
-        </div>
-        <!-- 右：会社情報テーブル -->
-        <div class="company-right">
-          <dl class="company-info">
-            <div class="company-info-row">
-              <dt data-ja="運営会社" data-en="Company">運営会社</dt>
-              <dd data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</dd>
-            </div>
-            <div class="company-info-row">
-              <dt data-ja="代表" data-en="CEO">代表</dt>
-              <dd data-ja="黒宮 大貴" data-en="Daiki Kuromiya">黒宮 大貴</dd>
-            </div>
-            <div class="company-info-row">
-              <dt data-ja="設立" data-en="Founded">設立</dt>
-              <dd data-ja="2026年 3月 3日" data-en="March 3, 2026">2026年 3月 3日</dd>
-            </div>
-            <div class="company-info-row">
-              <dt data-ja="事業内容" data-en="Business">事業内容</dt>
-              <dd data-ja="漫画・アニメーションの企画制作、AIスクール事業の運営、IPコンテンツの企画・制作・販売、広告宣伝・マーケティング事業" data-en="Manga & animation production, AI school operations, IP content development & sales, advertising & marketing services">漫画・アニメーションの企画制作、AIスクール事業の運営、IPコンテンツの企画・制作・販売、広告宣伝・マーケティング事業</dd>
-            </div>
-            <div class="company-info-row">
-              <dt data-ja="住所" data-en="Address">住所</dt>
-              <dd data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ===== 事業提携パートナー ===== -->
   <section class="partners" id="partners">
@@ -548,18 +518,90 @@
               <a href="https://kirinz.jp/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
             </div>
           </div>
+
         </div>
       </div>
+
+    <!-- パートナー募集 — partnersセクション内だがlayout外（ビズちゃん範囲外） -->
+    <div class="partners-recruit">
+      <h3 class="partners-recruit-title" data-ja="一緒に新しい物語を。" data-en="Let's create new stories together.">一緒に新しい物語を。</h3>
+      <p class="partners-recruit-lead" data-ja="漫画・IP・エンタメ領域で事業連携いただけるパートナー企業を募集しています。共同プロジェクト・出資・業務提携など、お気軽にご相談ください。" data-en="We are looking for partner companies in manga, IP, and entertainment. Feel free to contact us about joint projects, investment, or business alliances.">漫画・IP・エンタメ領域で事業連携いただけるパートナー企業を募集しています。共同プロジェクト・出資・業務提携など、お気軽にご相談ください。</p>
+
+      <div class="partners-recruit-types">
+        <div class="recruit-type">
+          <span class="recruit-type-icon">🤝</span>
+          <span class="recruit-type-label" data-ja="共同プロジェクト・IP開発" data-en="Joint Projects & IP Development">共同プロジェクト・IP開発</span>
+        </div>
+        <div class="recruit-type">
+          <span class="recruit-type-icon">📈</span>
+          <span class="recruit-type-label" data-ja="販売パートナー（3ランク制度）" data-en="Sales Partner (3-tier program)">販売パートナー（3ランク制度）</span>
+        </div>
+        <div class="recruit-type">
+          <span class="recruit-type-icon">💡</span>
+          <span class="recruit-type-label" data-ja="出資・資本提携" data-en="Investment & Capital Alliance">出資・資本提携</span>
+        </div>
+      </div>
+
+      <a href="contact.html" class="partners-recruit-btn" data-ja="パートナーのお問い合わせ" data-en="Partner Inquiry">パートナーのお問い合わせ</a>
+    </div>
+  </section>
+
+  <!-- ===== 会社概要 ===== -->
+  <section class="company" id="company">
+    <div class="container">
+      <p class="section-label">Company</p>
+      <h2 class="section-title" style="margin-bottom: 48px;" data-ja="会社概要" data-en="Company Overview">会社概要</h2>
+
+      <div class="company-inner">
+        <!-- 左：ロゴ + 説明 -->
+        <div class="company-left">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="company-logo">
+          <p class="company-description" data-ja="コンテンツエックスは、「埋もれていた物語に、光を当てる」コンテンツスタジオです。人の手が7割、AIテクノロジーが3割の次世代ニューマンガで、企業の想いを届くコンテンツに、クリエイターの才能を届く作品に変えています。ビジネス特化型漫画制作から、IPコンテンツ開発、クリエイター育成まで一気通貫で手がけ、シナリオ設計・ネーム・演出はすべてプロのクリエイターが担当。道具は変わっても、物語を作るのは人間です。" data-en="Contents X is a content studio that shines light on stories that have been buried. With next-generation New Manga—70% human craft, 30% AI technology—we transform corporate vision into content that reaches, and creator talent into work that resonates. From business-specialized manga production to IP content development and creator education, we handle everything end-to-end. Script design, storyboarding, and direction are all led by professional creators. Tools change, but humans create stories.">
+            コンテンツエックスは、「埋もれていた物語に、光を当てる」コンテンツスタジオです。人の手が7割、AIテクノロジーが3割の次世代ニューマンガで、企業の想いを届くコンテンツに、クリエイターの才能を届く作品に変えています。ビジネス特化型漫画制作から、IPコンテンツ開発、クリエイター育成まで一気通貫で手がけ、シナリオ設計・ネーム・演出はすべてプロのクリエイターが担当。道具は変わっても、物語を作るのは人間です。
+          </p>
+        </div>
+        <!-- 右：会社情報テーブル -->
+        <div class="company-right">
+          <dl class="company-info">
+            <div class="company-info-row">
+              <dt data-ja="運営会社" data-en="Company">運営会社</dt>
+              <dd data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="代表" data-en="CEO">代表</dt>
+              <dd data-ja="黒宮 大貴" data-en="Daiki Kuromiya">黒宮 大貴</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="設立" data-en="Founded">設立</dt>
+              <dd data-ja="2026年 3月 3日" data-en="March 3, 2026">2026年 3月 3日</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="事業内容" data-en="Business">事業内容</dt>
+              <dd data-ja="漫画・アニメーションの企画制作、AIスクール事業の運営、IPコンテンツの企画・制作・販売、広告宣伝・マーケティング事業" data-en="Manga & animation production, AI school operations, IP content development & sales, advertising & marketing services">漫画・アニメーションの企画制作、AIスクール事業の運営、IPコンテンツの企画・制作・販売、広告宣伝・マーケティング事業</dd>
+            </div>
+            <div class="company-info-row">
+              <dt data-ja="住所" data-en="Address">住所</dt>
+              <dd data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</dd>
+            </div>
+          </dl>
+          <div class="company-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1621.2!2d139.71085!3d35.63375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188b1b4ef3cfcf%3A0x0!2z55uu6buSMi0xMS0xNQ!5e0!3m2!1sja!2sjp!4v1711000000000"
+              width="100%" height="240" style="border:0;border-radius:12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ===== CTA ===== -->
   <section class="cta" id="contact">
     <div class="container">
-      <h2 class="cta-title">物語で、世界の理解を拡張する。</h2>
-      <p class="cta-desc">まずは無料でご相談ください。</p>
+      <h2 class="cta-title" data-ja="物語で、世界の理解を拡張する。" data-en="Expand global understanding through stories.">物語で、世界の理解を拡張する。</h2>
+      <p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>
       <div class="cta-actions">
-        <a href="#" class="btn btn-primary btn-lg">お問い合わせ</a>
-        <a href="#" class="btn btn-outline btn-lg">資料ダウンロード</a>
+        <a href="contact.html" class="btn btn-primary btn-lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>
+        <a href="material/ContentsX_アライアンス提案書.pdf" download class="btn btn-outline btn-lg" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</a>
       </div>
     </div>
   </section>
@@ -570,16 +612,17 @@
       <div class="footer-inner">
         <div class="footer-brand">
           <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
-          <p class="footer-company">コンテンツエックス株式会社</p>
-          <p class="footer-address">東京都目黒区目黒2-11-15 8階</p>
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
         </div>
         <div class="footer-links">
-          <a href="#company">会社概要</a>
-          <a href="#about">サービス</a>
-          <a href="#strength">強み</a>
-          <a href="#works">実績</a>
-          <a href="#contact">お問い合わせ</a>
-          <a href="#">プライバシーポリシー</a>
+          <a href="#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="#partners" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="#company" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
         </div>
       </div>
       <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
