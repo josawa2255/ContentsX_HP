@@ -1470,6 +1470,16 @@ section { padding: 100px 0; }
 }
 
 @media (max-width: 768px) {
+  .flow {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 40px 20px;
+    border-radius: 12px;
+  }
+  .flow-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
   .flow-layout {
     flex-direction: column;
   }
@@ -1479,14 +1489,82 @@ section { padding: 100px 0; }
     justify-content: center;
     gap: 2px;
   }
+  .flow-step-num {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  .flow-step p {
+    font-size: 10px;
+  }
   .flow-arrow-v {
     transform: rotate(-90deg);
   }
+  .flow-gallery {
+    margin-left: 0;
+  }
   .flow-gallery-item img {
-    height: 340px;
+    height: 280px;
+    padding: 8px;
+    border-width: 2px;
+    outline-width: 3px;
+    box-shadow:
+      inset 0 0 6px rgba(0,0,0,0.3),
+      0 0 0 6px #3d2b0a,
+      0 6px 20px rgba(0,0,0,0.3);
   }
   .flow-gallery-label {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+  }
+  .flow-specs {
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flow-spec-value {
+    font-size: 18px;
+  }
+  .flow-spec-label {
+    font-size: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .flow {
+    padding: 28px 12px;
+    border-radius: 8px;
+  }
+  .flow-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  .flow-steps-vertical {
+    gap: 1px;
+  }
+  .flow-step-num {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+  .flow-step p {
+    font-size: 9px;
+  }
+  .flow-gallery-item img {
+    height: 220px;
+    padding: 6px;
+  }
+  .flow-gallery-label {
+    font-size: 0.75rem;
+  }
+  .flow-gallery-track {
+    gap: 12px;
+  }
+  .flow-specs {
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 20px;
+  }
+  .flow-spec-value {
+    font-size: 16px;
   }
 }
 
