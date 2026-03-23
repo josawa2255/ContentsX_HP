@@ -486,3 +486,28 @@
     padding: 20px;
   }
 }
+
+@media (max-width: 480px) {
+  .hero-works-cover {
+    width: 100px;
+    height: 140px;
+  }
+  .hero-logo-main {
+    width: 70%;
+  }
+  .work-detail-content {
+    max-width: 100%;
+  }
+  .work-detail-right,
+  .work-detail-info {
+    padding: 16px;
+  }
+  .work-detail-title {
+    font-size: 1.2rem;
+  }
+  .work-detail-comment,
+  .work-detail-quote {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+  }
+}

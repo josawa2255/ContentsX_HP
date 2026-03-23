@@ -161,7 +161,19 @@
 }
 
 /* レスポンシブ */
+@media (max-width: 900px) {
+  .contact-main {
+    grid-template-columns: 1fr 280px;
+    gap: 40px;
+  }
+}
 @media (max-width: 768px) {
+  .contact-hero {
+    padding: 120px 20px 60px;
+  }
+  .contact-hero h1 {
+    font-size: 28px;
+  }
   .contact-main {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -169,5 +181,26 @@
   }
   .contact-sidebar {
     position: static;
+  }
+}
+@media (max-width: 480px) {
+  .contact-hero {
+    padding: 100px 16px 48px;
+  }
+  .contact-hero h1 {
+    font-size: 24px;
+  }
+  .contact-hero p {
+    font-size: 14px;
+  }
+  .contact-main {
+    gap: 28px;
+    padding: 36px 16px;
+  }
+  .contact-sidebar {
+    padding: 20px;
+  }
+  .contact-dl-banner {
+    padding: 20px;
   }
 }

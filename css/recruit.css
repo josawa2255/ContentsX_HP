@@ -108,7 +108,40 @@
 
 /* レスポンシブ */
 @media (max-width: 768px) {
+  .recruit-top {
+    padding: 120px 20px 48px;
+  }
+  .recruit-top h1 {
+    font-size: 28px;
+  }
   .recruit-cards {
     grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+  .recruit-form-section {
+    padding: 48px 20px 60px;
+  }
+}
+@media (max-width: 480px) {
+  .recruit-top {
+    padding: 100px 16px 40px;
+  }
+  .recruit-top h1 {
+    font-size: 24px;
+  }
+  .recruit-top p {
+    font-size: 14px;
+  }
+  .recruit-cards {
+    gap: 16px;
+  }
+  .recruit-card {
+    padding: 24px 16px;
+  }
+  .recruit-form-section {
+    padding: 40px 16px 48px;
+  }
+  .recruit-form-section h2 {
+    font-size: 22px;
   }
 }

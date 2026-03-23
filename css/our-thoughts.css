@@ -203,3 +203,51 @@
     padding: 72px 20px;
   }
 }
+
+@media (max-width: 480px) {
+  .ot-hero {
+    padding: 120px 16px 56px;
+  }
+  .ot-hero h1 {
+    font-size: 28px;
+  }
+  .ot-hero-sub {
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .ot-section {
+    padding: 56px 16px;
+  }
+  .ot-num {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+  .ot-title {
+    font-size: 22px;
+    margin-bottom: 32px;
+  }
+  .ot-prose {
+    gap: 24px;
+  }
+  .ot-prose p {
+    font-size: 14px;
+    line-height: 1.95;
+  }
+  .ot-highlight {
+    font-size: 15px !important;
+    padding-left: 16px;
+  }
+  .ot-cta {
+    padding: 56px 16px;
+  }
+  .ot-cta h2 {
+    font-size: 22px;
+  }
+  .ot-cta p {
+    font-size: 14px;
+  }
+  .ot-cta-btn {
+    padding: 16px 40px;
+    font-size: 15px;
+  }
+}

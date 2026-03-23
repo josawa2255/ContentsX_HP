@@ -2044,8 +2044,24 @@ section { padding: 100px 0; }
 }
 
 @media (max-width: 480px) {
+  .header-inner { padding: 0 12px; height: 56px; }
+  .logo-img { height: 48px; }
+  .header-lang-btn { width: 44px; height: 32px; font-size: 11px; }
+
   .results-grid { grid-template-columns: 1fr; }
   .hero-title { font-size: 30px; }
+
+  .section-active-label { display: none; }
+  .section-dots { display: none; }
+
+  .portfolio-item { min-height: 180px; }
+
+  .flow { padding: 20px 12px; }
+  .flow-steps { gap: 6px; }
+  .flow-step { font-size: 11px; padding: 6px 4px; }
+
+  .footer-inner { padding: 24px 16px; }
+  .footer-links { gap: 10px; }
 }
 
 
@@ -2303,4 +2319,20 @@ section { padding: 100px 0; }
   .recruit-type-desc {
     font-size: 13px;
   }
+}
+
+@media (max-width: 480px) {
+  .partners-title { font-size: 24px; margin-bottom: 32px; }
+  .partners-character { width: 160px; }
+  .partners-cards { padding-bottom: 360px; gap: 16px; }
+  .partner-card { padding: 20px 16px; }
+  .partner-desc { font-size: 12.5px; }
+  .partners-recruit {
+    padding: 24px 16px 48px;
+    margin-top: -360px;
+  }
+  .partners-recruit-title { font-size: 20px; }
+  .partners-recruit-lead { font-size: 13px; }
+  .partners-recruit-btn { padding: 14px 32px; font-size: 14px; }
+  .recruit-type { padding: 12px 0; }
 }

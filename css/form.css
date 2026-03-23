@@ -121,3 +121,28 @@
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 480px) {
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-label {
+    font-size: 13px;
+  }
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  .form-submit {
+    padding: 14px 32px;
+    font-size: 15px;
+    width: 100%;
+  }
+  .form-back-btn {
+    font-size: 13px;
+  }
+  .form-section-title {
+    font-size: 18px;
+  }
+}

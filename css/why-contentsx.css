@@ -874,3 +874,31 @@
   .process-specs { flex-wrap: wrap; gap: 24px; }
   .market-big-num { font-size: 36px; }
 }
+
+@media (max-width: 480px) {
+  .why-hero { padding: 120px 16px 56px; }
+  .why-hero h1 { font-size: 28px; }
+  .why-section { padding: 56px 16px; }
+  .why-section-title { font-size: 22px; margin-bottom: 32px; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .stat-num { font-size: 28px; }
+  .strength-list { grid-template-columns: 1fr; gap: 16px; }
+  .strength-item { padding: 24px 16px; }
+  .funnel-step { padding: 10px 12px; }
+  .funnel-label { font-size: 12px; }
+  .funnel-num { font-size: 14px; }
+  .road-card { padding: 24px 16px; }
+  .market-col { padding: 24px 16px; }
+  .market-big-num { font-size: 28px; }
+  .bar-label { width: 64px; font-size: 11px; }
+  .compare-table { font-size: 11px; }
+  .compare-table td, .compare-table th { padding: 8px 6px; }
+  .compare-table-2col { font-size: 11px; }
+  .compare-table-2col td, .compare-table-2col th { padding: 8px 6px; }
+  .process-specs { gap: 16px; }
+  .platform-grid { gap: 16px; }
+  .roadmap-item { padding: 24px 16px; }
+  .why-cta { padding: 56px 16px; }
+  .why-cta h2 { font-size: 22px; }
+  .why-cta-btn { padding: 16px 40px; font-size: 14px; }
+}
