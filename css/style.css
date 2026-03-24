@@ -940,6 +940,7 @@ section { padding: 100px 0; }
 }
 .new-works-track-wrapper {
   overflow: hidden;
+  container-type: inline-size;
 }
 .new-works-track {
   display: flex;
@@ -971,7 +972,7 @@ section { padding: 100px 0; }
   color: #fff;
 }
 .new-works-card {
-  flex: 0 0 200px;
+  flex: 0 0 calc((100cqi - 24px * 4) / 5);
   cursor: pointer;
   transition: transform 0.3s;
 }
@@ -979,17 +980,18 @@ section { padding: 100px 0; }
   transform: translateY(-4px);
 }
 .new-works-card-cover {
-  width: 200px;
-  height: 283px;
+  width: 100%;
+  aspect-ratio: 5 / 8;
+  height: auto;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  background: var(--bg-white);
+  background: #f0f0f0;
 }
 .new-works-card-cover img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .new-works-card-title {
   font-size: 13px;
@@ -1200,8 +1202,8 @@ section { padding: 100px 0; }
     flex: 0 0 160px;
   }
   .new-works-card-cover {
-    width: 160px;
-    height: 226px;
+    width: 100%;
+    aspect-ratio: 200 / 283;
   }
   .manga-viewer-scroll-inner {
     max-width: 100%;
@@ -1212,8 +1214,8 @@ section { padding: 100px 0; }
     flex: 0 0 140px;
   }
   .new-works-card-cover {
-    width: 140px;
-    height: 198px;
+    width: 100%;
+    aspect-ratio: 200 / 283;
   }
 }
 
