@@ -1,3 +1,15 @@
+// 採用ページからのposition自動入力
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var position = params.get('position');
+  if (position) {
+    var msgField = document.getElementById('message');
+    if (msgField) {
+      msgField.value = '【応募】' + position + '\n\n';
+    }
+  }
+})();
+
 // HubSpot Forms API 送信
 var HUBSPOT_PORTAL_ID = '48367061';
 var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';

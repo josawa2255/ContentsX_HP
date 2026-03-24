@@ -12,6 +12,8 @@
   var actionBtns = actionsBar ? actionsBar.querySelectorAll('.rc-action-btn') : [];
   var details = detailArea ? detailArea.querySelectorAll('.rc-detail') : [];
 
+  var posSection = document.getElementById('positions');
+
   var selectedPos = null;
   var currentView = null; // 'detail' or 'apply'
 
@@ -21,6 +23,29 @@
     production: 'マンガ製作担当',
     sales: '営業'
   };
+
+  // Position hero image map
+  var posImages = {
+    manga: "url('material/images/recruit/manga.webp')",
+    production: "url('material/images/recruit/production.webp')",
+    sales: "url('material/images/recruit/sales.webp')"
+  };
+
+  // Switch positions section background with fade
+  function switchPosBg(bgUrl) {
+    if (!posSection) return;
+    posSection.classList.add('rc-positions--fade');
+    setTimeout(function() {
+      if (bgUrl) {
+        posSection.style.backgroundImage = bgUrl;
+        posSection.classList.add('rc-positions--has-bg');
+      } else {
+        posSection.style.backgroundImage = '';
+        posSection.classList.remove('rc-positions--has-bg');
+      }
+      posSection.classList.remove('rc-positions--fade');
+    }, 300);
+  }
 
   // --- Card Click ---
   cards.forEach(function(card) {
@@ -40,6 +65,11 @@
       cards.forEach(function(c) { c.classList.remove('is-active'); });
       this.classList.add('is-active');
 
+      // Switch positions background
+      if (posImages[pos]) {
+        switchPosBg(posImages[pos]);
+      }
+
       // Show action buttons
       actionsBar.style.display = '';
 
@@ -51,9 +81,11 @@
       applyArea.style.display = 'none';
       detailArea.style.display = 'none';
 
-      // Scroll to actions
+      // Scroll to show full positions section with background
       setTimeout(function() {
-        actionsBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var rect = posSection.getBoundingClientRect();
+        var offset = window.pageYOffset + rect.top - 70; // ヘッダー分を差し引く
+        window.scrollTo({ top: offset, behavior: 'smooth' });
       }, 100);
     });
   });
@@ -73,10 +105,8 @@
         applyArea.style.display = 'none';
         showDetail(selectedPos);
       } else if (action === 'apply') {
-        currentView = 'apply';
-        hideAllDetails();
-        detailArea.style.display = 'none';
-        showApply(selectedPos);
+        var name = posNames[selectedPos] || selectedPos;
+        window.location.href = 'contact.html?position=' + encodeURIComponent(name);
       }
     });
   });
@@ -116,5 +146,7 @@
     applyArea.style.display = 'none';
     hideAllDetails();
     actionBtns.forEach(function(b) { b.classList.remove('is-active'); });
+    // Reset positions background
+    switchPosBg(null);
   }
 })();

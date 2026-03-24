@@ -15,10 +15,13 @@
         { label: '事業提携パートナー', labelEn: 'Partners',      href: '#partners' }
       ]
     },
+    { label: '会社概要',   labelEn: 'Company',      href: 'company.html',  indexHref: 'company.html',
+      children: [
+        { label: '私たちの思い', labelEn: 'Our Thoughts', href: 'our-thoughts.html' }
+      ]
+    },
     { label: '強み', labelEn: 'Strengths',       href: 'why-contentsx.html',  indexHref: 'why-contentsx.html' },
-    { label: '伝えたい思い', labelEn: 'Our Thoughts', href: 'our-thoughts.html',   indexHref: 'our-thoughts.html' },
     { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit.html',        indexHref: 'recruit.html' },
-    { label: '会社概要',   labelEn: 'Company',      href: 'company.html',  indexHref: 'company.html' },
     { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact.html',        indexHref: 'contact.html', cta: true }
   ];
 

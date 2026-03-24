@@ -21,20 +21,22 @@
     </div>
   </header>
 
-  <section class="rc-hero">
-    <div class="rc-hero-inner">
-      <div class="rc-hero-label">Recruit</div>
-      <h1>物語の力で、<br>世界を動かす仲間を。</h1>
-      <p>コンテンツエックスは「マンガ×テクノロジー」で、企業の課題解決からグローバルIP創出まで手がけるコンテンツ・エージェンシーです。</p>
-      <div class="rc-hero-line"></div>
+  <section class="rc-hero-bg" id="rc-hero-bg" style="background-image:url('material/images/recruit/hero.webp');">
+    <div class="rc-hero-overlay">
+      <div class="rc-hero-content">
+        <div class="rc-hero-label">Recruit</div>
+        <h1 class="rc-hero-title">物語の力で、<br>世界を動かす仲間を。</h1>
+        <p class="rc-hero-desc">コンテンツエックスは「マンガ×テクノロジー」で、企業の課題解決からグローバルIP創出まで手がけるコンテンツ・エージェンシーです。</p>
+      </div>
     </div>
   </section>
 
   <section class="rc-positions" id="positions">
+    <div class="rc-positions-overlay"></div>
     <div class="rc-positions-inner">
       <div class="rc-section-label">Open Positions</div>
       <h2 class="rc-section-title">募集職種</h2>
-      <p class="rc-positions-lead">コンテンツエックスは、マンガで「届ける」をつくる仲間を募集しています。</p>
+      <p class="rc-positions-lead">希望の職種をクリックしてください。</p>
       <div class="rc-pos-cards">
         <div class="rc-pos-card" data-pos="manga">
           <div class="rc-pos-card-num">01</div>
@@ -53,8 +55,8 @@
         </div>
       </div>
       <div class="rc-actions" id="rc-actions" style="display:none;">
-        <button class="rc-action-btn" data-action="apply">応募する</button>
-        <button class="rc-action-btn rc-action-btn--outline" data-action="detail">詳細を見る</button>
+        <button class="rc-action-btn" data-action="apply"><span class="rc-action-icon">&#9998;</span> 応募する</button>
+        <button class="rc-action-btn rc-action-btn--outline" data-action="detail"><span class="rc-action-icon">&#9776;</span> 詳細を見る</button>
       </div>
       <div class="rc-detail-area" id="rc-detail-area" style="display:none;">
         <div class="rc-detail" data-detail="manga">
@@ -63,7 +65,8 @@
           <p class="rc-detail-lead">画像生成技術を活用したハイブリッド制作体制で、企業向けマンガを手がけています。漫画家の方には、以下の業務をお任せします。</p>
           <div class="rc-detail-grid"><div class="rc-detail-label">仕事内容</div><div class="rc-detail-content"><ul><li>シナリオ・プロットのチェック</li><li>ネーム制作</li><li>作画完成後の赤ペン作業（修正指示）</li></ul></div></div>
           <div class="rc-detail-grid"><div class="rc-detail-label">応募条件</div><div class="rc-detail-content"><ul><li>マンガのシナリオ構成・ネーム制作の経験がある方（商業誌・同人・Web連載問わず）</li><li>フリーランス・副業可</li></ul></div></div>
-          <span class="rc-tag">業務委託</span><span class="rc-tag">フルリモート</span>
+          <div class="rc-tag-row"><span class="rc-tag">業務委託</span><span class="rc-tag">フルリモート</span></div>
+          <a href="contact.html" class="rc-detail-apply-btn">この職種に応募する →</a>
         </div>
         <div class="rc-detail" data-detail="production">
           <div class="rc-detail-num">02</div>
@@ -71,7 +74,8 @@
           <p class="rc-detail-lead">ネームをもとに、画像生成技術を活用して作画を完成させるポジションです。シナリオ設計や品質管理にも携わります。</p>
           <div class="rc-detail-grid"><div class="rc-detail-label">仕事内容</div><div class="rc-detail-content"><ul><li>ネームをもとにした作画（メイン業務）</li><li>シナリオ設計・構成サポート</li><li>品質チェック・納品対応</li></ul></div></div>
           <div class="rc-detail-grid"><div class="rc-detail-label">応募条件</div><div class="rc-detail-content"><ul><li>クリエイティブな仕事に興味がある方</li><li>Adobe（Photoshop / Illustrator等）やCanvaの使用経験がある方（推奨）</li><li>画像生成技術を使った作画に関心がある方（経験不問）</li><li>業界未経験歓迎</li></ul></div></div>
-          <span class="rc-tag">リモートワーク可</span><span class="rc-tag">業務委託・副業可</span>
+          <div class="rc-tag-row"><span class="rc-tag">リモートワーク可</span><span class="rc-tag">業務委託・副業可</span></div>
+          <a href="contact.html" class="rc-detail-apply-btn">この職種に応募する →</a>
         </div>
         <div class="rc-detail" data-detail="sales">
           <div class="rc-detail-num">03</div>
@@ -79,7 +83,8 @@
           <p class="rc-detail-lead">企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。マンガDMやコンテンツセールス等、独自の営業ツールを活用した新規開拓も行います。</p>
           <div class="rc-detail-grid"><div class="rc-detail-label">仕事内容</div><div class="rc-detail-content"><ul><li>法人向け新規開拓</li><li>クライアントへのヒアリング・ソリューション提案</li><li>パートナー企業の開拓・アライアンス推進</li></ul></div></div>
           <div class="rc-detail-grid"><div class="rc-detail-label">応募条件</div><div class="rc-detail-content"><ul><li>法人営業経験がある方（業界不問）</li><li>課題解決型の営業スタイルに関心がある方</li><li>将来的に事業開発にも携わりたい方</li><li>海外での案件に興味がある方</li><li>副業・業務委託からのスタートも可</li></ul></div></div>
-          <span class="rc-tag">リモートワーク可</span><span class="rc-tag">業務委託・副業可</span>
+          <div class="rc-tag-row"><span class="rc-tag">リモートワーク可</span><span class="rc-tag">業務委託・副業可</span></div>
+          <a href="contact.html" class="rc-detail-apply-btn">この職種に応募する →</a>
         </div>
       </div>
       <div class="rc-apply-area" id="rc-apply-area" style="display:none;">
@@ -94,14 +99,47 @@
     <div class="rc-flow-inner">
       <div class="rc-section-label">Flow</div>
       <h2 class="rc-section-title">応募から参画までの流れ</h2>
-      <div class="rc-flow-steps">
-        <div class="rc-flow-step"><div class="rc-flow-step-num">01</div><div class="rc-flow-step-title">エントリー</div><div class="rc-flow-step-desc">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</div></div>
-        <div class="rc-flow-arrow"></div>
-        <div class="rc-flow-step"><div class="rc-flow-step-num">02</div><div class="rc-flow-step-title">カジュアル面談</div><div class="rc-flow-step-desc">オンライン（Google Meet）で30分程度。事業内容や働き方についてお互いに確認します。</div></div>
-        <div class="rc-flow-arrow"></div>
-        <div class="rc-flow-step"><div class="rc-flow-step-num">03</div><div class="rc-flow-step-title">トライアル</div><div class="rc-flow-step-desc">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性を確認します。</div></div>
-        <div class="rc-flow-arrow"></div>
-        <div class="rc-flow-step"><div class="rc-flow-step-num">04</div><div class="rc-flow-step-title">契約・参画</div><div class="rc-flow-step-desc">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</div></div>
+      <div class="rc-flow-timeline">
+        <div class="rc-flow-item">
+          <div class="rc-flow-marker"><span>01</span></div>
+          <div class="rc-flow-card">
+            <div class="rc-flow-card-header">
+              <h3 class="rc-flow-card-title">エントリー</h3>
+              <span class="rc-flow-card-badge">最短当日対応</span>
+            </div>
+            <p class="rc-flow-card-desc">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</p>
+          </div>
+        </div>
+        <div class="rc-flow-item">
+          <div class="rc-flow-marker"><span>02</span></div>
+          <div class="rc-flow-card">
+            <div class="rc-flow-card-header">
+              <h3 class="rc-flow-card-title">カジュアル面談</h3>
+              <span class="rc-flow-card-badge">オンライン 30分</span>
+            </div>
+            <p class="rc-flow-card-desc">Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。</p>
+          </div>
+        </div>
+        <div class="rc-flow-item">
+          <div class="rc-flow-marker"><span>03</span></div>
+          <div class="rc-flow-card">
+            <div class="rc-flow-card-header">
+              <h3 class="rc-flow-card-title">トライアル</h3>
+              <span class="rc-flow-card-badge">短期間</span>
+            </div>
+            <p class="rc-flow-card-desc">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。</p>
+          </div>
+        </div>
+        <div class="rc-flow-item">
+          <div class="rc-flow-marker rc-flow-marker--last"><span>04</span></div>
+          <div class="rc-flow-card">
+            <div class="rc-flow-card-header">
+              <h3 class="rc-flow-card-title">契約・参画</h3>
+              <span class="rc-flow-card-badge rc-flow-card-badge--accent">チーム合流</span>
+            </div>
+            <p class="rc-flow-card-desc">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
