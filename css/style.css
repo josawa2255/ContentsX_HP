@@ -142,6 +142,8 @@ body {
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
+  scrollbar-gutter: stable; /* Windowsスクロールバー分の幅を予約してガタつき防止 */
 }
 
 body {
@@ -149,6 +151,7 @@ body {
   color: var(--text-secondary);
   background: var(--bg-white);
   line-height: 1.8;
+  overflow-x: hidden;
 }
 
 .container {
@@ -2181,11 +2184,12 @@ section { padding: 100px 0; }
   flex-shrink: 0;
   width: 500px;
   margin-right: -200px;
+  margin-top: -110px;
   z-index: 1;
 }
 .partners-character-inner {
   position: sticky;
-  top: 90px;
+  top: 150px;
 }
 .partners-character-img {
   width: 100%;
