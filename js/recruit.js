@@ -1,6 +1,6 @@
 var roleLabels = {
-  mangaka: { ja: '漫画家', en: 'Manga Artist' },
-  editor:  { ja: '編集者', en: 'Editor' }
+  mangaka:     { ja: '漫画家', en: 'Manga Artist' },
+  illustrator: { ja: '作画担当', en: 'Illustrator' }
 };
 var currentRole = '';
 
