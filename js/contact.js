@@ -1,6 +1,6 @@
 // HubSpot Forms API 送信
 var HUBSPOT_PORTAL_ID = '48367061';
-var HUBSPOT_FORM_GUID = 'd8b2249d-923b-b53e-2e64-c81a4f77f4cb';
+var HUBSPOT_FORM_GUID = '2c892764-8eed-4f8b-9932-0693ddfd32f4';
 
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
