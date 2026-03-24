@@ -1,69 +1,120 @@
-var roleLabels = {
-  mangaka:     { ja: '漫画家', en: 'Manga Artist' },
-  illustrator: { ja: '作画担当', en: 'Illustrator' }
-};
-var currentRole = '';
+/* ============================================
+   Recruit Page — Interactive Card Logic
+   ============================================ */
+(function() {
+  'use strict';
 
-function selectRole(role) {
-  currentRole = role;
-  // カード選択状態
-  document.querySelectorAll('.recruit-card').forEach(function(c) {
-    c.classList.toggle('selected', c.getAttribute('data-role') === role);
+  var cards = document.querySelectorAll('.rc-pos-card');
+  var actionsBar = document.getElementById('rc-actions');
+  var detailArea = document.getElementById('rc-detail-area');
+  var applyArea = document.getElementById('rc-apply-area');
+  var applyPosName = document.getElementById('rc-apply-pos-name');
+  var actionBtns = actionsBar ? actionsBar.querySelectorAll('.rc-action-btn') : [];
+  var details = detailArea ? detailArea.querySelectorAll('.rc-detail') : [];
+
+  var selectedPos = null;
+  var currentView = null; // 'detail' or 'apply'
+
+  // Position name map
+  var posNames = {
+    manga: '漫画家',
+    production: 'マンガ製作担当',
+    sales: '営業'
+  };
+
+  // --- Card Click ---
+  cards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      var pos = this.getAttribute('data-pos');
+
+      // Toggle: clicking same card again deselects
+      if (selectedPos === pos) {
+        resetAll();
+        return;
+      }
+
+      selectedPos = pos;
+      currentView = null;
+
+      // Update card active states
+      cards.forEach(function(c) { c.classList.remove('is-active'); });
+      this.classList.add('is-active');
+
+      // Show action buttons
+      actionsBar.style.display = '';
+
+      // Reset action button states
+      actionBtns.forEach(function(btn) { btn.classList.remove('is-active'); });
+
+      // Hide detail & apply areas
+      hideAllDetails();
+      applyArea.style.display = 'none';
+      detailArea.style.display = 'none';
+
+      // Scroll to actions
+      setTimeout(function() {
+        actionsBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    });
   });
-  // hidden input
-  document.getElementById('roleInput').value = role;
-  // バッジ表示
-  var lang = document.documentElement.lang || 'ja';
-  var badge = document.getElementById('selectedRoleBadge');
-  var labelObj = roleLabels[role];
-  badge.textContent = lang === 'en' ? labelObj.en : labelObj.ja;
-  badge.setAttribute('data-ja', labelObj.ja);
-  badge.setAttribute('data-en', labelObj.en);
-  // フォーム表示
-  var formSection = document.getElementById('recruitForm');
-  formSection.classList.add('active');
-  setTimeout(function() {
-    formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
-}
 
-function backToSelect() {
-  document.getElementById('recruitForm').classList.remove('active');
-  document.querySelectorAll('.recruit-card').forEach(function(c) {
-    c.classList.remove('selected');
+  // --- Action Button Click ---
+  actionBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var action = this.getAttribute('data-action');
+      if (!selectedPos) return;
+
+      // Update button states
+      actionBtns.forEach(function(b) { b.classList.remove('is-active'); });
+      this.classList.add('is-active');
+
+      if (action === 'detail') {
+        currentView = 'detail';
+        applyArea.style.display = 'none';
+        showDetail(selectedPos);
+      } else if (action === 'apply') {
+        currentView = 'apply';
+        hideAllDetails();
+        detailArea.style.display = 'none';
+        showApply(selectedPos);
+      }
+    });
   });
-  document.getElementById('recruitTop').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
-// mailto送信
-document.getElementById('recruitFormEl').addEventListener('submit', function(e) {
-  e.preventDefault();
-  var role = document.getElementById('roleInput').value;
-  var roleLabel = roleLabels[role] ? roleLabels[role].ja : role;
-  var lastName = document.getElementById('rLastName').value;
-  var firstName = document.getElementById('rFirstName').value;
-  var lastNameKana = document.getElementById('rLastNameKana').value;
-  var firstNameKana = document.getElementById('rFirstNameKana').value;
-  var email = document.getElementById('rEmail').value;
-  var phone = document.getElementById('rPhone').value;
-  var age = document.getElementById('rAge').value;
-  var experience = document.getElementById('rExperience').value;
-  var skills = document.getElementById('rSkills').value;
-  var portfolio = document.getElementById('rPortfolio').value;
-  var motivation = document.getElementById('rMotivation').value;
+  function showDetail(pos) {
+    detailArea.style.display = '';
+    hideAllDetails();
+    var target = detailArea.querySelector('[data-detail="' + pos + '"]');
+    if (target) {
+      target.classList.add('is-visible');
+      setTimeout(function() {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }
 
-  var subject = encodeURIComponent('【採用応募】' + roleLabel + ' - ' + lastName + ' ' + firstName);
-  var body = encodeURIComponent(
-    '■ 応募職種: ' + roleLabel + '\n\n' +
-    '■ お名前: ' + lastName + ' ' + firstName + '（' + lastNameKana + ' ' + firstNameKana + '）\n' +
-    '■ メールアドレス: ' + email + '\n' +
-    '■ 電話番号: ' + (phone || '未記入') + '\n' +
-    '■ 年齢: ' + (age || '未記入') + '\n\n' +
-    '■ 経歴・職歴:\n' + experience + '\n\n' +
-    '■ スキル・ツール: ' + (skills || '未記入') + '\n' +
-    '■ ポートフォリオ: ' + (portfolio || '未記入') + '\n\n' +
-    '■ 志望動機・自己PR:\n' + motivation
-  );
+  function showApply(pos) {
+    if (applyPosName) {
+      applyPosName.textContent = posNames[pos] || pos;
+    }
+    applyArea.style.display = '';
+    setTimeout(function() {
+      applyArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
 
-  window.location.href = 'mailto:kuromiya2618@gmail.com?subject=' + subject + '&body=' + body;
-});
+  function hideAllDetails() {
+    details.forEach(function(d) { d.classList.remove('is-visible'); });
+  }
+
+  function resetAll() {
+    selectedPos = null;
+    currentView = null;
+    cards.forEach(function(c) { c.classList.remove('is-active'); });
+    actionsBar.style.display = 'none';
+    detailArea.style.display = 'none';
+    applyArea.style.display = 'none';
+    hideAllDetails();
+    actionBtns.forEach(function(b) { b.classList.remove('is-active'); });
+  }
+})();

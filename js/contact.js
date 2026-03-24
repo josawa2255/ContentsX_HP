@@ -1,6 +1,6 @@
 // HubSpot Forms API 送信
 var HUBSPOT_PORTAL_ID = '48367061';
-var HUBSPOT_FORM_GUID = '2c892764-8eed-4f8b-9932-0693ddfd32f4';
+var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -10,28 +10,18 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   submitBtn.disabled = true;
   submitBtn.textContent = '送信中...';
 
-  var lastName = document.getElementById('lastName').value;
-  var firstName = document.getElementById('firstName').value;
-  var lastNameKana = document.getElementById('lastNameKana').value;
-  var firstNameKana = document.getElementById('firstNameKana').value;
   var company = document.getElementById('company').value;
-  var position = document.getElementById('position').value;
+  var department = document.getElementById('department').value;
+  var fullName = document.getElementById('fullName').value;
   var email = document.getElementById('email').value;
-  var phone = document.getElementById('phone').value;
-  var category = document.getElementById('category');
-  var categoryText = category.options[category.selectedIndex].text;
   var message = document.getElementById('message').value;
 
   var fields = [
-    { name: 'lastname',  value: lastName },
-    { name: 'firstname', value: firstName },
-    { name: 'lastname_kana',  value: lastNameKana },
-    { name: 'firstname_kana', value: firstNameKana },
     { name: 'company',   value: company },
-    { name: 'jobtitle',  value: position },
+    { name: 'busyo',     value: department },
+    { name: 'lastname',  value: fullName },
+    { name: 'firstname', value: fullName },
     { name: 'email',     value: email },
-    { name: 'phone',     value: phone },
-    { name: 'inquiry_type', value: categoryText },
     { name: 'message',   value: message }
   ];
 
@@ -46,27 +36,37 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
     + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
 
+  console.log('Sending to HubSpot:', JSON.stringify(payload, null, 2));
+
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
   .then(function(res) {
+    console.log('HubSpot response status:', res.status);
     if (res.ok) {
       return res.json();
     }
-    return res.text().then(function(t) { throw new Error(t); });
+    return res.text().then(function(t) {
+      console.error('HubSpot error response:', t);
+      throw new Error(t);
+    });
   })
   .then(function() {
     // 送信成功
     submitBtn.textContent = '送信完了';
     submitBtn.style.background = '#2e7d32';
     var form = document.getElementById('contactForm');
-    // サンクスメッセージ表示
+    // サンクスメッセージ + 資料DLリンク表示
     var thanks = document.createElement('div');
     thanks.className = 'form-thanks';
     thanks.innerHTML = '<p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);margin-top:24px;">お問い合わせありがとうございます。</p>'
-      + '<p style="text-align:center;font-size:14px;color:var(--text-muted);margin-top:8px;">3営業日以内にご連絡いたします。</p>';
+      + '<p style="text-align:center;font-size:14px;color:var(--text-muted);margin-top:8px;">3営業日以内にご連絡いたします。</p>'
+      + '<div style="text-align:center;margin-top:32px;padding:24px;background:var(--bg-light);border-radius:8px;">'
+      + '<p style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:12px;">サービス資料をダウンロード</p>'
+      + '<a href="material/ContentsX_アライアンス提案書.pdf" download style="display:inline-block;padding:12px 32px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:4px;transition:filter 0.2s;">資料ダウンロード</a>'
+      + '</div>';
     form.parentNode.insertBefore(thanks, form.nextSibling);
     form.style.display = 'none';
   })

@@ -2173,19 +2173,19 @@ section { padding: 100px 0; }
 .partners-layout {
   display: flex;
   gap: 0;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
 }
 .partners-character {
   flex-shrink: 0;
-  width: 260px;
-  margin-right: -30px;
+  width: 500px;
+  margin-right: -200px;
   z-index: 1;
 }
 .partners-character-inner {
   position: sticky;
-  top: 280px;
+  top: 90px;
 }
 .partners-character-img {
   width: 100%;

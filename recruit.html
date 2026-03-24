@@ -7,132 +7,113 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="icon" type="image/webp" href="material/images/contentsx-icon.webp">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/recruit.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/form.css">
-  <link rel="stylesheet" href="css/recruit.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body data-theme="cyber-green">
-
-  <!-- ===== ヘッダー ===== -->
   <header class="header" id="header">
     <div class="header-inner">
-      <a href="index.html" class="logo">
-        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
-      </a>
-      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
-      <div class="header-right">
-        <button class="hamburger" id="hamburger" aria-label="メニュー">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
+      <a href="index.html" class="logo"><img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img"></a>
+      <nav class="nav" id="nav"></nav>
+      <div class="header-right"><button class="hamburger" id="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
     </div>
   </header>
 
-  <!-- ===== 職種選択 ===== -->
-  <section class="recruit-top" id="recruitTop">
-    <p class="recruit-top-label">Recruit</p>
-    <h1 class="recruit-top-title" data-ja="一緒に物語を創りませんか" data-en="Join Our Creative Team">一緒に物語を創りませんか</h1>
-    <p class="recruit-top-sub" data-ja="ContentsXでは、漫画の力で世界を変える仲間を募集しています。応募する職種を選んでください。" data-en="We're looking for people who want to change the world with manga. Select a position to apply.">ContentsXでは、漫画の力で世界を変える仲間を募集しています。応募する職種を選んでください。</p>
+  <section class="rc-hero">
+    <div class="rc-hero-inner">
+      <div class="rc-hero-label">Recruit</div>
+      <h1>物語の力で、<br>世界を動かす仲間を。</h1>
+      <p>コンテンツエックスは「マンガ×テクノロジー」で、企業の課題解決からグローバルIP創出まで手がけるコンテンツ・エージェンシーです。</p>
+      <div class="rc-hero-line"></div>
+    </div>
+  </section>
 
-    <div class="recruit-cards">
-      <div class="recruit-card" data-role="mangaka" onclick="selectRole('mangaka')">
-        <div class="recruit-card-icon">🖊️</div>
-        <h3 class="recruit-card-title" data-ja="漫画家" data-en="Manga Artist">漫画家</h3>
-        <p class="recruit-card-desc" data-ja="ビズマンガ・IP作品の作画を担当。経験・ジャンル不問。デジタル作画ができる方を歓迎します。" data-en="Draw for BizManga & IP works. All experience levels and genres welcome. Digital drawing skills preferred.">ビズマンガ・IP作品の作画を担当。経験・ジャンル不問。デジタル作画ができる方を歓迎します。</p>
+  <section class="rc-positions" id="positions">
+    <div class="rc-positions-inner">
+      <div class="rc-section-label">Open Positions</div>
+      <h2 class="rc-section-title">募集職種</h2>
+      <p class="rc-positions-lead">コンテンツエックスは、マンガで「届ける」をつくる仲間を募集しています。</p>
+      <div class="rc-pos-cards">
+        <div class="rc-pos-card" data-pos="manga">
+          <div class="rc-pos-card-num">01</div>
+          <div class="rc-pos-card-title">漫画家</div>
+          <div class="rc-pos-card-desc">シナリオチェック・ネーム制作・赤ペン</div>
+        </div>
+        <div class="rc-pos-card" data-pos="production">
+          <div class="rc-pos-card-num">02</div>
+          <div class="rc-pos-card-title">マンガ製作担当</div>
+          <div class="rc-pos-card-desc">ネームからの作画・品質管理</div>
+        </div>
+        <div class="rc-pos-card" data-pos="sales">
+          <div class="rc-pos-card-num">03</div>
+          <div class="rc-pos-card-title">営業</div>
+          <div class="rc-pos-card-desc">法人開拓・ソリューション提案</div>
+        </div>
       </div>
-      <div class="recruit-card" data-role="illustrator" onclick="selectRole('illustrator')">
-        <div class="recruit-card-icon">🎨</div>
-        <h3 class="recruit-card-title" data-ja="作画担当" data-en="Illustrator">作画担当</h3>
-        <p class="recruit-card-desc" data-ja="線画・着彩・背景など作画工程を担当。CLIP STUDIOやPhotoshopでのデジタル作画経験がある方を歓迎します。" data-en="Handle line art, coloring, backgrounds and other illustration processes. Experience with digital drawing tools like CLIP STUDIO or Photoshop is welcome.">線画・着彩・背景など作画工程を担当。CLIP STUDIOやPhotoshopでのデジタル作画経験がある方を歓迎します。</p>
+      <div class="rc-actions" id="rc-actions" style="display:none;">
+        <button class="rc-action-btn" data-action="apply">応募する</button>
+        <button class="rc-action-btn rc-action-btn--outline" data-action="detail">詳細を見る</button>
+      </div>
+      <div class="rc-detail-area" id="rc-detail-area" style="display:none;">
+        <div class="rc-detail" data-detail="manga">
+          <div class="rc-detail-num">01</div>
+          <h3 class="rc-detail-title">漫画家募集</h3>
+          <p class="rc-detail-lead">画像生成技術を活用したハイブリッド制作体制で、企業向けマンガを手がけています。漫画家の方には、以下の業務をお任せします。</p>
+          <div class="rc-detail-grid"><div class="rc-detail-label">仕事内容</div><div class="rc-detail-content"><ul><li>シナリオ・プロットのチェック</li><li>ネーム制作</li><li>作画完成後の赤ペン作業（修正指示）</li></ul></div></div>
+          <div class="rc-detail-grid"><div class="rc-detail-label">応募条件</div><div class="rc-detail-content"><ul><li>マンガのシナリオ構成・ネーム制作の経験がある方（商業誌・同人・Web連載問わず）</li><li>フリーランス・副業可</li></ul></div></div>
+          <span class="rc-tag">業務委託</span><span class="rc-tag">フルリモート</span>
+        </div>
+        <div class="rc-detail" data-detail="production">
+          <div class="rc-detail-num">02</div>
+          <h3 class="rc-detail-title">マンガ製作担当募集</h3>
+          <p class="rc-detail-lead">ネームをもとに、画像生成技術を活用して作画を完成させるポジションです。シナリオ設計や品質管理にも携わります。</p>
+          <div class="rc-detail-grid"><div class="rc-detail-label">仕事内容</div><div class="rc-detail-content"><ul><li>ネームをもとにした作画（メイン業務）</li><li>シナリオ設計・構成サポート</li><li>品質チェック・納品対応</li></ul></div></div>
+          <div class="rc-detail-grid"><div class="rc-detail-label">応募条件</div><div class="rc-detail-content"><ul><li>クリエイティブな仕事に興味がある方</li><li>Adobe（Photoshop / Illustrator等）やCanvaの使用経験がある方（推奨）</li><li>画像生成技術を使った作画に関心がある方（経験不問）</li><li>業界未経験歓迎</li></ul></div></div>
+          <span class="rc-tag">リモートワーク可</span><span class="rc-tag">業務委託・副業可</span>
+        </div>
+        <div class="rc-detail" data-detail="sales">
+          <div class="rc-detail-num">03</div>
+          <h3 class="rc-detail-title">営業募集</h3>
+          <p class="rc-detail-lead">企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。マンガDMやコンテンツセールス等、独自の営業ツールを活用した新規開拓も行います。</p>
+          <div class="rc-detail-grid"><div class="rc-detail-label">仕事内容</div><div class="rc-detail-content"><ul><li>法人向け新規開拓</li><li>クライアントへのヒアリング・ソリューション提案</li><li>パートナー企業の開拓・アライアンス推進</li></ul></div></div>
+          <div class="rc-detail-grid"><div class="rc-detail-label">応募条件</div><div class="rc-detail-content"><ul><li>法人営業経験がある方（業界不問）</li><li>課題解決型の営業スタイルに関心がある方</li><li>将来的に事業開発にも携わりたい方</li><li>海外での案件に興味がある方</li><li>副業・業務委託からのスタートも可</li></ul></div></div>
+          <span class="rc-tag">リモートワーク可</span><span class="rc-tag">業務委託・副業可</span>
+        </div>
+      </div>
+      <div class="rc-apply-area" id="rc-apply-area" style="display:none;">
+        <h3 class="rc-apply-title">応募・カジュアル面談</h3>
+        <p class="rc-apply-lead"><span id="rc-apply-pos-name"></span>へのご応募・カジュアル面談のご希望は、以下よりご連絡ください。</p>
+        <a href="contact.html" class="rc-apply-btn">お問い合わせフォームへ</a>
       </div>
     </div>
   </section>
 
-  <!-- ===== 応募フォーム ===== -->
-  <section class="recruit-form-section" id="recruitForm">
-    <span class="recruit-selected-badge" id="selectedRoleBadge"></span>
-    <h2 data-ja="応募フォーム" data-en="Application Form">応募フォーム</h2>
-    <p data-ja="以下の情報をご記入ください。書類選考後、3営業日以内にご連絡いたします。" data-en="Please fill in your details below. We will contact you within 3 business days after screening.">以下の情報をご記入ください。書類選考後、3営業日以内にご連絡いたします。</p>
-
-    <form class="recruit-form" id="recruitFormEl">
-      <input type="hidden" id="roleInput" name="role" value="">
-
-      <!-- 基本情報 -->
-      <p class="form-section-title" data-ja="基本情報" data-en="Personal Info">基本情報</p>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="rLastName"><span data-ja="姓" data-en="Last Name">姓</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="rLastName" name="lastName" placeholder="佐藤" data-ph-ja="佐藤" data-ph-en="Sato" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="rFirstName"><span data-ja="名" data-en="First Name">名</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="rFirstName" name="firstName" placeholder="太郎" data-ph-ja="太郎" data-ph-en="Taro" required>
-        </div>
+  <section class="rc-flow">
+    <div class="rc-flow-inner">
+      <div class="rc-section-label">Flow</div>
+      <h2 class="rc-section-title">応募から参画までの流れ</h2>
+      <div class="rc-flow-steps">
+        <div class="rc-flow-step"><div class="rc-flow-step-num">01</div><div class="rc-flow-step-title">エントリー</div><div class="rc-flow-step-desc">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</div></div>
+        <div class="rc-flow-arrow"></div>
+        <div class="rc-flow-step"><div class="rc-flow-step-num">02</div><div class="rc-flow-step-title">カジュアル面談</div><div class="rc-flow-step-desc">オンライン（Google Meet）で30分程度。事業内容や働き方についてお互いに確認します。</div></div>
+        <div class="rc-flow-arrow"></div>
+        <div class="rc-flow-step"><div class="rc-flow-step-num">03</div><div class="rc-flow-step-title">トライアル</div><div class="rc-flow-step-desc">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性を確認します。</div></div>
+        <div class="rc-flow-arrow"></div>
+        <div class="rc-flow-step"><div class="rc-flow-step-num">04</div><div class="rc-flow-step-title">契約・参画</div><div class="rc-flow-step-desc">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</div></div>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="rLastNameKana"><span data-ja="セイ（フリガナ）" data-en="Last Name (Kana)">セイ（フリガナ）</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="rLastNameKana" name="lastNameKana" placeholder="サトウ" data-ph-ja="サトウ" data-ph-en="Sato" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="rFirstNameKana"><span data-ja="メイ（フリガナ）" data-en="First Name (Kana)">メイ（フリガナ）</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="rFirstNameKana" name="firstNameKana" placeholder="タロウ" data-ph-ja="タロウ" data-ph-en="Taro" required>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="rEmail"><span data-ja="メールアドレス" data-en="Email">メールアドレス</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-        <input class="form-input" type="email" id="rEmail" name="email" placeholder="example@email.com" required>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="rPhone"><span data-ja="電話番号" data-en="Phone Number">電話番号</span></label>
-        <input class="form-input" type="tel" id="rPhone" name="phone" placeholder="090-0000-0000" data-ph-ja="090-0000-0000" data-ph-en="+81-90-0000-0000">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="rAge"><span data-ja="年齢" data-en="Age">年齢</span></label>
-        <input class="form-input" type="number" id="rAge" name="age" placeholder="25" min="15" max="99">
-      </div>
-
-      <!-- 経歴 -->
-      <p class="form-section-title" data-ja="経歴・スキル" data-en="Experience & Skills">経歴・スキル</p>
-
-      <div class="form-group">
-        <label class="form-label" for="rExperience"><span data-ja="経歴・職歴" data-en="Work Experience">経歴・職歴</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-        <textarea class="form-textarea" id="rExperience" name="experience" placeholder="これまでの経歴や職歴をご記入ください" data-ph-ja="これまでの経歴や職歴をご記入ください" data-ph-en="Please describe your work experience" required></textarea>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="rSkills"><span data-ja="得意なスキル・使用ツール" data-en="Skills & Tools">得意なスキル・使用ツール</span></label>
-        <input class="form-input" type="text" id="rSkills" name="skills" placeholder="CLIP STUDIO, Photoshop, InDesign 等" data-ph-ja="CLIP STUDIO, Photoshop, InDesign 等" data-ph-en="CLIP STUDIO, Photoshop, InDesign, etc.">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="rPortfolio"><span data-ja="ポートフォリオURL（任意）" data-en="Portfolio URL (Optional)">ポートフォリオURL（任意）</span></label>
-        <input class="form-input" type="url" id="rPortfolio" name="portfolio" placeholder="https://..." data-ph-ja="https://..." data-ph-en="https://...">
-      </div>
-
-      <!-- 自己PR -->
-      <p class="form-section-title" data-ja="志望動機・自己PR" data-en="Motivation & PR">志望動機・自己PR</p>
-
-      <div class="form-group">
-        <label class="form-label" for="rMotivation"><span data-ja="志望動機・自己PR" data-en="Motivation & Self-introduction">志望動機・自己PR</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-        <textarea class="form-textarea" id="rMotivation" name="motivation" placeholder="ContentsXを志望する理由やアピールポイントをご記入ください" data-ph-ja="ContentsXを志望する理由やアピールポイントをご記入ください" data-ph-en="Please describe why you want to join ContentsX" required></textarea>
-      </div>
-
-      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
-        <button type="submit" class="form-submit" data-ja="応募する" data-en="Submit Application">応募する</button>
-        <button type="button" class="form-back-btn" onclick="backToSelect()" data-ja="職種選択に戻る" data-en="Back to Selection">職種選択に戻る</button>
-      </div>
-    </form>
+    </div>
   </section>
 
-  <!-- ===== フッター ===== -->
+  <section class="rc-cta" id="apply">
+    <div class="rc-cta-inner">
+      <h2>応募・カジュアル面談</h2>
+      <p>各ポジションへのご応募・カジュアル面談のご希望は、以下よりご連絡ください。</p>
+      <a href="contact.html" class="rc-cta-btn">お問い合わせフォームへ</a>
+    </div>
+  </section>
+
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
@@ -144,18 +125,18 @@
         <div class="footer-links">
           <a href="index.html#new-works">新作情報</a>
           <a href="index.html#about">サービス</a>
-          <a href="index.html#strength">制作体制</a>
-          <a href="index.html#flow">制作フロー</a>
-          <a href="index.html#partners">パートナー</a>
-          <a href="index.html#company">会社概要</a>
+          <a href="why-contentsx.html">強み</a>
+          <a href="company.html">会社概要</a>
           <a href="contact.html">お問い合わせ</a>
         </div>
       </div>
-      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
+      <p class="footer-copy">&copy; Contents X Co., Ltd. 2026 All rights reserved.</p>
     </div>
   </footer>
-
   <script src="js/nav.js" defer></script>
   <script src="js/recruit.js" defer></script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
+<!-- End of HubSpot Embed Code -->
 </body>
 </html>

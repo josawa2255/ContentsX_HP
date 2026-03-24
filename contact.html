@@ -39,59 +39,24 @@
       <p data-ja="以下のフォームにご記入の上、送信してください。2営業日以内にご返信いたします。" data-en="Please fill in the form below. We will reply within 2 business days.">以下のフォームにご記入の上、送信してください。2営業日以内にご返信いたします。</p>
 
       <form class="contact-form" id="contactForm">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="lastName"><span data-ja="姓" data-en="Last Name">姓</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-            <input class="form-input" type="text" id="lastName" name="lastName" placeholder="佐藤" data-ph-ja="佐藤" data-ph-en="Sato" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="firstName"><span data-ja="名" data-en="First Name">名</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-            <input class="form-input" type="text" id="firstName" name="firstName" placeholder="太郎" data-ph-ja="太郎" data-ph-en="Taro" required>
-          </div>
+        <div class="form-group">
+          <label class="form-label" for="company"><span data-ja="会社名" data-en="Company">会社名</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <input class="form-input" type="text" id="company" name="company" placeholder="コンテンツエックス株式会社" data-ph-ja="コンテンツエックス株式会社" data-ph-en="Contents X Co., Ltd." required>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="lastNameKana"><span data-ja="セイ（フリガナ）" data-en="Last Name (Kana)">セイ（フリガナ）</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-            <input class="form-input" type="text" id="lastNameKana" name="lastNameKana" placeholder="サトウ" data-ph-ja="サトウ" data-ph-en="Sato" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="firstNameKana"><span data-ja="メイ（フリガナ）" data-en="First Name (Kana)">メイ（フリガナ）</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-            <input class="form-input" type="text" id="firstNameKana" name="firstNameKana" placeholder="タロウ" data-ph-ja="タロウ" data-ph-en="Taro" required>
-          </div>
+        <div class="form-group">
+          <label class="form-label" for="department"><span data-ja="部署" data-en="Department">部署</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <input class="form-input" type="text" id="department" name="department" placeholder="マーケティング部" data-ph-ja="マーケティング部" data-ph-en="Marketing Dept." required>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="company"><span data-ja="会社名" data-en="Company">会社名</span></label>
-            <input class="form-input" type="text" id="company" name="company" placeholder="コンテンツエックス株式会社" data-ph-ja="コンテンツエックス株式会社" data-ph-en="Contents X Co., Ltd.">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="position"><span data-ja="役職" data-en="Position">役職</span></label>
-            <input class="form-input" type="text" id="position" name="position" placeholder="マーケティング部長" data-ph-ja="マーケティング部長" data-ph-en="Marketing Director">
-          </div>
+        <div class="form-group">
+          <label class="form-label" for="fullName"><span data-ja="名前" data-en="Name">名前</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <input class="form-input" type="text" id="fullName" name="fullName" placeholder="佐藤 太郎" data-ph-ja="佐藤 太郎" data-ph-en="Taro Sato" required>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="email"><span data-ja="メールアドレス" data-en="Email">メールアドレス</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
           <input class="form-input" type="email" id="email" name="email" placeholder="example@company.com" required>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="phone"><span data-ja="電話番号" data-en="Phone Number">電話番号</span></label>
-          <input class="form-input" type="tel" id="phone" name="phone" placeholder="03-0000-0000" data-ph-ja="03-0000-0000" data-ph-en="+81-3-0000-0000">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="category"><span data-ja="お問い合わせ種別" data-en="Category">お問い合わせ種別</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <select class="form-select" id="category" name="category" required>
-            <option value="" disabled selected data-ja="選択してください" data-en="Please select">選択してください</option>
-            <option value="manga" data-ja="漫画制作のご依頼" data-en="Manga Production Request">漫画制作のご依頼</option>
-            <option value="partner" data-ja="パートナー提携のご相談" data-en="Partnership Inquiry">パートナー提携のご相談</option>
-            <option value="ip" data-ja="IP・コンテンツ開発" data-en="IP & Content Development">IP・コンテンツ開発</option>
-            <option value="school" data-ja="ニューマンガアカデミーについて" data-en="About New Manga Academy">ニューマンガアカデミーについて</option>
-            <option value="other" data-ja="その他のお問い合わせ" data-en="Other Inquiries">その他のお問い合わせ</option>
-          </select>
         </div>
 
         <div class="form-group">
@@ -103,47 +68,6 @@
       </form>
     </div>
 
-    <!-- 右：会社情報 -->
-    <aside class="contact-sidebar">
-      <div class="contact-card">
-        <h3 data-ja="会社情報" data-en="Company Info">会社情報</h3>
-        <dl class="contact-info-list">
-          <div class="contact-info-item">
-            <div class="contact-info-icon">🏢</div>
-            <div class="contact-info-text">
-              <dt>Company</dt>
-              <dd data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</dd>
-            </div>
-          </div>
-          <div class="contact-info-item">
-            <div class="contact-info-icon">👤</div>
-            <div class="contact-info-text">
-              <dt>CEO</dt>
-              <dd data-ja="黒宮 大貴" data-en="Daiki Kuromiya">黒宮 大貴</dd>
-            </div>
-          </div>
-          <div class="contact-info-item">
-            <div class="contact-info-icon">📍</div>
-            <div class="contact-info-text">
-              <dt>Address</dt>
-              <dd data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo">東京都目黒区目黒2-11-15 8階</dd>
-            </div>
-          </div>
-          <div class="contact-info-item">
-            <div class="contact-info-icon">✉️</div>
-            <div class="contact-info-text">
-              <dt>Email</dt>
-              <dd><a href="mailto:kuromiya2618@gmail.com">kuromiya2618@gmail.com</a></dd>
-            </div>
-          </div>
-        </dl>
-      </div>
-
-      <div class="contact-dl-banner">
-        <p data-ja="サービス資料をダウンロード" data-en="Download our brochure">サービス資料をダウンロード</p>
-        <a href="material/ContentsX_アライアンス提案書.pdf" download data-ja="資料ダウンロード" data-en="Download PDF">資料ダウンロード</a>
-      </div>
-    </aside>
   </div>
 
   <!-- ===== フッター ===== -->
@@ -171,5 +95,8 @@
 
   <script src="js/nav.js" defer></script>
   <script src="js/contact.js" defer></script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
+<!-- End of HubSpot Embed Code -->
 </body>
 </html>
