@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>主要関連会社 | ContentsX</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/webp" href="material/images/contentsx-icon.webp">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    /* 資料DLボタン */
+    .partners-dl-btn {
+      background: var(--text-primary);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .partners-dl-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    /* モーダル */
+    .dl-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 20000;
+      align-items: center;
+      justify-content: center;
+    }
+    .dl-modal-overlay.active {
+      display: flex;
+    }
+    .dl-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .dl-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .dl-modal-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+    .dl-modal-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 36px;
+      border-radius: 60px;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+    .dl-modal-btn:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body data-theme="cyber-green">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 主要関連会社 ===== -->
+  <section class="partners" id="partners" style="padding-top: 140px;">
+    <div class="container">
+      <h2 class="partners-title" data-ja="主要関連会社" data-en="Key Partners">主要関連会社</h2>
+    </div>
+
+    <div class="partners-layout">
+      <!-- ビズちゃんキャラクター -->
+      <div class="partners-character" id="partnersCharacter">
+        <div class="partners-character-inner">
+          <img src="material/images/characters/bizchan_partner.webp" alt="ビズちゃん" class="partners-character-img">
+        </div>
+      </div>
+
+      <!-- パートナーカード一覧 -->
+      <div class="partners-cards">
+          <!-- ASOBI SYSTEM -->
+          <div class="partner-card partner-card--orange">
+            <div class="partner-card-logo">
+              <img src="material/images/partners/asobi-system.webp" alt="ASOBI SYSTEM" class="partner-logo">
+              <span class="partner-badge partner-badge--green" data-ja="最重要戦略パートナー" data-en="Strategic Partner">最重要戦略パートナー</span>
+            </div>
+            <div class="partner-card-body">
+              <p class="partner-desc" data-ja="エンタメ業界のリーディングカンパニー。共同プロジェクト「ASOBI ORIGINAL STORY PROJECT」や漫画コンテスト「ネームSHOW!」を展開。きゃりーぱみゅぱみゅ漫画の共同制作や、共同スタジオ会社の設立を計画中。" data-en="A leading entertainment company. Joint projects include 'ASOBI ORIGINAL STORY PROJECT' and manga contest 'Name SHOW!'.">エンタメ業界のリーディングカンパニー。共同プロジェクト「ASOBI ORIGINAL STORY PROJECT」や漫画コンテスト「ネームSHOW!」を展開。きゃりーぱみゅぱみゅ漫画の共同制作や、共同スタジオ会社の設立を計画中。</p>
+              <a href="https://asobisystem.com/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
+            </div>
+          </div>
+
+          <!-- DM Solutions -->
+          <div class="partner-card partner-card--cyan">
+            <div class="partner-card-logo">
+              <img src="material/images/partners/dm-solutions.webp" alt="DM Solutions" class="partner-logo">
+              <span class="partner-badge partner-badge--green" data-ja="コアパートナー" data-en="Core Partner">コアパートナー</span>
+            </div>
+            <div class="partner-card-body">
+              <p class="partner-desc" data-ja="ダイレクトメール業界大手。「漫画でDM」サービスを共同展開し、従来30万円の漫画DM制作を13.8万円〜と半額以下で実現。A4圧着はがき・大判はがきに対応。" data-en="A major direct mail company. Co-developing 'Manga DM' service.">ダイレクトメール業界大手。「漫画でDM」サービスを共同展開し、従来30万円の漫画DM制作を13.8万円〜と半額以下で実現。A4圧着はがき・大判はがきに対応。</p>
+              <a href="https://www.dm-s.co.jp/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
+            </div>
+          </div>
+
+          <!-- KIRINZ -->
+          <div class="partner-card partner-card--purple">
+            <div class="partner-card-logo">
+              <img src="material/images/partners/kirinz.webp" alt="KIRINZ" class="partner-logo">
+              <span class="partner-badge partner-badge--purple" data-ja="出資・事業協力" data-en="Investment &amp; Cooperation">出資・事業協力</span>
+            </div>
+            <div class="partner-card-body">
+              <p class="partner-desc" data-ja="共同創業者・鵜池航太氏が率いるインフルエンサーマーケティング企業。出資を通じた事業基盤の強化と、SNS・インフルエンサー領域での事業協力を推進。" data-en="An influencer marketing company led by co-founder Kota Uike.">共同創業者・鵜池航太氏が率いるインフルエンサーマーケティング企業。出資を通じた事業基盤の強化と、SNS・インフルエンサー領域での事業協力を推進。</p>
+              <a href="https://kirinz.jp/" target="_blank" rel="noopener noreferrer" class="partner-visit" data-ja="Visit Site →" data-en="Visit Site →">Visit Site →</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    <!-- パートナー募集 -->
+    <div class="partners-recruit">
+      <h3 class="partners-recruit-title" data-ja="一緒に新しい物語を。" data-en="Let's create new stories together.">一緒に新しい物語を。</h3>
+      <p class="partners-recruit-lead" data-ja="漫画・IP・エンタメ領域で事業連携いただけるパートナー企業を募集しています。共同プロジェクト・出資・業務提携など、お気軽にご相談ください。" data-en="We are looking for partner companies in manga, IP, and entertainment. Feel free to contact us about joint projects, investment, or business alliances.">漫画・IP・エンタメ領域で事業連携いただけるパートナー企業を募集しています。共同プロジェクト・出資・業務提携など、お気軽にご相談ください。</p>
+
+      <a href="contact.html" class="partners-recruit-btn" data-ja="パートナーのお問い合わせ" data-en="Partner Inquiry">パートナーのお問い合わせ</a>
+      <button type="button" class="partners-recruit-btn partners-dl-btn" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
+    </div>
+  </section>
+
+  <!-- 資料DLモーダル -->
+  <div class="dl-modal-overlay" id="dlModal">
+    <div class="dl-modal">
+      <button class="dl-modal-close" id="dlModalClose" aria-label="閉じる">&times;</button>
+      <p class="dl-modal-text" data-ja="資料のダウンロードにはお問い合わせフォームへのご記入が必要です。" data-en="Please fill out the contact form to download materials.">資料のダウンロードにはお問い合わせフォームへのご記入が必要です。</p>
+      <a href="contact.html" class="dl-modal-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
+    </div>
+  </div>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="index.html#partners" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        </div>
+      </div>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/script.js" defer></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var dlBtn = document.getElementById('dlBtn');
+    var dlModal = document.getElementById('dlModal');
+    var dlModalClose = document.getElementById('dlModalClose');
+    if (!dlBtn) return;
+
+    dlBtn.addEventListener('click', function() {
+      var submitted = false;
+      try { submitted = localStorage.getItem('cx_form_submitted') === '1'; } catch(e) {}
+
+      if (submitted) {
+        // フォーム記入済み → 直接DL
+        var a = document.createElement('a');
+        a.href = 'material/ContentsX_アライアンス提案書.pdf';
+        a.download = '';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        // 未記入 → モーダル表示
+        dlModal.classList.add('active');
+      }
+    });
+
+    dlModalClose.addEventListener('click', function() {
+      dlModal.classList.remove('active');
+    });
+
+    dlModal.addEventListener('click', function(e) {
+      if (e.target === dlModal) dlModal.classList.remove('active');
+    });
+  });
+  </script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
+<!-- End of HubSpot Embed Code -->
+</body>
+</html>

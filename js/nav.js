@@ -20,7 +20,7 @@
         { label: '会社概要',       labelEn: 'Company',        href: 'company.html' },
         { label: '私たちの思い',    labelEn: 'Our Thoughts',   href: 'our-thoughts.html' },
         { label: '主要関連会社',    labelEn: 'Partners',       href: 'partners.html' },
-        { label: '取締役・執行委員', labelEn: 'Leadership',     href: 'leadership.html' }
+        { label: '役員紹介',       labelEn: 'Leadership',     href: 'leadership.html' }
       ]
     },
     { label: '強み', labelEn: 'Strengths',       href: 'why-contentsx.html',  indexHref: 'why-contentsx.html' },

@@ -95,6 +95,7 @@
   align-items: center;
   justify-content: center;
   transition: opacity 1s ease;
+  pointer-events: none;
 }
 .hero--phase2 .hero-bizchar {
   opacity: 0;

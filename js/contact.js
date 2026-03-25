@@ -66,7 +66,8 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     });
   })
   .then(function() {
-    // 送信成功
+    // 送信成功 — 資料DL許可フラグを保存
+    try { localStorage.setItem('cx_form_submitted', '1'); } catch(e) {}
     submitBtn.textContent = '送信完了';
     submitBtn.style.background = '#2e7d32';
     var form = document.getElementById('contactForm');

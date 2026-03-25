@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>役員紹介 | ContentsX</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/webp" href="material/images/contentsx-icon.webp">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    /* ===== 役員紹介 ===== */
+    .leadership-hero {
+      text-align: center;
+      padding: 160px 24px 60px;
+      background: var(--bg-white);
+    }
+    .leadership-hero-title {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .leadership-hero-sub {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* 役員カード */
+    .leadership-section {
+      background: var(--bg-white);
+      padding: 0 24px 80px;
+    }
+    .leadership-list {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+
+    .leader-card {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .leader-card:nth-child(even) {
+      direction: rtl;
+    }
+    .leader-card:nth-child(even) > * {
+      direction: ltr;
+    }
+
+    .leader-photo {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-light);
+    }
+    .leader-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* 写真未設定時のプレースホルダー */
+    .leader-photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .leader-info {
+      padding-top: 8px;
+    }
+    .leader-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    .leader-name {
+      font-size: clamp(28px, 3.5vw, 36px);
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .leader-name-en {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      letter-spacing: 0.04em;
+    }
+
+    /* 経歴年表 */
+    .leader-career {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-left: 2px solid var(--border);
+      padding-left: 24px;
+    }
+    .leader-career li {
+      position: relative;
+      padding-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .leader-career li:last-child {
+      padding-bottom: 0;
+    }
+    .leader-career li::before {
+      content: '';
+      position: absolute;
+      left: -29px;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .leader-career-year {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-right: 8px;
+    }
+
+    /* 役員からのメッセージ（任意） */
+    .leader-message {
+      margin-top: 24px;
+      padding: 20px 24px;
+      background: var(--bg-light);
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .leadership-hero {
+        padding: 120px 24px 40px;
+      }
+      .leader-card {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .leader-card:nth-child(even) {
+        direction: ltr;
+      }
+      .leader-photo {
+        max-width: 240px;
+        margin: 0 auto;
+      }
+      .leader-info {
+        text-align: center;
+        padding-top: 0;
+      }
+      .leader-career {
+        text-align: left;
+        max-width: 360px;
+        margin: 0 auto;
+      }
+      .leader-message {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .leadership-list {
+        gap: 60px;
+      }
+      .leader-photo {
+        max-width: 200px;
+      }
+      .leader-name {
+        font-size: 24px;
+      }
+      .leader-career li {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="cyber-green">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ヒーロー ===== -->
+  <section class="leadership-hero">
+    <h1 class="leadership-hero-title" data-ja="役員紹介" data-en="Leadership">役員紹介</h1>
+    <p class="leadership-hero-sub">Officers</p>
+  </section>
+
+  <!-- ===== 役員一覧 ===== -->
+  <section class="leadership-section">
+    <div class="leadership-list">
+
+      <!-- 黒宮 大貴 -->
+      <div class="leader-card">
+        <div class="leader-photo">
+          <div class="leader-photo-placeholder" data-ja="写真準備中" data-en="Photo coming soon">写真準備中</div>
+          <!-- 写真が用意できたら以下に差し替え:
+          <img src="material/images/leadership/kuromiya.webp" alt="黒宮 大貴" loading="lazy">
+          -->
+        </div>
+        <div class="leader-info">
+          <p class="leader-role" data-ja="代表取締役" data-en="CEO / Founder">代表取締役</p>
+          <h2 class="leader-name">黒宮 大貴</h2>
+          <p class="leader-name-en">Kuromiya Daiki</p>
+          <ul class="leader-career">
+            <li><span class="leader-career-year">2026年</span>コンテンツエックス株式会社 設立、代表取締役に就任</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 鵜池 航太 -->
+      <div class="leader-card">
+        <div class="leader-photo">
+          <div class="leader-photo-placeholder" data-ja="写真準備中" data-en="Photo coming soon">写真準備中</div>
+          <!-- 写真が用意できたら以下に差し替え:
+          <img src="material/images/leadership/uike.webp" alt="鵜池 航太" loading="lazy">
+          -->
+        </div>
+        <div class="leader-info">
+          <p class="leader-role" data-ja="共同創業者 / 取締役" data-en="Co-Founder / Director">共同創業者 / 取締役</p>
+          <h2 class="leader-name">鵜池 航太</h2>
+          <p class="leader-name-en">Uike Kota</p>
+          <ul class="leader-career">
+            <li><span class="leader-career-year">2017年</span>株式会社KIRINZ 設立、代表取締役に就任</li>
+            <li><span class="leader-career-year">2026年</span>コンテンツエックス株式会社 共同創業、取締役に就任</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 中川 祐介 -->
+      <div class="leader-card">
+        <div class="leader-photo">
+          <div class="leader-photo-placeholder" data-ja="写真準備中" data-en="Photo coming soon">写真準備中</div>
+          <!-- 写真が用意できたら以下に差し替え:
+          <img src="material/images/leadership/nakagawa.webp" alt="中川 祐介" loading="lazy">
+          -->
+        </div>
+        <div class="leader-info">
+          <p class="leader-role" data-ja="社外取締役" data-en="Outside Director">社外取締役</p>
+          <h2 class="leader-name">中川 祐介</h2>
+          <p class="leader-name-en">Nakagawa Yusuke</p>
+          <ul class="leader-career">
+            <li><span class="leader-career-year">2007年</span>ASOBI SYSTEM株式会社 設立</li>
+            <li><span class="leader-career-year">2026年</span>コンテンツエックス株式会社 社外取締役に就任</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="partners.html" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        </div>
+      </div>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/script.js" defer></script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
+<!-- End of HubSpot Embed Code -->
+</body>
+</html>
