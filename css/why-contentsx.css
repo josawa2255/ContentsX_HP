@@ -1,67 +1,313 @@
 /* ===== Why Contents X — ページ専用スタイル ===== */
+
+/* ---------- Hero：CyberAgent風フルスクリーン ---------- */
 .why-hero {
-  padding: 140px 24px 80px;
-  background: url('../material/images/backgrounds/cx2_bg_creative.webp') center/cover no-repeat;
-  color: #fff;
-  text-align: center;
   position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 100vh;
+  height: 100dvh;
+  margin-top: 64px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url('../material/images/backgrounds/cx2_bg_creative.webp') center/cover no-repeat;
 }
 .why-hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 40%, rgba(255,107,53,0.15) 0%, transparent 50%),
-              radial-gradient(circle at 70% 60%, rgba(0,188,212,0.1) 0%, transparent 50%);
-  pointer-events: none;
+  background: rgba(0,0,0,0.4);
+  z-index: 1;
 }
-.why-hero-label {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--accent, #FF6B35);
-  margin-bottom: 20px;
-}
-.why-hero h1 {
-  font-size: clamp(32px, 5vw, 56px);
-  font-weight: 900;
-  line-height: 1.3;
-  margin-bottom: 24px;
+.why-hero-center {
   position: relative;
-}
-.why-hero h1 span {
-  color: var(--accent, #FF6B35);
-}
-.why-hero-sub {
-  font-size: 17px;
-  color: rgba(255,255,255,0.75);
-  max-width: 640px;
-  margin: 0 auto;
-  line-height: 1.9;
-}
-.why-hero-mission {
-  display: flex;
-  gap: 40px;
-  justify-content: center;
-  margin-top: 48px;
-  flex-wrap: wrap;
-}
-.why-hero-mission-item {
+  z-index: 2;
   text-align: center;
 }
-.why-hero-mission-item .label {
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+.why-hero-heading {
+  font-family: 'Sora', sans-serif;
+  font-size: 72px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin: 0;
+}
+.why-hero-sub {
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 6px;
+  margin-top: 16px;
+}
+
+/* ---------- サービスカードグリッド（CyberAgent風） ---------- */
+.why-cards {
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background: #0a0a0a;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+/* 動画背景 */
+.why-cards-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 0;
+  pointer-events: none;
+}
+.why-cards::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 0;
+  pointer-events: none;
+}
+.why-cards-header {
+  text-align: left;
+  padding: 140px 24px 56px 64px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,1);
+  transition: background 0.45s ease;
+}
+.why-cards:hover .why-cards-header {
+  background: rgba(220,220,220,0.45);
+}
+.why-cards-heading {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 800;
+  color: rgba(29,29,31,1);
+  letter-spacing: 3px;
+  line-height: 1;
+  margin: 0;
+  transition: color 0.45s ease;
+}
+.why-cards:hover .why-cards-heading {
+  color: rgba(29,29,31,0.5);
+}
+.why-cards-sub {
+  font-size: 18px;
+  font-weight: 500;
+  color: #888;
+  letter-spacing: 4px;
+  margin-top: 16px;
+}
+
+/* グリッド */
+.why-cards-grid {
+  max-width: 100%;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* カード本体 */
+.why-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(245,245,245,1);
+  border: none;
+  border-right: 1px solid #e5e5e7;
+  cursor: pointer;
+  padding: 52px 24px;
+  min-height: 200px;
+  font-family: inherit;
+  outline: none;
+  border-radius: 0;
+  /* ホバー時のアニメーション */
+  transition:
+    background 0.45s ease,
+    border-radius 0.45s ease,
+    transform 0.45s ease,
+    box-shadow 0.45s ease,
+    border-color 0.45s ease;
+}
+.why-card:nth-child(3n) {
+  border-right: none;
+}
+.why-card:nth-child(n+4) {
+  border-top: 1px solid #e5e5e7;
+}
+
+/* ===== ホバー：透明化 + 縮小 + 角丸 ===== */
+.why-cards-grid:hover .why-card {
+  background: rgba(220,220,220,0.45);
+  border-radius: 50%;
+  transform: scale(0.88);
+  border-color: transparent;
+}
+/* ホバー中のカード自体はアクセントカラーの半透明 */
+.why-cards-grid:hover .why-card:hover {
+  background: rgba(111,195,28,0.8);
+  border-radius: 50%;
+  transform: scale(0.90);
+  box-shadow: 0 16px 56px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+
+/* アクティブ状態 */
+.why-card--active {
+  background: rgba(255,255,255,0.93) !important;
+  transform: scale(0.90) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.15) !important;
+  z-index: 2 !important;
+}
+
+.why-card-en {
+  font-family: 'Sora', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: rgba(29,29,31,1);
+  letter-spacing: 1px;
+  line-height: 1.2;
+  display: block;
+  transition: color 0.45s ease;
+}
+.why-cards-grid:hover .why-card .why-card-en {
+  color: rgba(29,29,31,0.5);
+}
+.why-card-ja {
+  font-size: 16px;
+  font-weight: 500;
+  color: #888;
+  margin-top: 12px;
+  display: block;
+}
+/* ホバー中のカード自体・アクティブカードのサブテキスト */
+.why-cards-grid:hover .why-card:hover .why-card-ja,
+.why-card--active .why-card-ja {
+  color: #666;
+}
+
+.why-card-arrow {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--accent, #4caf50);
+  transition: transform 0.3s ease, opacity 0.4s ease;
+  line-height: 1;
+}
+.why-cards-grid:hover .why-card .why-card-arrow {
+  opacity: 0.7;
+}
+.why-cards-grid:hover .why-card:hover .why-card-arrow {
+  opacity: 1;
+  transform: translateY(-50%) translateX(4px);
+}
+.why-card--active .why-card-arrow {
+  opacity: 1 !important;
+  transform: translateY(-50%) rotate(90deg) !important;
+}
+
+/* ---------- セクション表示/非表示 ---------- */
+.why-section--hidden {
+  display: none;
+}
+
+/* ---------- ユーティリティ ---------- */
+.why-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px;
+  border: 1px solid var(--border, #e5e5e7);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  margin-top: 48px;
+}
+.why-box h3 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-primary, #1d1d1f);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.why-callout {
+  background: linear-gradient(135deg, #1a1a2e, #0d1117);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-top: 24px;
+  text-align: center;
+  color: #fff;
+}
+.why-callout p {
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 0 0 8px;
+}
+.why-callout-note {
+  font-size: 12px;
   color: rgba(255,255,255,0.5);
+  margin-left: 8px;
+}
+.why-callout-strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent, #FF6B35);
+  margin-top: 8px;
+}
+.why-sub-heading {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary, #1d1d1f);
+  margin-top: 64px;
   margin-bottom: 8px;
 }
-.why-hero-mission-item p {
-  font-size: 16px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.9);
-  line-height: 1.6;
+.why-sub-note {
+  font-size: 13px;
+  color: var(--text-muted, #999);
+  margin-bottom: 24px;
+}
+.why-note-center {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary, #555);
+  line-height: 1.9;
+  margin-top: 32px;
+}
+.why-box-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.why-box-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary, #555);
+  line-height: 1.7;
+  padding: 16px;
+  background: var(--bg-light, #f8f9fa);
+  border-radius: 10px;
+}
+.why-box-num {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent, #FF6B35);
+  flex-shrink: 0;
+  width: 24px;
 }
 
 /* セクション共通 */
@@ -856,6 +1102,19 @@
 
 /* レスポンシブ */
 @media (max-width: 768px) {
+  .why-hero { height: 60vh; height: 60dvh; }
+  .why-hero-heading { font-size: 48px; letter-spacing: 2px; }
+  .why-hero-sub { font-size: 15px; letter-spacing: 4px; }
+  .why-cards-header { padding: 100px 16px 32px; }
+  .why-cards-grid { grid-template-columns: 1fr 1fr; }
+  .why-card { min-height: 140px; padding: 36px 20px; }
+  .why-card:nth-child(3n) { border-right: 1px solid #e5e5e7; }
+  .why-card:nth-child(2n) { border-right: none; }
+  .why-card:nth-child(n+3) { border-top: 1px solid #e5e5e7; }
+  .why-card-en { font-size: 20px; }
+  .why-card-arrow { right: 16px; font-size: 26px; }
+  .why-cards-grid:hover .why-card { transform: scale(0.86); border-radius: 16px; }
+  .why-box-grid { grid-template-columns: 1fr; }
   .compare-table { font-size: 12px; }
   .compare-table td, .compare-table th { padding: 10px 8px; }
   .compare-table-2col { font-size: 12px; }
@@ -876,8 +1135,21 @@
 }
 
 @media (max-width: 480px) {
-  .why-hero { padding: 120px 16px 56px; }
-  .why-hero h1 { font-size: 28px; }
+  .why-hero { height: 50vh; height: 50dvh; }
+  .why-hero-heading { font-size: 36px; }
+  .why-hero-sub { font-size: 13px; letter-spacing: 3px; }
+  .why-cards-header { padding: 32px 12px 24px; }
+  .why-cards-heading { font-size: 32px; }
+  .why-cards-grid { grid-template-columns: 1fr; }
+  .why-card { min-height: 110px; padding: 28px 16px; }
+  .why-card:nth-child(n+2) { border-top: 1px solid #e5e5e7; }
+  .why-card:nth-child(2n), .why-card:nth-child(3n) { border-right: none; }
+  .why-card-en { font-size: 18px; }
+  .why-card-arrow { right: 12px; font-size: 22px; }
+  .why-box { padding: 24px 16px; }
+  .why-box h3 { font-size: 17px; }
+  .why-callout { padding: 20px 16px; }
+  .why-sub-heading { font-size: 17px; }
   .why-section { padding: 56px 16px; }
   .why-section-title { font-size: 22px; margin-bottom: 32px; }
   .stat-grid { grid-template-columns: 1fr; }

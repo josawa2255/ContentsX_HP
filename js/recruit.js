@@ -15,7 +15,7 @@
   var posSection = document.getElementById('positions');
 
   var selectedPos = null;
-  var currentView = null; // 'detail' or 'apply'
+  var currentView = null;
 
   // Position name map
   var posNames = {
@@ -46,6 +46,29 @@
       posSection.classList.remove('rc-positions--fade');
     }, 300);
   }
+
+  // --- Hero nav pill click → scroll to positions & select card ---
+  var heroPills = document.querySelectorAll('.rc-hero-nav .rc-pill[data-pos]');
+  heroPills.forEach(function(pill) {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      var pos = this.getAttribute('data-pos');
+      // Find matching card and click it
+      var matchCard = document.querySelector('.rc-pos-card[data-pos="' + pos + '"]');
+      if (matchCard) {
+        // Scroll to positions section first
+        setTimeout(function() {
+          var rect = posSection.getBoundingClientRect();
+          var offset = window.pageYOffset + rect.top - 70;
+          window.scrollTo({ top: offset, behavior: 'smooth' });
+          // Then simulate card click after scroll
+          setTimeout(function() {
+            matchCard.click();
+          }, 400);
+        }, 50);
+      }
+    });
+  });
 
   // --- Card Click ---
   cards.forEach(function(card) {
@@ -84,7 +107,7 @@
       // Scroll to show full positions section with background
       setTimeout(function() {
         var rect = posSection.getBoundingClientRect();
-        var offset = window.pageYOffset + rect.top - 70; // ヘッダー分を差し引く
+        var offset = window.pageYOffset + rect.top - 70;
         window.scrollTo({ top: offset, behavior: 'smooth' });
       }, 100);
     });
