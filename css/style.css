@@ -1399,22 +1399,16 @@ section { padding: 100px 0; }
 }
 
 /* Flow Gallery — スクロールハイジャック横移動 */
-.flow-gallery {
-  overflow-x: auto;
-  overflow-y: hidden;
-  border-radius: 16px;
+.flow-gallery-wrap {
   position: relative;
   flex: 1;
   min-width: 0;
   margin-left: 20px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  border-radius: 16px;
+  overflow: hidden;
 }
-.flow-gallery::-webkit-scrollbar { display: none; }
-.flow-gallery::before,
-.flow-gallery::after {
+.flow-gallery-wrap::before,
+.flow-gallery-wrap::after {
   content: '';
   position: absolute;
   top: 0;
@@ -1423,18 +1417,34 @@ section { padding: 100px 0; }
   z-index: 2;
   pointer-events: none;
 }
-.flow-gallery::before {
+.flow-gallery-wrap::before {
   left: 0;
   background: linear-gradient(to right, var(--bg-light), transparent);
 }
-.flow-gallery::after {
+.flow-gallery-wrap::after {
   right: 0;
   background: linear-gradient(to left, var(--bg-light), transparent);
 }
-.flow-gallery-track {
+.flow-gallery {
   display: flex;
   gap: 20px;
-  width: max-content;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 16px;
+  position: relative;
+  width: 100%;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.flow-gallery::-webkit-scrollbar { display: none; }
+/* 先頭・末尾アイテムの中央寄せ用スペーサー */
+.flow-gallery-spacer {
+  flex-shrink: 0;
+  /* JS不要: ギャラリー幅の半分 - アイテム幅の半分 を確保 */
+  /* デスクトップ: アイテム幅 ≈ 889px (500*16/9) → 適度なスペース */
+  min-width: calc(50% - 445px);
 }
 .flow-gallery-item {
   flex-shrink: 0;
@@ -1515,8 +1525,14 @@ section { padding: 100px 0; }
   .flow-arrow-v {
     display: none;
   }
-  .flow-gallery {
+  .flow-gallery-wrap {
     margin-left: 0;
+  }
+  .flow-gallery {
+    gap: 16px;
+  }
+  .flow-gallery-spacer {
+    min-width: calc(50% - 37.5vw);
   }
   .flow-gallery-item {
     width: 75vw;
@@ -1537,9 +1553,6 @@ section { padding: 100px 0; }
   }
   .flow-gallery-label {
     font-size: 0.85rem;
-  }
-  .flow-gallery-track {
-    gap: 16px;
   }
   .flow-specs {
     gap: 24px;
@@ -1574,6 +1587,12 @@ section { padding: 100px 0; }
   .flow-step p {
     font-size: 9px;
   }
+  .flow-gallery {
+    gap: 12px;
+  }
+  .flow-gallery-spacer {
+    min-width: calc(50% - 40vw);
+  }
   .flow-gallery-item {
     width: 80vw;
     max-width: 80vw;
@@ -1587,9 +1606,6 @@ section { padding: 100px 0; }
   }
   .flow-gallery-label {
     font-size: 0.75rem;
-  }
-  .flow-gallery-track {
-    gap: 12px;
   }
   .flow-specs {
     gap: 16px;
