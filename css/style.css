@@ -142,7 +142,7 @@ body {
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  overflow-x: hidden;
+  overflow-x: clip;
   scrollbar-gutter: stable; /* Windowsスクロールバー分の幅を予約してガタつき防止 */
 }
 
@@ -151,7 +151,7 @@ body {
   color: var(--text-secondary);
   background: var(--bg-white);
   line-height: 1.8;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .container {
@@ -1430,6 +1430,7 @@ section { padding: 100px 0; }
   gap: 20px;
   width: max-content;
   will-change: transform;
+  transition: opacity 0.3s ease;
 }
 .flow-gallery-item {
   flex-shrink: 0;
@@ -1512,8 +1513,14 @@ section { padding: 100px 0; }
   .flow-gallery {
     margin-left: 0;
   }
+  .flow-gallery-item {
+    max-width: 75vw;
+  }
   .flow-gallery-item img {
-    height: 340px;
+    height: auto;
+    max-height: 340px;
+    width: 100%;
+    max-width: 75vw;
     padding: 8px;
     border-width: 2px;
     outline-width: 3px;
@@ -1561,8 +1568,14 @@ section { padding: 100px 0; }
   .flow-step p {
     font-size: 9px;
   }
+  .flow-gallery-item {
+    max-width: 80vw;
+  }
   .flow-gallery-item img {
-    height: 300px;
+    height: auto;
+    max-height: 300px;
+    width: 100%;
+    max-width: 80vw;
     padding: 6px;
   }
   .flow-gallery-label {

@@ -288,6 +288,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   transition: opacity 0.3s ease;
 }
 .rc-positions--has-bg .rc-positions-overlay {
