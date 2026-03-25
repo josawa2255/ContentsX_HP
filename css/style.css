@@ -1430,7 +1430,6 @@ section { padding: 100px 0; }
   gap: 20px;
   width: max-content;
   will-change: transform;
-  transition: opacity 0.3s ease;
 }
 .flow-gallery-item {
   flex-shrink: 0;
@@ -1441,7 +1440,7 @@ section { padding: 100px 0; }
 }
 .flow-gallery-item img {
   height: 500px;
-  width: auto;
+  aspect-ratio: 16 / 9;
   border-radius: 2px;
   object-fit: cover;
   /* 額縁: 内マット + 金フレーム + 外縁 */
@@ -1514,13 +1513,14 @@ section { padding: 100px 0; }
     margin-left: 0;
   }
   .flow-gallery-item {
+    width: 75vw;
     max-width: 75vw;
+    flex-shrink: 0;
   }
   .flow-gallery-item img {
-    height: auto;
-    max-height: 340px;
     width: 100%;
-    max-width: 75vw;
+    height: auto;
+    aspect-ratio: 16 / 9;
     padding: 8px;
     border-width: 2px;
     outline-width: 3px;
@@ -1569,13 +1569,14 @@ section { padding: 100px 0; }
     font-size: 9px;
   }
   .flow-gallery-item {
+    width: 80vw;
     max-width: 80vw;
+    flex-shrink: 0;
   }
   .flow-gallery-item img {
-    height: auto;
-    max-height: 300px;
     width: 100%;
-    max-width: 80vw;
+    height: auto;
+    aspect-ratio: 16 / 9;
     padding: 6px;
   }
   .flow-gallery-label {

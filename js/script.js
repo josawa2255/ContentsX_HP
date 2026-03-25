@@ -97,33 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
       track.style.paddingLeft = Math.max(0, padLeft) + 'px';
       track.style.paddingRight = Math.max(0, padRight) + 'px';
     }
-    // 初期位置をセンタリング（アニメーションなし）
+    // 位置を再計算（アニメーションなし）
     function recalcPosition() {
       updateTrackPadding();
       var x = getItemOffset(currentIndex);
       track.style.transition = 'none';
       track.style.transform = 'translateX(' + (-x) + 'px)';
-      // 次フレームでtransition復帰
       requestAnimationFrame(function() {
         track.style.transition = '';
       });
     }
 
-    // 初回: 非表示にしておき、画像読み込み後に正確な位置で表示
-    track.style.opacity = '0';
-    function initPosition() {
-      recalcPosition();
-      track.style.opacity = '1';
-    }
-
-    // window.load で全画像読み込み完了後に初期化（最も確実）
-    if (document.readyState === 'complete') {
-      requestAnimationFrame(initPosition);
-    } else {
-      window.addEventListener('load', function() {
-        requestAnimationFrame(initPosition);
-      });
-    }
+    // 初回: 非表示→計算→表示（チラつき防止）
+    track.style.visibility = 'hidden';
+    recalcPosition();
+    requestAnimationFrame(function() {
+      track.style.visibility = '';
+    });
 
     window.addEventListener('resize', recalcPosition);
 
