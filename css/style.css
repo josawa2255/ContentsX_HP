@@ -254,7 +254,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 10000;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -512,10 +512,15 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   background: none;
   border: none;
   cursor: pointer;
-  padding: 12px;
+  padding: 16px;
   position: relative;
-  z-index: 101;
+  z-index: 10001;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-width: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
 }
 .hamburger span {
   display: block;
@@ -2144,7 +2149,7 @@ section { padding: 100px 0; }
     padding: 20px;
     gap: 14px;
     border-bottom: 1px solid var(--border);
-    z-index: 9999;
+    z-index: 10002;
   }
   .nav.open .nav-dropdown-menu {
     position: static;

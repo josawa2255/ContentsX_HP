@@ -103,21 +103,21 @@ document.addEventListener('DOMContentLoaded', () => {
       scrollTimer = setTimeout(detectCenteredItem, 80);
     }, { passive: true });
 
-    // --- scrollIntoView でスクロール（offsetWidth 計算不要）---
+    // --- ギャラリー内だけスクロール（ページ全体は動かさない）---
     function scrollToIndex(index, smooth) {
       index = Math.max(0, Math.min(index, totalItems - 1));
-      items[index].scrollIntoView({
-        inline: 'center',
-        block: 'nearest',
+      var item = items[index];
+      var scrollTarget = item.offsetLeft - (gallery.offsetWidth - item.offsetWidth) / 2;
+      gallery.scrollTo({
+        left: Math.max(0, scrollTarget),
         behavior: smooth ? 'smooth' : 'instant'
       });
       currentIndex = index;
       highlightStep(index + 1);
     }
 
-    // 初期位置: STEP1 を中央に（ページ読み込み後に確実に実行）
-    // 即実行 + load後にも再実行で確実にSTEP1を表示
-    scrollToIndex(0, false);
+    // 初期位置: STEP1を中央に（load後に再実行で確実に）
+    gallery.scrollLeft = 0;
     window.addEventListener('load', function() {
       scrollToIndex(0, false);
     });
