@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== JP/EN 言語切替は nav.js に統合済み =====
 
 
-  // ===== フローギャラリー: 横スクロールでスナップ移動 + STEP連動 =====
+  // ===== フローギャラリー: CSS scroll-snap + 自動スクロール + STEP連動 =====
   (function() {
     var gallery = document.getElementById('flowGallery');
     var track   = document.getElementById('flowGalleryTrack');
@@ -71,99 +71,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     var flowSteps = document.querySelectorAll('.flow-step[data-step]');
     var currentIndex = 0;
-    var animating = false;
+
+    // --- 先頭・末尾の中央寄せ用パディング ---
+    function updateTrackPadding() {
+      var firstW = items[0] ? items[0].offsetWidth : 0;
+      var lastW  = items[totalItems - 1] ? items[totalItems - 1].offsetWidth : 0;
+      var padL = Math.max(0, (gallery.offsetWidth - firstW) / 2);
+      var padR = Math.max(0, (gallery.offsetWidth - lastW)  / 2);
+      track.style.paddingLeft  = padL + 'px';
+      track.style.paddingRight = padR + 'px';
+    }
+    updateTrackPadding();
+    window.addEventListener('resize', updateTrackPadding);
 
     // --- STEP連動ハイライト ---
     function clearHighlight() {
       flowSteps.forEach(function(el) { el.classList.remove('flow-hover'); });
     }
-
     function highlightStep(stepNum) {
       clearHighlight();
       flowSteps.forEach(function(el) {
         if (el.getAttribute('data-step') === String(stepNum)) el.classList.add('flow-hover');
       });
     }
-
-    // 初期状態: STEP1をハイライト
     highlightStep(1);
 
-    // トラック両端にパディングを入れて全画像を中央配置可能にする
-    function updateTrackPadding() {
-      var firstW = items[0] ? items[0].offsetWidth : 0;
-      var lastW = items[totalItems - 1] ? items[totalItems - 1].offsetWidth : 0;
-      var padLeft = (gallery.offsetWidth - firstW) / 2;
-      var padRight = (gallery.offsetWidth - lastW) / 2;
-      track.style.paddingLeft = Math.max(0, padLeft) + 'px';
-      track.style.paddingRight = Math.max(0, padRight) + 'px';
-    }
-    // 位置を再計算（アニメーションなし）
-    function recalcPosition() {
-      updateTrackPadding();
-      var x = getItemOffset(currentIndex);
-      track.style.transition = 'none';
-      track.style.transform = 'translateX(' + (-x) + 'px)';
-      requestAnimationFrame(function() {
-        track.style.transition = '';
+    // --- 中央に表示されているアイテムを検出 ---
+    function detectCenteredItem() {
+      var galRect = gallery.getBoundingClientRect();
+      var center = galRect.left + galRect.width / 2;
+      var closest = 0;
+      var minDist = Infinity;
+      items.forEach(function(item, i) {
+        var r = item.getBoundingClientRect();
+        var d = Math.abs((r.left + r.width / 2) - center);
+        if (d < minDist) { minDist = d; closest = i; }
       });
-    }
-
-    // 初回: 非表示→計算→表示（チラつき防止）
-    track.style.visibility = 'hidden';
-    recalcPosition();
-    requestAnimationFrame(function() {
-      track.style.visibility = '';
-    });
-
-    window.addEventListener('resize', recalcPosition);
-
-    function getTrackGap() {
-      return parseFloat(getComputedStyle(track).gap) || 20;
-    }
-
-    function getItemOffset(index) {
-      // 画像をギャラリー中央に配置して前後の画像を均等にチラ見せ
-      var gap = getTrackGap();
-      var offset = parseFloat(track.style.paddingLeft) || 0;
-      for (var i = 0; i < index; i++) {
-        offset += items[i].offsetWidth + gap;
+      if (closest !== currentIndex) {
+        currentIndex = closest;
+        highlightStep(currentIndex + 1);
       }
-      var itemWidth = items[index].offsetWidth;
-      var centered = offset - (gallery.offsetWidth - itemWidth) / 2;
-      return Math.max(0, centered);
     }
 
-    function snapTo(index) {
-      if (animating) return;
+    // スクロール時にハイライト更新
+    var scrollTimer = null;
+    gallery.addEventListener('scroll', function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(detectCenteredItem, 80);
+    }, { passive: true });
+
+    // --- プログラム的にスクロール ---
+    function scrollToIndex(index, smooth) {
       index = Math.max(0, Math.min(index, totalItems - 1));
-      if (index === currentIndex) return;
+      var item = items[index];
+      var scrollTarget = item.offsetLeft - (gallery.offsetWidth - item.offsetWidth) / 2;
+      gallery.scrollTo({
+        left: Math.max(0, scrollTarget),
+        behavior: smooth ? 'smooth' : 'instant'
+      });
       currentIndex = index;
-      animating = true;
-
-      // 左のステップを連動ハイライト
-      highlightStep(currentIndex + 1);
-
-      var targetX = getItemOffset(index);
-      track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-      track.style.transform = 'translateX(' + (-targetX) + 'px)';
-
-      setTimeout(function() {
-        track.style.transition = '';
-        animating = false;
-      }, 420);
+      highlightStep(index + 1);
     }
 
-    // 左のステップをクリック → その画像にスナップ
+    // 初期位置: STEP1を中央に（アニメーションなし）
+    scrollToIndex(0, false);
+
+    // --- 左のステップをクリック → その画像にスナップ ---
     flowSteps.forEach(function(el) {
       el.addEventListener('click', function() {
         var step = parseInt(el.getAttribute('data-step'), 10);
         if (step >= 1 && step <= totalItems) {
-          snapTo(step - 1);
+          scrollToIndex(step - 1, true);
+          resetAuto();
         }
       });
     });
 
-    // ホバー連動（一時的にホバー先を強調、離すと現在のindexに戻る）
+    // --- ホバー連動 ---
     flowSteps.forEach(function(el) {
       el.addEventListener('mouseenter', function() { highlightStep(el.getAttribute('data-step')); });
       el.addEventListener('mouseleave', function() { highlightStep(currentIndex + 1); });
@@ -173,74 +157,39 @@ document.addEventListener('DOMContentLoaded', () => {
       el.addEventListener('mouseleave', function() { highlightStep(currentIndex + 1); });
     });
 
-    // 画像クリックで進む/戻る（右半分クリック=次、左半分クリック=前）
+    // --- 画像クリックで進む/戻る ---
     gallery.addEventListener('click', function(e) {
-      if (animating) return;
       var rect = gallery.getBoundingClientRect();
       var clickX = e.clientX - rect.left;
       if (clickX > rect.width / 2) {
-        if (currentIndex < totalItems - 1) { snapTo(currentIndex + 1); resetAuto(); }
+        if (currentIndex < totalItems - 1) { scrollToIndex(currentIndex + 1, true); resetAuto(); }
       } else {
-        if (currentIndex > 0) { snapTo(currentIndex - 1); resetAuto(); }
+        if (currentIndex > 0) { scrollToIndex(currentIndex - 1, true); resetAuto(); }
       }
     });
 
-    // 横スクロール（deltaX）のみキャッチ — 1操作で必ず1ページだけ
-    var cooldown = false;
-    gallery.addEventListener('wheel', function(e) {
-      if (Math.abs(e.deltaX) < 10) return;
-      e.preventDefault();
-      if (animating || cooldown) return;
-
-      cooldown = true;
-      setTimeout(function() { cooldown = false; }, 700);
-
-      if (e.deltaX > 0 && currentIndex < totalItems - 1) {
-        snapTo(currentIndex + 1);
-      } else if (e.deltaX < 0 && currentIndex > 0) {
-        snapTo(currentIndex - 1);
-      }
-    }, { passive: false });
-
-    // タッチ: 横スワイプのみ
-    var touchStartX = 0;
-    gallery.addEventListener('touchstart', function(e) {
-      touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-
-    gallery.addEventListener('touchend', function(e) {
-      if (animating) return;
-      var dx = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(dx) < 40) return;
-      if (dx > 0 && currentIndex < totalItems - 1) {
-        snapTo(currentIndex + 1);
-      } else if (dx < 0 && currentIndex > 0) {
-        snapTo(currentIndex - 1);
-      }
-    }, { passive: true });
-
-    // 2秒ごとに自動スクロール（最後まで行ったら最初に戻る）
+    // --- 4秒ごとに自動スクロール（最後→最初に戻る）---
     var autoInterval = setInterval(function() {
       if (currentIndex < totalItems - 1) {
-        snapTo(currentIndex + 1);
+        scrollToIndex(currentIndex + 1, true);
       } else {
-        snapTo(0);
+        scrollToIndex(0, true);
       }
     }, 4000);
 
-    // ユーザー操作時に自動スクロールをリセット（操作後また3秒で再開）
     function resetAuto() {
       clearInterval(autoInterval);
       autoInterval = setInterval(function() {
         if (currentIndex < totalItems - 1) {
-          snapTo(currentIndex + 1);
+          scrollToIndex(currentIndex + 1, true);
         } else {
-          snapTo(0);
+          scrollToIndex(0, true);
         }
       }, 4000);
     }
-    gallery.addEventListener('wheel', resetAuto);
-    gallery.addEventListener('touchstart', resetAuto);
+    // ユーザーがスワイプ/スクロールしたら自動タイマーリセット
+    gallery.addEventListener('touchstart', resetAuto, { passive: true });
+    gallery.addEventListener('wheel', resetAuto, { passive: true });
     flowSteps.forEach(function(el) { el.addEventListener('click', resetAuto); });
   })();
 
