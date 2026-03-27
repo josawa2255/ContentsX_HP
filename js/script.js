@@ -34,14 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 保存されたテーマを復元
+  // 保存されたテーマを復元（存在しないテーマ名ならデフォルトに戻す）
+  const validThemes = Array.from(themeBtns).map(b => b.dataset.theme);
   try {
     const saved = localStorage.getItem('cx-theme');
-    if (saved) {
+    if (saved && validThemes.includes(saved)) {
       document.body.setAttribute('data-theme', saved);
       themeBtns.forEach(b => {
         b.classList.toggle('active', b.dataset.theme === saved);
       });
+    } else if (saved) {
+      // 削除済みテーマ → デフォルト(cyber-green)にリセット
+      localStorage.removeItem('cx-theme');
+      document.body.setAttribute('data-theme', 'cyber-green');
     }
   } catch(e) {}
 
