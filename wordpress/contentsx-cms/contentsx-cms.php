@@ -256,6 +256,7 @@ add_action( 'rest_api_init', function() {
         $allowed = [
             'https://contentsx.jp',
             'https://www.contentsx.jp',
+            'https://bizmanga.contentsx.jp',
             'http://localhost:3000',
             'http://127.0.0.1:5500',       // VS Code Live Server
         ];

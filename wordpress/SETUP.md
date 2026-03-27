@@ -5,7 +5,7 @@
 ```
 ┌─────────────────────┐          ┌─────────────────────────┐
 │   WordPress (裏方)   │  ──API──▶│   静的サイト (表)         │
-│   cms.contentsx.jp│          │   contentsx.jp        │
+│   bizmanga.contentsx.jp│          │   contentsx.jp        │
 │   お名前.comサーバー   │          │   GitHub Pages           │
 │                     │          │                         │
 │  ・漫画事例の編集     │          │  ・HTML / CSS / JS       │
@@ -18,7 +18,7 @@
 
 1. お名前.com にログイン
 2. 「レンタルサーバー」→「RSプラン」を契約（月額990円〜）
-3. サブドメイン `cms.contentsx.jp` を設定
+3. サブドメイン `bizmanga.contentsx.jp` を設定
    - サーバー管理画面 → ドメイン設定 → サブドメイン追加
 
 ## STEP 2: WordPressをインストール
@@ -26,12 +26,12 @@
 1. お名前.com サーバー管理画面（コントロールパネル）にログイン
 2. 「WordPress」→「簡単インストール」をクリック
 3. 以下を入力:
-   - インストールURL: `cms.contentsx.jp`
+   - インストールURL: `bizmanga.contentsx.jp`
    - サイト名: `ContentsX CMS`
    - ユーザー名: 任意（管理用）
    - パスワード: 強力なものを設定
 4. 「インストール」をクリック
-5. `https://cms.contentsx.jp/wp-admin/` にアクセスできることを確認
+5. `https://bizmanga.contentsx.jp/wp-admin/` にアクセスできることを確認
 
 ## STEP 3: プラグインをインストール
 
@@ -47,10 +47,10 @@
 ## STEP 4: SSL（HTTPS）を有効化
 
 1. お名前.com コントロールパネル → SSL設定
-2. `cms.contentsx.jp` に無料SSL（Let's Encrypt）を設定
+2. `bizmanga.contentsx.jp` に無料SSL（Let's Encrypt）を設定
 3. WordPress管理画面 → 設定 → 一般:
-   - WordPress アドレス: `https://cms.contentsx.jp`
-   - サイトアドレス: `https://cms.contentsx.jp`
+   - WordPress アドレス: `https://bizmanga.contentsx.jp`
+   - サイトアドレス: `https://bizmanga.contentsx.jp`
 
 ## STEP 5: 初期データを投入
 
@@ -100,7 +100,7 @@ $allowed = [
 `js/wp-config.js` を編集:
 ```javascript
 const WP_CONFIG = {
-  apiBase: 'https://cms.contentsx.jp/wp-json/contentsx/v1',
+  apiBase: 'https://bizmanga.contentsx.jp/wp-json/contentsx/v1',
   enabled: true,
   timeout: 5000,
   cacheTTL: 5 * 60 * 1000,
@@ -170,13 +170,13 @@ const WP_CONFIG = {
 ## 日常の運用フロー
 
 ### 漫画事例を追加したいとき
-1. `cms.contentsx.jp/wp-admin` にログイン
+1. `bizmanga.contentsx.jp/wp-admin` にログイン
 2. 漫画事例 → 新規追加
 3. 情報を入力して「公開」
 4. サイトに自動反映（数秒以内）
 
 ### ニュースを追加したいとき
-1. `cms.contentsx.jp/wp-admin` にログイン
+1. `bizmanga.contentsx.jp/wp-admin` にログイン
 2. ニュース → 新規追加
 3. タイトル・タグ・リンクを入力して「公開」
 4. サイトに自動反映
@@ -205,7 +205,7 @@ js/
 ## トラブルシューティング
 
 **Q: WordPress API に接続できない**
-→ `wp-config.js` の `apiBase` URLが正しいか確認。ブラウザで直接 `https://cms.contentsx.jp/wp-json/contentsx/v1/works` を開いてJSONが返るか確認。
+→ `wp-config.js` の `apiBase` URLが正しいか確認。ブラウザで直接 `https://bizmanga.contentsx.jp/wp-json/contentsx/v1/works` を開いてJSONが返るか確認。
 
 **Q: CORSエラーが出る**
 → `contentsx-cms.php` の `$allowed` 配列にフロントサイトのドメインが入っているか確認。

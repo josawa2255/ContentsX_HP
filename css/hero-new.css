@@ -490,14 +490,9 @@
     gap: 5px;
     padding-top: 60px;
   }
-  /* モバイル鎖: 幅を抑えてはみ出し防止 */
-  .hero-chain--turq,
-  .hero-chain--orange {
-    width: 250%;
-    left: -75%;
-  }
+  /* モバイル: 鎖アニメーション非表示 */
   .hero-chains {
-    overflow: hidden;
+    display: none;
   }
   /* モーダル: スマホは縦並び */
   .work-detail-content {

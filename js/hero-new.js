@@ -45,27 +45,20 @@ document.addEventListener('DOMContentLoaded', function() {
       heroLogoMain.style.animationPlayState = 'running';
     }
 
-    // 鎖アニメーション開始（モバイルではスケール・距離を縮小）
-    var isMobile = window.innerWidth <= 768;
-    var chainScale = isMobile ? 2.5 : 5;
-    var chainFromA = isMobile ? 50 : 80;
-    var chainToA   = isMobile ? -70 : -120;
-    var chainFromB = isMobile ? -50 : -80;
-    var chainToB   = isMobile ? 70 : 120;
-
+    // 鎖アニメーション開始（モバイルはCSS非表示のためPC専用）
     animateChain(document.querySelector('.hero-chain--turq'), {
       duration: 5500,
       delay: 0,
-      fromDist: chainFromA, toDist: chainToA,
+      fromDist: 80, toDist: -120,
       angle: -30,
-      scale: chainScale
+      scale: 5
     });
     animateChain(document.querySelector('.hero-chain--orange'), {
       duration: 5500,
       delay: 300,
-      fromDist: chainFromB, toDist: chainToB,
+      fromDist: -80, toDist: 120,
       angle: -30,
-      scale: chainScale
+      scale: 5
     });
 
     // Phase 2: 5.5秒後にカルーセルへトランジション
