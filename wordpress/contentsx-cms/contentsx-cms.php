@@ -174,48 +174,111 @@ function cxcms_manga_meta_html( $post ) {
         <input type="date" name="cx_added_date" value="<?php echo esc_attr($m('cx_added_date')); ?>">
     </div>
     <div class="cx-field">
-        <label>ギャラリー画像（漫画ページ）</label>
+        <label>ギャラリー画像（漫画ページ）— ドラッグで並べ替え可能</label>
         <input type="hidden" name="cx_gallery" id="cx_gallery" value="<?php echo esc_attr($m('cx_gallery')); ?>">
         <div id="cx_gallery_preview" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
         <?php
         $gallery_ids = $m('cx_gallery');
         if ($gallery_ids) {
+            $idx = 1;
             foreach (array_filter(array_map('trim', explode(',', $gallery_ids))) as $att_id) {
                 $img = wp_get_attachment_image_src((int)$att_id, 'thumbnail');
                 if ($img) {
-                    echo '<div style="position:relative;"><img src="'.esc_url($img[0]).'" style="width:60px;height:80px;object-fit:cover;border:1px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'.esc_attr($att_id).'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;">×</span></div>';
+                    echo '<div class="cx-gallery-item" data-id="'.esc_attr($att_id).'" style="position:relative;cursor:grab;user-select:none;">'
+                        .'<div style="position:absolute;top:-4px;left:-4px;background:var(--accent,#0073aa);color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;" class="cx-gallery-num">'.$idx.'</div>'
+                        .'<img src="'.esc_url($img[0]).'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ddd;border-radius:4px;">'
+                        .'<span class="cx-gallery-remove" data-id="'.esc_attr($att_id).'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span>'
+                        .'</div>';
+                    $idx++;
                 }
             }
         }
         ?>
         </div>
         <button type="button" id="cx_gallery_btn" class="button">画像を追加</button>
-        <div class="cx-hint">漫画の各ページ画像をアップロード（表紙はアイキャッチ画像で設定）</div>
+        <div class="cx-hint">漫画の各ページ画像をアップロード（表紙はアイキャッチ画像で設定）。ドラッグで順番変更可。ファイル名の番号順で自動ソートされます。</div>
     </div>
     <script>
     jQuery(function($){
-        // ギャラリー画像追加
+        // ページ番号を振り直す
+        function reNumber() {
+            $('#cx_gallery_preview .cx-gallery-num').each(function(i){ $(this).text(i+1); });
+        }
+        // hidden input を並び順で更新
+        function syncIds() {
+            var ids = [];
+            $('#cx_gallery_preview .cx-gallery-item').each(function(){ ids.push($(this).data('id')); });
+            $('#cx_gallery').val(ids.join(','));
+            reNumber();
+        }
+
+        // ドラッグ＆ドロップ並べ替え
+        (function(){
+            var dragEl = null;
+            var preview = document.getElementById('cx_gallery_preview');
+            preview.addEventListener('dragstart', function(e){
+                dragEl = e.target.closest('.cx-gallery-item');
+                if (!dragEl) return;
+                dragEl.style.opacity = '0.4';
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            preview.addEventListener('dragover', function(e){
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                var target = e.target.closest('.cx-gallery-item');
+                if (target && target !== dragEl) {
+                    var rect = target.getBoundingClientRect();
+                    var mid = rect.left + rect.width / 2;
+                    if (e.clientX < mid) {
+                        preview.insertBefore(dragEl, target);
+                    } else {
+                        preview.insertBefore(dragEl, target.nextSibling);
+                    }
+                }
+            });
+            preview.addEventListener('dragend', function(){
+                if (dragEl) { dragEl.style.opacity = '1'; dragEl = null; }
+                syncIds();
+            });
+            // 全アイテムに draggable 設定
+            $('#cx_gallery_preview .cx-gallery-item').attr('draggable','true');
+        })();
+
+        // ギャラリー画像追加（ファイル名の番号順で自動ソート）
         $('#cx_gallery_btn').on('click', function(e){
             e.preventDefault();
             var frame = wp.media({title:'漫画ページ画像を選択',multiple:true,library:{type:'image'}});
             frame.on('select', function(){
                 var selection = frame.state().get('selection');
-                var ids = $('#cx_gallery').val() ? $('#cx_gallery').val().split(',').filter(Boolean) : [];
+                var newItems = [];
                 selection.each(function(att){
+                    newItems.push(att);
+                });
+                // ファイル名の数字部分で昇順ソート
+                newItems.sort(function(a, b){
+                    var numA = parseInt((a.attributes.filename || '').match(/(\d+)/)?.[1] || '0', 10);
+                    var numB = parseInt((b.attributes.filename || '').match(/(\d+)/)?.[1] || '0', 10);
+                    return numA - numB;
+                });
+                var ids = $('#cx_gallery').val() ? $('#cx_gallery').val().split(',').filter(Boolean) : [];
+                newItems.forEach(function(att){
                     ids.push(att.id);
                     var url = att.attributes.sizes && att.attributes.sizes.thumbnail ? att.attributes.sizes.thumbnail.url : att.attributes.url;
-                    $('#cx_gallery_preview').append('<div style="position:relative;"><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:1px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;">×</span></div>');
+                    $('#cx_gallery_preview').append('<div class="cx-gallery-item" data-id="'+att.id+'" draggable="true" style="position:relative;cursor:grab;user-select:none;"><div class="cx-gallery-num" style="position:absolute;top:-4px;left:-4px;background:#0073aa;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;"></div><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span></div>');
                 });
                 $('#cx_gallery').val(ids.join(','));
+                reNumber();
             });
             frame.open();
         });
         // ギャラリー画像削除
-        $(document).on('click', '.cx-gallery-remove', function(){
+        $(document).on('click', '.cx-gallery-remove', function(e){
+            e.stopPropagation();
             var removeId = $(this).data('id').toString();
-            $(this).parent().remove();
+            $(this).closest('.cx-gallery-item').remove();
             var ids = $('#cx_gallery').val().split(',').filter(function(id){ return id !== removeId; });
             $('#cx_gallery').val(ids.join(','));
+            reNumber();
         });
     });
     </script>
@@ -730,3 +793,137 @@ add_action( 'send_headers', function() {
         header( 'Referrer-Policy: strict-origin-when-cross-origin' );
     }
 });
+
+
+/* ==========================================================
+   9. 漫画事例 一括インポート（初回移行用）
+   ========================================================== */
+
+add_action( 'admin_menu', function() {
+    add_submenu_page(
+        'edit.php?post_type=manga_work',
+        '一括インポート',
+        '一括インポート',
+        'manage_options',
+        'cxcms-import',
+        'cxcms_import_page'
+    );
+});
+
+function cxcms_import_page() {
+    // インポート実行
+    if ( isset($_POST['cxcms_do_import']) && wp_verify_nonce($_POST['_wpnonce'], 'cxcms_import') ) {
+        $result = cxcms_run_import();
+        echo '<div class="notice notice-success"><p>' . esc_html($result) . '</p></div>';
+    }
+
+    $existing = get_posts(['post_type'=>'manga_work','posts_per_page'=>200,'post_status'=>'any','fields'=>'ids']);
+    $existing_ids = [];
+    foreach ($existing as $pid) {
+        $wid = get_post_meta($pid, 'cx_work_id', true);
+        if ($wid) $existing_ids[] = $wid;
+    }
+    $data = cxcms_get_import_data();
+    $new_count = 0;
+    foreach ($data as $w) {
+        if (!in_array($w['id'], $existing_ids)) $new_count++;
+    }
+
+    echo '<div class="wrap">';
+    echo '<h1>漫画事例 一括インポート</h1>';
+    echo '<p>works-detail.js のデータを WordPress に一括登録します。</p>';
+    echo '<p>全 <strong>' . count($data) . '</strong> 件中、<strong>' . $new_count . '</strong> 件が未登録です。</p>';
+    if ($new_count > 0) {
+        echo '<form method="post">';
+        wp_nonce_field('cxcms_import');
+        echo '<p><button type="submit" name="cxcms_do_import" class="button button-primary button-hero">未登録の ' . $new_count . ' 件をインポート</button></p>';
+        echo '</form>';
+    } else {
+        echo '<p>すべての漫画事例が登録済みです。</p>';
+    }
+
+    // 登録済みリスト
+    if (!empty($existing_ids)) {
+        echo '<h2>登録済み (' . count($existing_ids) . '件)</h2><ul>';
+        foreach ($existing_ids as $eid) echo '<li>✅ ' . esc_html($eid) . '</li>';
+        echo '</ul>';
+    }
+    echo '</div>';
+}
+
+function cxcms_run_import() {
+    $data = cxcms_get_import_data();
+    $existing = get_posts(['post_type'=>'manga_work','posts_per_page'=>200,'post_status'=>'any','fields'=>'ids']);
+    $existing_ids = [];
+    foreach ($existing as $pid) {
+        $wid = get_post_meta($pid, 'cx_work_id', true);
+        if ($wid) $existing_ids[] = $wid;
+    }
+
+    $imported = 0;
+    foreach ($data as $i => $w) {
+        if (in_array($w['id'], $existing_ids)) continue;
+
+        $post_id = wp_insert_post([
+            'post_type'   => 'manga_work',
+            'post_title'  => $w['title_ja'],
+            'post_status' => 'publish',
+        ]);
+        if (is_wp_error($post_id)) continue;
+
+        $media_str = is_array($w['media']) ? implode(', ', $w['media']) : $w['media'];
+        update_post_meta($post_id, 'cx_work_id', $w['id']);
+        update_post_meta($post_id, 'cx_title_en', $w['title_en']);
+        update_post_meta($post_id, 'cx_pages', $w['pages']);
+        update_post_meta($post_id, 'cx_client', $w['client']);
+        update_post_meta($post_id, 'cx_spec_pages', $w['spec_pages']);
+        update_post_meta($post_id, 'cx_spec_period', $w['spec_period']);
+        update_post_meta($post_id, 'cx_media', $media_str);
+        update_post_meta($post_id, 'cx_point', $w['point']);
+        update_post_meta($post_id, 'cx_comment', $w['comment']);
+        update_post_meta($post_id, 'cx_sort_order', $i + 1);
+        update_post_meta($post_id, 'cx_is_new', '0');
+
+        // カテゴリ登録
+        if (!empty($w['category'])) {
+            $term = term_exists($w['category'], 'manga_category');
+            if (!$term) $term = wp_insert_term($w['category'], 'manga_category');
+            if (!is_wp_error($term)) {
+                $term_id = is_array($term) ? $term['term_id'] : $term;
+                wp_set_object_terms($post_id, [(int)$term_id], 'manga_category');
+            }
+        }
+
+        $imported++;
+    }
+    return $imported . ' 件の漫画事例をインポートしました！';
+}
+
+function cxcms_get_import_data() {
+    return [
+        ['id'=>'ichinohe-home','title_ja'=>'一戸ホーム','title_en'=>'Ichinohe Home','pages'=>22,'category'=>'営業','client'=>'一戸ホーム','media'=>['営業ツール','Web掲載'],'spec_pages'=>'22P','spec_period'=>'3週間','point'=>'住宅メーカーの魅力をストーリー漫画で伝える営業ツール。漫画ならではの没入感で、お客様の理解と共感を引き出します。','comment'=>'漫画にしたことで、お客様との商談がスムーズになりました。紙面だけでは伝わらなかった住まいへの想いが伝わるようになったと感じています。'],
+        ['id'=>'diamond','title_ja'=>'DIAMOND シャンパンコール','title_en'=>'DIAMOND Champagne Call','pages'=>11,'category'=>'研修','client'=>'DIAMOND','media'=>['新人研修資料','マニュアル動画内'],'spec_pages'=>'9P','spec_period'=>'10日間','point'=>'新人が体験しがちな"焦りとミス"をストーリー化することで、正しい順序を守る大切さを体験として理解できる構成にしました。','comment'=>'これまで"何度言っても同じミスをする"新人が多かったのですが、漫画にしてから"自分も同じことをしそう"と感じてもらえるようになりました。'],
+        ['id'=>'omatome-ninja','title_ja'=>'おまとめ忍者 見つけてみせる！トレンドの兆し','title_en'=>'Omatome Ninja: Discovering Trend Signs','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['営業資料','Webサイト（製品紹介ページ）','SNS（X・Instagram）','社内説明・営業研修'],'spec_pages'=>'15P','spec_period'=>'10日間','point'=>'専門的なAI分析の説明を、"数字ではなく人の物語"に置き換え、"なるほど、こう使えるのか"とイメージできる構成にしました。','comment'=>'堅かった"データ分析の説明"が、漫画を通して"現場の悩み"として伝わるようになりました。会議でも"うちもこういう状況あるよね"と共感され、導入への理解が一気に進みました。'],
+        ['id'=>'omatome-ninja-2','title_ja'=>'おまとめ忍者 手間な議事録をこっそり要約','title_en'=>'Omatome Ninja: Secretly Summarizing Meeting Notes','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['営業資料（PDF／展示会パネル）','Webサイト（製品紹介ページ）','セミナー・展示会・SNS投稿'],'spec_pages'=>'15P','spec_period'=>'10日間','point'=>'"難しそう"を"かわいい・簡単そう"に変換し、AIツールの概念を直感で理解させる構成。','comment'=>'AIやDXのように専門的なサービスも、"忍者が助けてくれる"という比喩で、誰にでも理解してもらえるようになりました。'],
+        ['id'=>'omatome-ninja-3','title_ja'=>'おまとめ忍者 地獄のまとめ作業 拙者におまかせ！','title_en'=>'Omatome Ninja: Leave the Tedious Summarizing to Me!','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['展示会ブース配布用冊子','営業用資料','Webサイト／SNS（Instagram投稿・X）','セミナーやオンライン説明会での導入動画内使用'],'spec_pages'=>'15P','spec_period'=>'10日間','point'=>'"DX＝難しい"という印象を払拭し、明るく親しみのあるコミュニケーションを狙った構成。','comment'=>'説明しづらかったAIの価値が"誰でもわかる"漫画になったことで、展示会での会話率が格段に上がりました。'],
+        ['id'=>'omatome-ninja-4','title_ja'=>'おまとめ忍者 手書き派の悩み 拙者にお任せ！','title_en'=>'Omatome Ninja: Helping the Handwriting Fans!','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['営業資料','展示会／セミナー配布用冊子','Webサイト・SNS投稿（X・Instagram）','社内説明資料／製品紹介動画内'],'spec_pages'=>'15P','spec_period'=>'10日間','point'=>'商品サービスの仕組みを説明するのではなく、"現場でどんな変化が起きるか"を体感的に理解できる構成にしました。','comment'=>'"手書き派の社員でも使える"というポイントを、言葉ではなく漫画で伝えられたことで、現場担当者からの理解が格段に早くなりました。'],
+        ['id'=>'omatome-ninja-5','title_ja'=>'おまとめ忍者 長時間会議も怖くない！','title_en'=>'Omatome Ninja: No More Fear of Long Meetings!','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['展示会ブース配布冊子','営業資料（PDF）','Webサイト（製品紹介ページ）','SNS（X・Instagram）'],'spec_pages'=>'15P','spec_period'=>'10日間','point'=>'長い会議のストレスをリアルに描き、サービス導入後に"仕事が軽くなる感覚"を物語で表現。','comment'=>'"AI議事録"という言葉の説明より、漫画を見せる方が早い。経営層にも、"こういうことか！"とすぐ伝わるようになりました。'],
+        ['id'=>'omatome-ninja-rohto','title_ja'=>'おまとめ忍者 忍者参上！！欠席者をお助けいたす！','title_en'=>'Omatome Ninja: Here to Help Absentees!','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['営業資料','Webサイト（製品紹介ページ）','SNS（X・Instagram）'],'spec_pages'=>'15P','spec_period'=>'10日間','point'=>'体調不良や欠席など、"誰にでも起こる日常"を題材にすることで、AIの便利さを"助けてもらう安心感"として自然に伝える構成にしました。','comment'=>'商談でも"この漫画みたいなシーンあります！"と共感の声を多くいただきました。'],
+        ['id'=>'omatome-ninja-english','title_ja'=>'おまとめ忍者（海外版）','title_en'=>'Omatome Ninja (Global Edition)','pages'=>15,'category'=>'紹介','client'=>'マクニカ','media'=>['グローバル展示会／海外パートナー企業への営業資料','Webサイト（英語版製品ページ）','SNS（LinkedIn・Instagram・X）','英語圏メディア向け紹介動画内素材'],'spec_pages'=>'15P','spec_period'=>'18日間','point'=>'英語版では、文化や言葉の違いを意識して、セリフやテンポをより自然なリズムに調整。国や文化が違っても、ビジュアルと物語の流れを追うだけで価値が伝わるストーリーに仕上げています。','comment'=>'海外の展示会で、漫画を見せると目立ち、人だかりができました。言葉で説明するよりも、物語で"価値のイメージ"を共有できるのが最大のメリットです。漫画は、日本のサービスが海外に出ていくうえでも強力な武器になると感じました。'],
+        ['id'=>'seko','title_ja'=>'瀬古恭介 始まりのものがたり','title_en'=>'Kyosuke Seko: A Story of Beginnings','pages'=>25,'category'=>'ブランド','client'=>'瀬古','media'=>['ブランディング','Web掲載'],'spec_pages'=>'25P','spec_period'=>'4週間','point'=>'経営者の原体験と想いをストーリー漫画化。感情に訴える構成で、企業理念への深い理解と共感を生み出します。','comment'=>'自分の想いがこんなに伝わる形になるとは思いませんでした。社員にも読んでもらい、チームの結束が強まりました。'],
+        ['id'=>'life-buzfes','title_ja'=>'バズフェス','title_en'=>'BuzzFes','pages'=>25,'category'=>'集客','client'=>'ライフエンターテイメント','media'=>['イベント告知','SNS広告'],'spec_pages'=>'25P','spec_period'=>'3週間','point'=>'イベントの魅力と参加メリットをストーリー形式で訴求。ターゲットの"自分ごと化"を促す構成で集客力を最大化。','comment'=>'漫画広告を使った告知で、前回比150%の集客を達成できました。'],
+        ['id'=>'life-school','title_ja'=>'バズスクール','title_en'=>'Buzz School','pages'=>26,'category'=>'集客','client'=>'ライフエンターテイメント','media'=>['LP','SNS投稿'],'spec_pages'=>'26P','spec_period'=>'3週間','point'=>'スクールの魅力と卒業生の成功体験をストーリーで伝達。入学への不安を解消し、申込みへの心理的ハードルを下げる構成。','comment'=>'漫画を導入してから、LPからの問い合わせ率が大幅に改善しました。'],
+        ['id'=>'bms-unso','title_ja'=>'BMS運送','title_en'=>'BMS Transport','pages'=>10,'category'=>'採用','client'=>'BMS運送','media'=>['採用サイト','説明会資料'],'spec_pages'=>'10P','spec_period'=>'2週間','point'=>'運送業界の「きつい」イメージを払拭し、働く人の魅力とやりがいをストーリーで伝える採用漫画。','comment'=>'求人への応募数が増えただけでなく、面接時に漫画の内容を話題にしてくれる方が増えました。'],
+        ['id'=>'bms-unso-remake','title_ja'=>'BMS運送（リメイク）','title_en'=>'BMS Transport (Remake)','pages'=>10,'category'=>'採用','client'=>'BMS運送','media'=>['採用サイト','SNS'],'spec_pages'=>'10P','spec_period'=>'2週間','point'=>'初版の反響を踏まえ、よりターゲットに刺さるストーリーラインにリニューアル。キャラクターデザインも一新。','comment'=>'リメイク版は初版以上の反響で、スカウト返信率も向上しました。'],
+        ['id'=>'kyoiku-manual','title_ja'=>'教育マニュアル','title_en'=>'Education Manual','pages'=>10,'category'=>'研修','client'=>'企業研修','media'=>['社内研修','マニュアル'],'spec_pages'=>'10P','spec_period'=>'2週間','point'=>'テキストだけでは伝わらない業務手順を、漫画でビジュアル化。新人の理解速度と定着率を大幅に向上させます。','comment'=>'研修時間が短縮され、新人の理解度テストのスコアも向上しました。'],
+        ['id'=>'merumaga','title_ja'=>'メルマガ漫画','title_en'=>'Newsletter Manga','pages'=>10,'category'=>'集客','client'=>'メルマガ施策','media'=>['メールマガジン','Web掲載'],'spec_pages'=>'10P','spec_period'=>'10日間','point'=>'メルマガの開封率・クリック率を漫画コンテンツで劇的に改善。読者の「続きが読みたい」心理を活用した連載型。','comment'=>'開封率が平均の2倍以上になり、CVRも大幅に改善しました。'],
+        ['id'=>'shohin-shokai','title_ja'=>'商品紹介漫画','title_en'=>'Product Introduction','pages'=>11,'category'=>'営業','client'=>'商品紹介','media'=>['LP','営業資料'],'spec_pages'=>'11P','spec_period'=>'2週間','point'=>'複雑な商品特徴を、ユーザー目線のストーリーで分かりやすく伝達。購買までの心理プロセスを漫画で設計。','comment'=>'商品の良さが直感的に伝わるようになり、商談の成約率が上がりました。'],
+        ['id'=>'tagengo','title_ja'=>'多言語対応マニュアル','title_en'=>'Multilingual Manual','pages'=>12,'category'=>'研修','client'=>'多言語対応','media'=>['社内マニュアル','多言語展開'],'spec_pages'=>'12P','spec_period'=>'3週間','point'=>'外国人従業員向けに、言語の壁を超えるビジュアルマニュアルを漫画で実現。文化的配慮も盛り込んだ構成。','comment'=>'言葉が通じない場面でも、漫画なら伝わる。現場の安全意識が向上しました。'],
+        ['id'=>'sixtones','title_ja'=>'SixTONES風キャラ','title_en'=>'SixTONES-style Characters','pages'=>4,'category'=>'IP','client'=>'IPキャラクター','media'=>['キャラクターデザイン','SNS'],'spec_pages'=>'4P','spec_period'=>'1週間','point'=>'著名人をモチーフにしたオリジナルキャラクターデザイン。IP展開を見据えた設計で、グッズ化・メディアミックスに対応。','comment'=>'キャラクターの完成度が高く、ファンからの反響も大きかったです。'],
+        ['id'=>'torutoru-kun','title_ja'=>'トルトルくん','title_en'=>'Torutoru-kun','pages'=>21,'category'=>'採用','client'=>'トルトルくん','media'=>['採用ツール','Web掲載'],'spec_pages'=>'21P','spec_period'=>'3週間','point'=>'定額制採用代行・RPOサービス「トルトルくん」の魅力を漫画で訴求。月10万円から採用を再起動できる手軽さをストーリーで伝達。','comment'=>'漫画にしたことでサービスの分かりやすさが格段に上がり、問い合わせ数が増加しました。'],
+        ['id'=>'hamada-masatada','title_ja'=>'濱田将匡 信頼を、つなぐ。','title_en'=>'Masatada Hamada: Connecting Trust','pages'=>20,'category'=>'ブランド','client'=>'FRESH CAREER','media'=>['ブランディング','Web掲載'],'spec_pages'=>'20P','spec_period'=>'4週間','point'=>'FRESH CAREER代表・濱田将匡氏の原体験と経営理念をストーリー漫画化。信頼をつなぐ想いを感情に訴える構成で表現。','comment'=>'自分のストーリーがここまで伝わる形になるとは思いませんでした。採用候補者にも好評です。'],
+        ['id'=>'asobi-kyary','title_ja'=>'ASOBI SYSTEM×きゃりーぱみゅぱみゅ','title_en'=>'ASOBI SYSTEM x Kyary Pamyu Pamyu','pages'=>6,'category'=>'IP','client'=>'ASOBI SYSTEM','media'=>['提案資料','SNS'],'spec_pages'=>'6P','spec_period'=>'1週間','point'=>'ASOBI SYSTEMとの共同企画。きゃりーぱみゅぱみゅをモチーフにしたキャラクター漫画で、IPコラボレーションの可能性を提案。','comment'=>'キャラクターの魅力が漫画で十分に表現されており、コラボ企画の説得力が増しました。'],
+        ['id'=>'uike-law','title_ja'=>'正義の価値','title_en'=>'The Value of Justice','pages'=>8,'category'=>'ブランド','client'=>'鵜池航太','media'=>['ブランディング','Webサイト'],'spec_pages'=>'8P','spec_period'=>'3週間','point'=>'弁護士の原体験と信念をWebtoon形式のストーリー漫画で表現。感情に訴える構成で、人となりへの深い理解と共感を生み出します。','comment'=>''],
+        ['id'=>'lady-column','title_ja'=>'レディーコラム','title_en'=>'Lady Column','pages'=>8,'category'=>'紹介','client'=>'レディーコラム','media'=>['Webサイト','SNS'],'spec_pages'=>'8P','spec_period'=>'2週間','point'=>'女性向けコラムの魅力を漫画で表現。読者の共感と興味を引き出すストーリー構成。','comment'=>''],
+    ];
+}
