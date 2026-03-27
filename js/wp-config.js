@@ -12,10 +12,10 @@
 
 const WP_CONFIG = {
   /* WordPress REST API のベースURL（末尾スラッシュなし） */
-  apiBase: '',   // 例: 'https://bizmanga.contentsx.jp/wp-json/contentsx/v1'
+  apiBase: 'https://bizmanga.contentsx.jp/wp-json/contentsx/v1',
 
   /* true にすると WordPress API から取得、false ならローカルJS */
-  enabled: false,
+  enabled: true,
 
   /* API タイムアウト（ミリ秒） */
   timeout: 5000,
