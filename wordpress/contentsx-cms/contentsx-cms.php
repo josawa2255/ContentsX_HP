@@ -28,6 +28,10 @@ function cxcms_register_post_types() {
             'all_items'          => 'すべての漫画事例',
             'search_items'       => '漫画事例を検索',
             'not_found'          => '漫画事例が見つかりません',
+            'featured_image'        => '表紙の画像',
+            'set_featured_image'    => '表紙の画像を設定',
+            'remove_featured_image' => '表紙の画像を削除',
+            'use_featured_image'    => '表紙の画像として使用',
         ],
         'public'       => false,
         'show_ui'      => true,
@@ -196,7 +200,7 @@ function cxcms_manga_meta_html( $post ) {
         ?>
         </div>
         <button type="button" id="cx_gallery_btn" class="button">画像を追加</button>
-        <div class="cx-hint">漫画の各ページ画像をアップロード（表紙はアイキャッチ画像で設定）。ドラッグで順番変更可。ファイル名の番号順で自動ソートされます。</div>
+        <div class="cx-hint">漫画の各ページ画像をアップロード（表紙は右サイドバーの「表紙の画像」で設定）。ドラッグで順番変更可。ファイル名の番号順で自動ソートされます。</div>
     </div>
     <script>
     jQuery(function($){
