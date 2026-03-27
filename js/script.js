@@ -724,9 +724,10 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'new-works-card';
       card.dataset.manga = item.id;
       card.dataset.pages = item.pages;
+      const coverSrc = item.thumbnail || `material/manga/${item.id}/01.webp`;
       card.innerHTML = `
         <div class="new-works-card-cover">
-          <img src="material/manga/${item.id}/01.webp" alt="${item.title_ja}" loading="lazy">
+          <img src="${coverSrc}" alt="${item.title_ja}" loading="lazy" style="object-position:top center;">
         </div>
         <p class="new-works-card-title" data-ja="${item.title_ja}" data-en="${item.title_en}">${item.title_ja}</p>
       `;
@@ -751,6 +752,13 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => buildNewWorksCards(data))
       .catch(err => console.warn('new-works data not available:', err));
   }
+
+  /* WordPress データ到着後に新作情報を再構築 */
+  window.addEventListener('wp-data-ready', function() {
+    if (typeof NEW_WORKS_DATA !== 'undefined' && NEW_WORKS_DATA.length > 0) {
+      buildNewWorksCards(NEW_WORKS_DATA);
+    }
+  });
 
   if (prevBtn && nextBtn) {
     const scrollAmount = 224;

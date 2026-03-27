@@ -198,6 +198,16 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   buildHeroCarousel();
 
+  /* WordPress データ到着後にカルーセルを再構築 */
+  window.addEventListener('wp-data-ready', function() {
+    // worksMap を再構築
+    if (typeof WORKS_DETAIL_DATA !== 'undefined') {
+      Object.keys(worksMap || {}).forEach(k => delete worksMap[k]);
+      WORKS_DETAIL_DATA.forEach(w => { if (worksMap) worksMap[w.id] = w; });
+    }
+    buildHeroCarousel();
+  });
+
   // ===== 制作事例モーダル (BizMangaスタイル) =====
   const wdOverlay = document.getElementById('workDetailOverlay');
   const wdClose = document.getElementById('workDetailClose');
