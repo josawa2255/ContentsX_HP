@@ -182,6 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
         img.alt = item.title_ja;
         img.loading = 'lazy';
         img.decoding = 'async';
+        /* 縦長Webtoon画像は上部を表示（中央だと意味ある内容が見えない） */
+        img.style.objectPosition = 'top center';
         div.appendChild(img);
         frag.appendChild(div);
 
