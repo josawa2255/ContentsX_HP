@@ -166,6 +166,14 @@ function cxcms_manga_meta_html( $post ) {
         <input type="number" name="cx_sort_order" value="<?php echo esc_attr($m('cx_sort_order') ?: '0'); ?>">
     </div>
     <div class="cx-field">
+        <label>Heroカルーセルに表示</label>
+        <select name="cx_show_hero">
+            <option value="1" <?php selected($m('cx_show_hero'), '1'); ?>>表示する</option>
+            <option value="0" <?php selected($m('cx_show_hero'), '0'); ?>>表示しない</option>
+        </select>
+        <div class="cx-hint">「表示する」にするとトップページのHero背景カルーセルに出ます</div>
+    </div>
+    <div class="cx-field">
         <label>新作情報に表示</label>
         <select name="cx_is_new">
             <option value="0" <?php selected($m('cx_is_new'), '0'); ?>>表示しない</option>
@@ -313,7 +321,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_gallery'];
+    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_is_new','cx_added_date','cx_gallery'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -505,6 +513,7 @@ function cxcms_api_works( $req ) {
             ],
             'point'    => $m('cx_point'),
             'comment'  => $m('cx_comment'),
+            'show_hero' => $m('cx_show_hero') !== '0',
             'thumbnail' => $thumb_url,
             'gallery'   => $gallery_urls,
         ];
@@ -670,6 +679,7 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
             $new['cx_work_id'] = 'ID';
             $new['cx_client']  = 'クライアント';
             $new['cx_pages']   = 'ページ';
+            $new['cx_show_hero'] = 'Hero';
             $new['cx_is_new']  = '新作';
         }
     }
@@ -677,6 +687,7 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
 });
 add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
     $v = get_post_meta( $id, $col, true );
+    if ( $col === 'cx_show_hero' ) { echo $v !== '0' ? '✅' : '—'; return; }
     if ( $col === 'cx_is_new' ) echo $v === '1' ? '✅' : '—';
     else echo esc_html( $v ?: '—' );
 }, 10, 2 );
@@ -931,6 +942,7 @@ function cxcms_run_import() {
         update_post_meta($post_id, 'cx_comment', $w['comment']);
         update_post_meta($post_id, 'cx_sort_order', $i + 1);
         update_post_meta($post_id, 'cx_is_new', '0');
+        update_post_meta($post_id, 'cx_show_hero', '1');
 
         // カテゴリ登録
         if (!empty($w['category'])) {

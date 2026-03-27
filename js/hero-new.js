@@ -151,7 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // --- 作品カルーセル構築 (集英社スタイル) ---
   function buildHeroCarousel() {
     if (!heroWorksBg || !worksMap) return;
-    const works = WORKS_DETAIL_DATA;
+    /* show_hero フラグがある場合はフィルタ、なければ全件表示（フォールバック） */
+    const allWorks = WORKS_DETAIL_DATA;
+    const works = allWorks.some(w => 'show_hero' in w)
+      ? allWorks.filter(w => w.show_hero !== false)
+      : allWorks;
     const row1 = document.getElementById('heroWorksRow1');
     const row2 = document.getElementById('heroWorksRow2');
     const row3 = document.getElementById('heroWorksRow3');
