@@ -4,51 +4,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ===== テーマ切替 =====
-  const themeToggle = document.getElementById('themeToggle');
-  const themePanel = document.getElementById('themePanel');
-  const themeBtns = document.querySelectorAll('.theme-btn');
-
-  themeToggle.addEventListener('click', () => {
-    themePanel.classList.toggle('open');
-  });
-
-  // パネル外クリックで閉じる
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.theme-switcher')) {
-      themePanel.classList.remove('open');
-    }
-  });
-
-  themeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const theme = btn.dataset.theme;
-      document.body.setAttribute('data-theme', theme);
-
-      // active状態を更新
-      themeBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      // ローカルストレージに保存
-      try { localStorage.setItem('cx-theme', theme); } catch(e) {}
-    });
-  });
-
-  // 保存されたテーマを復元（存在しないテーマ名ならデフォルトに戻す）
-  const validThemes = Array.from(themeBtns).map(b => b.dataset.theme);
-  try {
-    const saved = localStorage.getItem('cx-theme');
-    if (saved && validThemes.includes(saved)) {
-      document.body.setAttribute('data-theme', saved);
-      themeBtns.forEach(b => {
-        b.classList.toggle('active', b.dataset.theme === saved);
-      });
-    } else if (saved) {
-      // 削除済みテーマ → デフォルト(cyber-green)にリセット
-      localStorage.removeItem('cx-theme');
-      document.body.setAttribute('data-theme', 'cyber-green');
-    }
-  } catch(e) {}
+  // ===== テーマ（Hot Magenta固定） =====
+  // localStorageに古いテーマが残っている場合はクリア
+  try { localStorage.removeItem('cx-theme'); } catch(e) {}
 
 
   // ===== ヒーロー背景クロスフェード =====
