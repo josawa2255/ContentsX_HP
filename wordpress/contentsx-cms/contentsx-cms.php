@@ -388,7 +388,7 @@ add_action( 'init', function() {
 
     /* REST API パスへのリクエストのみ対象 */
     $req = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
-    if ( strpos( $req, '/wp-json/' ) === false ) return;
+    if ( strpos( $req, '/wp-json/' ) === false && strpos( $req, 'rest_route=' ) === false ) return;
 
     if ( in_array( $origin, cxcms_allowed_origins(), true ) ) {
         header( 'Access-Control-Allow-Origin: ' . $origin );
