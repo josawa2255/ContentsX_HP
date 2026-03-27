@@ -56,7 +56,7 @@ function cxcms_register_post_types() {
         'show_in_rest' => true,
         'rest_base'    => 'cx-news',
         'menu_icon'    => 'dashicons-megaphone',
-        'supports'     => [ 'title', 'custom-fields' ],
+        'supports'     => [ 'title', 'editor', 'custom-fields' ],
         'has_archive'  => false,
         'rewrite'      => false,
     ]);
@@ -298,6 +298,18 @@ add_action( 'rest_api_init', function() {
         'callback' => 'cxcms_api_news',
         'permission_callback' => '__return_true',
     ]);
+
+    /* GET /wp-json/contentsx/v1/news/{id} — ニュース個別 */
+    register_rest_route( 'contentsx/v1', '/news/(?P<id>\d+)', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_news_single',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [
+                'validate_callback' => function($v) { return is_numeric($v); },
+            ],
+        ],
+    ]);
 });
 
 /* ── 全漫画事例 ── */
@@ -359,7 +371,7 @@ function cxcms_api_works_new( $req ) {
     return new WP_REST_Response( $out, 200 );
 }
 
-/* ── ニュース ── */
+/* ── ニュース一覧 ── */
 function cxcms_api_news( $req ) {
     $limit = (int) ($req->get_param('per_page') ?: 10);
     $posts = get_posts([
@@ -373,16 +385,45 @@ function cxcms_api_news( $req ) {
     foreach ( $posts as $p ) {
         $m = fn($k) => get_post_meta( $p->ID, $k, true );
         $tag = cxcms_get_first_term( $p->ID, 'news_tag' );
+        $content = apply_filters( 'the_content', $p->post_content );
+        $has_detail = ! empty( trim( $p->post_content ) );
         $out[] = [
-            'date'     => get_the_date( 'Y.m.d', $p ),
-            'tag_ja'   => $tag,
-            'tag_en'   => cxcms_get_first_term_en( $p->ID, 'news_tag' ),
-            'title_ja' => $p->post_title,
-            'title_en' => $m('cx_news_title_en'),
-            'url'      => $m('cx_news_url') ?: '',
+            'id'        => $p->ID,
+            'date'      => get_the_date( 'Y.m.d', $p ),
+            'tag_ja'    => $tag,
+            'tag_en'    => cxcms_get_first_term_en( $p->ID, 'news_tag' ),
+            'title_ja'  => $p->post_title,
+            'title_en'  => $m('cx_news_title_en'),
+            'url'       => $m('cx_news_url') ?: '',
+            'has_detail' => $has_detail,
         ];
     }
     return new WP_REST_Response( $out, 200 );
+}
+
+/* ── ニュース個別 ── */
+function cxcms_api_news_single( $req ) {
+    $post_id = (int) $req['id'];
+    $p = get_post( $post_id );
+
+    if ( ! $p || $p->post_type !== 'cx_news' || $p->post_status !== 'publish' ) {
+        return new WP_Error( 'not_found', 'ニュースが見つかりません', [ 'status' => 404 ] );
+    }
+
+    $m = fn($k) => get_post_meta( $p->ID, $k, true );
+    $tag = cxcms_get_first_term( $p->ID, 'news_tag' );
+    $content = apply_filters( 'the_content', $p->post_content );
+
+    return new WP_REST_Response([
+        'id'        => $p->ID,
+        'date'      => get_the_date( 'Y.m.d', $p ),
+        'tag_ja'    => $tag,
+        'tag_en'    => cxcms_get_first_term_en( $p->ID, 'news_tag' ),
+        'title_ja'  => $p->post_title,
+        'title_en'  => $m('cx_news_title_en'),
+        'url'       => $m('cx_news_url') ?: '',
+        'content'   => $content,
+    ], 200 );
 }
 
 /* ── ヘルパー ── */

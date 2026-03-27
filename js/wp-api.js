@@ -108,7 +108,14 @@
 
       const a = document.createElement('a');
       a.className = 'news-link';
-      a.href = item.url || '#';
+      /* 外部URLがあればそちらへ、本文があれば詳細ページへ、どちらもなければ # */
+      if (item.url) {
+        a.href = item.url;
+      } else if (item.has_detail && item.id) {
+        a.href = 'news-detail.html?id=' + item.id;
+      } else {
+        a.href = '#';
+      }
       a.setAttribute('data-ja', item.title_ja || '');
       a.setAttribute('data-en', item.title_en || item.title_ja || '');
       a.textContent = lang === 'en' ? (item.title_en || item.title_ja) : item.title_ja;
