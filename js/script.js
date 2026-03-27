@@ -1069,6 +1069,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (mvClose) mvClose.addEventListener('click', closeMangaViewer);
+  const mvCloseScroll = document.getElementById('mangaViewerCloseScroll');
+  if (mvCloseScroll) mvCloseScroll.addEventListener('click', closeMangaViewer);
   if (mvOverlay) mvOverlay.addEventListener('click', (e) => {
     if (e.target === mvOverlay) closeMangaViewer();
   });

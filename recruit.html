@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dl-modal.css">
 </head>
 <body data-theme="cyber-green">
   <header class="header" id="header">
@@ -27,32 +28,32 @@
     <div class="rc-hero-overlay"></div>
     <div class="rc-hero-center">
       <h1 class="rc-hero-heading">Careers</h1>
-      <p class="rc-hero-sub">採用情報</p>
+      <p class="rc-hero-sub" data-ja="採用情報" data-en="Recruitment">採用情報</p>
     </div>
     <!-- カテゴリーナビ（ヒーロー下部） -->
     <div class="rc-hero-nav">
       <div class="rc-hero-nav-col">
-        <h2 class="rc-hero-nav-title">募集職種</h2>
+        <h2 class="rc-hero-nav-title" data-ja="募集職種" data-en="Open Positions">募集職種</h2>
         <div class="rc-hero-nav-line"></div>
         <div class="rc-hero-nav-btns">
-          <a href="#detail-manga" class="rc-pill" data-pos="manga">漫画家</a>
-          <a href="#detail-production" class="rc-pill" data-pos="production">マンガ製作担当</a>
-          <a href="#detail-sales" class="rc-pill" data-pos="sales">営業</a>
+          <a href="#detail-manga" class="rc-pill" data-pos="manga" data-ja="漫画家" data-en="Manga Artist">漫画家</a>
+          <a href="#detail-production" class="rc-pill" data-pos="production" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</a>
+          <a href="#detail-sales" class="rc-pill" data-pos="sales" data-ja="営業" data-en="Sales">営業</a>
         </div>
       </div>
       <div class="rc-hero-nav-col">
-        <h2 class="rc-hero-nav-title">会社を知る</h2>
+        <h2 class="rc-hero-nav-title" data-ja="会社を知る" data-en="About Us">会社を知る</h2>
         <div class="rc-hero-nav-line"></div>
         <div class="rc-hero-nav-btns">
-          <a href="company.html" class="rc-pill">会社概要</a>
-          <a href="our-thoughts.html" class="rc-pill">私たちの思い</a>
+          <a href="company.html" class="rc-pill" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="our-thoughts.html" class="rc-pill" data-ja="私たちの思い" data-en="Our Thoughts">私たちの思い</a>
         </div>
       </div>
       <div class="rc-hero-nav-col">
-        <h2 class="rc-hero-nav-title">選考フロー</h2>
+        <h2 class="rc-hero-nav-title" data-ja="選考フロー" data-en="Selection Process">選考フロー</h2>
         <div class="rc-hero-nav-line"></div>
         <div class="rc-hero-nav-btns">
-          <a href="#flow" class="rc-pill">応募の流れ</a>
+          <a href="#flow" class="rc-pill" data-ja="応募の流れ" data-en="Application Flow">応募の流れ</a>
         </div>
       </div>
     </div>
@@ -63,122 +64,122 @@
     <div class="rc-positions-overlay"></div>
     <div class="rc-positions-inner">
       <div class="rc-section-label">Open Positions</div>
-      <h2 class="rc-section-title">募集職種</h2>
-      <p class="rc-positions-lead">希望の職種をクリックしてください。</p>
+      <h2 class="rc-section-title" data-ja="募集職種" data-en="Open Positions">募集職種</h2>
+      <p class="rc-positions-lead" data-ja="希望の職種をクリックしてください。" data-en="Please select your desired position.">希望の職種をクリックしてください。</p>
       <div class="rc-pos-cards">
         <div class="rc-pos-card" data-pos="manga" id="detail-manga">
           <div class="rc-pos-card-num">01</div>
-          <div class="rc-pos-card-title">漫画家</div>
-          <div class="rc-pos-card-desc">シナリオチェック・ネーム制作・赤ペン</div>
-          <div class="rc-pos-card-tags"><span>業務委託</span><span>フルリモート</span></div>
+          <div class="rc-pos-card-title" data-ja="漫画家" data-en="Manga Artist">漫画家</div>
+          <div class="rc-pos-card-desc" data-ja="シナリオチェック・ネーム制作・赤ペン" data-en="Script review, storyboard creation, and editing">シナリオチェック・ネーム制作・赤ペン</div>
+          <div class="rc-pos-card-tags"><span data-ja="業務委託" data-en="Contract">業務委託</span><span data-ja="フルリモート" data-en="Fully Remote">フルリモート</span></div>
         </div>
         <div class="rc-pos-card" data-pos="production" id="detail-production">
           <div class="rc-pos-card-num">02</div>
-          <div class="rc-pos-card-title">マンガ製作担当</div>
-          <div class="rc-pos-card-desc">ネームからの作画・品質管理</div>
-          <div class="rc-pos-card-tags"><span>リモート可</span><span>未経験歓迎</span></div>
+          <div class="rc-pos-card-title" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</div>
+          <div class="rc-pos-card-desc" data-ja="ネームからの作画・品質管理" data-en="Artwork from storyboards and quality control">ネームからの作画・品質管理</div>
+          <div class="rc-pos-card-tags"><span data-ja="リモート可" data-en="Remote OK">リモート可</span><span data-ja="未経験歓迎" data-en="No Experience Needed">未経験歓迎</span></div>
         </div>
         <div class="rc-pos-card" data-pos="sales" id="detail-sales">
           <div class="rc-pos-card-num">03</div>
-          <div class="rc-pos-card-title">営業</div>
-          <div class="rc-pos-card-desc">法人開拓・ソリューション提案</div>
-          <div class="rc-pos-card-tags"><span>リモート可</span><span>副業可</span></div>
+          <div class="rc-pos-card-title" data-ja="営業" data-en="Sales">営業</div>
+          <div class="rc-pos-card-desc" data-ja="法人開拓・ソリューション提案" data-en="B2B development and solution proposals">法人開拓・ソリューション提案</div>
+          <div class="rc-pos-card-tags"><span data-ja="リモート可" data-en="Remote OK">リモート可</span><span data-ja="副業可" data-en="Side Job OK">副業可</span></div>
         </div>
       </div>
       <div class="rc-actions" id="rc-actions" style="display:none;">
-        <button class="rc-action-btn" data-action="apply">応募する</button>
-        <button class="rc-action-btn rc-action-btn--outline" data-action="detail">詳細を見る</button>
+        <button class="rc-action-btn" data-action="apply" data-ja="応募する" data-en="Apply">応募する</button>
+        <button class="rc-action-btn rc-action-btn--outline" data-action="detail" data-ja="詳細を見る" data-en="View Details">詳細を見る</button>
       </div>
       <div class="rc-detail-area" id="rc-detail-area" style="display:none;">
         <!-- 漫画家 -->
         <div class="rc-detail" data-detail="manga">
-          <h3 class="rc-detail-title">漫画家募集</h3>
-          <div class="rc-detail-cat"><span>クリエイティブ</span></div>
+          <h3 class="rc-detail-title" data-ja="漫画家募集" data-en="Manga Artist Wanted">漫画家募集</h3>
+          <div class="rc-detail-cat"><span data-ja="クリエイティブ" data-en="Creative">クリエイティブ</span></div>
           <div class="rc-detail-rows">
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">業務内容</div>
-              <div class="rc-detail-val">画像生成技術を活用したハイブリッド制作体制で、企業向けマンガを手がけています。漫画家の方には、以下の業務をお任せします。<br>・シナリオ・プロットのチェック<br>・ネーム制作<br>・作画完成後の赤ペン作業（修正指示）</div>
+              <div class="rc-detail-badge" data-ja="業務内容" data-en="Job Description">業務内容</div>
+              <div class="rc-detail-val" data-ja="画像生成技術を活用したハイブリッド制作体制で、企業向けマンガを手がけています。漫画家の方には、以下の業務をお任せします。" data-en="We produce corporate manga using a hybrid workflow with image generation technology. Manga artists handle the following tasks:">画像生成技術を活用したハイブリッド制作体制で、企業向けマンガを手がけています。漫画家の方には、以下の業務をお任せします。<br>・シナリオ・プロットのチェック<br>・ネーム制作<br>・作画完成後の赤ペン作業（修正指示）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">応募条件</div>
-              <div class="rc-detail-val">・マンガのシナリオ構成・ネーム制作の経験がある方（商業誌・同人・Web連載問わず）<br>・フリーランス・副業可</div>
+              <div class="rc-detail-badge" data-ja="応募条件" data-en="Requirements">応募条件</div>
+              <div class="rc-detail-val" data-ja="・マンガのシナリオ構成・ネーム制作の経験がある方（商業誌・同人・Web連載問わず）・フリーランス・副業可" data-en="Experience in manga scripting and storyboarding (commercial, doujin, or web serialization). Freelance and side jobs welcome.">・マンガのシナリオ構成・ネーム制作の経験がある方（商業誌・同人・Web連載問わず）<br>・フリーランス・副業可</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">勤務形態</div>
-              <div class="rc-detail-val">業務委託（フルリモート）</div>
+              <div class="rc-detail-badge" data-ja="勤務形態" data-en="Work Style">勤務形態</div>
+              <div class="rc-detail-val" data-ja="業務委託（フルリモート）" data-en="Contract (Fully Remote)">業務委託（フルリモート）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">勤務地</div>
-              <div class="rc-detail-val">フルリモート（全国どこからでも可）</div>
+              <div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div>
+              <div class="rc-detail-val" data-ja="フルリモート（全国どこからでも可）" data-en="Fully Remote (Anywhere in Japan)">フルリモート（全国どこからでも可）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">報酬</div>
-              <div class="rc-detail-val">案件単位（スキル・経験に応じて相談）</div>
+              <div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div>
+              <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="contact.html?position=%E6%BC%AB%E7%94%BB%E5%AE%B6" class="rc-detail-apply-btn">この募集に応募する</a>
+          <a href="contact.html?position=%E6%BC%AB%E7%94%BB%E5%AE%B6" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </div>
         <!-- マンガ製作担当 -->
         <div class="rc-detail" data-detail="production">
-          <h3 class="rc-detail-title">マンガ製作担当募集</h3>
-          <div class="rc-detail-cat"><span>クリエイティブ</span></div>
+          <h3 class="rc-detail-title" data-ja="マンガ製作担当募集" data-en="Manga Producer Wanted">マンガ製作担当募集</h3>
+          <div class="rc-detail-cat"><span data-ja="クリエイティブ" data-en="Creative">クリエイティブ</span></div>
           <div class="rc-detail-rows">
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">業務内容</div>
-              <div class="rc-detail-val">ネームをもとに、画像生成技術を活用して作画を完成させるポジションです。シナリオ設計や品質管理にも携わります。<br>・ネームをもとにした作画（メイン業務）<br>・シナリオ設計・構成サポート<br>・品質チェック・納品対応</div>
+              <div class="rc-detail-badge" data-ja="業務内容" data-en="Job Description">業務内容</div>
+              <div class="rc-detail-val" data-ja="ネームをもとに、画像生成技術を活用して作画を完成させるポジションです。シナリオ設計や品質管理にも携わります。" data-en="A position completing artwork from storyboards using image generation technology. Also involved in script design and quality control.">ネームをもとに、画像生成技術を活用して作画を完成させるポジションです。シナリオ設計や品質管理にも携わります。<br>・ネームをもとにした作画（メイン業務）<br>・シナリオ設計・構成サポート<br>・品質チェック・納品対応</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">応募条件</div>
-              <div class="rc-detail-val">・クリエイティブな仕事に興味がある方<br>・Adobe（Photoshop / Illustrator等）やCanvaの使用経験がある方（推奨）<br>・画像生成技術を使った作画に関心がある方（経験不問）<br>・業界未経験歓迎</div>
+              <div class="rc-detail-badge" data-ja="応募条件" data-en="Requirements">応募条件</div>
+              <div class="rc-detail-val" data-ja="・クリエイティブな仕事に興味がある方・Adobe（Photoshop / Illustrator等）やCanvaの使用経験がある方（推奨）・画像生成技術を使った作画に関心がある方（経験不問）・業界未経験歓迎" data-en="Interest in creative work. Adobe (Photoshop/Illustrator) or Canva experience preferred. Interest in AI-assisted artwork welcome (no experience required). Industry newcomers welcome.">・クリエイティブな仕事に興味がある方<br>・Adobe（Photoshop / Illustrator等）やCanvaの使用経験がある方（推奨）<br>・画像生成技術を使った作画に関心がある方（経験不問）<br>・業界未経験歓迎</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">勤務形態</div>
-              <div class="rc-detail-val">業務委託・副業可（リモートワーク可）</div>
+              <div class="rc-detail-badge" data-ja="勤務形態" data-en="Work Style">勤務形態</div>
+              <div class="rc-detail-val" data-ja="業務委託・副業可（リモートワーク可）" data-en="Contract / Side job OK (Remote available)">業務委託・副業可（リモートワーク可）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">勤務地</div>
-              <div class="rc-detail-val">リモートワーク可（全国どこからでも可）</div>
+              <div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div>
+              <div class="rc-detail-val" data-ja="リモートワーク可（全国どこからでも可）" data-en="Remote available (Anywhere in Japan)">リモートワーク可（全国どこからでも可）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">報酬</div>
-              <div class="rc-detail-val">案件単位（スキル・経験に応じて相談）</div>
+              <div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div>
+              <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="contact.html?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn">この募集に応募する</a>
+          <a href="contact.html?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </div>
         <!-- 営業 -->
         <div class="rc-detail" data-detail="sales">
-          <h3 class="rc-detail-title">営業募集</h3>
-          <div class="rc-detail-cat"><span>ビジネス</span></div>
+          <h3 class="rc-detail-title" data-ja="営業募集" data-en="Sales Position">営業募集</h3>
+          <div class="rc-detail-cat"><span data-ja="ビジネス" data-en="Business">ビジネス</span></div>
           <div class="rc-detail-rows">
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">業務内容</div>
-              <div class="rc-detail-val">企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。マンガDMやコンテンツセールス等、独自の営業ツールを活用した新規開拓も行います。<br>・法人向け新規開拓<br>・クライアントへのヒアリング・ソリューション提案<br>・パートナー企業の開拓・アライアンス推進</div>
+              <div class="rc-detail-badge" data-ja="業務内容" data-en="Job Description">業務内容</div>
+              <div class="rc-detail-val" data-ja="企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。" data-en="B2B sales proposing manga as a solution for corporate communication challenges. Includes new business development using proprietary tools.">企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。マンガDMやコンテンツセールス等、独自の営業ツールを活用した新規開拓も行います。<br>・法人向け新規開拓<br>・クライアントへのヒアリング・ソリューション提案<br>・パートナー企業の開拓・アライアンス推進</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">応募条件</div>
-              <div class="rc-detail-val">・法人営業経験がある方（業界不問）<br>・課題解決型の営業スタイルに関心がある方<br>・将来的に事業開発にも携わりたい方<br>・海外での案件に興味がある方<br>・副業・業務委託からのスタートも可</div>
+              <div class="rc-detail-badge" data-ja="応募条件" data-en="Requirements">応募条件</div>
+              <div class="rc-detail-val" data-ja="・法人営業経験がある方（業界不問）・課題解決型の営業スタイルに関心がある方・将来的に事業開発にも携わりたい方・海外での案件に興味がある方・副業・業務委託からのスタートも可" data-en="B2B sales experience (any industry). Interest in solution-based sales. Desire to grow into business development. Interest in international projects. Side jobs and contract work welcome.">・法人営業経験がある方（業界不問）<br>・課題解決型の営業スタイルに関心がある方<br>・将来的に事業開発にも携わりたい方<br>・海外での案件に興味がある方<br>・副業・業務委託からのスタートも可</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">勤務形態</div>
-              <div class="rc-detail-val">業務委託・副業可（リモートワーク可）</div>
+              <div class="rc-detail-badge" data-ja="勤務形態" data-en="Work Style">勤務形態</div>
+              <div class="rc-detail-val" data-ja="業務委託・副業可（リモートワーク可）" data-en="Contract / Side job OK (Remote available)">業務委託・副業可（リモートワーク可）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">勤務地</div>
-              <div class="rc-detail-val">リモートワーク可（全国どこからでも可）</div>
+              <div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div>
+              <div class="rc-detail-val" data-ja="リモートワーク可（全国どこからでも可）" data-en="Remote available (Anywhere in Japan)">リモートワーク可（全国どこからでも可）</div>
             </div>
             <div class="rc-detail-row">
-              <div class="rc-detail-badge">報酬</div>
-              <div class="rc-detail-val">案件単位（スキル・経験に応じて相談）</div>
+              <div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div>
+              <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="contact.html?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn">この募集に応募する</a>
+          <a href="contact.html?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </div>
       </div>
       <div class="rc-apply-area" id="rc-apply-area" style="display:none;">
-        <h3 class="rc-apply-title">応募・カジュアル面談</h3>
-        <p class="rc-apply-lead"><span id="rc-apply-pos-name"></span>へのご応募・カジュアル面談のご希望は、以下よりご連絡ください。</p>
-        <a href="contact.html" class="rc-apply-btn">お問い合わせフォームへ</a>
+        <h3 class="rc-apply-title" data-ja="応募・カジュアル面談" data-en="Apply / Casual Interview">応募・カジュアル面談</h3>
+        <p class="rc-apply-lead" data-ja="へのご応募・カジュアル面談のご希望は、以下よりご連絡ください。" data-en="To apply or request a casual interview, please contact us below."><span id="rc-apply-pos-name"></span>へのご応募・カジュアル面談のご希望は、以下よりご連絡ください。</p>
+        <a href="contact.html" class="rc-apply-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
       </div>
     </div>
   </section>
@@ -187,46 +188,46 @@
   <section class="rc-flow" id="flow">
     <div class="rc-flow-inner">
       <div class="rc-section-label">Flow</div>
-      <h2 class="rc-section-title">応募から参画までの流れ</h2>
+      <h2 class="rc-section-title" data-ja="応募から参画までの流れ" data-en="From Application to Joining">応募から参画までの流れ</h2>
       <div class="rc-flow-timeline">
         <div class="rc-flow-item">
           <div class="rc-flow-marker"><span>01</span></div>
           <div class="rc-flow-card">
             <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title">エントリー</h3>
-              <span class="rc-flow-card-badge">最短当日対応</span>
+              <h3 class="rc-flow-card-title" data-ja="エントリー" data-en="Entry">エントリー</h3>
+              <span class="rc-flow-card-badge" data-ja="最短当日対応" data-en="Same-day Response">最短当日対応</span>
             </div>
-            <p class="rc-flow-card-desc">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</p>
+            <p class="rc-flow-card-desc" data-ja="フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。" data-en="Apply via form or email. Please attach your portfolio or resume if available.">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</p>
           </div>
         </div>
         <div class="rc-flow-item">
           <div class="rc-flow-marker"><span>02</span></div>
           <div class="rc-flow-card">
             <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title">カジュアル面談</h3>
-              <span class="rc-flow-card-badge">オンライン 30分</span>
+              <h3 class="rc-flow-card-title" data-ja="カジュアル面談" data-en="Casual Interview">カジュアル面談</h3>
+              <span class="rc-flow-card-badge" data-ja="オンライン 30分" data-en="Online 30 min">オンライン 30分</span>
             </div>
-            <p class="rc-flow-card-desc">Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。</p>
+            <p class="rc-flow-card-desc" data-ja="Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。" data-en="We'll discuss our business and work style over Google Meet. It's a casual conversation, not a formal interview.">Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。</p>
           </div>
         </div>
         <div class="rc-flow-item">
           <div class="rc-flow-marker"><span>03</span></div>
           <div class="rc-flow-card">
             <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title">トライアル</h3>
-              <span class="rc-flow-card-badge">短期間</span>
+              <h3 class="rc-flow-card-title" data-ja="トライアル" data-en="Trial">トライアル</h3>
+              <span class="rc-flow-card-badge" data-ja="短期間" data-en="Short Term">短期間</span>
             </div>
-            <p class="rc-flow-card-desc">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。</p>
+            <p class="rc-flow-card-desc" data-ja="実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。" data-en="A short trial with real project-like tasks. Both sides confirm compatibility in skills and workflow.">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。</p>
           </div>
         </div>
         <div class="rc-flow-item">
           <div class="rc-flow-marker rc-flow-marker--last"><span>04</span></div>
           <div class="rc-flow-card">
             <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title">契約・参画</h3>
-              <span class="rc-flow-card-badge rc-flow-card-badge--accent">チーム合流</span>
+              <h3 class="rc-flow-card-title" data-ja="契約・参画" data-en="Contract & Join">契約・参画</h3>
+              <span class="rc-flow-card-badge rc-flow-card-badge--accent" data-ja="チーム合流" data-en="Join the Team">チーム合流</span>
             </div>
-            <p class="rc-flow-card-desc">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</p>
+            <p class="rc-flow-card-desc" data-ja="業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。" data-en="Sign a contract and join the team. Project assignments begin immediately.">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</p>
           </div>
         </div>
       </div>
@@ -234,36 +235,50 @@
   </section>
 
   <!-- ===== CTA ===== -->
-  <section class="rc-cta" id="apply">
-    <div class="rc-cta-inner">
-      <div class="rc-cta-label">Join Us</div>
-      <h2>まずは気軽にお話ししませんか？</h2>
-      <p>各ポジションへのご応募・カジュアル面談のご希望は、以下よりご連絡ください。</p>
-      <a href="contact.html" class="rc-cta-btn">お問い合わせフォームへ</a>
+  <section class="cta" id="contact">
+    <div class="container">
+      <h2 class="cta-title" data-ja="物語で、世界の理解を拡張する。" data-en="Expand global understanding through stories.">物語で、世界の理解を拡張する。</h2>
+      <p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>
+      <div class="cta-actions">
+        <a href="contact.html" class="btn btn-primary btn-lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>
+        <button type="button" class="btn btn-outline btn-lg" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
+      </div>
     </div>
   </section>
+
+  <!-- 資料DLモーダル -->
+  <div class="dl-modal-overlay" id="dlModal">
+    <div class="dl-modal">
+      <button class="dl-modal-close" id="dlModalClose" aria-label="閉じる">&times;</button>
+      <p class="dl-modal-text" data-ja="資料のダウンロードにはお問い合わせフォームへのご記入が必要です。" data-en="Please fill out the contact form to download materials.">資料のダウンロードにはお問い合わせフォームへのご記入が必要です。</p>
+      <a href="contact.html" class="dl-modal-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
         <div class="footer-brand">
           <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
-          <p class="footer-company">コンテンツエックス株式会社</p>
-          <p class="footer-address">東京都目黒区目黒2-11-15 8階</p>
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
         </div>
         <div class="footer-links">
-          <a href="index.html#new-works">新作情報</a>
-          <a href="index.html#about">サービス</a>
-          <a href="why-contentsx.html">強み</a>
-          <a href="company.html">会社概要</a>
-          <a href="contact.html">お問い合わせ</a>
+          <a href="index.html#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="partners.html" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
         </div>
       </div>
-      <p class="footer-copy">&copy; Contents X Co., Ltd. 2026 All rights reserved.</p>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
     </div>
   </footer>
   <script src="js/nav.js" defer></script>
   <script src="js/recruit.js" defer></script>
+  <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 <!-- End of HubSpot Embed Code -->

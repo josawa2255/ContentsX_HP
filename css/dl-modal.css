@@ -1,0 +1,68 @@
+/* ===== 資料DLモーダル 共通スタイル ===== */
+.dl-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 20000;
+  align-items: center;
+  justify-content: center;
+}
+.dl-modal-overlay.active {
+  display: flex;
+}
+.dl-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 48px 40px;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.dl-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+.dl-modal-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+.dl-modal-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 36px;
+  border-radius: 60px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+.dl-modal-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* 資料DLボタン（ダーク版） */
+.dl-btn-dark {
+  background: var(--text-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.dl-btn-dark:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}

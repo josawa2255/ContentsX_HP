@@ -10,74 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <style>
-    /* 資料DLボタン */
-    .partners-dl-btn {
-      background: var(--text-primary);
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .partners-dl-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    }
-    /* モーダル */
-    .dl-modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 20000;
-      align-items: center;
-      justify-content: center;
-    }
-    .dl-modal-overlay.active {
-      display: flex;
-    }
-    .dl-modal {
-      background: #fff;
-      border-radius: 16px;
-      padding: 48px 40px;
-      max-width: 440px;
-      width: 90%;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    }
-    .dl-modal-close {
-      position: absolute;
-      top: 16px;
-      right: 20px;
-      background: none;
-      border: none;
-      font-size: 28px;
-      color: var(--text-muted);
-      cursor: pointer;
-      line-height: 1;
-    }
-    .dl-modal-text {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.8;
-      margin-bottom: 28px;
-    }
-    .dl-modal-btn {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 14px 36px;
-      border-radius: 60px;
-      text-decoration: none;
-      transition: transform 0.2s ease;
-    }
-    .dl-modal-btn:hover {
-      transform: translateY(-2px);
-    }
-  </style>
+  <link rel="stylesheet" href="css/dl-modal.css">
 </head>
 <body data-theme="cyber-green">
 
@@ -157,7 +90,7 @@
       <p class="partners-recruit-lead" data-ja="漫画・IP・エンタメ領域で事業連携いただけるパートナー企業を募集しています。共同プロジェクト・出資・業務提携など、お気軽にご相談ください。" data-en="We are looking for partner companies in manga, IP, and entertainment. Feel free to contact us about joint projects, investment, or business alliances.">漫画・IP・エンタメ領域で事業連携いただけるパートナー企業を募集しています。共同プロジェクト・出資・業務提携など、お気軽にご相談ください。</p>
 
       <a href="contact.html" class="partners-recruit-btn" data-ja="パートナーのお問い合わせ" data-en="Partner Inquiry">パートナーのお問い合わせ</a>
-      <button type="button" class="partners-recruit-btn partners-dl-btn" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
+      <button type="button" class="partners-recruit-btn dl-btn-dark" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
     </div>
   </section>
 
@@ -184,7 +117,7 @@
           <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
           <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
           <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
-          <a href="index.html#partners" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="partners.html" data-ja="パートナー" data-en="Partners">パートナー</a>
           <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
           <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
         </div>
@@ -195,40 +128,7 @@
 
   <script src="js/nav.js" defer></script>
   <script src="js/script.js" defer></script>
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var dlBtn = document.getElementById('dlBtn');
-    var dlModal = document.getElementById('dlModal');
-    var dlModalClose = document.getElementById('dlModalClose');
-    if (!dlBtn) return;
-
-    dlBtn.addEventListener('click', function() {
-      var submitted = false;
-      try { submitted = localStorage.getItem('cx_form_submitted') === '1'; } catch(e) {}
-
-      if (submitted) {
-        // フォーム記入済み → 直接DL
-        var a = document.createElement('a');
-        a.href = 'material/ContentsX_アライアンス提案書.pdf';
-        a.download = '';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } else {
-        // 未記入 → モーダル表示
-        dlModal.classList.add('active');
-      }
-    });
-
-    dlModalClose.addEventListener('click', function() {
-      dlModal.classList.remove('active');
-    });
-
-    dlModal.addEventListener('click', function(e) {
-      if (e.target === dlModal) dlModal.classList.remove('active');
-    });
-  });
-  </script>
+  <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 <!-- End of HubSpot Embed Code -->

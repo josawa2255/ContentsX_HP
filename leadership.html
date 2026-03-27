@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/dl-modal.css">
   <style>
     /* ===== 役員紹介 ===== */
     .leadership-hero {
@@ -237,10 +238,10 @@
         </div>
         <div class="leader-info">
           <p class="leader-role" data-ja="代表取締役" data-en="CEO / Founder">代表取締役</p>
-          <h2 class="leader-name">黒宮 大貴</h2>
+          <h2 class="leader-name" data-ja="黒宮 大貴" data-en="Daiki Kuromiya">黒宮 大貴</h2>
           <p class="leader-name-en">Kuromiya Daiki</p>
           <ul class="leader-career">
-            <li><span class="leader-career-year">2026年</span>コンテンツエックス株式会社 設立、代表取締役に就任</li>
+            <li data-ja="コンテンツエックス株式会社 設立、代表取締役に就任" data-en="Founded Contents X Co., Ltd. as CEO"><span class="leader-career-year" data-ja="2026年" data-en="2026">2026年</span>コンテンツエックス株式会社 設立、代表取締役に就任</li>
           </ul>
         </div>
       </div>
@@ -255,11 +256,11 @@
         </div>
         <div class="leader-info">
           <p class="leader-role" data-ja="共同創業者 / 取締役" data-en="Co-Founder / Director">共同創業者 / 取締役</p>
-          <h2 class="leader-name">鵜池 航太</h2>
+          <h2 class="leader-name" data-ja="鵜池 航太" data-en="Kota Uike">鵜池 航太</h2>
           <p class="leader-name-en">Uike Kota</p>
           <ul class="leader-career">
-            <li><span class="leader-career-year">2017年</span>株式会社KIRINZ 設立、代表取締役に就任</li>
-            <li><span class="leader-career-year">2026年</span>コンテンツエックス株式会社 共同創業、取締役に就任</li>
+            <li data-ja="株式会社KIRINZ 設立、代表取締役に就任" data-en="Founded KIRINZ Inc. as CEO"><span class="leader-career-year" data-ja="2017年" data-en="2017">2017年</span>株式会社KIRINZ 設立、代表取締役に就任</li>
+            <li data-ja="コンテンツエックス株式会社 共同創業、取締役に就任" data-en="Co-founded Contents X Co., Ltd. as Director"><span class="leader-career-year" data-ja="2026年" data-en="2026">2026年</span>コンテンツエックス株式会社 共同創業、取締役に就任</li>
           </ul>
         </div>
       </div>
@@ -274,17 +275,38 @@
         </div>
         <div class="leader-info">
           <p class="leader-role" data-ja="社外取締役" data-en="Outside Director">社外取締役</p>
-          <h2 class="leader-name">中川 祐介</h2>
+          <h2 class="leader-name" data-ja="中川 祐介" data-en="Yusuke Nakagawa">中川 祐介</h2>
           <p class="leader-name-en">Nakagawa Yusuke</p>
           <ul class="leader-career">
-            <li><span class="leader-career-year">2007年</span>ASOBI SYSTEM株式会社 設立</li>
-            <li><span class="leader-career-year">2026年</span>コンテンツエックス株式会社 社外取締役に就任</li>
+            <li data-ja="ASOBI SYSTEM株式会社 設立" data-en="Founded ASOBI SYSTEM Inc."><span class="leader-career-year" data-ja="2007年" data-en="2007">2007年</span>ASOBI SYSTEM株式会社 設立</li>
+            <li data-ja="コンテンツエックス株式会社 社外取締役に就任" data-en="Appointed Outside Director of Contents X Co., Ltd."><span class="leader-career-year" data-ja="2026年" data-en="2026">2026年</span>コンテンツエックス株式会社 社外取締役に就任</li>
           </ul>
         </div>
       </div>
 
     </div>
   </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <h2 class="cta-title" data-ja="物語で、世界の理解を拡張する。" data-en="Expand global understanding through stories.">物語で、世界の理解を拡張する。</h2>
+      <p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>
+      <div class="cta-actions">
+        <a href="contact.html" class="btn btn-primary btn-lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>
+        <button type="button" class="btn btn-outline btn-lg" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 資料DLモーダル -->
+  <div class="dl-modal-overlay" id="dlModal">
+    <div class="dl-modal">
+      <button class="dl-modal-close" id="dlModalClose" aria-label="閉じる">&times;</button>
+      <p class="dl-modal-text" data-ja="資料のダウンロードにはお問い合わせフォームへのご記入が必要です。" data-en="Please fill out the contact form to download materials.">資料のダウンロードにはお問い合わせフォームへのご記入が必要です。</p>
+      <a href="contact.html" class="dl-modal-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
+    </div>
+  </div>
 
   <!-- ===== フッター ===== -->
   <footer class="footer">
@@ -311,6 +333,7 @@
 
   <script src="js/nav.js" defer></script>
   <script src="js/script.js" defer></script>
+  <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 <!-- End of HubSpot Embed Code -->

@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/dl-modal.css">
 </head>
 <body data-theme="cyber-green">
 
@@ -83,10 +84,19 @@
       <p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>
       <div class="cta-actions">
         <a href="contact.html" class="btn btn-primary btn-lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>
-        <a href="material/ContentsX_アライアンス提案書.pdf" download class="btn btn-outline btn-lg" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</a>
+        <button type="button" class="btn btn-outline btn-lg" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
       </div>
     </div>
   </section>
+
+  <!-- 資料DLモーダル -->
+  <div class="dl-modal-overlay" id="dlModal">
+    <div class="dl-modal">
+      <button class="dl-modal-close" id="dlModalClose" aria-label="閉じる">&times;</button>
+      <p class="dl-modal-text" data-ja="資料のダウンロードにはお問い合わせフォームへのご記入が必要です。" data-en="Please fill out the contact form to download materials.">資料のダウンロードにはお問い合わせフォームへのご記入が必要です。</p>
+      <a href="contact.html" class="dl-modal-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
+    </div>
+  </div>
 
   <!-- ===== フッター ===== -->
   <footer class="footer">
@@ -102,7 +112,7 @@
           <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
           <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
           <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
-          <a href="index.html#partners" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="partners.html" data-ja="パートナー" data-en="Partners">パートナー</a>
           <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
           <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
         </div>
@@ -113,6 +123,7 @@
 
   <script src="js/nav.js" defer></script>
   <script src="js/script.js" defer></script>
+  <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 <!-- End of HubSpot Embed Code -->

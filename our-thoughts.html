@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/our-thoughts.css">
+  <link rel="stylesheet" href="css/dl-modal.css">
 </head>
 <body data-theme="cyber-green" class="ot-page">
 
@@ -117,7 +118,7 @@
 
       <div class="ot-mvv-group">
         <div class="ot-mvv-block">
-          <span class="ot-mvv-label">Mission</span>
+          <span class="ot-mvv-label" data-ja="Mission" data-en="Mission">Mission</span>
           <div class="ot-mvv-text" data-ja="想いを、届くコンテンツに。才能を、届く作品に。" data-en="Turn vision into content that reaches. Turn talent into work that resonates.">
             想いを、届くコンテンツに。<br>才能を、届く作品に。
           </div>
@@ -127,7 +128,7 @@
           </div>
         </div>
         <div class="ot-mvv-block">
-          <span class="ot-mvv-label">Vision</span>
+          <span class="ot-mvv-label" data-ja="Vision" data-en="Vision">Vision</span>
           <div class="ot-mvv-text" data-ja="人とテクノロジーで、「創る」も「届ける」も、次の時代へ。" data-en="With people and technology, taking both 'creating' and 'delivering' to the next era.">
             人とテクノロジーで、<br>「創る」も「届ける」も、次の時代へ。
           </div>
@@ -143,21 +144,21 @@
 
     <div class="ot-values-grid">
       <div class="ot-value-item">
-        <span class="ot-value-num">VALUE 01</span>
+        <span class="ot-value-num" data-ja="VALUE 01" data-en="VALUE 01">VALUE 01</span>
         <div class="ot-value-title" data-ja="つくるのは、人だ。" data-en="People create.">つくるのは、人だ。</div>
         <p class="ot-value-desc" data-ja="どれだけ道具が進化しても、想いを汲み取り、構成を設計し、人の心を動かすのは人間の仕事です。ネームがないと、絶対に再現できない。AIは背景を描けても、物語を創ることはできません。" data-en="No matter how tools evolve, understanding feelings, designing structure, and moving hearts remains human work. Without storyboards, nothing can be reproduced. AI can draw backgrounds, but it cannot create stories.">
           どれだけ道具が進化しても、想いを汲み取り、構成を設計し、人の心を動かすのは人間の仕事です。ネームがないと、絶対に再現できない。AIは背景を描けても、物語を創ることはできません。
         </p>
       </div>
       <div class="ot-value-item">
-        <span class="ot-value-num">VALUE 02</span>
+        <span class="ot-value-num" data-ja="VALUE 02" data-en="VALUE 02">VALUE 02</span>
         <div class="ot-value-title" data-ja="業界の常識は、変えられる。" data-en="Industry norms can be changed.">業界の常識は、変えられる。</div>
         <p class="ot-value-desc" data-ja="出版社依存の構造、テキスト中心の伝え方、選ばれなければ終わりのゲートキーパーモデル。私たちは、変えられないと思われていたものを、テクノロジーと仕組みの力で変えていきます。" data-en="Publisher-dependent structures, text-centric communication, gatekeeper models where rejection means the end. We're changing what was thought unchangeable through technology and systems.">
           出版社依存の構造、テキスト中心の伝え方、選ばれなければ終わりのゲートキーパーモデル。私たちは、変えられないと思われていたものを、テクノロジーと仕組みの力で変えていきます。
         </p>
       </div>
       <div class="ot-value-item">
-        <span class="ot-value-num">VALUE 03</span>
+        <span class="ot-value-num" data-ja="VALUE 03" data-en="VALUE 03">VALUE 03</span>
         <div class="ot-value-title" data-ja="日本の才能を、世界に届ける。" data-en="Deliver Japanese talent to the world.">日本の才能を、世界に届ける。</div>
         <p class="ot-value-desc" data-ja="日本には、世界に通用する才能が溢れています。足りないのは、世界への道です。100以上のプラットフォームへの接続、多言語展開、SNSプロモーション。個人では不可能だったことを、私たちが代わりにやります。" data-en="Japan overflows with world-class talent. What's missing is the path to the world. Connection to 100+ platforms, multilingual deployment, SNS promotion. We do what individuals couldn't.">
           日本には、世界に通用する才能が溢れています。足りないのは、世界への道です。100以上のプラットフォームへの接続、多言語展開、SNSプロモーション。個人では不可能だったことを、私たちが代わりにやります。
@@ -179,10 +180,55 @@
     <p data-ja="私たちは、その両方に向き合い続けます。" data-en="We will continue facing both challenges.">
       私たちは、その両方に向き合い続けます。
     </p>
-    <div class="ot-closing-logo">Contents X Inc.</div>
+    <div class="ot-closing-logo" data-ja="Contents X Inc." data-en="Contents X Inc.">Contents X Inc.</div>
   </section>
 
+  <!-- ===== CTA ===== -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <h2 class="cta-title" data-ja="物語で、世界の理解を拡張する。" data-en="Expand global understanding through stories.">物語で、世界の理解を拡張する。</h2>
+      <p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>
+      <div class="cta-actions">
+        <a href="contact.html" class="btn btn-primary btn-lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>
+        <button type="button" class="btn btn-outline btn-lg" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 資料DLモーダル -->
+  <div class="dl-modal-overlay" id="dlModal">
+    <div class="dl-modal">
+      <button class="dl-modal-close" id="dlModalClose" aria-label="閉じる">&times;</button>
+      <p class="dl-modal-text" data-ja="資料のダウンロードにはお問い合わせフォームへのご記入が必要です。" data-en="Please fill out the contact form to download materials.">資料のダウンロードにはお問い合わせフォームへのご記入が必要です。</p>
+      <a href="contact.html" class="dl-modal-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
+    </div>
+  </div>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="partners.html" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        </div>
+      </div>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
+    </div>
+  </footer>
+
   <script src="js/nav.js"></script>
+  <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 <!-- End of HubSpot Embed Code -->

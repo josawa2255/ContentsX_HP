@@ -45,20 +45,27 @@ document.addEventListener('DOMContentLoaded', function() {
       heroLogoMain.style.animationPlayState = 'running';
     }
 
-    // 鎖アニメーション開始
+    // 鎖アニメーション開始（モバイルではスケール・距離を縮小）
+    var isMobile = window.innerWidth <= 768;
+    var chainScale = isMobile ? 2.5 : 5;
+    var chainFromA = isMobile ? 50 : 80;
+    var chainToA   = isMobile ? -70 : -120;
+    var chainFromB = isMobile ? -50 : -80;
+    var chainToB   = isMobile ? 70 : 120;
+
     animateChain(document.querySelector('.hero-chain--turq'), {
       duration: 5500,
       delay: 0,
-      fromDist: 80, toDist: -120,
+      fromDist: chainFromA, toDist: chainToA,
       angle: -30,
-      scale: 5
+      scale: chainScale
     });
     animateChain(document.querySelector('.hero-chain--orange'), {
       duration: 5500,
       delay: 300,
-      fromDist: -80, toDist: 120,
+      fromDist: chainFromB, toDist: chainToB,
       angle: -30,
-      scale: 5
+      scale: chainScale
     });
 
     // Phase 2: 5.5秒後にカルーセルへトランジション
@@ -255,6 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isVertical) {
           // 縦スクロールモード
           wdCarousel.classList.add('vertical-scroll');
+          // :has() フォールバック — 親にもクラス付与
+          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
           wdCarousel.style.transform = '';
           buildCarouselPages(true);
           // 縦読みではドットとナビ矢印を非表示
@@ -264,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           // 通常カルーセルモード
           wdCarousel.classList.remove('vertical-scroll');
+          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
           buildCarouselPages(false);
           if (wdDots) {
             wdDots.style.display = 'flex';
@@ -287,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // フォールバック: 画像読み込み失敗時は通常カルーセル
       testImg.onerror = function() {
         wdCarousel.classList.remove('vertical-scroll');
+        if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
         buildCarouselPages(false);
         // メモリリーク防止
         testImg.onload = null;

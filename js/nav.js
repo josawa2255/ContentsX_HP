@@ -17,8 +17,8 @@
     },
     { label: '企業',   labelEn: 'Corporate',      href: 'company.html',  indexHref: 'company.html',
       children: [
-        { label: '会社概要',       labelEn: 'Company',        href: 'company.html' },
         { label: '私たちの思い',    labelEn: 'Our Thoughts',   href: 'our-thoughts.html' },
+        { label: '会社概要',       labelEn: 'Company',        href: 'company.html' },
         { label: '主要関連会社',    labelEn: 'Partners',       href: 'partners.html' },
         { label: '役員紹介',       labelEn: 'Leadership',     href: 'leadership.html' }
       ]

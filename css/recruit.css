@@ -288,7 +288,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll; /* fixed はWindows/モバイルで描画崩れ・見切れ発生のため scroll に変更 */
   transition: opacity 0.3s ease;
 }
 .rc-positions--has-bg .rc-positions-overlay {
@@ -307,6 +307,7 @@
 }
 .rc-positions--has-bg .rc-pos-card {
   background: rgba(255,255,255,0.85);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 .rc-positions-inner {

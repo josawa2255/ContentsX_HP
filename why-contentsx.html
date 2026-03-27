@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/why-contentsx.css">
+  <link rel="stylesheet" href="css/dl-modal.css">
 </head>
 <body data-theme="cyber-green">
 
@@ -32,7 +33,7 @@
   <!-- ===== サービスカードグリッド（CyberAgent風） ===== -->
   <section class="why-cards" id="why-cards">
     <video class="why-cards-video" autoplay muted loop playsinline>
-      <source src="material/videos/hero_train_bg.mp4" type="video/mp4">
+      <source src="material/videos/hero_train_loop.mp4" type="video/mp4">
     </video>
     <div class="why-cards-header">
       <h2 class="why-cards-heading" data-ja="Contents Xの強み" data-en="Strengths">Contents Xの強み</h2>
@@ -190,14 +191,14 @@
           <th data-ja="Contents X" data-en="Contents X">Contents X</th>
         </tr></thead>
         <tbody>
-          <tr><td data-ja="コスト" data-en="Cost">コスト</td><td class="compare-bad">高い（7〜10万円/P）</td><td class="compare-check">安い</td><td>14,700円〜/P（1/5）</td></tr>
-          <tr><td data-ja="品質" data-en="Quality">品質</td><td class="compare-check">高い</td><td class="compare-bad">不安定</td><td>高品質（プロ監修6回チェック）</td></tr>
-          <tr><td data-ja="スピード" data-en="Speed">スピード</td><td class="compare-bad">1〜3ヶ月</td><td class="compare-check">数時間</td><td>最短2週間</td></tr>
-          <tr><td data-ja="著作権リスク" data-en="Copyright Risk">著作権リスク</td><td>低い</td><td class="compare-bad">高い（学習データ問題）</td><td>ゼロ（原画資産方式）</td></tr>
-          <tr><td data-ja="キャラ一貫性" data-en="Character Consistency">キャラ一貫性</td><td>属人的</td><td class="compare-bad">不安定</td><td>固定技術で一貫</td></tr>
-          <tr><td data-ja="IP資産価値" data-en="IP Asset Value">IP資産価値</td><td>中</td><td class="compare-bad">低い</td><td>高い（IP蓄積・展開可能）</td></tr>
-          <tr><td data-ja="戦略設計" data-en="Strategy">戦略設計</td><td>制作のみ</td><td class="compare-bad">なし</td><td>コンサルティング込み</td></tr>
-          <tr><td data-ja="メディア展開" data-en="Media Expansion">メディア展開</td><td>別途依頼</td><td class="compare-bad">なし</td><td>一気通貫（動画・DM・LP）</td></tr>
+          <tr><td data-ja="コスト" data-en="Cost">コスト</td><td class="compare-bad" data-ja="高い（7〜10万円/P）" data-en="High (¥70K–100K/P)">高い（7〜10万円/P）</td><td class="compare-check" data-ja="安い" data-en="Low">安い</td><td data-ja="14,700円〜/P（1/5）" data-en="From ¥14,700/P (1/5)">14,700円〜/P（1/5）</td></tr>
+          <tr><td data-ja="品質" data-en="Quality">品質</td><td class="compare-check" data-ja="高い" data-en="High">高い</td><td class="compare-bad" data-ja="不安定" data-en="Unstable">不安定</td><td data-ja="高品質（プロ監修6回チェック）" data-en="High quality (6 pro reviews)">高品質（プロ監修6回チェック）</td></tr>
+          <tr><td data-ja="スピード" data-en="Speed">スピード</td><td class="compare-bad" data-ja="1〜3ヶ月" data-en="1–3 months">1〜3ヶ月</td><td class="compare-check" data-ja="数時間" data-en="Hours">数時間</td><td data-ja="最短2週間" data-en="As fast as 2 weeks">最短2週間</td></tr>
+          <tr><td data-ja="著作権リスク" data-en="Copyright Risk">著作権リスク</td><td data-ja="低い" data-en="Low">低い</td><td class="compare-bad" data-ja="高い（学習データ問題）" data-en="High (training data issues)">高い（学習データ問題）</td><td data-ja="ゼロ（原画資産方式）" data-en="Zero (original asset method)">ゼロ（原画資産方式）</td></tr>
+          <tr><td data-ja="キャラ一貫性" data-en="Character Consistency">キャラ一貫性</td><td data-ja="属人的" data-en="Person-dependent">属人的</td><td class="compare-bad" data-ja="不安定" data-en="Unstable">不安定</td><td data-ja="固定技術で一貫" data-en="Consistent via fixed technology">固定技術で一貫</td></tr>
+          <tr><td data-ja="IP資産価値" data-en="IP Asset Value">IP資産価値</td><td data-ja="中" data-en="Medium">中</td><td class="compare-bad" data-ja="低い" data-en="Low">低い</td><td data-ja="高い（IP蓄積・展開可能）" data-en="High (IP accumulation & expansion)">高い（IP蓄積・展開可能）</td></tr>
+          <tr><td data-ja="戦略設計" data-en="Strategy">戦略設計</td><td data-ja="制作のみ" data-en="Production only">制作のみ</td><td class="compare-bad" data-ja="なし" data-en="None">なし</td><td data-ja="コンサルティング込み" data-en="Consulting included">コンサルティング込み</td></tr>
+          <tr><td data-ja="メディア展開" data-en="Media Expansion">メディア展開</td><td data-ja="別途依頼" data-en="Separate request">別途依頼</td><td class="compare-bad" data-ja="なし" data-en="None">なし</td><td data-ja="一気通貫（動画・DM・LP）" data-en="End-to-end (video, DM, LP)">一気通貫（動画・DM・LP）</td></tr>
         </tbody>
       </table>
       <p class="why-note-center" data-ja="Contents Xは「コスト」「品質」「スピード」のトリレンマを人間7割 × AI3割のハイブリッド体制で解決しています。" data-en="Contents X solves the trilemma with a 70% human x 30% AI hybrid system.">Contents Xは「コスト」「品質」「スピード」のトリレンマを<br>人間7割 × AI3割のハイブリッド体制で解決しています。</p>
@@ -216,19 +217,19 @@
           <th data-ja="Contents X" data-en="Contents X">Contents X</th>
         </tr></thead>
         <tbody>
-          <tr><td>作品の発表機会</td><td>編集者の承認が必要。認められなければ世に出せない</td><td>テイストや表現スタイルを問わず、あらゆる作品に発表の場を提供</td></tr>
-          <tr><td>海外展開</td><td>国内でヒットした後、出版社の判断で選別的に展開</td><td>制作段階から多市場を想定。同時多言語展開が可能</td></tr>
-          <tr><td>市場マッチング</td><td>編集者の経験と感覚に依存（属人的）</td><td>読者のSNS評価を活用 ＋ 海外プラットフォームへのオファーで選定</td></tr>
-          <tr><td>収益配分</td><td>印税は売上の約1割。出版社が大部分を受け取る構造</td><td>貢献度に応じた配分を実現。漫画家により多く還元できる仕組み</td></tr>
+          <tr><td data-ja="作品の発表機会" data-en="Publication Opportunity">作品の発表機会</td><td data-ja="編集者の承認が必要。認められなければ世に出せない" data-en="Requires editor approval. Works may never see the light of day.">編集者の承認が必要。認められなければ世に出せない</td><td data-ja="テイストや表現スタイルを問わず、あらゆる作品に発表の場を提供" data-en="A platform for all works regardless of taste or expression style.">テイストや表現スタイルを問わず、あらゆる作品に発表の場を提供</td></tr>
+          <tr><td data-ja="海外展開" data-en="Global Expansion">海外展開</td><td data-ja="国内でヒットした後、出版社の判断で選別的に展開" data-en="Selectively expanded overseas after domestic success, at publisher's discretion.">国内でヒットした後、出版社の判断で選別的に展開</td><td data-ja="制作段階から多市場を想定。同時多言語展開が可能" data-en="Multi-market targeting from production. Simultaneous multilingual launch.">制作段階から多市場を想定。同時多言語展開が可能</td></tr>
+          <tr><td data-ja="市場マッチング" data-en="Market Matching">市場マッチング</td><td data-ja="編集者の経験と感覚に依存（属人的）" data-en="Depends on editor's experience and intuition (subjective).">編集者の経験と感覚に依存（属人的）</td><td data-ja="読者のSNS評価を活用 ＋ 海外プラットフォームへのオファーで選定" data-en="Leverages reader SNS feedback + offers from global platforms.">読者のSNS評価を活用 ＋ 海外プラットフォームへのオファーで選定</td></tr>
+          <tr><td data-ja="収益配分" data-en="Revenue Share">収益配分</td><td data-ja="印税は売上の約1割。出版社が大部分を受け取る構造" data-en="Royalties ~10% of sales. Publishers take the majority.">印税は売上の約1割。出版社が大部分を受け取る構造</td><td data-ja="貢献度に応じた配分を実現。漫画家により多く還元できる仕組み" data-en="Contribution-based distribution. More revenue returned to manga artists.">貢献度に応じた配分を実現。漫画家により多く還元できる仕組み</td></tr>
         </tbody>
       </table>
       <div class="why-box">
         <h3 data-ja="漫画家個人には不可能なことを、Contents Xが代わりにやる。" data-en="Contents X does what individual mangaka cannot do alone.">漫画家個人には不可能なことを、Contents Xが代わりにやる。</h3>
         <div class="why-box-grid">
-          <div class="why-box-item"><span class="why-box-num">01</span>世界100以上のプラットフォームへの接続・掲載交渉</div>
-          <div class="why-box-item"><span class="why-box-num">02</span>制作段階からの同時多言語翻訳（英・韓・仏・西・タイ語）</div>
-          <div class="why-box-item"><span class="why-box-num">03</span>各SNSに最適化したプロモーション戦略の設計</div>
-          <div class="why-box-item"><span class="why-box-num">04</span>アニメ化・映像化・ゲーム化などIPバリューチェーン展開</div>
+          <div class="why-box-item" data-ja="世界100以上のプラットフォームへの接続・掲載交渉" data-en="Connecting and negotiating with 100+ global platforms"><span class="why-box-num">01</span>世界100以上のプラットフォームへの接続・掲載交渉</div>
+          <div class="why-box-item" data-ja="制作段階からの同時多言語翻訳（英・韓・仏・西・タイ語）" data-en="Simultaneous multilingual translation from production (EN, KR, FR, ES, TH)"><span class="why-box-num">02</span>制作段階からの同時多言語翻訳（英・韓・仏・西・タイ語）</div>
+          <div class="why-box-item" data-ja="各SNSに最適化したプロモーション戦略の設計" data-en="Promotion strategy optimized for each social media platform"><span class="why-box-num">03</span>各SNSに最適化したプロモーション戦略の設計</div>
+          <div class="why-box-item" data-ja="アニメ化・映像化・ゲーム化などIPバリューチェーン展開" data-en="IP value chain: anime, video, game adaptations and more"><span class="why-box-num">04</span>アニメ化・映像化・ゲーム化などIPバリューチェーン展開</div>
         </div>
       </div>
     </div>
@@ -261,67 +262,90 @@
   </section>
 
   <!-- ===== CTA ===== -->
-  <section class="why-cta">
-    <h2 data-ja="まずはお気軽にご相談ください" data-en="Feel free to contact us today">まずはお気軽にご相談ください</h2>
-    <p data-ja="御社の課題に最適な漫画活用プランをご提案します。" data-en="We'll propose a manga utilization plan tailored to your company's needs.">御社の課題に最適な漫画活用プランをご提案します。</p>
-    <a href="contact.html" class="why-cta-btn" data-ja="お問い合わせはこちら" data-en="Contact us here">お問い合わせはこちら</a>
+  <section class="cta" id="contact">
+    <div class="container">
+      <h2 class="cta-title" data-ja="物語で、世界の理解を拡張する。" data-en="Expand global understanding through stories.">物語で、世界の理解を拡張する。</h2>
+      <p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>
+      <div class="cta-actions">
+        <a href="contact.html" class="btn btn-primary btn-lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>
+        <button type="button" class="btn btn-outline btn-lg" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>
+      </div>
+    </div>
   </section>
+
+  <!-- 資料DLモーダル -->
+  <div class="dl-modal-overlay" id="dlModal">
+    <div class="dl-modal">
+      <button class="dl-modal-close" id="dlModalClose" aria-label="閉じる">&times;</button>
+      <p class="dl-modal-text" data-ja="資料のダウンロードにはお問い合わせフォームへのご記入が必要です。" data-en="Please fill out the contact form to download materials.">資料のダウンロードにはお問い合わせフォームへのご記入が必要です。</p>
+      <a href="contact.html" class="dl-modal-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
         <div class="footer-brand">
           <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
-          <p class="footer-company">コンテンツエックス株式会社</p>
-          <p class="footer-address">東京都目黒区目黒2-11-15 8階</p>
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
         </div>
         <div class="footer-links">
-          <a href="index.html#new-works">新作情報</a>
-          <a href="index.html#about">サービス</a>
-          <a href="why-contentsx.html">強み</a>
-          <a href="company.html">会社概要</a>
-          <a href="contact.html">お問い合わせ</a>
+          <a href="index.html#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="index.html#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="index.html#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="index.html#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="partners.html" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="company.html" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact.html" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
         </div>
       </div>
-      <p class="footer-copy">&copy; Contents X Co., Ltd. 2026 All rights reserved.</p>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
     </div>
   </footer>
 
+  <!-- 上に戻るボタン -->
+  <button class="why-scroll-top" id="whyScrollTop" aria-label="上に戻る">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+    <span>TOP</span>
+  </button>
+
   <script src="js/nav.js"></script>
+  <script src="js/dl-modal.js" defer></script>
   <script>
   (function() {
     var cards = document.querySelectorAll('.why-card[data-target]');
-    var sections = document.querySelectorAll('.why-section');
+    var scrollTopBtn = document.getElementById('whyScrollTop');
+    var cardsSection = document.getElementById('why-cards');
 
-    // 全セクション非表示
-    sections.forEach(function(sec) {
-      sec.classList.add('why-section--hidden');
-    });
-
+    // カードクリック → そのセクションへスクロール + 上に戻るボタン表示
     cards.forEach(function(card) {
       card.addEventListener('click', function() {
         var targetId = this.getAttribute('data-target');
         var target = document.getElementById(targetId);
         if (!target) return;
 
-        var isActive = this.classList.contains('why-card--active');
-
-        // リセット
         cards.forEach(function(c) { c.classList.remove('why-card--active'); });
-        sections.forEach(function(s) { s.classList.add('why-section--hidden'); });
+        this.classList.add('why-card--active');
 
-        if (!isActive) {
-          this.classList.add('why-card--active');
-          target.classList.remove('why-section--hidden');
-          // スクロール
-          setTimeout(function() {
-            var rect = target.getBoundingClientRect();
-            var offset = window.pageYOffset + rect.top - 80;
-            window.scrollTo({ top: offset, behavior: 'smooth' });
-          }, 50);
-        }
+        var rect = target.getBoundingClientRect();
+        var offset = window.pageYOffset + rect.top - 80;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+
+        if (scrollTopBtn) scrollTopBtn.classList.add('visible');
       });
     });
+
+    // 上に戻るボタン: カードグリッドのトップへ
+    if (scrollTopBtn) {
+      scrollTopBtn.addEventListener('click', function() {
+        if (cardsSection) {
+          cardsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        cards.forEach(function(c) { c.classList.remove('why-card--active'); });
+        scrollTopBtn.classList.remove('visible');
+      });
+    }
   })();
   </script>
 <!-- Start of HubSpot Embed Code -->
