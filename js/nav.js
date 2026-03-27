@@ -8,8 +8,8 @@
   var NAV_ITEMS = [
     { label: 'ホーム', labelEn: 'Home', href: 'index.html', indexHref: '#hero',
       children: [
-        { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
+        { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
         { label: 'サービス',         labelEn: 'Services',      href: '#about' },
         { label: '漫画制作フロー',    labelEn: 'Workflow',      href: '#flow' }
       ]
