@@ -10,9 +10,7 @@
       children: [
         { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
         { label: 'サービス',         labelEn: 'Services',      href: '#about' },
-        { label: '信頼の制作体制',    labelEn: 'Production',    href: '#strength' },
-        { label: '漫画制作フロー',    labelEn: 'Workflow',      href: '#flow' },
-        { label: '事業提携パートナー', labelEn: 'Partners',      href: '#partners' }
+        { label: '漫画制作フロー',    labelEn: 'Workflow',      href: '#flow' }
       ]
     },
     { label: '企業',   labelEn: 'Corporate',      href: 'company.html',  indexHref: 'company.html',
