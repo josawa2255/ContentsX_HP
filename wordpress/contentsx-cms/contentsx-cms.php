@@ -358,23 +358,51 @@ function cxcms_register_rest_fields() {
    4. CORS ヘッダー（フロントサイトからのAPI呼び出し許可）
    ========================================================== */
 
+/* 許可オリジン一覧 */
+function cxcms_allowed_origins() {
+    return [
+        'https://contentsx.jp',
+        'https://www.contentsx.jp',
+        'https://bizmanga.contentsx.jp',
+        'http://localhost:3000',
+        'http://127.0.0.1:5500',       // VS Code Live Server
+    ];
+}
+
+/* ── (A) OPTIONS プリフライトを WordPress 処理前に返す ── */
+add_action( 'init', function() {
+    $origin = isset( $_SERVER['HTTP_ORIGIN'] ) ? $_SERVER['HTTP_ORIGIN'] : '';
+    if ( empty( $origin ) ) return;
+
+    /* REST API パスへのリクエストのみ対象 */
+    $req = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+    if ( strpos( $req, '/wp-json/' ) === false ) return;
+
+    if ( in_array( $origin, cxcms_allowed_origins(), true ) ) {
+        header( 'Access-Control-Allow-Origin: ' . $origin );
+        header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
+        header( 'Access-Control-Allow-Headers: Content-Type, Authorization' );
+        header( 'Access-Control-Allow-Credentials: true' );
+        header( 'Access-Control-Max-Age: 86400' );
+    }
+
+    /* OPTIONS プリフライトは即座に 200 を返して終了 */
+    if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS' ) {
+        status_header( 200 );
+        exit;
+    }
+}, 1 );
+
+/* ── (B) REST レスポンスにも CORS ヘッダーを付与 ── */
 add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
-        /* 許可するオリジン（本番ドメインに変更してください） */
-        $allowed = [
-            'https://contentsx.jp',
-            'https://www.contentsx.jp',
-            'https://bizmanga.contentsx.jp',
-            'http://localhost:3000',
-            'http://127.0.0.1:5500',       // VS Code Live Server
-        ];
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-        if ( in_array( $origin, $allowed, true ) ) {
+        $origin = isset( $_SERVER['HTTP_ORIGIN'] ) ? $_SERVER['HTTP_ORIGIN'] : '';
+        if ( in_array( $origin, cxcms_allowed_origins(), true ) ) {
             header( 'Access-Control-Allow-Origin: ' . $origin );
         }
-        header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
-        header( 'Access-Control-Allow-Headers: Content-Type' );
+        header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
+        header( 'Access-Control-Allow-Headers: Content-Type, Authorization' );
         header( 'Access-Control-Allow-Credentials: true' );
         return $value;
     });

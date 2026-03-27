@@ -4,123 +4,32 @@
    テーマ切替はアクセントカラーのみ変更
    ============================================ */
 
-/* ---------- Theme: Content X Orange (Default) ---------- */
-[data-theme="cx-orange"] {
-  --accent: #E8640A;
-  --accent-light: rgba(232, 100, 10, 0.06);
-  --accent-rgb: 232, 100, 10;
-}
-
-/* ---------- Theme: CyberAgent Green ---------- */
+/* ---------- Theme: Cyber Green (Default) ---------- */
 [data-theme="cyber-green"] {
   --accent: #6fc31c;
   --accent-light: rgba(111, 195, 28, 0.06);
   --accent-rgb: 111, 195, 28;
 }
 
-/* ---------- Theme: Apple Blue ---------- */
-[data-theme="apple-blue"] {
-  --accent: #0071e3;
-  --accent-light: rgba(0, 113, 227, 0.06);
-  --accent-rgb: 0, 113, 227;
+/* ---------- Theme: Magenta Hot (ホットマゼンタ) ---------- */
+[data-theme="magenta-hot"] {
+  --accent: #FF0090;
+  --accent-light: rgba(255, 0, 144, 0.06);
+  --accent-rgb: 255, 0, 144;
 }
 
-/* ---------- Theme: Deep Navy ---------- */
-[data-theme="deep-navy"] {
-  --accent: #1E3A5F;
-  --accent-light: rgba(30, 58, 95, 0.06);
-  --accent-rgb: 30, 58, 95;
+/* ---------- Theme: Magenta Rose (ローズマゼンタ) ---------- */
+[data-theme="magenta-rose"] {
+  --accent: #E91E8C;
+  --accent-light: rgba(233, 30, 140, 0.06);
+  --accent-rgb: 233, 30, 140;
 }
 
-/* ---------- Theme: Violet ---------- */
-[data-theme="violet"] {
-  --accent: #7C3AED;
-  --accent-light: rgba(124, 58, 237, 0.06);
-  --accent-rgb: 124, 58, 237;
-}
-
-/* ---------- Theme: Crimson ---------- */
-[data-theme="crimson"] {
-  --accent: #DC2626;
-  --accent-light: rgba(220, 38, 38, 0.06);
-  --accent-rgb: 220, 38, 38;
-}
-
-/* ---------- Theme: Teal ---------- */
-[data-theme="teal"] {
-  --accent: #0D9488;
-  --accent-light: rgba(13, 148, 136, 0.06);
-  --accent-rgb: 13, 148, 136;
-}
-
-/* ---------- Theme: Slate ---------- */
-[data-theme="slate"] {
-  --accent: #475569;
-  --accent-light: rgba(71, 85, 105, 0.06);
-  --accent-rgb: 71, 85, 105;
-}
-
-/* ---------- Theme: Royal Blue (青) ---------- */
-[data-theme="royal-blue"] {
-  --accent: #2563EB;
-  --accent-light: rgba(37, 99, 235, 0.06);
-  --accent-rgb: 37, 99, 235;
-}
-
-/* ---------- Theme: Sky Blue (水色) ---------- */
-[data-theme="sky-blue"] {
-  --accent: #0EA5E9;
-  --accent-light: rgba(14, 165, 233, 0.06);
-  --accent-rgb: 14, 165, 233;
-}
-
-/* ---------- Theme: Indigo (藍) ---------- */
-[data-theme="indigo"] {
-  --accent: #4F46E5;
-  --accent-light: rgba(79, 70, 229, 0.06);
-  --accent-rgb: 79, 70, 229;
-}
-
-/* ---------- Theme: Emerald (エメラルド) ---------- */
-[data-theme="emerald"] {
-  --accent: #059669;
-  --accent-light: rgba(5, 150, 105, 0.06);
-  --accent-rgb: 5, 150, 105;
-}
-
-/* ---------- Theme: Lime Green (ライム) ---------- */
-[data-theme="lime-green"] {
-  --accent: #65A30D;
-  --accent-light: rgba(101, 163, 13, 0.06);
-  --accent-rgb: 101, 163, 13;
-}
-
-/* ---------- Theme: Forest (フォレスト) ---------- */
-[data-theme="forest"] {
-  --accent: #15803D;
-  --accent-light: rgba(21, 128, 61, 0.06);
-  --accent-rgb: 21, 128, 61;
-}
-
-/* ---------- Theme: Purple (パープル) ---------- */
-[data-theme="purple"] {
-  --accent: #9333EA;
-  --accent-light: rgba(147, 51, 234, 0.06);
-  --accent-rgb: 147, 51, 234;
-}
-
-/* ---------- Theme: Fuchsia (フューシャ) ---------- */
-[data-theme="fuchsia"] {
-  --accent: #C026D3;
-  --accent-light: rgba(192, 38, 211, 0.06);
-  --accent-rgb: 192, 38, 211;
-}
-
-/* ---------- Theme: Plum (プラム) ---------- */
-[data-theme="plum"] {
-  --accent: #6D28D9;
-  --accent-light: rgba(109, 40, 217, 0.06);
-  --accent-rgb: 109, 40, 217;
+/* ---------- Theme: Magenta Deep (ディープマゼンタ) ---------- */
+[data-theme="magenta-deep"] {
+  --accent: #C2185B;
+  --accent-light: rgba(194, 24, 91, 0.06);
+  --accent-rgb: 194, 24, 91;
 }
 
 /* ---------- Shared Base Variables ---------- */
@@ -1032,12 +941,13 @@ section { padding: 100px 0; }
   align-items: center;
   justify-content: center;
 }
+/* 漫画ビューア ×閉じるボタン（共通） */
 .manga-viewer-close {
   position: fixed;
   top: 16px;
   left: 16px;
   z-index: 10001;
-  background: rgba(0,0,0,0.6);
+  background: rgba(var(--accent-rgb), 0.55);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 50%;
   width: 44px;
@@ -1051,36 +961,12 @@ section { padding: 100px 0; }
   cursor: pointer;
   opacity: 0.9;
   transition: opacity 0.3s, background 0.3s;
-}
-.manga-viewer-close:hover {
-  opacity: 1;
-  background: rgba(255,255,255,0.2);
-}
-/* スマホ スクロールモード用「戻る」ボタン */
-.manga-viewer-back {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 22px;
-  padding: 8px 16px 8px 12px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  opacity: 0.9;
-  transition: opacity 0.3s, background 0.3s;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
-.manga-viewer-back:hover {
+.manga-viewer-close:hover {
   opacity: 1;
-  background: rgba(255,255,255,0.2);
+  background: rgba(var(--accent-rgb), 0.8);
 }
 
 /* フリップブックモード (PC) — 制作実績と同じUI */
@@ -1229,6 +1115,10 @@ section { padding: 100px 0; }
 }
 .manga-viewer-scroll-mode.active {
   display: block;
+}
+/* スクロールモード表示中はフリップ用×を非表示（スクロール専用×のみ） */
+.manga-viewer:has(.manga-viewer-scroll-mode.active) > .manga-viewer-close:not(.manga-viewer-close--scroll) {
+  display: none;
 }
 .manga-viewer-scroll-inner {
   max-width: 600px;

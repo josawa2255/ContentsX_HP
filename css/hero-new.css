@@ -287,7 +287,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(var(--accent-rgb), 0.55);
   color: #fff;
   border: none;
   width: 36px;
@@ -297,9 +297,11 @@
   cursor: pointer;
   z-index: 10;
   transition: background 0.2s;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 .work-detail-close:hover {
-  background: rgba(0,0,0,0.8);
+  background: rgba(var(--accent-rgb), 0.8);
 }
 
 /* 左カラム: 漫画カルーセル */
