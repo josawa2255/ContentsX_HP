@@ -482,6 +482,11 @@ function cxcms_api_works( $req ) {
             }
         }
 
+        /* アイキャッチ未設定 → ギャラリー1枚目を表紙として使用 */
+        if ( empty( $thumb_url ) && ! empty( $gallery_urls ) ) {
+            $thumb_url = $gallery_urls[0];
+        }
+
         $out[] = [
             'id'       => $m('cx_work_id') ?: sanitize_title($p->post_title),
             'title_ja' => $p->post_title,
@@ -522,6 +527,17 @@ function cxcms_api_works_new( $req ) {
         if ( $thumb_id ) {
             $img = wp_get_attachment_image_src( $thumb_id, 'full' );
             if ( $img ) $thumb_url = $img[0];
+        }
+        /* アイキャッチ未設定 → ギャラリー1枚目を表紙として使用 */
+        if ( empty( $thumb_url ) ) {
+            $gallery_ids = $m('cx_gallery');
+            if ( $gallery_ids ) {
+                $first_id = (int) strtok( $gallery_ids, ',' );
+                if ( $first_id ) {
+                    $img = wp_get_attachment_image_src( $first_id, 'full' );
+                    if ( $img ) $thumb_url = $img[0];
+                }
+            }
         }
         $out[] = [
             'id'       => $m('cx_work_id') ?: sanitize_title($p->post_title),
