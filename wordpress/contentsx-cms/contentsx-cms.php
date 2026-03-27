@@ -173,6 +173,52 @@ function cxcms_manga_meta_html( $post ) {
         <label>新作 追加日</label>
         <input type="date" name="cx_added_date" value="<?php echo esc_attr($m('cx_added_date')); ?>">
     </div>
+    <div class="cx-field">
+        <label>ギャラリー画像（漫画ページ）</label>
+        <input type="hidden" name="cx_gallery" id="cx_gallery" value="<?php echo esc_attr($m('cx_gallery')); ?>">
+        <div id="cx_gallery_preview" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
+        <?php
+        $gallery_ids = $m('cx_gallery');
+        if ($gallery_ids) {
+            foreach (array_filter(array_map('trim', explode(',', $gallery_ids))) as $att_id) {
+                $img = wp_get_attachment_image_src((int)$att_id, 'thumbnail');
+                if ($img) {
+                    echo '<div style="position:relative;"><img src="'.esc_url($img[0]).'" style="width:60px;height:80px;object-fit:cover;border:1px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'.esc_attr($att_id).'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;">×</span></div>';
+                }
+            }
+        }
+        ?>
+        </div>
+        <button type="button" id="cx_gallery_btn" class="button">画像を追加</button>
+        <div class="cx-hint">漫画の各ページ画像をアップロード（表紙はアイキャッチ画像で設定）</div>
+    </div>
+    <script>
+    jQuery(function($){
+        // ギャラリー画像追加
+        $('#cx_gallery_btn').on('click', function(e){
+            e.preventDefault();
+            var frame = wp.media({title:'漫画ページ画像を選択',multiple:true,library:{type:'image'}});
+            frame.on('select', function(){
+                var selection = frame.state().get('selection');
+                var ids = $('#cx_gallery').val() ? $('#cx_gallery').val().split(',').filter(Boolean) : [];
+                selection.each(function(att){
+                    ids.push(att.id);
+                    var url = att.attributes.sizes && att.attributes.sizes.thumbnail ? att.attributes.sizes.thumbnail.url : att.attributes.url;
+                    $('#cx_gallery_preview').append('<div style="position:relative;"><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:1px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;">×</span></div>');
+                });
+                $('#cx_gallery').val(ids.join(','));
+            });
+            frame.open();
+        });
+        // ギャラリー画像削除
+        $(document).on('click', '.cx-gallery-remove', function(){
+            var removeId = $(this).data('id').toString();
+            $(this).parent().remove();
+            var ids = $('#cx_gallery').val().split(',').filter(function(id){ return id !== removeId; });
+            $('#cx_gallery').val(ids.join(','));
+        });
+    });
+    </script>
     <?php
 }
 
@@ -200,7 +246,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date'];
+    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_gallery'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -327,6 +373,24 @@ function cxcms_api_works( $req ) {
         $m = fn($k) => get_post_meta( $p->ID, $k, true );
         $media_raw = $m('cx_media');
         $media = $media_raw ? array_map('trim', explode(',', str_replace('、', ',', $media_raw))) : [];
+        /* アイキャッチ画像URL（表紙） */
+        $thumb_url = '';
+        $thumb_id = get_post_thumbnail_id( $p->ID );
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+            if ( $img ) $thumb_url = $img[0];
+        }
+
+        /* ギャラリー画像（漫画ページ） — カスタムフィールド cx_gallery に添付画像IDをカンマ区切りで保存 */
+        $gallery_urls = [];
+        $gallery_ids = $m('cx_gallery');
+        if ( $gallery_ids ) {
+            foreach ( array_filter( array_map('trim', explode(',', $gallery_ids)) ) as $att_id ) {
+                $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+                if ( $img ) $gallery_urls[] = $img[0];
+            }
+        }
+
         $out[] = [
             'id'       => $m('cx_work_id') ?: sanitize_title($p->post_title),
             'title_ja' => $p->post_title,
@@ -341,6 +405,8 @@ function cxcms_api_works( $req ) {
             ],
             'point'    => $m('cx_point'),
             'comment'  => $m('cx_comment'),
+            'thumbnail' => $thumb_url,
+            'gallery'   => $gallery_urls,
         ];
     }
     return new WP_REST_Response( $out, 200 );
@@ -360,12 +426,19 @@ function cxcms_api_works_new( $req ) {
     $out = [];
     foreach ( $posts as $p ) {
         $m = fn($k) => get_post_meta( $p->ID, $k, true );
+        $thumb_url = '';
+        $thumb_id = get_post_thumbnail_id( $p->ID );
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+            if ( $img ) $thumb_url = $img[0];
+        }
         $out[] = [
             'id'       => $m('cx_work_id') ?: sanitize_title($p->post_title),
             'title_ja' => $p->post_title,
             'title_en' => $m('cx_title_en'),
             'pages'    => (int) $m('cx_pages'),
             'added'    => $m('cx_added_date'),
+            'thumbnail' => $thumb_url,
         ];
     }
     return new WP_REST_Response( $out, 200 );

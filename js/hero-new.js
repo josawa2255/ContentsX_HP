@@ -177,7 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
         div.className = 'hero-works-cover';
         div.dataset.workId = item.id;
         const img = document.createElement('img');
-        img.src = `material/manga/${item.id}/01.webp`;
+        /* WordPress画像があればそちら、なければローカルパス */
+        img.src = item.thumbnail || `material/manga/${item.id}/01.webp`;
         img.alt = item.title_ja;
         img.loading = 'lazy';
         img.decoding = 'async';
@@ -236,9 +237,15 @@ document.addEventListener('DOMContentLoaded', function() {
       // DocumentFragment でバッチDOM操作
       function buildCarouselPages(isVertical) {
         const frag = document.createDocumentFragment();
+        const hasGallery = work.gallery && work.gallery.length > 0;
         for (let i = 1; i <= previewPages; i++) {
           const img = document.createElement('img');
-          img.src = `material/manga/${work.id}/${String(i).padStart(2, '0')}.webp`;
+          /* WordPress ギャラリーがあればそちら、なければローカルパス */
+          if (hasGallery && work.gallery[i - 1]) {
+            img.src = work.gallery[i - 1];
+          } else {
+            img.src = `material/manga/${work.id}/${String(i).padStart(2, '0')}.webp`;
+          }
           img.alt = `${work.title_ja} ${i}ページ`;
           frag.appendChild(img);
         }
@@ -247,7 +254,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // 1ページ目の画像で縦長判定
       const testImg = new Image();
-      testImg.src = `material/manga/${work.id}/01.webp`;
+      const firstPageSrc = (work.gallery && work.gallery[0]) ? work.gallery[0] : `material/manga/${work.id}/01.webp`;
+      testImg.src = firstPageSrc;
       testImg.onload = function() {
         const ratio = testImg.naturalWidth / testImg.naturalHeight;
         const isVertical = ratio < 0.2; // 極端に縦長 = 縦読み漫画
