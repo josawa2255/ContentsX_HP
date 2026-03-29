@@ -54,7 +54,7 @@
 
   /* ── 漫画事例データを上書き ── */
   async function loadWorks() {
-    const data = await apiFetch('/works');
+    const data = await apiFetch('/works?site=contentsx');
     if (!data || !Array.isArray(data)) return;
 
     /* グローバル変数を上書き */
@@ -69,7 +69,7 @@
 
   /* ── 新作情報データを上書き ── */
   async function loadNewWorks() {
-    const data = await apiFetch('/works-new');
+    const data = await apiFetch('/works-new?site=contentsx');
     if (!data || !Array.isArray(data)) return;
 
     if (typeof NEW_WORKS_DATA !== 'undefined') {
@@ -83,7 +83,7 @@
 
   /* ── ニュース DOM を動的に生成 ── */
   async function loadNews() {
-    const data = await apiFetch('/news');
+    const data = await apiFetch('/news?site=contentsx');
     if (!data || !Array.isArray(data)) return;
 
     const list = document.querySelector('.news-list');

@@ -78,7 +78,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
       + '<p style="text-align:center;font-size:14px;color:var(--text-muted);margin-top:8px;">3営業日以内にご連絡いたします。</p>'
       + '<div style="text-align:center;margin-top:32px;padding:24px;background:var(--bg-light);border-radius:8px;">'
       + '<p style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:12px;">サービス資料をダウンロード</p>'
-      + '<a href="material/ContentsX_アライアンス提案書.pdf" download style="display:inline-block;padding:12px 32px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:4px;transition:filter 0.2s;">資料ダウンロード</a>'
+      + '<a href="material/docs/ContentsX_アライアンス提案書.pdf" download style="display:inline-block;padding:12px 32px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:4px;transition:filter 0.2s;">資料ダウンロード</a>'
       + '</div>';
     form.parentNode.insertBefore(thanks, form.nextSibling);
     form.style.display = 'none';

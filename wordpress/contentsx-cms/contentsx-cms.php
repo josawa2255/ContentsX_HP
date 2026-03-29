@@ -186,6 +186,23 @@ function cxcms_manga_meta_html( $post ) {
         <input type="date" name="cx_added_date" value="<?php echo esc_attr($m('cx_added_date')); ?>">
     </div>
     <div class="cx-field">
+        <label>ビズ書庫に表示</label>
+        <select name="cx_show_library">
+            <option value="1" <?php selected($m('cx_show_library'), '1'); ?>>表示する</option>
+            <option value="0" <?php selected($m('cx_show_library'), '0'); ?>>表示しない</option>
+        </select>
+        <div class="cx-hint">「表示する」にするとビズ書庫（漫画を読むページ）に出ます。デフォルトは表示する</div>
+    </div>
+    <div class="cx-field">
+        <label>表示先サイト</label>
+        <select name="cx_show_site">
+            <option value="both" <?php selected($m('cx_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
+            <option value="bizmanga" <?php selected($m('cx_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
+            <option value="contentsx" <?php selected($m('cx_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
+        </select>
+        <div class="cx-hint">制作事例・新作情報をどちらのサイトに表示するか選べます</div>
+    </div>
+    <div class="cx-field">
         <label>ギャラリー画像（漫画ページ）— ドラッグで並べ替え可能</label>
         <input type="hidden" name="cx_gallery" id="cx_gallery" value="<?php echo esc_attr($m('cx_gallery')); ?>">
         <div id="cx_gallery_preview" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
@@ -313,6 +330,15 @@ function cxcms_news_meta_html( $post ) {
             <input name="cx_news_url" value="<?php echo esc_attr($m('cx_news_url')); ?>" placeholder="https://...">
         </div>
     </div>
+    <div class="cx-field">
+        <label>表示先サイト</label>
+        <select name="cx_news_show_site">
+            <option value="both" <?php selected($m('cx_news_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
+            <option value="bizmanga" <?php selected($m('cx_news_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
+            <option value="contentsx" <?php selected($m('cx_news_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
+        </select>
+        <div class="cx-hint">このニュースをどちらのサイトに表示するか選べます</div>
+    </div>
     <?php
 }
 
@@ -321,7 +347,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_is_new','cx_added_date','cx_gallery'];
+    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_is_new','cx_added_date','cx_gallery','cx_show_library','cx_show_site'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -331,7 +357,7 @@ add_action( 'save_post_cx_news', 'cxcms_save_news_meta' );
 function cxcms_save_news_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_news_nonce']) || ! wp_verify_nonce($_POST['cxcms_news_nonce'], 'cxcms_news_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_news_title_en','cx_news_url'];
+    $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -347,7 +373,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_show_library','cx_show_site'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -356,7 +382,7 @@ function cxcms_register_rest_fields() {
     }
 
     /* ── ニュースのフィールド ── */
-    $news_fields = ['cx_news_title_en','cx_news_url'];
+    $news_fields = ['cx_news_title_en','cx_news_url','cx_news_show_site'];
     foreach ( $news_fields as $f ) {
         register_rest_field( 'cx_news', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -459,9 +485,78 @@ add_action( 'rest_api_init', function() {
             ],
         ],
     ]);
+
+    /* GET /wp-json/contentsx/v1/library — ビズ書庫用（漫画を読むページ） */
+    register_rest_route( 'contentsx/v1', '/library', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_library',
+        'permission_callback' => '__return_true',
+    ]);
 });
 
+/* ── ヘルパー: 漫画事例の共通データ整形 ── */
+function cxcms_format_work( $p ) {
+    $m = fn($k) => get_post_meta( $p->ID, $k, true );
+    $media_raw = $m('cx_media');
+    $media = $media_raw ? array_map('trim', explode(',', str_replace('、', ',', $media_raw))) : [];
+
+    /* アイキャッチ画像URL（表紙） */
+    $thumb_url = '';
+    $thumb_id = get_post_thumbnail_id( $p->ID );
+    if ( $thumb_id ) {
+        $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+        if ( $img ) $thumb_url = $img[0];
+    }
+
+    /* ギャラリー画像 */
+    $gallery_urls = [];
+    $gallery_ids = $m('cx_gallery');
+    if ( $gallery_ids ) {
+        foreach ( array_filter( array_map('trim', explode(',', $gallery_ids)) ) as $att_id ) {
+            $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+            if ( $img ) $gallery_urls[] = $img[0];
+        }
+    }
+
+    /* アイキャッチ未設定 → ギャラリー1枚目を表紙として使用 */
+    if ( empty( $thumb_url ) && ! empty( $gallery_urls ) ) {
+        $thumb_url = $gallery_urls[0];
+    }
+
+    return [
+        'id'        => $m('cx_work_id') ?: sanitize_title($p->post_title),
+        'title_ja'  => $p->post_title,
+        'title_en'  => $m('cx_title_en'),
+        'pages'     => (int) $m('cx_pages'),
+        'category'  => cxcms_get_first_term( $p->ID, 'manga_category' ),
+        'client'    => $m('cx_client'),
+        'media'     => $media,
+        'spec'      => [
+            'pages'  => $m('cx_spec_pages'),
+            'period' => $m('cx_spec_period'),
+        ],
+        'point'     => $m('cx_point'),
+        'comment'   => $m('cx_comment'),
+        'show_hero'    => $m('cx_show_hero') !== '0',
+        'show_library' => $m('cx_show_library') !== '0',
+        'show_site'    => $m('cx_show_site') ?: 'both',
+        'thumbnail' => $thumb_url,
+        'gallery'   => $gallery_urls,
+    ];
+}
+
+/* ── ヘルパー: サイトフィルター ── */
+function cxcms_filter_by_site( $items, $site_param, $site_key = 'show_site' ) {
+    if ( empty( $site_param ) ) return $items;
+    $site = sanitize_text_field( $site_param );
+    return array_values( array_filter( $items, function( $item ) use ( $site, $site_key ) {
+        $show = $item[ $site_key ] ?? 'both';
+        return $show === 'both' || $show === $site;
+    }));
+}
+
 /* ── 全漫画事例 ── */
+/* ?site=bizmanga or ?site=contentsx でフィルタリング可能 */
 function cxcms_api_works( $req ) {
     $posts = get_posts([
         'post_type'      => 'manga_work',
@@ -473,59 +568,18 @@ function cxcms_api_works( $req ) {
     ]);
     $out = [];
     foreach ( $posts as $p ) {
-        $m = fn($k) => get_post_meta( $p->ID, $k, true );
-        $media_raw = $m('cx_media');
-        $media = $media_raw ? array_map('trim', explode(',', str_replace('、', ',', $media_raw))) : [];
-        /* アイキャッチ画像URL（表紙） */
-        $thumb_url = '';
-        $thumb_id = get_post_thumbnail_id( $p->ID );
-        if ( $thumb_id ) {
-            $img = wp_get_attachment_image_src( $thumb_id, 'full' );
-            if ( $img ) $thumb_url = $img[0];
-        }
-
-        /* ギャラリー画像（漫画ページ） — カスタムフィールド cx_gallery に添付画像IDをカンマ区切りで保存 */
-        $gallery_urls = [];
-        $gallery_ids = $m('cx_gallery');
-        if ( $gallery_ids ) {
-            foreach ( array_filter( array_map('trim', explode(',', $gallery_ids)) ) as $att_id ) {
-                $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
-                if ( $img ) $gallery_urls[] = $img[0];
-            }
-        }
-
-        /* アイキャッチ未設定 → ギャラリー1枚目を表紙として使用 */
-        if ( empty( $thumb_url ) && ! empty( $gallery_urls ) ) {
-            $thumb_url = $gallery_urls[0];
-        }
-
-        $out[] = [
-            'id'       => $m('cx_work_id') ?: sanitize_title($p->post_title),
-            'title_ja' => $p->post_title,
-            'title_en' => $m('cx_title_en'),
-            'pages'    => (int) $m('cx_pages'),
-            'category' => cxcms_get_first_term( $p->ID, 'manga_category' ),
-            'client'   => $m('cx_client'),
-            'media'    => $media,
-            'spec'     => [
-                'pages'  => $m('cx_spec_pages'),
-                'period' => $m('cx_spec_period'),
-            ],
-            'point'    => $m('cx_point'),
-            'comment'  => $m('cx_comment'),
-            'show_hero' => $m('cx_show_hero') !== '0',
-            'thumbnail' => $thumb_url,
-            'gallery'   => $gallery_urls,
-        ];
+        $out[] = cxcms_format_work( $p );
     }
+    $out = cxcms_filter_by_site( $out, $req->get_param('site') );
     return new WP_REST_Response( $out, 200 );
 }
 
 /* ── 新作情報 ── */
+/* ?site=bizmanga or ?site=contentsx でフィルタリング可能 */
 function cxcms_api_works_new( $req ) {
     $posts = get_posts([
         'post_type'      => 'manga_work',
-        'posts_per_page' => 10,
+        'posts_per_page' => 20,  /* フィルタ後に10件に絞るため多めに取得 */
         'meta_key'       => 'cx_added_date',
         'orderby'        => 'meta_value',
         'order'          => 'DESC',
@@ -541,7 +595,6 @@ function cxcms_api_works_new( $req ) {
             $img = wp_get_attachment_image_src( $thumb_id, 'full' );
             if ( $img ) $thumb_url = $img[0];
         }
-        /* アイキャッチ未設定 → ギャラリー1枚目を表紙として使用 */
         if ( empty( $thumb_url ) ) {
             $gallery_ids = $m('cx_gallery');
             if ( $gallery_ids ) {
@@ -553,18 +606,21 @@ function cxcms_api_works_new( $req ) {
             }
         }
         $out[] = [
-            'id'       => $m('cx_work_id') ?: sanitize_title($p->post_title),
-            'title_ja' => $p->post_title,
-            'title_en' => $m('cx_title_en'),
-            'pages'    => (int) $m('cx_pages'),
-            'added'    => $m('cx_added_date'),
+            'id'        => $m('cx_work_id') ?: sanitize_title($p->post_title),
+            'title_ja'  => $p->post_title,
+            'title_en'  => $m('cx_title_en'),
+            'pages'     => (int) $m('cx_pages'),
+            'added'     => $m('cx_added_date'),
+            'show_site' => $m('cx_show_site') ?: 'both',
             'thumbnail' => $thumb_url,
         ];
     }
-    return new WP_REST_Response( $out, 200 );
+    $out = cxcms_filter_by_site( $out, $req->get_param('site') );
+    return new WP_REST_Response( array_slice($out, 0, 10), 200 );
 }
 
 /* ── ニュース一覧 ── */
+/* ?site=bizmanga or ?site=contentsx でフィルタリング可能 */
 function cxcms_api_news( $req ) {
     $limit = (int) ($req->get_param('per_page') ?: 10);
     $posts = get_posts([
@@ -589,8 +645,10 @@ function cxcms_api_news( $req ) {
             'title_en'  => $m('cx_news_title_en'),
             'url'       => $m('cx_news_url') ?: '',
             'has_detail' => $has_detail,
+            'show_site' => $m('cx_news_show_site') ?: 'both',
         ];
     }
+    $out = cxcms_filter_by_site( $out, $req->get_param('site') );
     return new WP_REST_Response( $out, 200 );
 }
 
@@ -617,6 +675,56 @@ function cxcms_api_news_single( $req ) {
         'url'       => $m('cx_news_url') ?: '',
         'content'   => $content,
     ], 200 );
+}
+
+/* ── ビズ書庫（漫画を読むページ）── */
+/* cx_show_library = '1'（デフォルト）の作品のみ返す */
+function cxcms_api_library( $req ) {
+    $posts = get_posts([
+        'post_type'      => 'manga_work',
+        'posts_per_page' => 100,
+        'meta_key'       => 'cx_sort_order',
+        'orderby'        => 'meta_value_num',
+        'order'          => 'ASC',
+        'post_status'    => 'publish',
+    ]);
+    $out = [];
+    foreach ( $posts as $p ) {
+        $m = fn($k) => get_post_meta( $p->ID, $k, true );
+
+        /* ビズ書庫非表示の作品をスキップ */
+        if ( $m('cx_show_library') === '0' ) continue;
+
+        $thumb_url = '';
+        $thumb_id = get_post_thumbnail_id( $p->ID );
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+            if ( $img ) $thumb_url = $img[0];
+        }
+
+        $gallery_urls = [];
+        $gallery_ids = $m('cx_gallery');
+        if ( $gallery_ids ) {
+            foreach ( array_filter( array_map('trim', explode(',', $gallery_ids)) ) as $att_id ) {
+                $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+                if ( $img ) $gallery_urls[] = $img[0];
+            }
+        }
+        if ( empty( $thumb_url ) && ! empty( $gallery_urls ) ) {
+            $thumb_url = $gallery_urls[0];
+        }
+
+        $out[] = [
+            'id'        => $m('cx_work_id') ?: sanitize_title($p->post_title),
+            'title_ja'  => $p->post_title,
+            'title_en'  => $m('cx_title_en'),
+            'pages'     => (int) $m('cx_pages'),
+            'category'  => cxcms_get_first_term( $p->ID, 'manga_category' ),
+            'thumbnail' => $thumb_url,
+            'gallery'   => $gallery_urls,
+        ];
+    }
+    return new WP_REST_Response( $out, 200 );
 }
 
 /* ── ヘルパー ── */
@@ -681,6 +789,8 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
             $new['cx_pages']   = 'ページ';
             $new['cx_show_hero'] = 'Hero';
             $new['cx_is_new']  = '新作';
+            $new['cx_show_library'] = '書庫';
+            $new['cx_show_site'] = 'サイト';
         }
     }
     return $new;
@@ -688,8 +798,14 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
 add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
     $v = get_post_meta( $id, $col, true );
     if ( $col === 'cx_show_hero' ) { echo $v !== '0' ? '✅' : '—'; return; }
-    if ( $col === 'cx_is_new' ) echo $v === '1' ? '✅' : '—';
-    else echo esc_html( $v ?: '—' );
+    if ( $col === 'cx_is_new' ) { echo $v === '1' ? '✅' : '—'; return; }
+    if ( $col === 'cx_show_library' ) { echo $v !== '0' ? '✅' : '—'; return; }
+    if ( $col === 'cx_show_site' ) {
+        $labels = ['both'=>'両方','bizmanga'=>'BM','contentsx'=>'CX'];
+        echo esc_html( $labels[$v] ?? '両方' );
+        return;
+    }
+    echo esc_html( $v ?: '—' );
 }, 10, 2 );
 
 /* ニュースの一覧カラム */

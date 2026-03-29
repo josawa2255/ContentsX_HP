@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (submitted) {
       // フォーム記入済み → 直接DL
       var a = document.createElement('a');
-      a.href = 'material/ContentsX_アライアンス提案書.pdf';
+      a.href = 'material/docs/ContentsX_アライアンス提案書.pdf';
       a.download = '';
       document.body.appendChild(a);
       a.click();

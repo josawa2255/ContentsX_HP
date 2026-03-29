@@ -4,8 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>強み | ContentsX</title>
+  <meta name="description" content="なぜContentsXが選ばれるのか。漫画制作の強み・実績データ・制作フローをご紹介。">
+  <link rel="canonical" href="https://contentsx.jp/why-contentsx.html">
+  
+  <!-- OG tags -->
+  <meta property="og:title" content="強み | ContentsX">
+  <meta property="og:description" content="なぜContentsXが選ばれるのか。漫画制作の強み・実績データ・制作フローをご紹介。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://contentsx.jp/why-contentsx.html">
+  <meta property="og:site_name" content="ContentsX">
+  <meta property="og:image" content="https://contentsx.jp/material/images/logo/ContentsX.webp">
+  <meta property="og:locale" content="ja_JP">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="強み | ContentsX">
+  <meta name="twitter:description" content="なぜContentsXが選ばれるのか。漫画制作の強み・実績データ・制作フローをご紹介。">
+  <meta name="twitter:image" content="https://contentsx.jp/material/images/logo/ContentsX.webp">
+  
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="ja" href="https://contentsx.jp/why-contentsx.html">
+  <link rel="alternate" hreflang="en" href="https://contentsx.jp/why-contentsx.html">
+  <link rel="alternate" hreflang="x-default" href="https://contentsx.jp/why-contentsx.html">
+  
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "強み | ContentsX",
+    "description": "なぜContentsXが選ばれるのか。漫画制作の強み・実績データ・制作フローをご紹介。",
+    "url": "https://contentsx.jp/why-contentsx.html",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ContentsX",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://contentsx.jp/material/images/logo/ContentsX.webp"
+      }
+    }
+  }
+  </script>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/webp" href="material/images/contentsx-icon.webp">
+  <link rel="icon" type="image/webp" href="material/images/logo/contentsx-icon.webp">
   <link rel="stylesheet" href="css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +77,7 @@
       <source src="material/videos/hero_train_loop.mp4" type="video/mp4">
     </video>
     <div class="why-cards-header">
-      <h2 class="why-cards-heading" data-ja="Contents Xの強み" data-en="Strengths">Contents Xの強み</h2>
+      <h1 class="why-cards-heading" data-ja="Contents Xの強み" data-en="Strengths">Contents Xの強み</h1>
     </div>
     <div class="why-cards-grid">
       <button class="why-card" data-target="sec-why-now">
@@ -304,6 +345,21 @@
     </div>
   </footer>
 
+  <!-- ===== セクション縦ナビ（ホームと同じUI） ===== -->
+  <nav class="section-dots" id="whySideNav">
+    <div class="section-dots-track">
+      <a class="section-dot" data-section="sec-why-now" data-label="なぜマンガか"></a>
+      <a class="section-dot" data-section="sec-power" data-label="マンガの力"></a>
+      <a class="section-dot" data-section="sec-results" data-label="実績データ"></a>
+      <a class="section-dot" data-section="sec-compare" data-label="3者比較"></a>
+      <a class="section-dot" data-section="sec-publish" data-label="出版比較"></a>
+      <a class="section-dot" data-section="sec-flow" data-label="制作フロー"></a>
+    </div>
+    <a class="section-nav-arrow" id="whySideUp" aria-label="前のセクション">&#8963;</a>
+    <span class="section-active-label" id="whySideLabel"></span>
+    <a class="section-nav-arrow" id="whySideDown" aria-label="次のセクション">&#8964;</a>
+  </nav>
+
   <!-- 上に戻るボタン -->
   <button class="why-scroll-top" id="whyScrollTop" aria-label="上に戻る">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
@@ -346,6 +402,85 @@
         scrollTopBtn.classList.remove('visible');
       });
     }
+
+    // ===== セクション縦ナビ（ホームと同じUI） =====
+    var sideNav = document.getElementById('whySideNav');
+    var dots = sideNav ? sideNav.querySelectorAll('.section-dot') : [];
+    var upBtn = document.getElementById('whySideUp');
+    var downBtn = document.getElementById('whySideDown');
+    var sideLabel = document.getElementById('whySideLabel');
+
+    var sectionIds = ['sec-why-now', 'sec-power', 'sec-results', 'sec-compare', 'sec-publish', 'sec-flow'];
+    var currentIdx = 0;
+
+    function updateSideNav(idx) {
+      currentIdx = idx;
+      dots.forEach(function(d, i) {
+        d.classList.toggle('active', i === idx);
+      });
+      if (sideLabel) sideLabel.textContent = dots[idx] ? dots[idx].getAttribute('data-label') : '';
+    }
+
+    // ドットクリック
+    dots.forEach(function(dot, i) {
+      dot.addEventListener('click', function(e) {
+        e.preventDefault();
+        var el = document.getElementById(sectionIds[i]);
+        if (el) {
+          var top = window.pageYOffset + el.getBoundingClientRect().top - 80;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // 上下矢印クリック
+    if (upBtn) upBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var next = Math.max(0, currentIdx - 1);
+      var el = document.getElementById(sectionIds[next]);
+      if (el) {
+        var top = window.pageYOffset + el.getBoundingClientRect().top - 80;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+    if (downBtn) downBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var next = Math.min(sectionIds.length - 1, currentIdx + 1);
+      var el = document.getElementById(sectionIds[next]);
+      if (el) {
+        var top = window.pageYOffset + el.getBoundingClientRect().top - 80;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+
+    // スクロールスパイ
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        ticking = false;
+        var scrollY = window.pageYOffset;
+        // カードセクション以降でサイドナビ表示
+        if (cardsSection && sideNav) {
+          var cardsBottom = cardsSection.getBoundingClientRect().bottom + scrollY;
+          sideNav.classList.toggle('visible', scrollY > cardsBottom - 200);
+        }
+        // どのセクションにいるか判定
+        var found = -1;
+        for (var i = sectionIds.length - 1; i >= 0; i--) {
+          var sec = document.getElementById(sectionIds[i]);
+          if (sec) {
+            var rect = sec.getBoundingClientRect();
+            if (rect.top <= window.innerHeight * 0.4) {
+              found = i;
+              break;
+            }
+          }
+        }
+        if (found >= 0) updateSideNav(found);
+      });
+    });
   })();
   </script>
 <!-- Start of HubSpot Embed Code -->
