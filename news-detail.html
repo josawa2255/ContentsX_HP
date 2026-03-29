@@ -219,7 +219,7 @@
       try {
         const apiBase = (typeof WP_CONFIG !== 'undefined' && WP_CONFIG.enabled && WP_CONFIG.apiBase)
           ? WP_CONFIG.apiBase.replace(/\/+$/, '')
-          : 'https://bizmanga.contentsx.jp/wp-json/contentsx/v1';
+          : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
 
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 8000);
