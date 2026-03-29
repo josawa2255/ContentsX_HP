@@ -6,7 +6,7 @@
 (function() {
   // ===== メニュー定義（ここだけ変えれば全ページ反映） =====
   var NAV_ITEMS = [
-    { label: 'ホーム', labelEn: 'Home', href: 'index.html', indexHref: '#hero',
+    { label: 'ホーム', labelEn: 'Home', href: './', indexHref: '#hero',
       children: [
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
         { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
@@ -14,17 +14,17 @@
         { label: '漫画制作フロー',    labelEn: 'Workflow',      href: '#flow' }
       ]
     },
-    { label: '企業',   labelEn: 'Corporate',      href: 'company.html',  indexHref: 'company.html',
+    { label: '企業',   labelEn: 'Corporate',      href: 'company',  indexHref: 'company',
       children: [
-        { label: '私たちの思い',    labelEn: 'Our Thoughts',   href: 'our-thoughts.html' },
-        { label: '会社概要',       labelEn: 'Company',        href: 'company.html' },
-        { label: '主要関連会社',    labelEn: 'Partners',       href: 'partners.html' },
-        { label: '役員紹介',       labelEn: 'Leadership',     href: 'leadership.html' }
+        { label: '私たちの思い',    labelEn: 'Our Thoughts',   href: 'our-thoughts' },
+        { label: '会社概要',       labelEn: 'Company',        href: 'company' },
+        { label: '主要関連会社',    labelEn: 'Partners',       href: 'partners' },
+        { label: '役員紹介',       labelEn: 'Leadership',     href: 'leadership' }
       ]
     },
-    { label: '強み', labelEn: 'Strengths',       href: 'why-contentsx.html',  indexHref: 'why-contentsx.html' },
-    { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit.html',        indexHref: 'recruit.html' },
-    { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact.html',        indexHref: 'contact.html', cta: true }
+    { label: '強み', labelEn: 'Strengths',       href: 'why-contentsx',  indexHref: 'why-contentsx' },
+    { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit',        indexHref: 'recruit' },
+    { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact',        indexHref: 'contact', cta: true }
   ];
 
   // 現在のファイル名を取得
@@ -46,7 +46,7 @@
   // href解決ヘルパー
   function resolveHref(rawHref) {
     if (rawHref.startsWith('#')) {
-      return isIndex ? rawHref : 'index.html' + rawHref;
+      return isIndex ? rawHref : './' + rawHref;
     }
     return rawHref;
   }
@@ -98,7 +98,7 @@
       var a = document.createElement('a');
       var rawHref = item.href;
       if (rawHref.startsWith('#')) {
-        a.href = isIndex ? rawHref : 'index.html' + rawHref;
+        a.href = isIndex ? rawHref : './' + rawHref;
       } else {
         a.href = rawHref;
       }

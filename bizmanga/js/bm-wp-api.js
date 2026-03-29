@@ -93,7 +93,7 @@
       if (item.url) {
         a.href = item.url;
       } else if (item.has_detail && item.id) {
-        a.href = 'news-detail.html?id=' + item.id;
+        a.href = 'news-detail?id=' + item.id;
       } else {
         a.href = '#';
       }

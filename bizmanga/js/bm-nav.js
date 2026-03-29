@@ -4,15 +4,15 @@
  */
 (function() {
   var NAV_ITEMS = [
-    { label: 'ホーム',     labelEn: 'Home',       href: 'index.html' },
-    { label: '制作事例',   labelEn: 'Works',      href: 'works.html' },
-    { label: 'ビズ書庫',   labelEn: 'Library',    href: 'biz-library.html' },
-    { label: '料金',       labelEn: 'Pricing',    href: 'pricing.html' },
-    { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq.html' }
+    { label: 'ホーム',     labelEn: 'Home',       href: './' },
+    { label: '制作事例',   labelEn: 'Works',      href: 'works' },
+    { label: 'ビズ書庫',   labelEn: 'Library',    href: 'biz-library' },
+    { label: '料金',       labelEn: 'Pricing',    href: 'pricing' },
+    { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' }
   ];
 
   var path = location.pathname;
-  var currentFile = path.substring(path.lastIndexOf('/') + 1) || 'index.html';
+  var currentFile = path.substring(path.lastIndexOf('/') + 1) || 'index';
 
   // ===== 言語状態の管理 =====
   var currentLang = 'ja';
