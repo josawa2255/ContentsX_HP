@@ -236,6 +236,56 @@ function cxcms_manga_meta_html( $post ) {
         <button type="button" id="cx_gallery_btn" class="button">画像を追加</button>
         <div class="cx-hint">漫画の各ページ画像をアップロード（表紙は右サイドバーの「表紙の画像」で設定）。ドラッグで順番変更可。ファイル名の番号順で自動ソートされます。</div>
     </div>
+    <div class="cx-field">
+        <label>赤ペン画像 — ドラッグで並べ替え可能</label>
+        <input type="hidden" name="cx_akapen_gallery" id="cx_akapen_gallery" value="<?php echo esc_attr($m('cx_akapen_gallery')); ?>">
+        <div id="cx_akapen_gallery_preview" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
+        <?php
+        $akapen_ids = $m('cx_akapen_gallery');
+        if ($akapen_ids) {
+            $idx = 1;
+            foreach (array_filter(array_map('trim', explode(',', $akapen_ids))) as $att_id) {
+                $img = wp_get_attachment_image_src((int)$att_id, 'thumbnail');
+                if ($img) {
+                    echo '<div class="cx-gallery-item cx-akapen-item" data-id="'.esc_attr($att_id).'" draggable="true" style="position:relative;cursor:grab;user-select:none;">'
+                        .'<div style="position:absolute;top:-4px;left:-4px;background:#e53935;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;" class="cx-gallery-num">'.$idx.'</div>'
+                        .'<img src="'.esc_url($img[0]).'" style="width:60px;height:80px;object-fit:cover;border:2px solid #e53935;border-radius:4px;">'
+                        .'<span class="cx-gallery-remove cx-akapen-remove" data-id="'.esc_attr($att_id).'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span>'
+                        .'</div>';
+                    $idx++;
+                }
+            }
+        }
+        ?>
+        </div>
+        <button type="button" id="cx_akapen_gallery_btn" class="button">赤ペン画像を追加</button>
+        <div class="cx-hint">赤ペン（添削済み）の画像をアップロード。ビズ書庫の詳細ページに表示されます。</div>
+    </div>
+    <div class="cx-field">
+        <label>ネーム画像 — ドラッグで並べ替え可能</label>
+        <input type="hidden" name="cx_name_gallery" id="cx_name_gallery" value="<?php echo esc_attr($m('cx_name_gallery')); ?>">
+        <div id="cx_name_gallery_preview" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;">
+        <?php
+        $name_ids = $m('cx_name_gallery');
+        if ($name_ids) {
+            $idx = 1;
+            foreach (array_filter(array_map('trim', explode(',', $name_ids))) as $att_id) {
+                $img = wp_get_attachment_image_src((int)$att_id, 'thumbnail');
+                if ($img) {
+                    echo '<div class="cx-gallery-item cx-name-item" data-id="'.esc_attr($att_id).'" draggable="true" style="position:relative;cursor:grab;user-select:none;">'
+                        .'<div style="position:absolute;top:-4px;left:-4px;background:#ff9800;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;" class="cx-gallery-num">'.$idx.'</div>'
+                        .'<img src="'.esc_url($img[0]).'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ff9800;border-radius:4px;">'
+                        .'<span class="cx-gallery-remove cx-name-remove" data-id="'.esc_attr($att_id).'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span>'
+                        .'</div>';
+                    $idx++;
+                }
+            }
+        }
+        ?>
+        </div>
+        <button type="button" id="cx_name_gallery_btn" class="button">ネーム画像を追加</button>
+        <div class="cx-hint">ネーム（下書き）の画像をアップロード。ビズ書庫の詳細ページに表示されます。</div>
+    </div>
     <script>
     jQuery(function($){
         // ページ番号を振り直す
@@ -310,13 +360,139 @@ function cxcms_manga_meta_html( $post ) {
             frame.open();
         });
         // ギャラリー画像削除
-        $(document).on('click', '.cx-gallery-remove', function(e){
+        $(document).on('click', '#cx_gallery_preview .cx-gallery-remove', function(e){
             e.stopPropagation();
             var removeId = $(this).data('id').toString();
             $(this).closest('.cx-gallery-item').remove();
             var ids = $('#cx_gallery').val().split(',').filter(function(id){ return id !== removeId; });
             $('#cx_gallery').val(ids.join(','));
             reNumber();
+        });
+
+        // ===== 赤ペンギャラリー =====
+        function reNumberAkapen() {
+            $('#cx_akapen_gallery_preview .cx-gallery-num').each(function(i){ $(this).text(i+1); });
+        }
+        function syncAkapenIds() {
+            var ids = [];
+            $('#cx_akapen_gallery_preview .cx-akapen-item').each(function(){ ids.push($(this).data('id')); });
+            $('#cx_akapen_gallery').val(ids.join(','));
+            reNumberAkapen();
+        }
+        (function(){
+            var dragEl = null;
+            var preview = document.getElementById('cx_akapen_gallery_preview');
+            preview.addEventListener('dragstart', function(e){
+                dragEl = e.target.closest('.cx-akapen-item');
+                if (!dragEl) return;
+                dragEl.style.opacity = '0.4';
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            preview.addEventListener('dragover', function(e){
+                e.preventDefault();
+                var target = e.target.closest('.cx-akapen-item');
+                if (target && target !== dragEl) {
+                    var rect = target.getBoundingClientRect();
+                    var mid = rect.left + rect.width / 2;
+                    if (e.clientX < mid) preview.insertBefore(dragEl, target);
+                    else preview.insertBefore(dragEl, target.nextSibling);
+                }
+            });
+            preview.addEventListener('dragend', function(){ if(dragEl){dragEl.style.opacity='1';dragEl=null;} syncAkapenIds(); });
+        })();
+        $('#cx_akapen_gallery_btn').on('click', function(e){
+            e.preventDefault();
+            var frame = wp.media({title:'赤ペン画像を選択',multiple:true,library:{type:'image'}});
+            frame.on('select', function(){
+                var selection = frame.state().get('selection');
+                var newItems = [];
+                selection.each(function(att){ newItems.push(att); });
+                newItems.sort(function(a,b){
+                    var numA = parseInt((a.attributes.filename||'').match(/(\d+)/)?.[1]||'0',10);
+                    var numB = parseInt((b.attributes.filename||'').match(/(\d+)/)?.[1]||'0',10);
+                    return numA - numB;
+                });
+                var ids = $('#cx_akapen_gallery').val() ? $('#cx_akapen_gallery').val().split(',').filter(Boolean) : [];
+                newItems.forEach(function(att){
+                    ids.push(att.id);
+                    var url = att.attributes.sizes && att.attributes.sizes.thumbnail ? att.attributes.sizes.thumbnail.url : att.attributes.url;
+                    $('#cx_akapen_gallery_preview').append('<div class="cx-gallery-item cx-akapen-item" data-id="'+att.id+'" draggable="true" style="position:relative;cursor:grab;user-select:none;"><div class="cx-gallery-num" style="position:absolute;top:-4px;left:-4px;background:#e53935;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;"></div><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:2px solid #e53935;border-radius:4px;"><span class="cx-gallery-remove cx-akapen-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span></div>');
+                });
+                $('#cx_akapen_gallery').val(ids.join(','));
+                reNumberAkapen();
+            });
+            frame.open();
+        });
+        $(document).on('click', '.cx-akapen-remove', function(e){
+            e.stopPropagation();
+            var removeId = $(this).data('id').toString();
+            $(this).closest('.cx-akapen-item').remove();
+            var ids = $('#cx_akapen_gallery').val().split(',').filter(function(id){ return id !== removeId; });
+            $('#cx_akapen_gallery').val(ids.join(','));
+            reNumberAkapen();
+        });
+
+        // ===== ネームギャラリー =====
+        function reNumberName() {
+            $('#cx_name_gallery_preview .cx-gallery-num').each(function(i){ $(this).text(i+1); });
+        }
+        function syncNameIds() {
+            var ids = [];
+            $('#cx_name_gallery_preview .cx-name-item').each(function(){ ids.push($(this).data('id')); });
+            $('#cx_name_gallery').val(ids.join(','));
+            reNumberName();
+        }
+        (function(){
+            var dragEl = null;
+            var preview = document.getElementById('cx_name_gallery_preview');
+            preview.addEventListener('dragstart', function(e){
+                dragEl = e.target.closest('.cx-name-item');
+                if (!dragEl) return;
+                dragEl.style.opacity = '0.4';
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            preview.addEventListener('dragover', function(e){
+                e.preventDefault();
+                var target = e.target.closest('.cx-name-item');
+                if (target && target !== dragEl) {
+                    var rect = target.getBoundingClientRect();
+                    var mid = rect.left + rect.width / 2;
+                    if (e.clientX < mid) preview.insertBefore(dragEl, target);
+                    else preview.insertBefore(dragEl, target.nextSibling);
+                }
+            });
+            preview.addEventListener('dragend', function(){ if(dragEl){dragEl.style.opacity='1';dragEl=null;} syncNameIds(); });
+        })();
+        $('#cx_name_gallery_btn').on('click', function(e){
+            e.preventDefault();
+            var frame = wp.media({title:'ネーム画像を選択',multiple:true,library:{type:'image'}});
+            frame.on('select', function(){
+                var selection = frame.state().get('selection');
+                var newItems = [];
+                selection.each(function(att){ newItems.push(att); });
+                newItems.sort(function(a,b){
+                    var numA = parseInt((a.attributes.filename||'').match(/(\d+)/)?.[1]||'0',10);
+                    var numB = parseInt((b.attributes.filename||'').match(/(\d+)/)?.[1]||'0',10);
+                    return numA - numB;
+                });
+                var ids = $('#cx_name_gallery').val() ? $('#cx_name_gallery').val().split(',').filter(Boolean) : [];
+                newItems.forEach(function(att){
+                    ids.push(att.id);
+                    var url = att.attributes.sizes && att.attributes.sizes.thumbnail ? att.attributes.sizes.thumbnail.url : att.attributes.url;
+                    $('#cx_name_gallery_preview').append('<div class="cx-gallery-item cx-name-item" data-id="'+att.id+'" draggable="true" style="position:relative;cursor:grab;user-select:none;"><div class="cx-gallery-num" style="position:absolute;top:-4px;left:-4px;background:#ff9800;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;"></div><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ff9800;border-radius:4px;"><span class="cx-gallery-remove cx-name-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span></div>');
+                });
+                $('#cx_name_gallery').val(ids.join(','));
+                reNumberName();
+            });
+            frame.open();
+        });
+        $(document).on('click', '.cx-name-remove', function(e){
+            e.stopPropagation();
+            var removeId = $(this).data('id').toString();
+            $(this).closest('.cx-name-item').remove();
+            var ids = $('#cx_name_gallery').val().split(',').filter(function(id){ return id !== removeId; });
+            $('#cx_name_gallery').val(ids.join(','));
+            reNumberName();
         });
     });
     </script>
@@ -356,7 +532,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_show_library','cx_show_site'];
+    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -532,6 +708,26 @@ function cxcms_format_work( $p ) {
         $thumb_url = $gallery_urls[0];
     }
 
+    /* 赤ペンギャラリー */
+    $akapen_urls = [];
+    $akapen_ids = $m('cx_akapen_gallery');
+    if ( $akapen_ids ) {
+        foreach ( array_filter( array_map('trim', explode(',', $akapen_ids)) ) as $att_id ) {
+            $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+            if ( $img ) $akapen_urls[] = $img[0];
+        }
+    }
+
+    /* ネームギャラリー */
+    $name_urls = [];
+    $name_ids = $m('cx_name_gallery');
+    if ( $name_ids ) {
+        foreach ( array_filter( array_map('trim', explode(',', $name_ids)) ) as $att_id ) {
+            $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+            if ( $img ) $name_urls[] = $img[0];
+        }
+    }
+
     return [
         'id'        => $m('cx_work_id') ?: sanitize_title($p->post_title),
         'title_ja'  => $p->post_title,
@@ -552,6 +748,8 @@ function cxcms_format_work( $p ) {
         'show_site'    => $m('cx_show_site') ?: 'both',
         'thumbnail' => $thumb_url,
         'gallery'   => $gallery_urls,
+        'akapen_gallery' => $akapen_urls,
+        'name_gallery'   => $name_urls,
     ];
 }
 
@@ -724,14 +922,46 @@ function cxcms_api_library( $req ) {
             $thumb_url = $gallery_urls[0];
         }
 
+        /* 赤ペンギャラリー */
+        $akapen_urls = [];
+        $akapen_ids = $m('cx_akapen_gallery');
+        if ( $akapen_ids ) {
+            foreach ( array_filter( array_map('trim', explode(',', $akapen_ids)) ) as $att_id ) {
+                $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+                if ( $img ) $akapen_urls[] = $img[0];
+            }
+        }
+
+        /* ネームギャラリー */
+        $name_urls = [];
+        $name_ids = $m('cx_name_gallery');
+        if ( $name_ids ) {
+            foreach ( array_filter( array_map('trim', explode(',', $name_ids)) ) as $att_id ) {
+                $img = wp_get_attachment_image_src( (int)$att_id, 'full' );
+                if ( $img ) $name_urls[] = $img[0];
+            }
+        }
+
+        /* タグ（manga_category の全term） */
+        $tags = [];
+        $terms = get_the_terms( $p->ID, 'manga_category' );
+        if ( $terms && ! is_wp_error($terms) ) {
+            foreach ( $terms as $term ) {
+                $tags[] = $term->name;
+            }
+        }
+
         $out[] = [
             'id'        => $m('cx_work_id') ?: sanitize_title($p->post_title),
             'title_ja'  => $p->post_title,
             'title_en'  => $m('cx_title_en'),
             'pages'     => (int) $m('cx_pages'),
-            'category'  => cxcms_get_first_term( $p->ID, 'manga_category' ),
+            'category'  => ! empty($tags) ? $tags[0] : '',
+            'tags'      => $tags,
             'thumbnail' => $thumb_url,
             'gallery'   => $gallery_urls,
+            'akapen_gallery' => $akapen_urls,
+            'name_gallery'   => $name_urls,
         ];
     }
     return new WP_REST_Response( $out, 200 );
