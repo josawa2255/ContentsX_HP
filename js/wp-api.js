@@ -106,23 +106,23 @@
       tag.setAttribute('data-en', item.tag_en || item.tag_ja || '');
       tag.textContent = lang === 'en' ? (item.tag_en || item.tag_ja) : item.tag_ja;
 
-      const a = document.createElement('a');
-      a.className = 'news-link';
-      /* 外部URLがあればそちらへ、本文があれば詳細ページへ、どちらもなければ # */
-      if (item.url) {
-        a.href = item.url;
-      } else if (item.has_detail && item.id) {
-        a.href = 'news-detail.html?id=' + item.id;
+      const hasLink = item.url || (item.has_detail && item.id);
+      let titleEl;
+      if (hasLink) {
+        titleEl = document.createElement('a');
+        titleEl.className = 'news-link';
+        titleEl.href = item.url || ('news-detail.html?id=' + item.id);
       } else {
-        a.href = '#';
+        titleEl = document.createElement('span');
+        titleEl.className = 'news-link news-link--plain';
       }
-      a.setAttribute('data-ja', item.title_ja || '');
-      a.setAttribute('data-en', item.title_en || item.title_ja || '');
-      a.textContent = lang === 'en' ? (item.title_en || item.title_ja) : item.title_ja;
+      titleEl.setAttribute('data-ja', item.title_ja || '');
+      titleEl.setAttribute('data-en', item.title_en || item.title_ja || '');
+      titleEl.textContent = lang === 'en' ? (item.title_en || item.title_ja) : item.title_ja;
 
       li.appendChild(time);
       li.appendChild(tag);
-      li.appendChild(a);
+      li.appendChild(titleEl);
       list.appendChild(li);
     });
 
