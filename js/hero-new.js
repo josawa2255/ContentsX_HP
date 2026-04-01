@@ -151,11 +151,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // --- 作品カルーセル構築 (集英社スタイル) ---
   function buildHeroCarousel() {
     if (!heroWorksBg || !worksMap) return;
-    /* show_hero フラグがある場合はフィルタ、なければ全件表示（フォールバック） */
+    /* show_hero_site でフィルタ: 'both' or 'contentsx' → ContentsXヒーローに表示 */
+    /* 後方互換: show_hero_site がない場合は旧 show_hero フラグで判定 */
     const allWorks = WORKS_DETAIL_DATA;
-    const works = allWorks.some(w => 'show_hero' in w)
-      ? allWorks.filter(w => w.show_hero !== false)
-      : allWorks;
+    const works = allWorks.filter(w => {
+      if ('show_hero_site' in w) {
+        return w.show_hero_site === 'both' || w.show_hero_site === 'contentsx';
+      }
+      return w.show_hero !== false;
+    });
     const row1 = document.getElementById('heroWorksRow1');
     const row2 = document.getElementById('heroWorksRow2');
     const row3 = document.getElementById('heroWorksRow3');

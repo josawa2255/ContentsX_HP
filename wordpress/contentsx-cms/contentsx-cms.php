@@ -167,11 +167,20 @@ function cxcms_manga_meta_html( $post ) {
     </div>
     <div class="cx-field">
         <label>Heroカルーセルに表示</label>
-        <select name="cx_show_hero">
-            <option value="1" <?php selected($m('cx_show_hero'), '1'); ?>>表示する</option>
-            <option value="0" <?php selected($m('cx_show_hero'), '0'); ?>>表示しない</option>
+        <?php
+        // 後方互換: 旧 cx_show_hero ('1'/'0') → 新 cx_show_hero_site ('both'/'none'/etc.)
+        $hero_site_raw = $m('cx_show_hero_site');
+        if ( empty($hero_site_raw) ) {
+            $hero_site_raw = $m('cx_show_hero') !== '0' ? 'both' : 'none';
+        }
+        ?>
+        <select name="cx_show_hero_site">
+            <option value="both" <?php selected($hero_site_raw, 'both'); ?>>両方（BizManga + ContentsX）</option>
+            <option value="bizmanga" <?php selected($hero_site_raw, 'bizmanga'); ?>>BizMangaのみ</option>
+            <option value="contentsx" <?php selected($hero_site_raw, 'contentsx'); ?>>ContentsXのみ</option>
+            <option value="none" <?php selected($hero_site_raw, 'none'); ?>>表示しない</option>
         </select>
-        <div class="cx-hint">「表示する」にするとトップページのHero背景カルーセルに出ます</div>
+        <div class="cx-hint">トップページのHero背景カルーセルにどちらのサイトで表示するか選べます（デフォルト: 両方）</div>
     </div>
     <div class="cx-field">
         <label>新作情報に表示</label>
@@ -347,7 +356,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_is_new','cx_added_date','cx_gallery','cx_show_library','cx_show_site'];
+    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_show_library','cx_show_site'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -538,6 +547,7 @@ function cxcms_format_work( $p ) {
         'point'     => $m('cx_point'),
         'comment'   => $m('cx_comment'),
         'show_hero'    => $m('cx_show_hero') !== '0',
+        'show_hero_site' => $m('cx_show_hero_site') ?: ( $m('cx_show_hero') !== '0' ? 'both' : 'none' ),
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
         'thumbnail' => $thumb_url,
@@ -787,7 +797,7 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
             $new['cx_work_id'] = 'ID';
             $new['cx_client']  = 'クライアント';
             $new['cx_pages']   = 'ページ';
-            $new['cx_show_hero'] = 'Hero';
+            $new['cx_show_hero_site'] = 'Hero';
             $new['cx_is_new']  = '新作';
             $new['cx_show_library'] = '書庫';
             $new['cx_show_site'] = 'サイト';
@@ -797,7 +807,12 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
 });
 add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
     $v = get_post_meta( $id, $col, true );
-    if ( $col === 'cx_show_hero' ) { echo $v !== '0' ? '✅' : '—'; return; }
+    if ( $col === 'cx_show_hero_site' ) {
+        $hs = $v ?: ( get_post_meta($id, 'cx_show_hero', true) !== '0' ? 'both' : 'none' );
+        $labels = ['both'=>'両方','bizmanga'=>'BM','contentsx'=>'CX','none'=>'—'];
+        echo esc_html( $labels[$hs] ?? '両方' );
+        return;
+    }
     if ( $col === 'cx_is_new' ) { echo $v === '1' ? '✅' : '—'; return; }
     if ( $col === 'cx_show_library' ) { echo $v !== '0' ? '✅' : '—'; return; }
     if ( $col === 'cx_show_site' ) {
@@ -1059,6 +1074,7 @@ function cxcms_run_import() {
         update_post_meta($post_id, 'cx_sort_order', $i + 1);
         update_post_meta($post_id, 'cx_is_new', '0');
         update_post_meta($post_id, 'cx_show_hero', '1');
+        update_post_meta($post_id, 'cx_show_hero_site', 'both');
 
         // カテゴリ登録
         if (!empty($w['category'])) {
