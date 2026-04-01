@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ニュース一覧 | ContentsX</title>
+  <meta name="description" content="ContentsXの最新ニュース・お知らせ一覧。イベント情報や新サービスの発表をお届けします。">
+  <link rel="canonical" href="https://contentsx.jp/news">
+  <!-- OG Tags -->
+  <meta property="og:title" content="ニュース一覧 | ContentsX">
+  <meta property="og:description" content="ContentsXの最新ニュース・お知らせ一覧。イベント情報や新サービスの発表をお届けします。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://contentsx.jp/news">
+  <meta property="og:site_name" content="ContentsX">
+  <meta property="og:image" content="https://contentsx.jp/material/images/logo/ContentsX.webp">
+  <meta property="og:locale" content="ja_JP">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ニュース一覧 | ContentsX">
+  <meta name="twitter:description" content="ContentsXの最新ニュース・お知らせ一覧。イベント情報や新サービスの発表をお届けします。">
+  <meta name="twitter:image" content="https://contentsx.jp/material/images/logo/ContentsX.webp">
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="ja" href="https://contentsx.jp/news">
+  <link rel="alternate" hreflang="en" href="https://contentsx.jp/news">
+  <link rel="alternate" hreflang="x-default" href="https://contentsx.jp/news">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/webp" href="material/images/logo/contentsx-icon.webp">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    .news-page-section {
+      padding-top: 140px;
+      padding-bottom: 80px;
+      min-height: 60vh;
+    }
+    .news-page-heading {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 900;
+      color: var(--text-primary);
+      margin-bottom: 40px;
+    }
+    .news-page-loading {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body data-theme="magenta-hot" data-page-news>
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="./" class="logo">
+        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ニュース一覧 ===== -->
+  <section class="news-page-section">
+    <div class="container">
+      <h1 class="news-page-heading" data-ja="News" data-en="News">News</h1>
+      <div id="newsPageLoading" class="news-page-loading" data-ja="読み込み中..." data-en="Loading...">読み込み中...</div>
+      <ul class="news-list" style="display:none;"></ul>
+    </div>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="footer-links">
+          <a href="./#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
+          <a href="./#about" data-ja="サービス" data-en="Services">サービス</a>
+          <a href="./#strength" data-ja="制作体制" data-en="Production">制作体制</a>
+          <a href="./#flow" data-ja="制作フロー" data-en="Workflow">制作フロー</a>
+          <a href="partners" data-ja="パートナー" data-en="Partners">パートナー</a>
+          <a href="company" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="contact" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        </div>
+      </div>
+      <p class="footer-copy">© Contents X Co., Ltd. 2026 All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/wp-config.js" defer></script>
+  <script src="js/wp-api.js" defer></script>
+  <script src="js/script.js" defer></script>
+  <script defer>
+    window.addEventListener('wp-data-ready', function() {
+      var loading = document.getElementById('newsPageLoading');
+      var list = document.querySelector('.news-list');
+      if (loading) loading.style.display = 'none';
+      if (list) list.style.display = '';
+    });
+  </script>
+
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "ニュース一覧 | ContentsX",
+  "description": "ContentsXの最新ニュース・お知らせ一覧。イベント情報や新サービスの発表をお届けします。",
+  "url": "https://contentsx.jp/news",
+  "publisher": {
+    "@type": "Organization",
+    "name": "ContentsX",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://contentsx.jp/material/images/logo/ContentsX.webp"
+    }
+  }
+}
+</script>
+</body>
+</html>

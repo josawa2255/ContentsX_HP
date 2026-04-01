@@ -82,17 +82,26 @@
   }
 
   /* ── ニュース DOM を動的に生成 ── */
+  const NEWS_HOME_LIMIT = 5;
+
   async function loadNews() {
-    const data = await apiFetch('/news?site=contentsx');
+    const data = await apiFetch('/news?site=contentsx&per_page=50');
     if (!data || !Array.isArray(data)) return;
+
+    window.CX_NEWS_DATA = data;
 
     const list = document.querySelector('.news-list');
     if (!list) return;
 
     const lang = document.documentElement.lang || 'ja';
+
+    /* ホームでは最大5件表示 */
+    const isHome = !document.body.hasAttribute('data-page-news');
+    const displayData = isHome ? data.slice(0, NEWS_HOME_LIMIT) : data;
+
     list.innerHTML = '';
 
-    data.forEach(item => {
+    displayData.forEach(item => {
       const li = document.createElement('li');
       li.className = 'news-item';
 
@@ -100,11 +109,18 @@
       time.className = 'news-date';
       time.textContent = item.date;
 
-      const tag = document.createElement('span');
-      tag.className = 'news-tag';
-      tag.setAttribute('data-ja', item.tag_ja || '');
-      tag.setAttribute('data-en', item.tag_en || item.tag_ja || '');
-      tag.textContent = lang === 'en' ? (item.tag_en || item.tag_ja) : item.tag_ja;
+      li.appendChild(time);
+
+      /* タグが空の場合はタグ要素を生成しない */
+      const tagText = lang === 'en' ? (item.tag_en || item.tag_ja) : item.tag_ja;
+      if (tagText) {
+        const tag = document.createElement('span');
+        tag.className = 'news-tag';
+        tag.setAttribute('data-ja', item.tag_ja || '');
+        tag.setAttribute('data-en', item.tag_en || item.tag_ja || '');
+        tag.textContent = tagText;
+        li.appendChild(tag);
+      }
 
       const hasLink = item.url || (item.has_detail && item.id);
       let titleEl;
@@ -120,13 +136,17 @@
       titleEl.setAttribute('data-en', item.title_en || item.title_ja || '');
       titleEl.textContent = lang === 'en' ? (item.title_en || item.title_ja) : item.title_ja;
 
-      li.appendChild(time);
-      li.appendChild(tag);
       li.appendChild(titleEl);
       list.appendChild(li);
     });
 
-    console.log(`[WP-API] ニュース: ${data.length}件 rendered`);
+    /* 5件以上ある場合、ホームに「一覧を見る」リンクを表示 */
+    if (isHome && data.length > NEWS_HOME_LIMIT) {
+      const moreLink = document.getElementById('newsMore');
+      if (moreLink) moreLink.style.display = '';
+    }
+
+    console.log(`[WP-API] ニュース: ${displayData.length}/${data.length}件 rendered`);
   }
 
   /* ── 初期化 ── */
