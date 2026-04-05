@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ContentsX CMS
- * Description: ContentsX サイト用カスタム投稿タイプ・REST API（漫画事例・ニュース）
+ * Description: ContentsX サイト用カスタム投稿タイプ・REST API（漫画事例・ニュース・お客様の声）
  * Version: 1.0.0
  * Author: ContentsX
  * Text Domain: contentsx-cms
@@ -65,6 +65,42 @@ function cxcms_register_post_types() {
         'rewrite'      => false,
     ]);
 
+    /* ── お客様の声 ── */
+    register_post_type( 'cx_testimonial', [
+        'labels' => [
+            'name'               => 'お客様の声',
+            'singular_name'      => 'お客様の声',
+            'add_new'            => '新規追加',
+            'add_new_item'       => 'お客様の声を追加',
+            'edit_item'          => 'お客様の声を編集',
+            'all_items'          => 'すべてのお客様の声',
+            'search_items'       => 'お客様の声を検索',
+            'not_found'          => 'お客様の声が見つかりません',
+        ],
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_rest' => true,
+        'rest_base'    => 'cx-testimonials',
+        'menu_icon'    => 'dashicons-format-quote',
+        'supports'     => [ 'title', 'editor', 'thumbnail' ],
+        'has_archive'  => false,
+        'rewrite'      => false,
+    ]);
+
+    /* ── お客様の声タグ分類 ── */
+    register_taxonomy( 'testimonial_tag', 'cx_testimonial', [
+        'labels' => [
+            'name'          => 'タグ',
+            'singular_name' => 'タグ',
+            'add_new_item'  => 'タグを追加',
+        ],
+        'show_in_rest'  => true,
+        'rest_base'     => 'testimonial-tags',
+        'hierarchical'  => true,
+        'show_ui'       => true,
+        'show_admin_column' => true,
+    ]);
+
     /* ── カテゴリ分類（漫画事例用） ── */
     register_taxonomy( 'manga_category', 'manga_work', [
         'labels' => [
@@ -104,6 +140,7 @@ add_action( 'add_meta_boxes', 'cxcms_add_meta_boxes' );
 function cxcms_add_meta_boxes() {
     add_meta_box( 'manga_work_fields', '漫画事例 詳細', 'cxcms_manga_meta_html', 'manga_work', 'normal', 'high' );
     add_meta_box( 'cx_news_fields', 'ニュース詳細', 'cxcms_news_meta_html', 'cx_news', 'normal', 'high' );
+    add_meta_box( 'cx_testimonial_fields', 'お客様の声 詳細', 'cxcms_testimonial_meta_html', 'cx_testimonial', 'normal', 'high' );
 }
 
 /* ── 漫画事例 メタボックス HTML ── */
@@ -183,15 +220,23 @@ function cxcms_manga_meta_html( $post ) {
         <div class="cx-hint">トップページのHero背景カルーセルにどちらのサイトで表示するか選べます（デフォルト: 両方）</div>
     </div>
     <div class="cx-field">
-        <label>新作情報に表示</label>
-        <select name="cx_is_new">
-            <option value="0" <?php selected($m('cx_is_new'), '0'); ?>>表示しない</option>
-            <option value="1" <?php selected($m('cx_is_new'), '1'); ?>>表示する</option>
+        <label>BizManga ギャラリーに表示</label>
+        <select name="cx_show_gallery_bizmanga">
+            <option value="0" <?php selected($m('cx_show_gallery_bizmanga') ?: ($m('cx_is_new') === '1' ? '1' : '0'), '0'); ?>>表示しない</option>
+            <option value="1" <?php selected($m('cx_show_gallery_bizmanga') ?: ($m('cx_is_new') === '1' ? '1' : '0'), '1'); ?>>表示する</option>
         </select>
-        <div class="cx-hint">「表示する」にすると index の新作情報セクションに出ます</div>
+        <div class="cx-hint">BizMangaトップページの「ギャラリー」セクションに表示されます</div>
     </div>
     <div class="cx-field">
-        <label>新作 追加日</label>
+        <label>ContentsX 新作情報に表示</label>
+        <select name="cx_show_new_contentsx">
+            <option value="0" <?php selected($m('cx_show_new_contentsx') ?: ($m('cx_is_new') === '1' ? '1' : '0'), '0'); ?>>表示しない</option>
+            <option value="1" <?php selected($m('cx_show_new_contentsx') ?: ($m('cx_is_new') === '1' ? '1' : '0'), '1'); ?>>表示する</option>
+        </select>
+        <div class="cx-hint">ContentsXトップページの「新作情報」セクションに表示されます</div>
+    </div>
+    <div class="cx-field">
+        <label>追加日</label>
         <input type="date" name="cx_added_date" value="<?php echo esc_attr($m('cx_added_date')); ?>">
     </div>
     <div class="cx-field">
@@ -527,12 +572,77 @@ function cxcms_news_meta_html( $post ) {
     <?php
 }
 
+/* ── お客様の声 メタボックス HTML ── */
+function cxcms_testimonial_meta_html( $post ) {
+    wp_nonce_field( 'cxcms_testimonial_save', 'cxcms_testimonial_nonce' );
+    $m = fn($k) => get_post_meta( $post->ID, $k, true );
+    ?>
+    <style>.cx-field{margin:10px 0}.cx-field label{display:block;font-weight:700;margin-bottom:4px}.cx-field input,.cx-field textarea,.cx-field select{width:100%;padding:6px 8px}.cx-hint{color:#666;font-size:12px;margin-top:2px}.cx-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}</style>
+    <p class="cx-hint">※ 表紙画像は「アイキャッチ画像」で設定してください。詳細ページの本文は上の「エディタ」で編集してください。</p>
+    <div class="cx-row">
+        <div class="cx-field">
+            <label>見出しテキスト</label>
+            <input name="cx_testimonial_heading" value="<?php echo esc_attr($m('cx_testimonial_heading')); ?>" placeholder="例: 採用応募数が2倍に増加">
+            <div class="cx-hint">カード上に表示される見出し</div>
+        </div>
+        <div class="cx-field">
+            <label>見出し（英語）</label>
+            <input name="cx_testimonial_heading_en" value="<?php echo esc_attr($m('cx_testimonial_heading_en')); ?>" placeholder="例: Application numbers doubled">
+        </div>
+    </div>
+    <div class="cx-field">
+        <label>カード説明文</label>
+        <textarea name="cx_testimonial_excerpt" rows="3" placeholder="カードに表示される短い説明文"><?php echo esc_textarea($m('cx_testimonial_excerpt')); ?></textarea>
+    </div>
+    <div class="cx-field">
+        <label>カード説明文（英語）</label>
+        <textarea name="cx_testimonial_excerpt_en" rows="3"><?php echo esc_textarea($m('cx_testimonial_excerpt_en')); ?></textarea>
+    </div>
+    <div class="cx-row">
+        <div class="cx-field">
+            <label>表紙画像の位置</label>
+            <select name="cx_testimonial_img_position">
+                <option value="center" <?php selected($m('cx_testimonial_img_position'), 'center'); ?>>中央</option>
+                <option value="top" <?php selected($m('cx_testimonial_img_position'), 'top'); ?>>上</option>
+                <option value="bottom" <?php selected($m('cx_testimonial_img_position'), 'bottom'); ?>>下</option>
+                <option value="left" <?php selected($m('cx_testimonial_img_position'), 'left'); ?>>左</option>
+                <option value="right" <?php selected($m('cx_testimonial_img_position'), 'right'); ?>>右</option>
+            </select>
+            <div class="cx-hint">表紙のどの部分を表示するか（object-position）</div>
+        </div>
+        <div class="cx-field">
+            <label>表示順（小さい値が先）</label>
+            <input type="number" name="cx_testimonial_order" value="<?php echo esc_attr($m('cx_testimonial_order') ?: '10'); ?>">
+        </div>
+    </div>
+    <div class="cx-field">
+        <label>表示先サイト</label>
+        <select name="cx_testimonial_show_site">
+            <option value="both" <?php selected($m('cx_testimonial_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
+            <option value="bizmanga" <?php selected($m('cx_testimonial_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
+            <option value="contentsx" <?php selected($m('cx_testimonial_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
+        </select>
+    </div>
+    <?php
+}
+
+/* ── お客様の声 メタ保存 ── */
+add_action( 'save_post_cx_testimonial', 'cxcms_save_testimonial_meta' );
+function cxcms_save_testimonial_meta( $post_id ) {
+    if ( ! isset($_POST['cxcms_testimonial_nonce']) || ! wp_verify_nonce($_POST['cxcms_testimonial_nonce'], 'cxcms_testimonial_save') ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    $fields = ['cx_testimonial_heading','cx_testimonial_heading_en','cx_testimonial_excerpt','cx_testimonial_excerpt_en','cx_testimonial_img_position','cx_testimonial_order','cx_testimonial_show_site'];
+    foreach ( $fields as $f ) {
+        if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
+    }
+}
+
 /* ── メタ保存 ── */
 add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site'];
+    $fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -558,9 +668,18 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_show_library','cx_show_site'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
+            'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
+            'schema'       => [ 'type' => 'string' ],
+        ]);
+    }
+
+    /* ── お客様の声のフィールド ── */
+    $testimonial_fields = ['cx_testimonial_heading','cx_testimonial_heading_en','cx_testimonial_excerpt','cx_testimonial_excerpt_en','cx_testimonial_img_position','cx_testimonial_order','cx_testimonial_show_site'];
+    foreach ( $testimonial_fields as $f ) {
+        register_rest_field( 'cx_testimonial', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
             'schema'       => [ 'type' => 'string' ],
         ]);
@@ -663,6 +782,25 @@ add_action( 'rest_api_init', function() {
     register_rest_route( 'contentsx/v1', '/news/(?P<id>\d+)', [
         'methods'  => 'GET',
         'callback' => 'cxcms_api_news_single',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [
+                'validate_callback' => function($v) { return is_numeric($v); },
+            ],
+        ],
+    ]);
+
+    /* GET /wp-json/contentsx/v1/testimonials — お客様の声一覧 */
+    register_rest_route( 'contentsx/v1', '/testimonials', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_testimonials',
+        'permission_callback' => '__return_true',
+    ]);
+
+    /* GET /wp-json/contentsx/v1/testimonials/{id} — お客様の声 個別（本文含む） */
+    register_rest_route( 'contentsx/v1', '/testimonials/(?P<id>\d+)', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_testimonial_single',
         'permission_callback' => '__return_true',
         'args' => [
             'id' => [
@@ -782,17 +920,37 @@ function cxcms_api_works( $req ) {
     return new WP_REST_Response( $out, 200 );
 }
 
-/* ── 新作情報 ── */
-/* ?site=bizmanga or ?site=contentsx でフィルタリング可能 */
+/* ── 新作情報 / ギャラリー ── */
+/* ?site=bizmanga → cx_show_gallery_bizmanga=1 の作品を返す（BizMangaギャラリー）
+   ?site=contentsx → cx_show_new_contentsx=1 の作品を返す（ContentsX新作情報）
+   ?site= 未指定  → cx_is_new=1 でフォールバック（後方互換） */
 function cxcms_api_works_new( $req ) {
+    $site = $req->get_param('site') ?: '';
+
+    /* サイト別フィルタ用のmeta_query構築 */
+    $meta_query = [];
+    if ( $site === 'bizmanga' ) {
+        $meta_query[] = [ 'key' => 'cx_show_gallery_bizmanga', 'value' => '1' ];
+    } elseif ( $site === 'contentsx' ) {
+        $meta_query[] = [ 'key' => 'cx_show_new_contentsx', 'value' => '1' ];
+    } else {
+        /* 後方互換: 旧 cx_is_new フラグでフォールバック */
+        $meta_query[] = [
+            'relation' => 'OR',
+            [ 'key' => 'cx_show_gallery_bizmanga', 'value' => '1' ],
+            [ 'key' => 'cx_show_new_contentsx', 'value' => '1' ],
+            [ 'key' => 'cx_is_new', 'value' => '1' ],
+        ];
+    }
+
     $posts = get_posts([
         'post_type'      => 'manga_work',
-        'posts_per_page' => 20,  /* フィルタ後に10件に絞るため多めに取得 */
+        'posts_per_page' => 20,
         'meta_key'       => 'cx_added_date',
         'orderby'        => 'meta_value',
         'order'          => 'DESC',
         'post_status'    => 'publish',
-        'meta_query'     => [[ 'key' => 'cx_is_new', 'value' => '1' ]],
+        'meta_query'     => $meta_query,
     ]);
     $out = [];
     foreach ( $posts as $p ) {
@@ -823,7 +981,6 @@ function cxcms_api_works_new( $req ) {
             'thumbnail' => $thumb_url,
         ];
     }
-    $out = cxcms_filter_by_site( $out, $req->get_param('site') );
     return new WP_REST_Response( array_slice($out, 0, 10), 200 );
 }
 
@@ -1347,5 +1504,76 @@ function cxcms_get_import_data() {
         ['id'=>'asobi-kyary','title_ja'=>'ASOBI SYSTEM×きゃりーぱみゅぱみゅ','title_en'=>'ASOBI SYSTEM x Kyary Pamyu Pamyu','pages'=>6,'category'=>'IP','client'=>'ASOBI SYSTEM','media'=>['提案資料','SNS'],'spec_pages'=>'6P','spec_period'=>'1週間','point'=>'ASOBI SYSTEMとの共同企画。きゃりーぱみゅぱみゅをモチーフにしたキャラクター漫画で、IPコラボレーションの可能性を提案。','comment'=>'キャラクターの魅力が漫画で十分に表現されており、コラボ企画の説得力が増しました。'],
         ['id'=>'uike-law','title_ja'=>'正義の価値','title_en'=>'The Value of Justice','pages'=>8,'category'=>'ブランド','client'=>'鵜池航太','media'=>['ブランディング','Webサイト'],'spec_pages'=>'8P','spec_period'=>'3週間','point'=>'弁護士の原体験と信念をWebtoon形式のストーリー漫画で表現。感情に訴える構成で、人となりへの深い理解と共感を生み出します。','comment'=>''],
         ['id'=>'lady-column','title_ja'=>'レディーコラム','title_en'=>'Lady Column','pages'=>8,'category'=>'紹介','client'=>'レディーコラム','media'=>['Webサイト','SNS'],'spec_pages'=>'8P','spec_period'=>'2週間','point'=>'女性向けコラムの魅力を漫画で表現。読者の共感と興味を引き出すストーリー構成。','comment'=>''],
+    ];
+}
+
+
+/* ==========================================================
+   お客様の声 API コールバック
+   ========================================================== */
+
+/* 一覧 */
+function cxcms_api_testimonials( $request ) {
+    $site = $request->get_param('site') ?: 'bizmanga';
+
+    $posts = get_posts([
+        'post_type'      => 'cx_testimonial',
+        'posts_per_page' => 50,
+        'post_status'    => 'publish',
+        'meta_key'       => 'cx_testimonial_order',
+        'orderby'        => 'meta_value_num',
+        'order'          => 'ASC',
+    ]);
+
+    $items = [];
+    foreach ( $posts as $p ) {
+        $show_site = get_post_meta( $p->ID, 'cx_testimonial_show_site', true ) ?: 'both';
+        if ( $show_site !== 'both' && $show_site !== $site ) continue;
+
+        $items[] = cxcms_format_testimonial( $p );
+    }
+
+    return rest_ensure_response( $items );
+}
+
+/* 個別（本文含む） */
+function cxcms_api_testimonial_single( $request ) {
+    $post = get_post( (int) $request['id'] );
+    if ( ! $post || $post->post_type !== 'cx_testimonial' || $post->post_status !== 'publish' ) {
+        return new WP_Error( 'not_found', 'Testimonial not found', [ 'status' => 404 ] );
+    }
+
+    $data = cxcms_format_testimonial( $post );
+    $data['content'] = apply_filters( 'the_content', $post->post_content );
+
+    return rest_ensure_response( $data );
+}
+
+/* ヘルパー: お客様の声データ整形 */
+function cxcms_format_testimonial( $p ) {
+    $m = fn($k) => get_post_meta( $p->ID, $k, true );
+
+    /* アイキャッチ画像（表紙） */
+    $thumb_url = '';
+    $thumb_id = get_post_thumbnail_id( $p->ID );
+    if ( $thumb_id ) {
+        $img = wp_get_attachment_image_src( $thumb_id, 'large' );
+        if ( $img ) $thumb_url = $img[0];
+    }
+
+    /* タグ */
+    $tags = wp_get_object_terms( $p->ID, 'testimonial_tag', [ 'fields' => 'names' ] );
+    $tag = ( ! is_wp_error( $tags ) && ! empty( $tags ) ) ? $tags[0] : '';
+
+    return [
+        'id'             => $p->ID,
+        'heading'        => $m('cx_testimonial_heading') ?: $p->post_title,
+        'heading_en'     => $m('cx_testimonial_heading_en') ?: '',
+        'excerpt'        => $m('cx_testimonial_excerpt') ?: '',
+        'excerpt_en'     => $m('cx_testimonial_excerpt_en') ?: '',
+        'thumbnail'      => $thumb_url,
+        'img_position'   => $m('cx_testimonial_img_position') ?: 'center',
+        'tag'            => $tag,
+        'order'          => (int)( $m('cx_testimonial_order') ?: 10 ),
     ];
 }

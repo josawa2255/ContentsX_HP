@@ -1260,3 +1260,70 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-artists-grid { grid-template-columns: 1fr; }
   .bm-new-works-card { flex: 0 0 140px; }
 }
+
+
+/* ============================================
+   お客様の声 詳細モーダル
+   ============================================ */
+.bm-testimonial-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.bm-testimonial-overlay.open {
+  opacity: 1; pointer-events: auto;
+}
+.bm-testimonial-modal {
+  background: #fff; border-radius: 16px;
+  max-width: 640px; width: 90%; max-height: 85vh;
+  overflow-y: auto; position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  transform: translateY(20px);
+  transition: transform 0.3s;
+}
+.bm-testimonial-overlay.open .bm-testimonial-modal {
+  transform: translateY(0);
+}
+.bm-testimonial-modal-close {
+  position: absolute; top: 12px; right: 12px; z-index: 10;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(0,0,0,0.5); border: none;
+  color: #fff; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.bm-testimonial-modal-close:hover { background: rgba(0,0,0,0.7); }
+.bm-testimonial-modal-cover {
+  width: 100%; aspect-ratio: 16/9; overflow: hidden;
+  border-radius: 16px 16px 0 0; background: #f5f5f5;
+}
+.bm-testimonial-modal-cover img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.bm-testimonial-modal-body { padding: 24px 28px 32px; }
+.bm-testimonial-modal-tag {
+  display: inline-block; font-size: 12px; font-weight: 700;
+  color: var(--bm-accent); margin-bottom: 8px;
+}
+.bm-testimonial-modal-title {
+  font-size: 20px; font-weight: 800; color: #222;
+  line-height: 1.5; margin-bottom: 16px;
+}
+.bm-testimonial-modal-content {
+  font-size: 15px; color: #444; line-height: 1.8;
+}
+.bm-testimonial-modal-content p { margin-bottom: 12px; }
+.bm-testimonial-modal-content img {
+  max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0;
+}
+.bm-testimonial-modal-loading {
+  text-align: center; color: #999; padding: 24px 0;
+}
+
+@media (max-width: 768px) {
+  .bm-testimonial-modal { max-width: 95%; max-height: 90vh; }
+  .bm-testimonial-modal-body { padding: 20px 20px 24px; }
+  .bm-testimonial-modal-title { font-size: 17px; }
+}

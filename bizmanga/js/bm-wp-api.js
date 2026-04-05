@@ -108,6 +108,14 @@
     console.log('[BM-WP-API] ニュース: ' + data.length + '件 rendered');
   }
 
+  /* ── お客様の声をロード ── */
+  async function loadTestimonials() {
+    var data = await apiFetch('/testimonials?site=bizmanga');
+    if (!data || !Array.isArray(data)) return;
+    window.BM_TESTIMONIALS_DATA = data;
+    console.log('[BM-WP-API] お客様の声: ' + data.length + '件 loaded');
+  }
+
   /* ── 初期化 ── */
   document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -115,10 +123,11 @@
         loadWorks(),
         loadNewWorks(),
         loadNews(),
-        loadLibrary()
+        loadLibrary(),
+        loadTestimonials()
       ]);
 
-      /* Hero・新作漫画トラックの再描画イベント発火 */
+      /* Hero・ギャラリートラック・お客様の声の再描画イベント発火 */
       window.dispatchEvent(new CustomEvent('bm-data-ready'));
     } catch(e) {
       console.warn('[BM-WP-API] 初期化エラー:', e);
