@@ -435,9 +435,17 @@
   border-color: var(--accent);
 }
 
+/* ---------- Detail Section（独立セクション） ---------- */
+.rc-detail-section {
+  background: var(--bg-white, #fff);
+}
+.rc-detail-section-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+}
 /* ---------- Detail Area（求人サイト風） ---------- */
 .rc-detail-area {
-  margin-top: 48px;
   animation: rcFadeIn 0.3s ease;
 }
 .rc-detail {
@@ -791,6 +799,15 @@
   .rc-positions-inner {
     padding: 60px 24px;
   }
+  .rc-positions {
+    background-image: none !important;
+  }
+  .rc-positions--has-bg .rc-positions-overlay {
+    background: none;
+  }
+  .rc-detail-section-inner {
+    padding: 0 24px 60px;
+  }
   .rc-pos-cards {
     grid-template-columns: 1fr;
   }
@@ -888,6 +905,9 @@
   }
   .rc-positions-inner {
     padding: 48px 20px;
+  }
+  .rc-detail-section-inner {
+    padding: 0 20px 48px;
   }
   .rc-section-title {
     font-size: 22px;

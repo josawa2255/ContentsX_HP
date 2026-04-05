@@ -24,23 +24,25 @@
     sales: '営業'
   };
 
-  // Position hero image map
-  var posImages = {
-    manga: "url('material/images/recruit/manga.webp')",
-    production: "url('material/images/recruit/production.webp')",
-    sales: "url('material/images/recruit/sales.webp')"
+  // Position hero image map (bg-position: モバイルでビズちゃんが見切れないよう調整)
+  var posData = {
+    manga:      { url: "url('material/images/recruit/manga.webp')",      bgPos: '62% center' },
+    production: { url: "url('material/images/recruit/production.webp')", bgPos: '50% center' },
+    sales:      { url: "url('material/images/recruit/sales.webp')",      bgPos: '38% center' }
   };
 
   // Switch positions section background with fade
-  function switchPosBg(bgUrl) {
+  function switchPosBg(pos) {
     if (!posSection) return;
     posSection.classList.add('rc-positions--fade');
     setTimeout(function() {
-      if (bgUrl) {
-        posSection.style.backgroundImage = bgUrl;
+      if (pos && posData[pos]) {
+        posSection.style.backgroundImage = posData[pos].url;
+        posSection.style.backgroundPosition = posData[pos].bgPos;
         posSection.classList.add('rc-positions--has-bg');
       } else {
         posSection.style.backgroundImage = '';
+        posSection.style.backgroundPosition = '';
         posSection.classList.remove('rc-positions--has-bg');
       }
       posSection.classList.remove('rc-positions--fade');
@@ -89,8 +91,8 @@
       this.classList.add('is-active');
 
       // Switch positions background
-      if (posImages[pos]) {
-        switchPosBg(posImages[pos]);
+      if (posData[pos]) {
+        switchPosBg(pos);
       }
 
       // Show action buttons

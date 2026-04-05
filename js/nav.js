@@ -139,6 +139,14 @@
 
   // ===== 言語切替ロジック =====
   function switchLang(lang) {
+    // i18n.js がロード済みならそちらに委譲
+    if (window.i18n && typeof window.i18n.switchLang === 'function') {
+      window.i18n.switchLang(lang);
+      currentLang = lang;
+      return;
+    }
+
+    // fallback: i18n.js 未ロード時の従来処理
     currentLang = lang;
     try { localStorage.setItem('cx-lang', lang); } catch(e) {}
 
@@ -176,8 +184,11 @@
   });
 
   // 初回: localStorageにENが保存されていればEN表示に切替
+  // i18n.js がロード済みの場合はそちらが初期化するので二重実行を避ける
   if (currentLang === 'en') {
-    switchLang('en');
+    if (!window.i18n) {
+      switchLang('en');
+    }
   }
 
   // ===== ハンバーガーメニュー =====
@@ -186,8 +197,36 @@
     hamburger.addEventListener('click', function() {
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
+      // メニュー閉じたらドロップダウンもリセット
+      if (!nav.classList.contains('open')) {
+        nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
+          d.classList.remove('is-open');
+        });
+      }
     });
-    nav.querySelectorAll('.nav-link, .nav-dropdown-item').forEach(function(link) {
+    // モバイル: ドロップダウン親をタップ
+    // 1回目 → サブメニュー開く、2回目 → リンク先へ遷移
+    nav.querySelectorAll('.nav-dropdown-toggle').forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        if (nav.classList.contains('open')) {
+          var dropdown = this.closest('.nav-dropdown');
+          if (!dropdown.classList.contains('is-open')) {
+            e.preventDefault();
+            dropdown.classList.add('is-open');
+          }
+          // is-open 状態なら preventDefault しない → 通常遷移
+        }
+      });
+    });
+    // サブメニュー項目クリックでメニュー閉じる
+    nav.querySelectorAll('.nav-dropdown-item').forEach(function(link) {
+      link.addEventListener('click', function() {
+        nav.classList.remove('open');
+        hamburger.classList.remove('active');
+      });
+    });
+    // 通常リンククリックでメニュー閉じる
+    nav.querySelectorAll('.nav-link:not(.nav-dropdown-toggle)').forEach(function(link) {
       link.addEventListener('click', function() {
         nav.classList.remove('open');
         hamburger.classList.remove('active');

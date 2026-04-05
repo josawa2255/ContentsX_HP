@@ -2083,6 +2083,8 @@ section { padding: 100px 0; }
   .nav.open {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     position: absolute;
     top: 64px;
     left: 0;
@@ -2095,17 +2097,48 @@ section { padding: 100px 0; }
     border-bottom: 1px solid var(--border);
     z-index: 10002;
   }
+  .nav.open .nav-link,
+  .nav.open .nav-dropdown-toggle {
+    display: block;
+    text-align: center;
+  }
+  .nav.open .nav-dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* モバイルではアクティブ線を中央基準に */
+  .nav.open .nav-link::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
   .nav.open .nav-dropdown-menu {
     position: static;
     transform: none;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
     box-shadow: none;
     background: transparent;
-    padding: 4px 0 0 16px;
+    padding: 0;
+    text-align: center;
+    transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
   }
-  .nav.open .nav-dropdown-arrow { display: none; }
+  .nav.open .nav-dropdown.is-open .nav-dropdown-menu {
+    max-height: 400px;
+    opacity: 1;
+    overflow: visible;
+    pointer-events: auto;
+    padding: 8px 0 0 0;
+  }
+  .nav.open .nav-dropdown-arrow {
+    display: inline;
+    transition: transform 0.25s ease;
+  }
+  .nav.open .nav-dropdown.is-open .nav-dropdown-arrow {
+    transform: rotate(180deg);
+  }
 
   /* .hero { padding: 100px 24px 60px; } — hero-new.css に移行済み */
 
