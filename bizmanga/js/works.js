@@ -536,7 +536,7 @@ function openManga(key) {
 
   // viewTypeに基づいてビューアモードを決定
   // スマホではspreadタイプも縦スクロールで表示
-  const dataMode = data.viewType || 'vertical';
+  const dataMode = data.viewType || 'spread';
   const mode = (!isPC() && dataMode === 'spread') ? 'vertical' : dataMode;
   currentViewMode = mode;
 
@@ -617,7 +617,7 @@ const navNext = document.getElementById('navNext');
 const hintLeft = document.getElementById('hintLeft');
 const hintRight = document.getElementById('hintRight');
 
-let currentViewMode = 'vertical';
+let currentViewMode = 'spread';
 let currentMangaKey = '';
 let currentMangaPath = '';
 let spreadTotalPages = 0;
@@ -678,7 +678,26 @@ function buildSpreadThumbnails() {
   navThumbs.appendChild(thumbsFrag);
 }
 
-function showSpread(index) {
+// 画像ロード完了を待つヘルパー（タイムアウト付き）
+function waitForImage(imgEl, callback, timeout) {
+  if (imgEl.complete && imgEl.naturalWidth > 0) {
+    callback();
+    return;
+  }
+  var done = false;
+  function finish() {
+    if (done) return;
+    done = true;
+    imgEl.onload = null;
+    imgEl.onerror = null;
+    callback();
+  }
+  imgEl.onload = finish;
+  imgEl.onerror = finish;
+  setTimeout(finish, timeout || 3000);
+}
+
+function showSpread(index, onReady) {
   if (index < 0 || index >= spreads.length) return;
   currentSpread = index;
   const spread = spreads[index];
@@ -733,6 +752,18 @@ function showSpread(index) {
   }
 
   updateSpreadUI();
+
+  // 画像ロード完了コールバック（goNext/goPrev で isSpreadAnimating 解除に使用）
+  if (typeof onReady === 'function') {
+    if (leftNum === null || pageLeft.style.display === 'none') {
+      waitForImage(imgRight, onReady);
+    } else {
+      var count = 2;
+      function check() { if (--count <= 0) onReady(); }
+      waitForImage(imgRight, check);
+      waitForImage(imgLeft, check);
+    }
+  }
 }
 
 function updateSpreadUI() {
@@ -865,8 +896,9 @@ function goNext() {
     pageShadowRight.style.transition = 'none';
     pageShadowRight.style.opacity = '';
 
-    showSpread(nextIndex);
-    isSpreadAnimating = false;
+    showSpread(nextIndex, function() {
+      isSpreadAnimating = false;
+    });
   }, FLIP_DURATION + 30);
 }
 
@@ -928,8 +960,9 @@ function goPrev() {
     pageShadowLeft.style.transition = 'none';
     pageShadowLeft.style.opacity = '';
 
-    showSpread(prevIndex);
-    isSpreadAnimating = false;
+    showSpread(prevIndex, function() {
+      isSpreadAnimating = false;
+    });
   }, FLIP_DURATION + 30);
 }
 
