@@ -272,58 +272,61 @@ document.addEventListener('DOMContentLoaded', function() {
         wdCarousel.appendChild(frag);
       }
 
-      // 1ページ目の画像で縦長判定
-      const testImg = new Image();
-      const firstPageSrc = (work.gallery && work.gallery[0]) ? work.gallery[0] : `material/manga/${work.id}/01.webp`;
-      testImg.src = firstPageSrc;
-      testImg.onload = function() {
-        const ratio = testImg.naturalWidth / testImg.naturalHeight;
-        const isVertical = ratio < 0.2; // 極端に縦長 = 縦読み漫画
-
-        if (isVertical) {
-          // 縦スクロールモード
-          wdCarousel.classList.add('vertical-scroll');
-          // :has() フォールバック — 親にもクラス付与
-          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
-          wdCarousel.style.transform = '';
-          buildCarouselPages(true);
-          // 縦読みではドットとナビ矢印を非表示
-          if (wdDots) wdDots.style.display = 'none';
-          if (wdPrev) wdPrev.style.display = 'none';
-          if (wdNext) wdNext.style.display = 'none';
-        } else {
-          // 通常カルーセルモード
-          wdCarousel.classList.remove('vertical-scroll');
-          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
-          buildCarouselPages(false);
-          if (wdDots) {
-            wdDots.style.display = 'flex';
-            wdDots.innerHTML = '';
-            const dotFrag = document.createDocumentFragment();
-            for (let i = 0; i < previewPages; i++) {
-              const dot = document.createElement('div');
-              dot.className = 'work-detail-dot' + (i === 0 ? ' active' : '');
-              dot.addEventListener('click', () => goToWdPage(i));
-              dotFrag.appendChild(dot);
-            }
-            wdDots.appendChild(dotFrag);
-          }
-          if (wdPrev) wdPrev.style.display = '';
-          if (wdNext) wdNext.style.display = '';
-        }
-        // メモリリーク防止: コールバック参照を解除
-        testImg.onload = null;
-        testImg.onerror = null;
-      };
-      // フォールバック: 画像読み込み失敗時は通常カルーセル
-      testImg.onerror = function() {
+      // 縦読み判定: 1ページ目 or 2ページ目が縦長なら縦スクロール
+      const isVerticalRatio = (r) => r < 0.2;
+      function applyVertical() {
+        wdCarousel.classList.add('vertical-scroll');
+        if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
+        wdCarousel.style.transform = '';
+        buildCarouselPages(true);
+        if (wdDots) wdDots.style.display = 'none';
+        if (wdPrev) wdPrev.style.display = 'none';
+        if (wdNext) wdNext.style.display = 'none';
+      }
+      function applyCarousel() {
         wdCarousel.classList.remove('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
         buildCarouselPages(false);
-        // メモリリーク防止
-        testImg.onload = null;
-        testImg.onerror = null;
+        if (wdDots) {
+          wdDots.style.display = 'flex';
+          wdDots.innerHTML = '';
+          const dotFrag = document.createDocumentFragment();
+          for (let i = 0; i < previewPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'work-detail-dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToWdPage(i));
+            dotFrag.appendChild(dot);
+          }
+          wdDots.appendChild(dotFrag);
+        }
+        if (wdPrev) wdPrev.style.display = '';
+        if (wdNext) wdNext.style.display = '';
+      }
+
+      const hasGal = work.gallery && work.gallery.length > 0;
+      const firstSrc = (hasGal && work.gallery[0]) ? work.gallery[0] : `material/manga/${work.id}/01.webp`;
+      const secondSrc = (hasGal && work.gallery[1]) ? work.gallery[1] : `material/manga/${work.id}/02.webp`;
+
+      const testImg1 = new Image();
+      testImg1.src = firstSrc;
+      testImg1.onload = () => {
+        if (isVerticalRatio(testImg1.naturalWidth / testImg1.naturalHeight)) {
+          applyVertical();
+        } else {
+          // 1ページ目は表紙の可能性 → 2ページ目も判定
+          const testImg2 = new Image();
+          testImg2.src = secondSrc;
+          testImg2.onload = () => {
+            if (isVerticalRatio(testImg2.naturalWidth / testImg2.naturalHeight)) {
+              applyVertical();
+            } else {
+              applyCarousel();
+            }
+          };
+          testImg2.onerror = () => applyCarousel();
+        }
       };
+      testImg1.onerror = () => applyCarousel();
     }
 
     wdOverlay.classList.add('active');
