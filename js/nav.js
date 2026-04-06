@@ -194,9 +194,7 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('hamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
+    hamburger.addEventListener('click', function() {
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
       // メニュー閉じたらドロップダウンもリセット
