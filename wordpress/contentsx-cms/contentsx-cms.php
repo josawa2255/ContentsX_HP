@@ -304,7 +304,7 @@ function cxcms_manga_meta_html( $post ) {
         ?>
         </div>
         <button type="button" id="cx_akapen_gallery_btn" class="button">赤ペン画像を追加</button>
-        <div class="cx-hint">赤ペン（添削済み）の画像をアップロード。ビズ書庫の詳細ページに表示されます。</div>
+        <div class="cx-hint">赤ペン（添削済み）の画像をアップロード。ホームの制作事例モーダルに表示されます。</div>
     </div>
     <div class="cx-field">
         <label>ネーム画像 — ドラッグで並べ替え可能</label>
@@ -329,7 +329,7 @@ function cxcms_manga_meta_html( $post ) {
         ?>
         </div>
         <button type="button" id="cx_name_gallery_btn" class="button">ネーム画像を追加</button>
-        <div class="cx-hint">ネーム（下書き）の画像をアップロード。ビズ書庫の詳細ページに表示されます。</div>
+        <div class="cx-hint">ネーム（下書き）の画像をアップロード。ホームの制作事例モーダルに表示されます。</div>
     </div>
     <script>
     jQuery(function($){
