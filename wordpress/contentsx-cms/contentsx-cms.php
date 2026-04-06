@@ -266,7 +266,8 @@ function cxcms_manga_meta_html( $post ) {
             foreach (array_filter(array_map('trim', explode(',', $gallery_ids))) as $att_id) {
                 $img = wp_get_attachment_image_src((int)$att_id, 'thumbnail');
                 if ($img) {
-                    echo '<div class="cx-gallery-item" data-id="'.esc_attr($att_id).'" style="position:relative;cursor:grab;user-select:none;">'
+                    $fname = basename(get_attached_file((int)$att_id) ?: '');
+                    echo '<div class="cx-gallery-item" data-id="'.esc_attr($att_id).'" data-filename="'.esc_attr($fname).'" style="position:relative;cursor:grab;user-select:none;">'
                         .'<div style="position:absolute;top:-4px;left:-4px;background:var(--accent,#0073aa);color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;" class="cx-gallery-num">'.$idx.'</div>'
                         .'<img src="'.esc_url($img[0]).'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ddd;border-radius:4px;">'
                         .'<span class="cx-gallery-remove" data-id="'.esc_attr($att_id).'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span>'
@@ -386,19 +387,25 @@ function cxcms_manga_meta_html( $post ) {
                 selection.each(function(att){
                     newItems.push(att);
                 });
-                // ファイル名の数字部分で昇順ソート
-                newItems.sort(function(a, b){
-                    var numA = parseInt((a.attributes.filename || '').match(/(\d+)/)?.[1] || '0', 10);
-                    var numB = parseInt((b.attributes.filename || '').match(/(\d+)/)?.[1] || '0', 10);
+                // 新規追加分をプレビューに追加（IDとファイル名を記録）
+                selection.each(function(att){
+                    var existIds = $('#cx_gallery').val() ? $('#cx_gallery').val().split(',').filter(Boolean) : [];
+                    if (existIds.indexOf(String(att.id)) !== -1) return; // 重複スキップ
+                    var url = att.attributes.sizes && att.attributes.sizes.thumbnail ? att.attributes.sizes.thumbnail.url : att.attributes.url;
+                    $('#cx_gallery_preview').append('<div class="cx-gallery-item" data-id="'+att.id+'" data-filename="'+(att.attributes.filename||'')+'" draggable="true" style="position:relative;cursor:grab;user-select:none;"><div class="cx-gallery-num" style="position:absolute;top:-4px;left:-4px;background:#0073aa;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;"></div><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span></div>');
+                });
+                // 全体をファイル名の番号順で再ソート
+                var items = $('#cx_gallery_preview .cx-gallery-item').get();
+                items.sort(function(a, b){
+                    var fnA = $(a).data('filename') || '';
+                    var fnB = $(b).data('filename') || '';
+                    var numA = parseInt((String(fnA)).match(/(\d+)/)?.[1] || '9999', 10);
+                    var numB = parseInt((String(fnB)).match(/(\d+)/)?.[1] || '9999', 10);
                     return numA - numB;
                 });
-                var ids = $('#cx_gallery').val() ? $('#cx_gallery').val().split(',').filter(Boolean) : [];
-                newItems.forEach(function(att){
-                    ids.push(att.id);
-                    var url = att.attributes.sizes && att.attributes.sizes.thumbnail ? att.attributes.sizes.thumbnail.url : att.attributes.url;
-                    $('#cx_gallery_preview').append('<div class="cx-gallery-item" data-id="'+att.id+'" draggable="true" style="position:relative;cursor:grab;user-select:none;"><div class="cx-gallery-num" style="position:absolute;top:-4px;left:-4px;background:#0073aa;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;"></div><img src="'+url+'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ddd;border-radius:4px;"><span class="cx-gallery-remove" data-id="'+att.id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span></div>');
-                });
-                $('#cx_gallery').val(ids.join(','));
+                $('#cx_gallery_preview').empty();
+                $.each(items, function(i, el){ $('#cx_gallery_preview').append(el); });
+                syncIds();
                 reNumber();
             });
             frame.open();
