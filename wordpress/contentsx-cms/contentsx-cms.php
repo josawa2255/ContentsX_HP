@@ -248,13 +248,12 @@ function cxcms_manga_meta_html( $post ) {
         <div class="cx-hint">「表示する」にするとビズ書庫（漫画を読むページ）に出ます。デフォルトは表示する</div>
     </div>
     <div class="cx-field">
-        <label>表示先サイト</label>
+        <label>BizManga 制作事例に表示</label>
         <select name="cx_show_site">
-            <option value="both" <?php selected($m('cx_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
-            <option value="bizmanga" <?php selected($m('cx_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
-            <option value="contentsx" <?php selected($m('cx_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
+            <option value="both" <?php selected($m('cx_show_site'), 'both'); ?>>表示する</option>
+            <option value="contentsx" <?php selected($m('cx_show_site'), 'contentsx'); ?>>表示しない</option>
         </select>
-        <div class="cx-hint">制作事例・新作情報をどちらのサイトに表示するか選べます</div>
+        <div class="cx-hint">BizMangaサイトの制作事例ページに表示するか選べます。ContentsX新作情報は上の項目で個別に設定</div>
     </div>
     <div class="cx-field">
         <label>ギャラリー画像（漫画ページ）— ドラッグで並べ替え可能</label>
@@ -1187,7 +1186,7 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
             $new['cx_show_hero_site'] = 'Hero';
             $new['cx_is_new']  = '新作';
             $new['cx_show_library'] = '書庫';
-            $new['cx_show_site'] = 'サイト';
+            $new['cx_show_site'] = 'BM事例';
         }
     }
     return $new;
@@ -1203,8 +1202,7 @@ add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
     if ( $col === 'cx_is_new' ) { echo $v === '1' ? '✅' : '—'; return; }
     if ( $col === 'cx_show_library' ) { echo $v !== '0' ? '✅' : '—'; return; }
     if ( $col === 'cx_show_site' ) {
-        $labels = ['both'=>'両方','bizmanga'=>'BM','contentsx'=>'CX'];
-        echo esc_html( $labels[$v] ?? '両方' );
+        echo ($v === 'contentsx') ? '—' : '✅';
         return;
     }
     echo esc_html( $v ?: '—' );
