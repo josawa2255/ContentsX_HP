@@ -1416,55 +1416,185 @@ function cxcms_import_page() {
     // インポート実行
     if ( isset($_POST['cxcms_do_import']) && wp_verify_nonce($_POST['_wpnonce'], 'cxcms_import') ) {
         $result = cxcms_run_import();
-        echo '<div class="notice notice-success"><p>' . esc_html($result) . '</p></div>';
+        echo '<div class="notice notice-success"><p>' . wp_kses_post($result) . '</p></div>';
+    }
+    // 同期（上書き更新）実行
+    if ( isset($_POST['cxcms_do_sync']) && wp_verify_nonce($_POST['_wpnonce'], 'cxcms_import') ) {
+        $result = cxcms_run_sync();
+        echo '<div class="notice notice-info"><p>' . wp_kses_post($result) . '</p></div>';
+    }
+    // 重複チェック＆修復
+    if ( isset($_POST['cxcms_fix_duplicates']) && wp_verify_nonce($_POST['_wpnonce'], 'cxcms_import') ) {
+        $result = cxcms_fix_duplicates();
+        echo '<div class="notice notice-warning"><p>' . wp_kses_post($result) . '</p></div>';
     }
 
     $existing = get_posts(['post_type'=>'manga_work','posts_per_page'=>200,'post_status'=>'any','fields'=>'ids']);
-    $existing_ids = [];
+    $existing_map = []; // cx_work_id => [post_ids]
     foreach ($existing as $pid) {
         $wid = get_post_meta($pid, 'cx_work_id', true);
-        if ($wid) $existing_ids[] = $wid;
+        if ($wid) {
+            if (!isset($existing_map[$wid])) $existing_map[$wid] = [];
+            $existing_map[$wid][] = $pid;
+        }
     }
     $data = cxcms_get_import_data();
     $new_count = 0;
+    $dup_count = 0;
     foreach ($data as $w) {
-        if (!in_array($w['id'], $existing_ids)) $new_count++;
+        if (!isset($existing_map[$w['id']])) $new_count++;
+    }
+    foreach ($existing_map as $wid => $pids) {
+        if (count($pids) > 1) $dup_count++;
     }
 
     echo '<div class="wrap">';
-    echo '<h1>漫画事例 一括インポート</h1>';
-    echo '<p>works-detail.js のデータを WordPress に一括登録します。</p>';
-    echo '<p>全 <strong>' . count($data) . '</strong> 件中、<strong>' . $new_count . '</strong> 件が未登録です。</p>';
-    if ($new_count > 0) {
-        echo '<form method="post">';
+    echo '<h1>漫画事例 一括インポート・同期</h1>';
+    echo '<p>フォールバックデータ（' . count($data) . '件）を WordPress に一括登録・同期します。</p>';
+
+    // 重複警告
+    if ($dup_count > 0) {
+        echo '<div class="notice notice-error"><p>⚠️ <strong>' . $dup_count . ' 件の重複</strong>が検出されました。修復ボタンで古い方を削除できます。</p></div>';
+        echo '<form method="post" style="margin-bottom:16px;">';
         wp_nonce_field('cxcms_import');
-        echo '<p><button type="submit" name="cxcms_do_import" class="button button-primary button-hero">未登録の ' . $new_count . ' 件をインポート</button></p>';
+        echo '<button type="submit" name="cxcms_fix_duplicates" class="button" style="color:#d63638;border-color:#d63638;">重複を修復（古い方を削除）</button>';
         echo '</form>';
-    } else {
-        echo '<p>すべての漫画事例が登録済みです。</p>';
+    }
+
+    echo '<form method="post" style="display:flex;gap:12px;margin-bottom:24px;">';
+    wp_nonce_field('cxcms_import');
+    if ($new_count > 0) {
+        echo '<button type="submit" name="cxcms_do_import" class="button button-primary button-hero">未登録の ' . $new_count . ' 件をインポート</button>';
+    }
+    echo '<button type="submit" name="cxcms_do_sync" class="button button-hero">全件を同期（既存データを上書き更新）</button>';
+    echo '</form>';
+
+    if ($new_count === 0 && $dup_count === 0) {
+        echo '<p>✅ すべての漫画事例が登録済みで、重複もありません。</p>';
     }
 
     // 登録済みリスト
-    if (!empty($existing_ids)) {
-        echo '<h2>登録済み (' . count($existing_ids) . '件)</h2><ul>';
-        foreach ($existing_ids as $eid) echo '<li>✅ ' . esc_html($eid) . '</li>';
-        echo '</ul>';
+    echo '<h2>登録状況 (' . count($existing_map) . '件)</h2>';
+    echo '<table class="widefat striped" style="max-width:700px;"><thead><tr><th>ID</th><th>状態</th><th>ギャラリー</th></tr></thead><tbody>';
+    foreach ($data as $w) {
+        $wid = $w['id'];
+        $has = isset($existing_map[$wid]);
+        $is_dup = $has && count($existing_map[$wid]) > 1;
+        $gallery_count = 0;
+        if ($has) {
+            $gal = get_post_meta($existing_map[$wid][0], 'cx_gallery', true);
+            if ($gal) $gallery_count = count(array_filter(explode(',', $gal)));
+        }
+        $status = $has ? ($is_dup ? '⚠️ 重複(' . count($existing_map[$wid]) . '件)' : '✅') : '❌ 未登録';
+        $gal_text = $gallery_count > 0 ? '🖼 ' . $gallery_count . '枚' : '—';
+        echo '<tr><td>' . esc_html($wid) . '</td><td>' . $status . '</td><td>' . $gal_text . '</td></tr>';
     }
+    echo '</tbody></table>';
     echo '</div>';
 }
 
-function cxcms_run_import() {
-    $data = cxcms_get_import_data();
+/* 共通: メタデータを投稿に書き込む */
+function cxcms_write_meta( $post_id, $w, $sort_order ) {
+    $media_str = is_array($w['media']) ? implode(', ', $w['media']) : $w['media'];
+    update_post_meta($post_id, 'cx_work_id', $w['id']);
+    update_post_meta($post_id, 'cx_title_en', $w['title_en']);
+    update_post_meta($post_id, 'cx_pages', $w['pages']);
+    update_post_meta($post_id, 'cx_client', $w['client']);
+    update_post_meta($post_id, 'cx_spec_pages', $w['spec_pages']);
+    update_post_meta($post_id, 'cx_spec_period', $w['spec_period']);
+    update_post_meta($post_id, 'cx_media', $media_str);
+    update_post_meta($post_id, 'cx_point', $w['point']);
+    update_post_meta($post_id, 'cx_comment', $w['comment']);
+    update_post_meta($post_id, 'cx_sort_order', $sort_order);
+
+    // カテゴリ登録
+    if (!empty($w['category'])) {
+        $term = term_exists($w['category'], 'manga_category');
+        if (!$term) $term = wp_insert_term($w['category'], 'manga_category');
+        if (!is_wp_error($term)) {
+            $term_id = is_array($term) ? $term['term_id'] : $term;
+            wp_set_object_terms($post_id, [(int)$term_id], 'manga_category');
+        }
+    }
+}
+
+/* 共通: 外部画像URLをWPメディアにインポートしてattachment IDを返す */
+function cxcms_import_image_from_url( $url, $post_id = 0 ) {
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+
+    $tmp = download_url( $url, 30 );
+    if ( is_wp_error($tmp) ) return 0;
+
+    $fname = basename( parse_url($url, PHP_URL_PATH) );
+    $file_array = [ 'name' => $fname, 'tmp_name' => $tmp ];
+    $att_id = media_handle_sideload( $file_array, $post_id );
+    if ( is_wp_error($att_id) ) {
+        @unlink($tmp);
+        return 0;
+    }
+    return $att_id;
+}
+
+/* 共通: ギャラリー画像をcontentsx.jpから取得してWPメディアに登録 */
+function cxcms_import_gallery( $post_id, $work_id, $pages ) {
+    $base = 'https://contentsx.jp/material/manga/' . $work_id . '/';
+    $att_ids = [];
+    for ($i = 1; $i <= $pages; $i++) {
+        $url = $base . str_pad($i, 2, '0', STR_PAD_LEFT) . '.webp';
+        $att_id = cxcms_import_image_from_url($url, $post_id);
+        if ($att_id) $att_ids[] = $att_id;
+    }
+    if (!empty($att_ids)) {
+        update_post_meta($post_id, 'cx_gallery', implode(',', $att_ids));
+        // 1枚目をアイキャッチに設定
+        set_post_thumbnail($post_id, $att_ids[0]);
+    }
+    return count($att_ids);
+}
+
+/* cx_work_id → post_id のマップを取得 */
+function cxcms_get_existing_map() {
     $existing = get_posts(['post_type'=>'manga_work','posts_per_page'=>200,'post_status'=>'any','fields'=>'ids']);
-    $existing_ids = [];
+    $map = [];
     foreach ($existing as $pid) {
         $wid = get_post_meta($pid, 'cx_work_id', true);
-        if ($wid) $existing_ids[] = $wid;
+        if ($wid) {
+            if (!isset($map[$wid])) $map[$wid] = [];
+            $map[$wid][] = $pid;
+        }
     }
+    // タイトルでもチェック（cx_work_idが空の投稿を検出）
+    foreach ($existing as $pid) {
+        $wid = get_post_meta($pid, 'cx_work_id', true);
+        if (empty($wid)) {
+            $title = get_the_title($pid);
+            if ($title) {
+                // フォールバックデータとタイトル照合
+                foreach (cxcms_get_import_data() as $w) {
+                    if ($w['title_ja'] === $title && !isset($map[$w['id']])) {
+                        // cx_work_idを補完
+                        update_post_meta($pid, 'cx_work_id', $w['id']);
+                        $map[$w['id']] = [$pid];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return $map;
+}
+
+/* 新規インポート（未登録のみ + ギャラリー画像取得） */
+function cxcms_run_import() {
+    $data = cxcms_get_import_data();
+    $existing_map = cxcms_get_existing_map();
 
     $imported = 0;
+    $images = 0;
     foreach ($data as $i => $w) {
-        if (in_array($w['id'], $existing_ids)) continue;
+        if (isset($existing_map[$w['id']])) continue;
 
         $post_id = wp_insert_post([
             'post_type'   => 'manga_work',
@@ -1473,34 +1603,69 @@ function cxcms_run_import() {
         ]);
         if (is_wp_error($post_id)) continue;
 
-        $media_str = is_array($w['media']) ? implode(', ', $w['media']) : $w['media'];
-        update_post_meta($post_id, 'cx_work_id', $w['id']);
-        update_post_meta($post_id, 'cx_title_en', $w['title_en']);
-        update_post_meta($post_id, 'cx_pages', $w['pages']);
-        update_post_meta($post_id, 'cx_client', $w['client']);
-        update_post_meta($post_id, 'cx_spec_pages', $w['spec_pages']);
-        update_post_meta($post_id, 'cx_spec_period', $w['spec_period']);
-        update_post_meta($post_id, 'cx_media', $media_str);
-        update_post_meta($post_id, 'cx_point', $w['point']);
-        update_post_meta($post_id, 'cx_comment', $w['comment']);
-        update_post_meta($post_id, 'cx_sort_order', $i + 1);
+        cxcms_write_meta($post_id, $w, $i + 1);
         update_post_meta($post_id, 'cx_is_new', '0');
         update_post_meta($post_id, 'cx_show_hero', '1');
         update_post_meta($post_id, 'cx_show_hero_site', 'both');
 
-        // カテゴリ登録
-        if (!empty($w['category'])) {
-            $term = term_exists($w['category'], 'manga_category');
-            if (!$term) $term = wp_insert_term($w['category'], 'manga_category');
-            if (!is_wp_error($term)) {
-                $term_id = is_array($term) ? $term['term_id'] : $term;
-                wp_set_object_terms($post_id, [(int)$term_id], 'manga_category');
-            }
-        }
-
+        // ギャラリー画像をインポート
+        $img_count = cxcms_import_gallery($post_id, $w['id'], $w['pages']);
+        $images += $img_count;
         $imported++;
     }
-    return $imported . ' 件の漫画事例をインポートしました！';
+    return $imported . ' 件をインポート（画像 ' . $images . ' 枚取得）';
+}
+
+/* 全件同期（既存データをフォールバックで上書き更新） */
+function cxcms_run_sync() {
+    $data = cxcms_get_import_data();
+    $existing_map = cxcms_get_existing_map();
+
+    $updated = 0;
+    $created = 0;
+    foreach ($data as $i => $w) {
+        if (isset($existing_map[$w['id']])) {
+            // 既存 → メタデータ上書き（ギャラリー・表示設定はそのまま保持）
+            $post_id = $existing_map[$w['id']][0];
+            wp_update_post(['ID' => $post_id, 'post_title' => $w['title_ja']]);
+            cxcms_write_meta($post_id, $w, $i + 1);
+            $updated++;
+        } else {
+            // 未登録 → 新規作成
+            $post_id = wp_insert_post([
+                'post_type'   => 'manga_work',
+                'post_title'  => $w['title_ja'],
+                'post_status' => 'publish',
+            ]);
+            if (is_wp_error($post_id)) continue;
+            cxcms_write_meta($post_id, $w, $i + 1);
+            update_post_meta($post_id, 'cx_is_new', '0');
+            update_post_meta($post_id, 'cx_show_hero', '1');
+            update_post_meta($post_id, 'cx_show_hero_site', 'both');
+            $img_count = cxcms_import_gallery($post_id, $w['id'], $w['pages']);
+            $created++;
+        }
+    }
+    return '同期完了: ' . $updated . ' 件更新、' . $created . ' 件新規作成';
+}
+
+/* 重複修復（同じcx_work_idの投稿が複数ある場合、古い方を削除） */
+function cxcms_fix_duplicates() {
+    $existing_map = cxcms_get_existing_map();
+    $deleted = 0;
+    foreach ($existing_map as $wid => $pids) {
+        if (count($pids) <= 1) continue;
+        // 最新（最大のpost_id）を残し、他を削除
+        rsort($pids);
+        $keep = array_shift($pids);
+        foreach ($pids as $dup_pid) {
+            wp_delete_post($dup_pid, true); // 完全削除（ゴミ箱に入れない）
+            $deleted++;
+        }
+    }
+    return $deleted > 0
+        ? $deleted . ' 件の重複投稿を削除しました'
+        : '重複はありませんでした';
 }
 
 function cxcms_get_import_data() {
