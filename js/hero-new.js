@@ -303,30 +303,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (wdNext) wdNext.style.display = '';
       }
 
+      // 2ページ目で縦読み判定（1ページ目は表紙の可能性があるため）
       const hasGal = work.gallery && work.gallery.length > 0;
-      const firstSrc = (hasGal && work.gallery[0]) ? work.gallery[0] : `material/manga/${work.id}/01.webp`;
       const secondSrc = (hasGal && work.gallery[1]) ? work.gallery[1] : `material/manga/${work.id}/02.webp`;
 
-      const testImg1 = new Image();
-      testImg1.src = firstSrc;
-      testImg1.onload = () => {
-        if (isVerticalRatio(testImg1.naturalWidth / testImg1.naturalHeight)) {
+      const testImg = new Image();
+      testImg.src = secondSrc;
+      testImg.onload = () => {
+        if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVertical();
         } else {
-          // 1ページ目は表紙の可能性 → 2ページ目も判定
-          const testImg2 = new Image();
-          testImg2.src = secondSrc;
-          testImg2.onload = () => {
-            if (isVerticalRatio(testImg2.naturalWidth / testImg2.naturalHeight)) {
-              applyVertical();
-            } else {
-              applyCarousel();
-            }
-          };
-          testImg2.onerror = () => applyCarousel();
+          applyCarousel();
         }
       };
-      testImg1.onerror = () => applyCarousel();
+      testImg.onerror = () => applyCarousel();
     }
 
     wdOverlay.classList.add('active');
