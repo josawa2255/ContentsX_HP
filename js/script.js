@@ -723,12 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // データからカード生成（data/new-works.js のグローバル変数を使用）
   if (typeof NEW_WORKS_DATA !== 'undefined') {
     buildNewWorksCards(NEW_WORKS_DATA);
-  } else {
-    // フォールバック: サーバー環境ではfetchも試行
-    fetch('data/new-works.json')
-      .then(res => res.json())
-      .then(data => buildNewWorksCards(data))
-      .catch(err => console.warn('new-works data not available:', err));
   }
 
   /* WordPress データ到着後に新作情報を再構築 */
