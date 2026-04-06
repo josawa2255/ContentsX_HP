@@ -306,12 +306,12 @@ document.addEventListener('DOMContentLoaded', function() {
       // 即座にカルーセルモードで仮表示（体感速度向上）
       applyCarousel();
 
-      // 2ページ目で縦読み判定（1ページ目は表紙の可能性があるため）
+      // 1ページ目で縦読み判定
       const hasGal = work.gallery && work.gallery.length > 0;
-      const secondSrc = (hasGal && work.gallery[1]) ? work.gallery[1] : `material/manga/${work.id}/02.webp`;
+      const firstSrc = (hasGal && work.gallery[0]) ? work.gallery[0] : `material/manga/${work.id}/01.webp`;
 
       const testImg = new Image();
-      testImg.src = secondSrc;
+      testImg.src = firstSrc;
       testImg.onload = () => {
         if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVertical();
