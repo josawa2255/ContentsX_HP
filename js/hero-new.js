@@ -303,6 +303,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (wdNext) wdNext.style.display = '';
       }
 
+      // 即座にカルーセルモードで仮表示（体感速度向上）
+      applyCarousel();
+
       // 2ページ目で縦読み判定（1ページ目は表紙の可能性があるため）
       const hasGal = work.gallery && work.gallery.length > 0;
       const secondSrc = (hasGal && work.gallery[1]) ? work.gallery[1] : `material/manga/${work.id}/02.webp`;
@@ -312,11 +315,8 @@ document.addEventListener('DOMContentLoaded', function() {
       testImg.onload = () => {
         if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVertical();
-        } else {
-          applyCarousel();
         }
       };
-      testImg.onerror = () => applyCarousel();
     }
 
     wdOverlay.classList.add('active');
