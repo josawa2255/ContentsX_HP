@@ -48,20 +48,16 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
     + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
 
-  console.log('Sending to HubSpot:', JSON.stringify(payload, null, 2));
-
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
   .then(function(res) {
-    console.log('HubSpot response status:', res.status);
     if (res.ok) {
       return res.json();
     }
     return res.text().then(function(t) {
-      console.error('HubSpot error response:', t);
       throw new Error(t);
     });
   })
@@ -84,7 +80,6 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     form.style.display = 'none';
   })
   .catch(function(err) {
-    console.error('HubSpot submission error:', err);
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
     alert('送信に失敗しました。お手数ですが、もう一度お試しください。');

@@ -626,7 +626,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scCategory) scCategory.textContent = showcaseData.category;
     if (scTitle) scTitle.textContent = showcaseData.title;
     if (scTags) {
-      scTags.innerHTML = showcaseData.tags.map(t => `<span class="showcase-tag">${t}</span>`).join('');
+      scTags.innerHTML = '';
+      showcaseData.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'showcase-tag';
+        span.textContent = t;
+        scTags.appendChild(span);
+      });
     }
     if (scDesc) scDesc.textContent = showcaseData.desc;
     if (scPageCount) scPageCount.textContent = `全${showcaseData.totalPages}ページ`;
@@ -688,12 +694,21 @@ document.addEventListener('DOMContentLoaded', () => {
       card.dataset.manga = item.id;
       card.dataset.pages = item.pages;
       const coverSrc = item.thumbnail || `material/manga/${item.id}/01.webp`;
-      card.innerHTML = `
-        <div class="new-works-card-cover">
-          <img src="${coverSrc}" alt="${item.title_ja}" loading="lazy" style="object-position:top center;">
-        </div>
-        <p class="new-works-card-title" data-ja="${item.title_ja}" data-en="${item.title_en}">${item.title_ja}</p>
-      `;
+      const coverWrap = document.createElement('div');
+      coverWrap.className = 'new-works-card-cover';
+      const img = document.createElement('img');
+      img.src = coverSrc;
+      img.alt = item.title_ja || '';
+      img.loading = 'lazy';
+      img.style.objectPosition = 'top center';
+      coverWrap.appendChild(img);
+      const titleP = document.createElement('p');
+      titleP.className = 'new-works-card-title';
+      titleP.setAttribute('data-ja', item.title_ja || '');
+      titleP.setAttribute('data-en', item.title_en || '');
+      titleP.textContent = item.title_ja || '';
+      card.appendChild(coverWrap);
+      card.appendChild(titleP);
       // カードクリック → ビューア起動
       card.addEventListener('click', () => {
         openMangaViewer(item.id, item.pages, item.title_ja);

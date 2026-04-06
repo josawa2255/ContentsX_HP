@@ -82,14 +82,26 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- ニュース一覧 -->
+  <url>
+    <loc>https://contentsx.jp/news</loc>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://contentsx.jp/news"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://contentsx.jp/news"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://contentsx.jp/news"/>
+    <lastmod>2026-04-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
   <!-- ニュース詳細（動的だが登録） -->
   <url>
     <loc>https://contentsx.jp/news-detail</loc>
     <xhtml:link rel="alternate" hreflang="ja" href="https://contentsx.jp/news-detail"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://contentsx.jp/news-detail"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://contentsx.jp/news-detail"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
   </url>
 
 </urlset>
