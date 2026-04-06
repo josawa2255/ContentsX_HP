@@ -1178,6 +1178,9 @@ add_action( 'edited_manga_category', function($id) {
 add_filter( 'manage_manga_work_posts_columns', function($cols) {
     $new = [];
     foreach ( $cols as $k => $v ) {
+        if ( $k === 'title' ) {
+            $new['cx_thumb'] = '表紙';
+        }
         $new[$k] = $v;
         if ( $k === 'title' ) {
             $new['cx_work_id'] = 'ID';
@@ -1192,6 +1195,30 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
     return $new;
 });
 add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
+    if ( $col === 'cx_thumb' ) {
+        $thumb_id = get_post_thumbnail_id( $id );
+        $img_url = '';
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
+            if ( $img ) $img_url = $img[0];
+        }
+        if ( ! $img_url ) {
+            $gallery = get_post_meta( $id, 'cx_gallery', true );
+            if ( $gallery ) {
+                $first_id = (int) strtok( $gallery, ',' );
+                if ( $first_id ) {
+                    $img = wp_get_attachment_image_src( $first_id, 'thumbnail' );
+                    if ( $img ) $img_url = $img[0];
+                }
+            }
+        }
+        if ( $img_url ) {
+            echo '<img src="' . esc_url($img_url) . '" style="width:40px;height:56px;object-fit:cover;border-radius:3px;">';
+        } else {
+            echo '—';
+        }
+        return;
+    }
     $v = get_post_meta( $id, $col, true );
     if ( $col === 'cx_show_hero_site' ) {
         $hs = $v ?: ( get_post_meta($id, 'cx_show_hero', true) !== '0' ? 'both' : 'none' );
