@@ -1235,6 +1235,106 @@ add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
     echo esc_html( $v ?: '—' );
 }, 10, 2 );
 
+/* ── 漫画事例 ドラッグ並べ替え ── */
+
+// 並べ替え列を追加
+add_filter( 'manage_manga_work_posts_columns', function($cols) {
+    $cols['cx_sort_order'] = '順番';
+    return $cols;
+}, 20 );
+add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
+    if ( $col === 'cx_sort_order' ) {
+        $order = get_post_meta($id, 'cx_sort_order', true) ?: '0';
+        echo '<span class="cx-sort-num">' . esc_html($order) . '</span>';
+    }
+}, 20, 2 );
+
+// デフォルトのソート順をcx_sort_orderにする
+add_action( 'pre_get_posts', function($q) {
+    if ( ! is_admin() || ! $q->is_main_query() ) return;
+    if ( $q->get('post_type') !== 'manga_work' ) return;
+    if ( ! $q->get('orderby') ) {
+        $q->set('meta_key', 'cx_sort_order');
+        $q->set('orderby', 'meta_value_num');
+        $q->set('order', 'ASC');
+    }
+});
+
+// ドラッグ用JS・CSSを漫画事例一覧でのみ読み込む
+add_action( 'admin_enqueue_scripts', function($hook) {
+    global $post_type;
+    if ( $hook !== 'edit.php' || $post_type !== 'manga_work' ) return;
+
+    wp_enqueue_script('jquery-ui-sortable');
+
+    $css = '
+        #the-list tr { cursor: grab; }
+        #the-list tr.ui-sortable-helper { background: #fff3cd; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #the-list tr.cx-drag-placeholder { height: 60px; background: #e8f0fe; }
+        .cx-sort-saving { position: fixed; top: 32px; right: 20px; background: #2271b1; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 9999; font-weight: 600; }
+    ';
+    wp_add_inline_style('wp-admin', $css);
+
+    $js = "
+    jQuery(function($){
+        var list = $('#the-list');
+        if (!list.length) return;
+
+        list.sortable({
+            items: 'tr',
+            axis: 'y',
+            handle: 'td',
+            placeholder: 'cx-drag-placeholder',
+            cursor: 'grabbing',
+            opacity: 0.8,
+            update: function(e, ui) {
+                var notice = $('<div class=\"cx-sort-saving\">保存中...</div>').appendTo('body');
+                var order = [];
+                list.find('tr').each(function(i){
+                    var id = $(this).attr('id');
+                    if (id) order.push(id.replace('post-',''));
+                });
+                $.post(ajaxurl, {
+                    action: 'cxcms_sort_works',
+                    order: order,
+                    _wpnonce: '" . wp_create_nonce('cxcms_sort') . "'
+                }, function(res){
+                    notice.text(res.success ? '✅ 保存完了' : '❌ エラー');
+                    setTimeout(function(){ notice.fadeOut(300, function(){ notice.remove(); }); }, 1500);
+                    // 順番の数字を更新
+                    list.find('tr').each(function(i){
+                        $(this).find('.cx-sort-num').text(i + 1);
+                    });
+                }).fail(function(){
+                    notice.text('❌ 通信エラー');
+                    setTimeout(function(){ notice.fadeOut(300, function(){ notice.remove(); }); }, 2000);
+                });
+            }
+        });
+    });
+    ";
+    wp_add_inline_script('jquery-ui-sortable', $js);
+});
+
+// Ajax: 並べ替え保存
+add_action( 'wp_ajax_cxcms_sort_works', function() {
+    check_ajax_referer('cxcms_sort', '_wpnonce');
+    if ( ! current_user_can('manage_options') ) wp_send_json_error('権限がありません');
+
+    $order = isset($_POST['order']) ? $_POST['order'] : [];
+    if ( empty($order) ) wp_send_json_error('データがありません');
+
+    // ページオフセットを考慮（2ページ目以降のドラッグ対応）
+    $paged = isset($_POST['paged']) ? (int)$_POST['paged'] : 1;
+    $per_page = 20;
+    $offset = ($paged - 1) * $per_page;
+
+    foreach ( $order as $i => $post_id ) {
+        update_post_meta( (int)$post_id, 'cx_sort_order', $offset + $i + 1 );
+    }
+    wp_send_json_success();
+});
+
 /* ニュースの一覧カラム */
 add_filter( 'manage_cx_news_posts_columns', function($cols) {
     $new = [];
