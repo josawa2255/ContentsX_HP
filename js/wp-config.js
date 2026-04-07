@@ -18,7 +18,7 @@ const WP_CONFIG = {
   enabled: true,
 
   /* API タイムアウト（ミリ秒） */
-  timeout: 5000,
+  timeout: 3000,
 
   /* キャッシュ有効期間（ミリ秒）— ブラウザメモリ内 */
   cacheTTL: 5 * 60 * 1000,   // 5分

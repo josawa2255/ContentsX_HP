@@ -152,14 +152,15 @@
   /* ── 初期化 ── */
   document.addEventListener('DOMContentLoaded', async () => {
     try {
+      // Heroデータを最優先で取得 → 即座にイベント発火
+      await loadWorks();
+      window.dispatchEvent(new CustomEvent('wp-data-ready'));
+
+      // 残りは並列で取得（Heroをブロックしない）
       await Promise.all([
-        loadWorks(),
         loadNewWorks(),
         loadNews(),
       ]);
-
-      /* Hero や新作情報の再描画が必要ならイベント発火 */
-      window.dispatchEvent(new CustomEvent('wp-data-ready'));
     } catch (e) {
       console.warn('[WP-API] 初期化エラー（ローカルデータで継続）:', e);
     }

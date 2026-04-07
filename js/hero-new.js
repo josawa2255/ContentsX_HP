@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
         /* WordPress画像があればそちら、なければローカルパス */
         img.src = item.thumbnail || `material/manga/${item.id}/01.webp`;
         img.alt = item.title_ja;
-        img.loading = 'lazy';
+        img.loading = 'eager';
+        img.fetchPriority = 'high';
         img.decoding = 'async';
         /* 縦長Webtoon画像は上部を表示（中央だと意味ある内容が見えない） */
         img.style.objectPosition = 'top center';
