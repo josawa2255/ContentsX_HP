@@ -1,7 +1,9 @@
+// URLパラメータ解析（流入元トラッキング + 自動入力）
+var CX_PARAMS = new URLSearchParams(window.location.search);
+
 // 採用ページからのposition自動入力
 (function() {
-  var params = new URLSearchParams(window.location.search);
-  var position = params.get('position');
+  var position = CX_PARAMS.get('position');
   if (position) {
     var msgField = document.getElementById('message');
     if (msgField) {
@@ -28,13 +30,25 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   var email = document.getElementById('email').value;
   var message = document.getElementById('message').value;
 
+  // 流入元トラッキング情報をメッセージに付加
+  var tracking = [];
+  var utmSource   = CX_PARAMS.get('utm_source');
+  var utmMedium   = CX_PARAMS.get('utm_medium');
+  var utmCampaign = CX_PARAMS.get('utm_campaign');
+  var source      = CX_PARAMS.get('source');
+  if (utmSource)   tracking.push('流入元: ' + utmSource);
+  if (utmMedium)   tracking.push('媒体: ' + utmMedium);
+  if (utmCampaign) tracking.push('キャンペーン: ' + utmCampaign);
+  if (source)      tracking.push('参照ページ: ' + source);
+  var trackingNote = tracking.length > 0 ? '\n\n---\n[トラッキング]\n' + tracking.join('\n') : '';
+
   var fields = [
     { name: 'company',   value: company },
     { name: 'busyo',     value: department },
     { name: 'lastname',  value: fullName },
     { name: 'firstname', value: fullName },
     { name: 'email',     value: email },
-    { name: 'message',   value: message }
+    { name: 'message',   value: message + trackingNote }
   ];
 
   var payload = {
