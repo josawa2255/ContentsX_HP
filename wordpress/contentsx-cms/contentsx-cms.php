@@ -1345,6 +1345,80 @@ add_action( 'wp_ajax_cxcms_sort_works', function() {
     wp_send_json_success();
 });
 
+/* ── タイトル重複チェック（投稿編集画面） ── */
+add_action( 'admin_enqueue_scripts', function($hook) {
+    global $post_type;
+    if ( !in_array($hook, ['post.php','post-new.php']) ) return;
+    if ( $post_type !== 'manga_work' ) return;
+
+    $css = '
+        .cx-dup-warning { background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 10px 14px; margin: 8px 0 0; font-size: 13px; color: #856404; display: none; }
+        .cx-dup-warning strong { color: #d63638; }
+    ';
+    wp_add_inline_style('wp-admin', $css);
+
+    $js = "
+    jQuery(function($){
+        var titleInput = $('#title');
+        if (!titleInput.length) return;
+        var warning = $('<div class=\"cx-dup-warning\"></div>').insertAfter('#titlewrap');
+        var timer = null;
+        var currentPostId = $('#post_ID').val() || 0;
+
+        titleInput.on('input', function(){
+            clearTimeout(timer);
+            var title = titleInput.val().trim();
+            if (!title) { warning.hide(); return; }
+            timer = setTimeout(function(){
+                $.post(ajaxurl, {
+                    action: 'cxcms_check_dup_title',
+                    title: title,
+                    post_id: currentPostId,
+                    _wpnonce: '" . wp_create_nonce('cxcms_dup_check') . "'
+                }, function(res){
+                    if (res.success && res.data.found) {
+                        warning.html('⚠️ <strong>同じタイトルの漫画事例が既に存在します:</strong> 「' + res.data.existing_title + '」(ID: ' + res.data.existing_id + ')。このまま保存すると重複になります。').show();
+                    } else {
+                        warning.hide();
+                    }
+                });
+            }, 500);
+        });
+    });
+    ";
+    wp_add_inline_script('jquery', $js);
+});
+
+add_action( 'wp_ajax_cxcms_check_dup_title', function() {
+    check_ajax_referer('cxcms_dup_check', '_wpnonce');
+    $title = sanitize_text_field($_POST['title'] ?? '');
+    $current_id = (int)($_POST['post_id'] ?? 0);
+    if (empty($title)) wp_send_json_success(['found' => false]);
+
+    $existing = get_posts([
+        'post_type' => 'manga_work',
+        'post_status' => 'any',
+        'posts_per_page' => 1,
+        'title' => $title,
+        'exclude' => $current_id ? [$current_id] : [],
+    ]);
+
+    // get_posts の title パラメータは完全一致ではないのでダブルチェック
+    $found = false;
+    $existing_title = '';
+    $existing_id = '';
+    foreach ($existing as $p) {
+        if (mb_strtolower(trim($p->post_title)) === mb_strtolower(trim($title))) {
+            $found = true;
+            $existing_title = $p->post_title;
+            $existing_id = get_post_meta($p->ID, 'cx_work_id', true) ?: $p->ID;
+            break;
+        }
+    }
+
+    wp_send_json_success(['found' => $found, 'existing_title' => $existing_title, 'existing_id' => $existing_id]);
+});
+
 /* ニュースの一覧カラム */
 add_filter( 'manage_cx_news_posts_columns', function($cols) {
     $new = [];
