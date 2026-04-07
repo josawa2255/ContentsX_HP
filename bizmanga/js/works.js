@@ -1232,7 +1232,6 @@ if (isDirectMode && mangaData[autoOpen]) {
   const preData = {
     red: [
       { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: '../material/pre/red/bms-unso-red/', pages: 8 },
-      { key: 'pre-red-life', title: 'ライフエンターテイメント 赤入れ', path: '../material/pre/red/life-ent-red/', pages: 27 },
       { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: '../material/pre/red/ichinohe-red/', pages: 20 }
     ],
     name: [
