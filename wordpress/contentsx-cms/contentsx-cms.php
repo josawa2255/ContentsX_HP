@@ -1600,6 +1600,74 @@ function cxcms_import_page() {
         echo '<tr><td>' . esc_html($wid) . '</td><td>' . $status . '</td><td>' . $gal_text . '</td></tr>';
     }
     echo '</tbody></table>';
+
+    // ===== フォールバックJSエクスポート =====
+    echo '<hr style="margin:32px 0;">';
+    echo '<h2>フォールバックJS エクスポート</h2>';
+    echo '<p>WPの現在のデータからフォールバック用JSコードを生成します。コピーして各JSファイルに貼り付けてください。</p>';
+
+    // WP投稿からフォールバックデータ生成
+    $all_posts = get_posts(['post_type'=>'manga_work','posts_per_page'=>200,'post_status'=>'publish','orderby'=>'meta_value_num','meta_key'=>'cx_sort_order','order'=>'ASC']);
+
+    // --- bm-hero.js 用 (Heroに表示する作品) ---
+    $hero_items = [];
+    foreach ($all_posts as $p) {
+        $m = function($k) use ($p) { return get_post_meta($p->ID, $k, true); };
+        $hero_site = $m('cx_show_hero_site') ?: ($m('cx_show_hero') !== '0' ? 'both' : 'none');
+        if ($hero_site === 'none') continue;
+        $media_raw = $m('cx_media');
+        $media = $media_raw ? array_map('trim', explode(',', str_replace('、', ',', $media_raw))) : [];
+        $hero_items[] = [
+            'id' => $m('cx_work_id'), 'title_ja' => $p->post_title, 'pages' => (int)$m('cx_pages'),
+            'category' => $m('cx_client') ? wp_get_object_terms($p->ID, 'manga_category', ['fields'=>'names'])[0] ?? '' : '',
+            'media' => $media, 'spec' => ['pages' => $m('cx_spec_pages'), 'period' => $m('cx_spec_period')],
+            'point' => $m('cx_point'), 'comment' => $m('cx_comment')
+        ];
+    }
+    echo '<h3>bm-hero.js 用 (FALLBACK_WORKS)</h3>';
+    echo '<textarea readonly style="width:100%;height:200px;font-family:monospace;font-size:12px;" onclick="this.select();">';
+    echo 'var FALLBACK_WORKS = ' . json_encode($hero_items, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . ';';
+    echo '</textarea>';
+
+    // --- works.js 用 (ビズ書庫に表示する作品) ---
+    $library_items = [];
+    foreach ($all_posts as $p) {
+        $m = function($k) use ($p) { return get_post_meta($p->ID, $k, true); };
+        if ($m('cx_show_library') === '0') continue;
+        $wid = $m('cx_work_id');
+        if (!$wid) continue;
+        $library_items[$wid] = [
+            'title' => $p->post_title, 'title_en' => $m('cx_title_en'),
+            'pages' => (int)$m('cx_pages'),
+            'path' => 'https://contentsx.jp/material/manga/' . $wid . '/',
+            'tags' => wp_get_object_terms($p->ID, 'manga_category', ['fields'=>'names']),
+            'category' => wp_get_object_terms($p->ID, 'manga_category', ['fields'=>'names'])[0] ?? '',
+            'viewType' => 'spread'
+        ];
+    }
+    echo '<h3>works.js 用 (FALLBACK_WORKS)</h3>';
+    echo '<textarea readonly style="width:100%;height:200px;font-family:monospace;font-size:12px;" onclick="this.select();">';
+    echo 'const FALLBACK_WORKS = ' . json_encode($library_items, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . ';';
+    echo '</textarea>';
+
+    // --- bm-home.js 用 (ギャラリー新作) ---
+    $new_items = [];
+    foreach ($all_posts as $p) {
+        $m = function($k) use ($p) { return get_post_meta($p->ID, $k, true); };
+        $wid = $m('cx_work_id');
+        if (!$wid) continue;
+        $new_items[] = [
+            'id' => $wid, 'title_ja' => $p->post_title, 'title_en' => $m('cx_title_en'),
+            'pages' => (int)$m('cx_pages'), 'added' => $m('cx_added_date') ?: $p->post_date
+        ];
+    }
+    echo '<h3>bm-home.js 用 (FALLBACK_NEW_WORKS)</h3>';
+    echo '<textarea readonly style="width:100%;height:200px;font-family:monospace;font-size:12px;" onclick="this.select();">';
+    echo 'var FALLBACK_NEW_WORKS = ' . json_encode($new_items, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . ';';
+    echo '</textarea>';
+
+    echo '<p style="margin-top:12px;color:#666;">※ クリックで全選択 → コピーして該当JSファイルのフォールバックデータを置き換えてください</p>';
+
     echo '</div>';
 }
 
