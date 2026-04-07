@@ -62,8 +62,8 @@ const NEW_WORKS_DATA = [
   },
   {
     "id": "bms-unso-remake",
-    "title_ja": "BMS運送（リメイク）",
-    "title_en": "BMS Transport (Remake)",
+    "title_ja": "BMS運送",
+    "title_en": "BMS Transport",
     "pages": 10,
     "added": "2026-03-15"
   },

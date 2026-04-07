@@ -145,21 +145,9 @@ const WORKS_DETAIL_DATA = [
     comment: "漫画を導入してから、LPからの問い合わせ率が大幅に改善しました。"
   },
   {
-    id: "bms-unso",
+    id: "bms-unso-remake",
     title_ja: "BMS運送",
     title_en: "BMS Transport",
-    pages: 10,
-    category: "採用",
-    client: "BMS運送",
-    media: ["採用サイト", "説明会資料"],
-    spec: { pages: "10P", period: "2週間" },
-    point: "運送業界の「きつい」イメージを払拭し、働く人の魅力とやりがいをストーリーで伝える採用漫画。",
-    comment: "求人への応募数が増えただけでなく、面接時に漫画の内容を話題にしてくれる方が増えました。"
-  },
-  {
-    id: "bms-unso-remake",
-    title_ja: "BMS運送（リメイク）",
-    title_en: "BMS Transport (Remake)",
     pages: 10,
     category: "採用",
     client: "BMS運送",
