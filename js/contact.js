@@ -40,7 +40,8 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   if (utmMedium)   tracking.push('媒体: ' + utmMedium);
   if (utmCampaign) tracking.push('キャンペーン: ' + utmCampaign);
   if (source)      tracking.push('参照ページ: ' + source);
-  var trackingNote = tracking.length > 0 ? '\n\n---\n[トラッキング]\n' + tracking.join('\n') : '';
+  var behaviorLog = typeof window.bmGetTrackingNote === 'function' ? window.bmGetTrackingNote() : '';
+  var trackingNote = tracking.length > 0 || behaviorLog ? '\n\n---\n[トラッキング]\n' + tracking.join('\n') + behaviorLog : '';
 
   var fields = [
     { name: 'company',   value: company },
