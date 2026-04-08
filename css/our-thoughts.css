@@ -20,7 +20,9 @@
 /* ===== HERO ===== */
 .ot-hero {
   min-height: 100vh;
-  background: var(--ot-off-white);
+  background:
+    radial-gradient(ellipse at 85% 50%, rgba(184,90,43,0.12) 0%, rgba(184,90,43,0.04) 40%, transparent 70%),
+    var(--ot-off-white);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -28,6 +30,20 @@
   text-align: center;
   padding: 160px 24px 100px;
   position: relative;
+  overflow: hidden;
+}
+.ot-hero::before {
+  content: '';
+  position: absolute;
+  right: -5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(300px, 40vw, 550px);
+  height: clamp(300px, 40vw, 550px);
+  background: url('../material/images/logo/contentsx-icon.webp') no-repeat center / contain;
+  opacity: 0.08;
+  filter: brightness(0) invert(1) drop-shadow(0 0 40px rgba(184,90,43,0.05));
+  pointer-events: none;
 }
 
 .ot-hero-label {
