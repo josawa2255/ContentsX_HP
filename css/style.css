@@ -197,7 +197,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   position: relative;
   letter-spacing: 0.02em;
 }
-.nav-link:hover { color: var(--text-primary); }
+.nav-link:hover { color: var(--accent); }
 .nav-link::after {
   content: '';
   position: absolute;
@@ -278,6 +278,13 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 .nav-dropdown-item:hover {
   background: var(--accent-light);
   color: var(--accent);
+  font-weight: 700;
+}
+.nav-dropdown-item.active {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 /* ---- セクションサイドナビ（ZOON風・右端固定） ---- */
