@@ -29,8 +29,8 @@
 
   // 現在のファイル名を取得
   var path = location.pathname;
-  var currentFile = path.substring(path.lastIndexOf('/') + 1) || 'index.html';
-  var isIndex = (currentFile === 'index.html' || currentFile === '' || currentFile === '/');
+  var currentFile = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';
+  var isIndex = (currentFile === 'index' || currentFile === '' || currentFile === '/');
 
   // ===== 言語状態の管理 =====
   var currentLang = 'ja';
@@ -81,16 +81,19 @@
       // サブメニュー
       var sub = document.createElement('div');
       sub.className = 'nav-dropdown-menu';
+      var childActive = false;
       item.children.forEach(function(child) {
         var ca = document.createElement('a');
         var childHref = child.href;
         ca.href = resolveHref(childHref);
         ca.className = 'nav-dropdown-item';
+        if (!childHref.startsWith('#') && childHref === currentFile) { ca.className += ' active'; childActive = true; }
         ca.setAttribute('data-ja', child.label);
         ca.setAttribute('data-en', child.labelEn);
         ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
         sub.appendChild(ca);
       });
+      if (childActive) a.className += ' active';
       wrapper.appendChild(sub);
       nav.appendChild(wrapper);
     } else {
