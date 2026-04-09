@@ -50,42 +50,6 @@
   box-sizing: border-box;
 }
 
-/* === 鎖アニメーション（画面横断フロー） === */
-.hero-chains {
-  position: absolute;
-  inset: 0;
-  z-index: 6;
-  pointer-events: none;
-  overflow: hidden;
-  transition: opacity 0.8s ease;
-}
-.hero--phase2 .hero-chains {
-  opacity: 0;
-  pointer-events: none;
-}
-.hero-chain {
-  position: absolute;
-  opacity: 0;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: translate3d(0,0,0);
-  height: auto;
-}
-
-/* ターコイズ鎖 */
-.hero-chain--turq {
-  top: 50%;
-  left: -50%;
-  width: 400%;
-}
-
-/* オレンジ鎖 */
-.hero-chain--orange {
-  bottom: -50%;
-  left: -50%;
-  width: 400%;
-}
 
 /* === ビズちゃんアニメーション背景 === */
 .hero-bizchar {
@@ -498,10 +462,7 @@
     gap: 5px;
     padding-top: 60px;
   }
-  /* モバイル: 鎖アニメーション非表示 */
-  .hero-chains {
-    display: none;
-  }
+
   /* モーダル: スマホは縦並び */
   .work-detail-content {
     flex-direction: column;

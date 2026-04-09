@@ -45,22 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
       heroLogoMain.style.animationPlayState = 'running';
     }
 
-    // 鎖アニメーション開始（モバイルはCSS非表示のためPC専用）
-    animateChain(document.querySelector('.hero-chain--turq'), {
-      duration: 5500,
-      delay: 0,
-      fromDist: 80, toDist: -120,
-      angle: -30,
-      scale: 5
-    });
-    animateChain(document.querySelector('.hero-chain--orange'), {
-      duration: 5500,
-      delay: 300,
-      fromDist: -80, toDist: 120,
-      angle: -30,
-      scale: 5
-    });
-
     // Phase 2: 5.5秒後にカルーセルへトランジション
     setTimeout(function() {
       if (heroSection) heroSection.classList.add('hero--phase2');
@@ -91,57 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // --- 鎖アニメーション (requestAnimationFrame で60fps滑らか制御) ---
-  // 斜め方向: チェーンの角度に沿ってX+Y同時移動 + scale(5)
-  function animateChain(el, config) {
-    if (!el) return;
-    const dur = config.duration;
-    const delay = config.delay || 0;
-    const start = performance.now() + delay;
-    const angle = config.angle || 0;
-    const scale = config.scale || 1;
-    const angleRad = angle * Math.PI / 180;
-    // 事前計算: cos/sinは固定値なのでループ外で算出
-    const cosA = Math.cos(angleRad);
-    const sinA = Math.sin(angleRad);
-    const fromDist = config.fromDist;
-    const toDist = config.toDist;
-    const distRange = toDist - fromDist;
-    // rotate + scale は固定なので文字列を事前構築
-    const rotateScale = ` rotate(${angle}deg) scale(${scale})`;
-
-    function smoothstep(t) {
-      t = Math.max(0, Math.min(1, t));
-      return t * t * (3 - 2 * t);
-    }
-
-    function opacityCurve(t) {
-      if (t < 0.15) return 0.85 * smoothstep(t / 0.15);
-      if (t > 0.80) return 0.85 * smoothstep((1 - t) / 0.20);
-      return 0.85;
-    }
-
-    function tick(now) {
-      const elapsed = now - start;
-      if (elapsed < 0) { requestAnimationFrame(tick); return; }
-
-      const t = Math.min(elapsed / dur, 1);
-      const move = 1 - Math.pow(1 - t, 2.5);
-
-      const dist = fromDist + distRange * move;
-      const xVw = dist * cosA;
-      const yVw = dist * sinA;
-
-      el.style.opacity = opacityCurve(t);
-      el.style.transform = `translate(${xVw}vw, ${yVw}vw)` + rotateScale;
-
-      if (t < 1) {
-        requestAnimationFrame(tick);
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-
-  // 鎖アニメーション・Phase 2 は startHeroAnimation() から呼び出し（イントロ終了後）
 
   // --- O(1) ルックアップ用マップを構築 ---
   const worksMap = (typeof WORKS_DETAIL_DATA !== 'undefined')
