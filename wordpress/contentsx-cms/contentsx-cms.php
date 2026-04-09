@@ -901,6 +901,7 @@ add_action( 'init', function() {
     $req = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
     if ( strpos( $req, '/wp-json/' ) === false && strpos( $req, 'rest_route=' ) === false ) return;
 
+    header( 'Vary: Origin' );
     if ( in_array( $origin, cxcms_allowed_origins(), true ) ) {
         header( 'Access-Control-Allow-Origin: ' . $origin );
         header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
@@ -921,6 +922,7 @@ add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
         $origin = isset( $_SERVER['HTTP_ORIGIN'] ) ? $_SERVER['HTTP_ORIGIN'] : '';
+        header( 'Vary: Origin' );
         if ( in_array( $origin, cxcms_allowed_origins(), true ) ) {
             header( 'Access-Control-Allow-Origin: ' . $origin );
         }

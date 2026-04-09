@@ -4,36 +4,32 @@
    テーマ切替はアクセントカラーのみ変更
    ============================================ */
 
-/* ---------- Theme: Turquoise (Default) ---------- */
+/* ---------- Theme: Cyber Green (Default) ---------- */
 [data-theme="cyber-green"] {
-  --accent: #18E2D4;
-  --accent-light: rgba(24, 226, 212, 0.06);
-  --accent-rgb: 24, 226, 212;
-  --accent-cta: #D7263D;
+  --accent: #6fc31c;
+  --accent-light: rgba(111, 195, 28, 0.06);
+  --accent-rgb: 111, 195, 28;
 }
 
 /* ---------- Theme: Magenta Hot (ホットマゼンタ) ---------- */
 [data-theme="magenta-hot"] {
-  --accent: #18E2D4;
-  --accent-light: rgba(24, 226, 212, 0.06);
-  --accent-rgb: 24, 226, 212;
-  --accent-cta: #D7263D;
+  --accent: #FF0090;
+  --accent-light: rgba(255, 0, 144, 0.06);
+  --accent-rgb: 255, 0, 144;
 }
 
 /* ---------- Theme: Magenta Rose (ローズマゼンタ) ---------- */
 [data-theme="magenta-rose"] {
-  --accent: #18E2D4;
-  --accent-light: rgba(24, 226, 212, 0.06);
-  --accent-rgb: 24, 226, 212;
-  --accent-cta: #D7263D;
+  --accent: #E91E8C;
+  --accent-light: rgba(233, 30, 140, 0.06);
+  --accent-rgb: 233, 30, 140;
 }
 
 /* ---------- Theme: Magenta Deep (ディープマゼンタ) ---------- */
 [data-theme="magenta-deep"] {
-  --accent: #18E2D4;
-  --accent-light: rgba(24, 226, 212, 0.06);
-  --accent-rgb: 24, 226, 212;
-  --accent-cta: #D7263D;
+  --accent: #C2185B;
+  --accent-light: rgba(194, 24, 91, 0.06);
+  --accent-rgb: 194, 24, 91;
 }
 
 /* ---------- Shared Base Variables ---------- */
