@@ -4,32 +4,36 @@
    テーマ切替はアクセントカラーのみ変更
    ============================================ */
 
-/* ---------- Theme: Cyber Green (Default) ---------- */
+/* ---------- Theme: Turquoise (Default) ---------- */
 [data-theme="cyber-green"] {
-  --accent: #6fc31c;
-  --accent-light: rgba(111, 195, 28, 0.06);
-  --accent-rgb: 111, 195, 28;
+  --accent: #18E2D4;
+  --accent-light: rgba(24, 226, 212, 0.06);
+  --accent-rgb: 24, 226, 212;
+  --accent-cta: #D7263D;
 }
 
 /* ---------- Theme: Magenta Hot (ホットマゼンタ) ---------- */
 [data-theme="magenta-hot"] {
-  --accent: #FF0090;
-  --accent-light: rgba(255, 0, 144, 0.06);
-  --accent-rgb: 255, 0, 144;
+  --accent: #18E2D4;
+  --accent-light: rgba(24, 226, 212, 0.06);
+  --accent-rgb: 24, 226, 212;
+  --accent-cta: #D7263D;
 }
 
 /* ---------- Theme: Magenta Rose (ローズマゼンタ) ---------- */
 [data-theme="magenta-rose"] {
-  --accent: #E91E8C;
-  --accent-light: rgba(233, 30, 140, 0.06);
-  --accent-rgb: 233, 30, 140;
+  --accent: #18E2D4;
+  --accent-light: rgba(24, 226, 212, 0.06);
+  --accent-rgb: 24, 226, 212;
+  --accent-cta: #D7263D;
 }
 
 /* ---------- Theme: Magenta Deep (ディープマゼンタ) ---------- */
 [data-theme="magenta-deep"] {
-  --accent: #C2185B;
-  --accent-light: rgba(194, 24, 91, 0.06);
-  --accent-rgb: 194, 24, 91;
+  --accent: #18E2D4;
+  --accent-light: rgba(24, 226, 212, 0.06);
+  --accent-rgb: 24, 226, 212;
+  --accent-cta: #D7263D;
 }
 
 /* ---------- Shared Base Variables ---------- */
@@ -397,9 +401,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 
 .nav-cta::after { display: none; }
 .nav-cta:hover {
-  background: var(--accent);
+  background: var(--accent-cta, var(--accent));
   color: #fff !important;
-  border-color: var(--accent);
+  border-color: var(--accent-cta, var(--accent));
 }
 
 /* ヘッダー右側：言語切替 + ハンバーガー */
