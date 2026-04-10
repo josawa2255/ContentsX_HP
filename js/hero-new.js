@@ -113,7 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // DocumentFragment でバッチDOM操作
       const frag = document.createDocumentFragment();
       const renderItems = [...items, ...items, ...items, ...items];
-      renderItems.forEach(item => {
+      const itemCount = items.length;
+      renderItems.forEach((item, idx) => {
         const div = document.createElement('div');
         div.className = 'hero-works-cover';
         div.dataset.workId = item.id;
@@ -121,8 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
         /* WordPress画像があればそちら、なければローカルパス */
         img.src = item.thumbnail || `material/manga/${item.id}/01.webp`;
         img.alt = item.title_ja;
-        img.loading = 'eager';
-        img.fetchPriority = 'high';
+        /* 最初の1セットだけeager、複製分はlazyで帯域節約 */
+        const isFirstSet = idx < itemCount;
+        img.loading = isFirstSet ? 'eager' : 'lazy';
+        if (isFirstSet) img.fetchPriority = 'high';
         img.decoding = 'async';
         /* 縦長Webtoon画像は上部を表示（中央だと意味ある内容が見えない） */
         img.style.objectPosition = 'top center';

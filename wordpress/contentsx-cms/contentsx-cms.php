@@ -1013,11 +1013,11 @@ function cxcms_format_work( $p ) {
     $media_raw = $m('cx_media');
     $media = $media_raw ? array_map('trim', explode(',', str_replace('、', ',', $media_raw))) : [];
 
-    /* アイキャッチ画像URL（表紙） */
+    /* アイキャッチ画像URL（表紙）— medium でサムネイル軽量化 */
     $thumb_url = '';
     $thumb_id = get_post_thumbnail_id( $p->ID );
     if ( $thumb_id ) {
-        $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+        $img = wp_get_attachment_image_src( $thumb_id, 'medium' );
         if ( $img ) $thumb_url = $img[0];
     }
 
@@ -1148,7 +1148,7 @@ function cxcms_api_works_new( $req ) {
         $thumb_url = '';
         $thumb_id = get_post_thumbnail_id( $p->ID );
         if ( $thumb_id ) {
-            $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+            $img = wp_get_attachment_image_src( $thumb_id, 'medium' );
             if ( $img ) $thumb_url = $img[0];
         }
         if ( empty( $thumb_url ) ) {
@@ -1253,7 +1253,7 @@ function cxcms_api_library( $req ) {
         $thumb_url = '';
         $thumb_id = get_post_thumbnail_id( $p->ID );
         if ( $thumb_id ) {
-            $img = wp_get_attachment_image_src( $thumb_id, 'full' );
+            $img = wp_get_attachment_image_src( $thumb_id, 'medium' );
             if ( $img ) $thumb_url = $img[0];
         }
 
