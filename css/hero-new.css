@@ -146,6 +146,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
 }
 .hero-works-cover:hover {
   transform: scale(1.08);

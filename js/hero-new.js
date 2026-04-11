@@ -143,14 +143,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   buildHeroCarousel();
 
-  /* WordPress データ到着後にカルーセルを再構築 */
+  /* WordPress データ到着後にサムネURLだけ差し替え（DOM再構築せず高速） */
   window.addEventListener('wp-data-ready', function() {
-    // worksMap を再構築
     if (typeof WORKS_DETAIL_DATA !== 'undefined') {
       Object.keys(worksMap || {}).forEach(k => delete worksMap[k]);
       WORKS_DETAIL_DATA.forEach(w => { if (worksMap) worksMap[w.id] = w; });
     }
-    buildHeroCarousel();
+    // 既存のimgタグのsrcをWPサムネイルに差し替え
+    if (heroWorksBg) {
+      heroWorksBg.querySelectorAll('.hero-works-cover').forEach(div => {
+        const id = div.dataset.workId;
+        const work = worksMap && worksMap[id];
+        if (work && work.thumbnail) {
+          const img = div.querySelector('img');
+          if (img && img.src !== work.thumbnail) img.src = work.thumbnail;
+        }
+      });
+    }
   });
 
   // ===== 制作事例モーダル (BizMangaスタイル) =====
