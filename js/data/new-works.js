@@ -61,7 +61,7 @@ const NEW_WORKS_DATA = [
     "added": "2026-03-20"
   },
   {
-    "id": "bms-unso-remake",
+    "id": "bms-unso",
     "title_ja": "BMS運送",
     "title_en": "BMS Transport",
     "pages": 10,

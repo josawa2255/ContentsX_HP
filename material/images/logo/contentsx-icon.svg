@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 116 112">
+  <defs>
+    <!-- Strand going left-to-right: starts top-left, dips down at center, goes to top-right -->
+    <!-- Strand going right-to-left: starts top-right, dips down at center, goes to top-left -->
+    <!-- Each strand has 2 lines (upper and lower) creating the double-wave effect -->
+
+    <!-- Mask: hide back strand where front strand crosses -->
+    <mask id="cross1">
+      <rect width="116" height="112" fill="white"/>
+      <!-- Front strand upper at left crossing -->
+      <path d="M8,32 C24,32 32,52 48,56" stroke="black" stroke-width="20" fill="none"/>
+      <!-- Front strand upper at right crossing -->
+      <path d="M68,56 C84,52 92,32 108,32" stroke="black" stroke-width="20" fill="none"/>
+    </mask>
+    <mask id="cross2">
+      <rect width="116" height="112" fill="white"/>
+      <!-- Front strand lower at left crossing -->
+      <path d="M8,52 C24,52 32,72 48,76" stroke="black" stroke-width="20" fill="none"/>
+      <!-- Front strand lower at right crossing -->
+      <path d="M68,76 C84,72 92,52 108,52" stroke="black" stroke-width="20" fill="none"/>
+    </mask>
+  </defs>
+
+  <!-- Back strand upper (right-to-left direction, goes behind) -->
+  <path d="M108,32 C92,32 84,56 58,56 C32,56 24,32 8,32" stroke="white" stroke-width="12" fill="none" stroke-linecap="round" mask="url(#cross1)"/>
+  <!-- Back strand lower -->
+  <path d="M108,52 C92,52 84,76 58,76 C32,76 24,52 8,52" stroke="white" stroke-width="12" fill="none" stroke-linecap="round" mask="url(#cross2)"/>
+
+  <!-- Front strand upper (left-to-right direction, goes in front) -->
+  <path d="M8,32 C24,32 32,56 58,56 C84,56 92,32 108,32" stroke="white" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <!-- Front strand lower -->
+  <path d="M8,52 C24,52 32,76 58,76 C84,76 92,52 108,52" stroke="white" stroke-width="12" fill="none" stroke-linecap="round"/>
+</svg>

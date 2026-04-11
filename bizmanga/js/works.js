@@ -86,9 +86,9 @@ const mangaData = {
     tags: ['住宅', '紹介'], category: '営業',
     viewType: 'spread'
   },
-  'bms-unso-remake': {
+  'bms-unso': {
     title: 'BMS運送', pages: 10,
-    path: '../material/manga/bms-unso-remake/',
+    path: '../material/manga/bms-unso/',
     tags: ['採用', 'セールス'], category: '営業',
     viewType: 'spread'
   },
@@ -1204,7 +1204,7 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ===== Direct access mode (QR code: works.html?manga=bms-unso-remake) =====
+// ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
 const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library

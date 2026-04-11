@@ -145,7 +145,7 @@ const WORKS_DETAIL_DATA = [
     comment: "漫画を導入してから、LPからの問い合わせ率が大幅に改善しました。"
   },
   {
-    id: "bms-unso-remake",
+    id: "bms-unso",
     title_ja: "BMS運送",
     title_en: "BMS Transport",
     pages: 10,
