@@ -105,7 +105,24 @@
           <textarea class="form-textarea" id="message" name="message" placeholder="ご質問やご要望をご記入ください" data-ph-ja="ご質問やご要望をご記入ください" data-ph-en="Please describe your inquiry" required></textarea>
         </div>
 
-        <button type="submit" class="form-submit" data-ja="送信する" data-en="Send Message">送信する</button>
+        <button type="submit" class="delivery-btn delivery-btn--cx form-submit" aria-label="送信する">
+          <span class="db-stars" aria-hidden="true"></span>
+          <span class="db-bg" aria-hidden="true"></span>
+          <span class="db-car" aria-hidden="true">
+            <span class="db-car-body"></span>
+            <span class="db-car-top"></span>
+            <span class="db-car-light"></span>
+            <span class="db-car-wheel db-car-wheel--1"></span>
+            <span class="db-car-wheel db-car-wheel--2"></span>
+          </span>
+          <span class="db-package" aria-hidden="true">
+            <span class="db-package-flap db-package-flap--l"></span>
+            <span class="db-package-flap db-package-flap--r"></span>
+            <span class="db-package-stamp"></span>
+          </span>
+          <span class="db-text db-text--order" data-ja="送信する" data-en="Send Message">送信する</span>
+          <span class="db-text db-text--done" data-ja="送信完了!" data-en="Sent!">送信完了!</span>
+        </button>
       </form>
     </div>
 

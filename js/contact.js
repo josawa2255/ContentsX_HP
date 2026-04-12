@@ -20,9 +20,8 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
   var submitBtn = e.target.querySelector('.form-submit');
-  var originalText = submitBtn.textContent;
   submitBtn.disabled = true;
-  submitBtn.textContent = '送信中...';
+  submitBtn.classList.add('is-sending');
 
   var company = document.getElementById('company').value;
   var department = document.getElementById('department').value;
@@ -79,8 +78,6 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   .then(function() {
     // 送信成功 — 資料DL許可フラグを保存
     try { localStorage.setItem('cx_form_submitted', '1'); } catch(e) {}
-    submitBtn.textContent = '送信完了';
-    submitBtn.style.background = '#2e7d32';
     var form = document.getElementById('contactForm');
     // サンクスメッセージ + 資料DLリンク表示
     var thanks = document.createElement('div');
@@ -96,7 +93,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   })
   .catch(function(err) {
     submitBtn.disabled = false;
-    submitBtn.textContent = originalText;
+    submitBtn.classList.remove('is-sending');
     alert('送信に失敗しました。お手数ですが、もう一度お試しください。');
   });
 });
