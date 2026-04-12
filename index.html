@@ -110,6 +110,10 @@
       <span class="hero-intro-line" id="heroIntroLine1" data-ja="埋もれていた物語に、" data-en="Shine light on stories">埋もれていた物語に、</span>
       <span class="hero-intro-line" id="heroIntroLine2" data-ja="光を当てる。" data-en="that have been buried.">光を当てる。</span>
     </div>
+    <button type="button" class="hero-intro-skip" id="heroIntroSkip" data-ja="スキップ" data-en="Skip" aria-label="イントロをスキップ">
+      <span>スキップ</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4l10 8-10 8V4zm12 0h2v16h-2V4z" fill="currentColor"/></svg>
+    </button>
   </div>
 
 
@@ -134,7 +138,11 @@
 
   <!-- 中央ロゴ (ZOONスタイル) -->
   <div class="hero-center" id="heroCenter">
-    <img src="material/images/hero/ContentsX_hero.webp" class="hero-logo-main" id="heroLogoMain" alt="ContentsX">
+    <div class="hero-logo-wrap">
+      <img src="material/images/hero/ContentsX_hero.webp" class="hero-logo-main" id="heroLogoMain" alt="ContentsX">
+      <span class="hero-logo-shine" aria-hidden="true"></span>
+    </div>
+    <p class="hero-tagline" id="heroTagline" data-ja="埋もれていた物語に光を当てる" data-en="Shine light on stories that have been buried">埋もれていた物語に光を当てる</p>
   </div>
 
   <!-- SCROLL indicator -->
@@ -362,6 +370,7 @@
   <script src="js/script.js" defer></script>
   <script src="js/dl-modal.js" defer></script>
   <script src="js/hero-new.js" defer></script>
+  <script src="js/hero-fx.js" defer></script>
   <!-- ビズちゃん追従はCSS stickyで実装 -->
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>

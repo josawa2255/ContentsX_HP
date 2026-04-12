@@ -22,7 +22,6 @@
         { label: '役員紹介',       labelEn: 'Leadership',     href: 'leadership' }
       ]
     },
-    { label: '強み', labelEn: 'Strengths',       href: 'why-contentsx',  indexHref: 'why-contentsx' },
     { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit',        indexHref: 'recruit' },
     { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact',        indexHref: 'contact', cta: true }
   ];

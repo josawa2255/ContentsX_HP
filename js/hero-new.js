@@ -12,27 +12,51 @@ document.addEventListener('DOMContentLoaded', function() {
     heroLogoMain.style.opacity = '0';
   }
 
+  var introTimers = [];
+  var introFinished = false;
+
+  function finishIntro() {
+    if (introFinished) return;
+    introFinished = true;
+    introTimers.forEach(clearTimeout);
+    introTimers = [];
+    if (introOverlay) {
+      introOverlay.classList.add('fade-out');
+      setTimeout(function() {
+        introOverlay.style.display = 'none';
+      }, 600);
+    }
+    startHeroAnimation();
+    // タグライン等に通知
+    window.dispatchEvent(new CustomEvent('hero-intro-done'));
+  }
+
   function startIntro() {
     // 0.3s → 1行目表示
-    setTimeout(function() {
+    introTimers.push(setTimeout(function() {
       if (introLine1) introLine1.classList.add('visible');
-    }, 300);
+    }, 300));
 
     // 0.9s → 2行目表示
-    setTimeout(function() {
+    introTimers.push(setTimeout(function() {
       if (introLine2) introLine2.classList.add('visible');
-    }, 900);
+    }, 900));
 
     // 2.8s → フェードアウト開始
-    setTimeout(function() {
+    introTimers.push(setTimeout(function() {
       if (introOverlay) introOverlay.classList.add('fade-out');
-    }, 2800);
+    }, 2800));
 
     // 3.6s → オーバーレイ完全除去 & ヒーローアニメーション開始
-    setTimeout(function() {
-      if (introOverlay) introOverlay.style.display = 'none';
-      startHeroAnimation();
-    }, 3600);
+    introTimers.push(setTimeout(function() {
+      finishIntro();
+    }, 3600));
+  }
+
+  // SKIPボタン
+  var introSkipBtn = document.getElementById('heroIntroSkip');
+  if (introSkipBtn) {
+    introSkipBtn.addEventListener('click', finishIntro);
   }
 
   function startHeroAnimation() {
@@ -48,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Phase 2: 5.5秒後にカルーセルへトランジション
     setTimeout(function() {
       if (heroSection) heroSection.classList.add('hero--phase2');
+      window.dispatchEvent(new CustomEvent('hero-phase2-start'));
     }, 5500);
   }
 
