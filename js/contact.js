@@ -16,22 +16,6 @@ var CX_PARAMS = new URLSearchParams(window.location.search);
 var HUBSPOT_PORTAL_ID = '48367061';
 var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
-// 送信ボタンのクリックで即エフェクト発動（未入力でも見える）
-(function() {
-  var cxSubmitBtn = document.querySelector('.form-submit');
-  if (!cxSubmitBtn) return;
-  cxSubmitBtn.addEventListener('click', function() {
-    cxSubmitBtn.classList.add('is-sending');
-    setTimeout(function() {
-      var form = document.getElementById('contactForm');
-      if (form && form.style.display !== 'none') {
-        cxSubmitBtn.classList.remove('is-sending');
-        cxSubmitBtn.disabled = false;
-      }
-    }, 5200);
-  });
-})();
-
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
