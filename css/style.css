@@ -2129,7 +2129,7 @@ section { padding: 100px 0; }
     flex-shrink: 0;
   }
 
-  /* ===== モバイルナビ（BizMangaスタイル: 左寄せ・縦リスト） ===== */
+  /* ===== モバイルナビ（BizMangaスタイル: 左寄せ・縦リスト・コンパクト） ===== */
   .nav.open {
     display: flex;
     flex-direction: column;
@@ -2142,7 +2142,7 @@ section { padding: 100px 0; }
     background: rgba(255, 255, 255, 0.98);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
-    padding: 8px 24px 24px;
+    padding: 4px 20px 16px;
     gap: 0;
     border-bottom: 1px solid var(--border);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -2157,8 +2157,8 @@ section { padding: 100px 0; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 0;
-    font-size: 16px;
+    padding: 12px 0;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
     border-bottom: 1px solid var(--border);
@@ -2172,41 +2172,31 @@ section { padding: 100px 0; }
     align-items: stretch;
     width: 100%;
   }
+  /* サブメニューは常時展開（モバイルでは toggle 不要） */
   .nav.open .nav-dropdown-menu {
     position: static;
     transform: none;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    pointer-events: none;
-    box-shadow: none;
-    background: transparent;
-    padding: 0 0 0 16px;
-    text-align: left;
-    transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
-  }
-  .nav.open .nav-dropdown.is-open .nav-dropdown-menu {
-    max-height: 400px;
+    display: block;
+    max-height: none;
     opacity: 1;
     overflow: visible;
     pointer-events: auto;
-    padding: 0 0 0 16px;
+    box-shadow: none;
+    background: transparent;
+    padding: 0 0 4px 16px;
+    text-align: left;
   }
   .nav.open .nav-dropdown-item {
     display: block;
-    padding: 12px 0;
-    font-size: 15px;
+    padding: 10px 0;
+    font-size: 13px;
+    color: var(--text-muted);
     border-bottom: 1px solid var(--border);
   }
-  .nav.open .nav-dropdown-arrow {
-    display: inline-block;
-    transition: transform 0.25s ease;
-    font-size: 12px;
-    margin-left: 8px;
+  .nav.open .nav-dropdown-item:last-child {
+    border-bottom: none;
   }
-  .nav.open .nav-dropdown.is-open .nav-dropdown-arrow {
-    transform: rotate(180deg);
-  }
+  .nav.open .nav-dropdown-arrow { display: none; }
 
   /* .hero { padding: 100px 24px 60px; } — hero-new.css に移行済み */
 
