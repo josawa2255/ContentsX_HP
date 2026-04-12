@@ -2172,19 +2172,20 @@ section { padding: 100px 0; }
     align-items: stretch;
     width: 100%;
   }
-  /* サブメニューは常時展開（モバイルでは toggle 不要） */
+  /* サブメニュー: デフォルト閉じる、is-openで開く */
   .nav.open .nav-dropdown-menu {
     position: static;
     transform: none;
-    display: block;
-    max-height: none;
-    opacity: 1;
-    overflow: visible;
-    pointer-events: auto;
+    display: none;
     box-shadow: none;
     background: transparent;
     padding: 0 0 4px 16px;
     text-align: left;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .nav.open .nav-dropdown.is-open .nav-dropdown-menu {
+    display: block;
   }
   .nav.open .nav-dropdown-item {
     display: block;
@@ -2196,7 +2197,15 @@ section { padding: 100px 0; }
   .nav.open .nav-dropdown-item:last-child {
     border-bottom: none;
   }
-  .nav.open .nav-dropdown-arrow { display: none; }
+  .nav.open .nav-dropdown-arrow {
+    display: inline-block;
+    transition: transform 0.25s ease;
+    font-size: 11px;
+    margin-left: 8px;
+  }
+  .nav.open .nav-dropdown.is-open .nav-dropdown-arrow {
+    transform: rotate(180deg);
+  }
 
   /* .hero { padding: 100px 24px 60px; } — hero-new.css に移行済み */
 

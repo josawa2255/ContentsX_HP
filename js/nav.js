@@ -214,16 +214,36 @@
     // モバイル: ドロップダウン親をタップ
     // 1回目 → サブメニュー開く、2回目 → リンク先へ遷移
     nav.querySelectorAll('.nav-dropdown-toggle').forEach(function(toggle) {
-      toggle.addEventListener('click', function(e) {
-        if (nav.classList.contains('open')) {
-          var dropdown = this.closest('.nav-dropdown');
-          if (!dropdown.classList.contains('is-open')) {
-            e.preventDefault();
-            dropdown.classList.add('is-open');
-          }
-          // is-open 状態なら preventDefault しない → 通常遷移
+      var handleDropdownTap = function(e) {
+        if (!nav.classList.contains('open')) return;
+        var dropdown = toggle.closest('.nav-dropdown');
+        if (!dropdown.classList.contains('is-open')) {
+          // 1回目: 開く
+          e.preventDefault();
+          e.stopPropagation();
+          // 他の開いてるドロップダウンを閉じる（同時に1つだけ開く）
+          nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
+            if (d !== dropdown) d.classList.remove('is-open');
+          });
+          dropdown.classList.add('is-open');
         }
-      });
+        // 2回目（is-open状態）→ デフォルト動作で遷移
+      };
+      toggle.addEventListener('click', handleDropdownTap);
+      // iOS Safari 対策: touchend でも発火（preventDefaultでクリック抑制）
+      toggle.addEventListener('touchend', function(e) {
+        if (!nav.classList.contains('open')) return;
+        var dropdown = toggle.closest('.nav-dropdown');
+        if (!dropdown.classList.contains('is-open')) {
+          e.preventDefault();
+          e.stopPropagation();
+          nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
+            if (d !== dropdown) d.classList.remove('is-open');
+          });
+          dropdown.classList.add('is-open');
+        }
+        // is-openなら何もしない → click が自然に遷移
+      }, { passive: false });
     });
     // サブメニュー項目クリックでメニュー閉じる
     nav.querySelectorAll('.nav-dropdown-item').forEach(function(link) {
