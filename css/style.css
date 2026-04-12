@@ -425,6 +425,17 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 }
 .nav-cta:hover::before { width: 260%; }
 
+/* CTAセクション用の大きい版 */
+.nav-cta--lg {
+  padding: 16px 44px;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  outline-width: 2.5px;
+}
+.nav-cta--lg:hover {
+  box-shadow: 8px 10px 28px -6px rgba(var(--accent-rgb, 0,0,0), 0.6);
+}
+
 /* ヘッダー右側：言語切替 + ハンバーガー */
 .header-right {
   display: flex;
