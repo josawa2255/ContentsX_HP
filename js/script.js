@@ -704,9 +704,12 @@ document.addEventListener('DOMContentLoaded', () => {
       coverWrap.appendChild(img);
       const titleP = document.createElement('p');
       titleP.className = 'new-works-card-title';
-      titleP.setAttribute('data-ja', item.title_ja || '');
-      titleP.setAttribute('data-en', item.title_en || '');
-      titleP.textContent = item.title_ja || '';
+      // サブタイトル優先（WP側で設定されていればそちらを表示名に使う）
+      const labelJa = item.subtitle_ja || item.title_ja || '';
+      const labelEn = item.subtitle_en || item.title_en || labelJa;
+      titleP.setAttribute('data-ja', labelJa);
+      titleP.setAttribute('data-en', labelEn);
+      titleP.textContent = labelJa;
       card.appendChild(coverWrap);
       card.appendChild(titleP);
       // カードクリック → ビューア起動
