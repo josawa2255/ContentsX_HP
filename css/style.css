@@ -440,15 +440,19 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 .nav-cta--lg:hover {
   box-shadow: 8px 10px 28px -6px rgba(var(--accent-rgb, 0,0,0), 0.6);
 }
-/* CTAセクションの資料DLボタンを nav-cta--lg と同サイズに統一 */
-.cta .cta-actions .btn-lg {
-  padding: 16px 44px;
-  font-size: 16px;
-  letter-spacing: 0.08em;
-  border-width: 2.5px;
-  border-radius: 999px;
-  min-height: 58px;
-  box-sizing: border-box;
+/* --ghost: アウトラインがダーク、ホバー時にdark塗りつぶし（資料DLなどのセカンダリ） */
+.nav-cta--ghost {
+  color: var(--text-primary) !important;
+  outline-color: var(--text-primary);
+  font-family: inherit;
+}
+.nav-cta--ghost::before {
+  background-color: var(--text-primary);
+}
+.nav-cta--ghost:hover {
+  color: #fff !important;
+  outline-color: var(--text-primary);
+  box-shadow: 8px 10px 28px -6px rgba(0, 0, 0, 0.5);
 }
 
 /* ヘッダー右側：言語切替 + ハンバーガー */

@@ -15,7 +15,7 @@
       '<p class="cta-desc" data-ja="まずは無料でご相談ください。" data-en="Start with a free consultation.">まずは無料でご相談ください。</p>' +
       '<div class="cta-actions">' +
         '<a href="contact" class="nav-cta nav-cta--lg" data-ja="お問い合わせ" data-en="Contact Us">お問い合わせ</a>' +
-        '<button type="button" class="btn btn-outline btn-lg" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>' +
+        '<button type="button" class="nav-cta nav-cta--lg nav-cta--ghost" id="dlBtn" data-ja="資料ダウンロード" data-en="Download Materials">資料ダウンロード</button>' +
       '</div>' +
     '</div>';
 
