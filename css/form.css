@@ -67,70 +67,7 @@
 }
 .form-submit:disabled { cursor: not-allowed; }
 .form-submit.cb-submit { align-self: flex-start; }
-
-/* ============================================
-   CSSButtons.io 風 送信ボタン (紙飛行機) — ContentsX
-   ============================================ */
-.cb-submit {
-  --cb-bg: var(--accent, #e91e8c);
-  --cb-bg-dark: #a8126c;
-  --cb-icon-color: var(--accent, #e91e8c);
-  background: var(--cb-bg);
-  color: #fff;
-  font-family: inherit;
-  padding: 0.35em 3.3em 0.35em 1.4em;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 0.9em;
-  border: none;
-  letter-spacing: 0.06em;
-  display: inline-flex;
-  align-items: center;
-  box-shadow: inset 0 0 1.6em -0.6em var(--cb-bg-dark);
-  overflow: hidden;
-  position: relative;
-  height: 3em;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.cb-submit:hover { transform: translateY(-1px); }
-.cb-submit:disabled { opacity: 0.65; cursor: not-allowed; }
-.cb-submit .cb-label {
-  position: relative;
-  z-index: 1;
-  padding-right: 0.5em;
-}
-.cb-submit .cb-icon {
-  background: #fff;
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2.4em;
-  width: 2.4em;
-  border-radius: 0.7em;
-  box-shadow: 0.1em 0.1em 0.6em 0.2em rgba(0,0,0,0.18);
-  right: 0.3em;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: width 0.35s cubic-bezier(0.16,1,0.3,1);
-  overflow: hidden;
-}
-.cb-submit:hover .cb-icon {
-  width: calc(100% - 0.6em);
-}
-.cb-submit .cb-icon svg {
-  width: 1.3em;
-  height: 1.3em;
-  color: var(--cb-icon-color);
-  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-}
-.cb-submit:hover .cb-icon svg {
-  transform: translateX(0.15em);
-}
-.cb-submit:active .cb-icon {
-  transform: translateY(-50%) scale(0.95);
-}
+/* cb-submit 共通スタイルは style.css に定義（全ページで利用可能） */
 
 .form-back-btn {
   display: inline-flex;
