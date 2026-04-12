@@ -216,12 +216,31 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 
 .nav-cta {
   background: transparent;
-  color: var(--text-primary) !important;
-  padding: 7px 20px;
-  border-radius: 20px;
-  font-weight: 600;
-  border: 1.5px solid var(--text-primary);
+  color: var(--accent, var(--text-primary)) !important;
+  padding: 8px 22px;
+  border-radius: 22px;
+  font-weight: 700;
+  border: none;
+  outline: 2px solid var(--accent, var(--text-primary));
+  outline-offset: 0;
   font-size: 13px;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+}
+.nav-cta::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--accent, #111);
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
 }
 /* ---- ドロップダウンナビ ---- */
 .nav-dropdown {
@@ -399,10 +418,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 
 .nav-cta::after { display: none; }
 .nav-cta:hover {
-  background: var(--accent-cta, var(--accent));
   color: #fff !important;
-  border-color: var(--accent-cta, var(--accent));
+  transform: scale(1.06);
+  outline-color: var(--accent, var(--text-primary));
+  box-shadow: 4px 5px 17px -4px rgba(var(--accent-rgb, 0,0,0), 0.5);
 }
+.nav-cta:hover::before { width: 260%; }
 
 /* ヘッダー右側：言語切替 + ハンバーガー */
 .header-right {
