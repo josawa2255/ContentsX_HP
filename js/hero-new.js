@@ -313,4 +313,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // ===== スマホ用: 横スワイプでページ切替 =====
+  if (wdCarousel) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchMoved = false;
+    const SWIPE_THRESHOLD = 40;
+    wdCarousel.addEventListener('touchstart', (e) => {
+      if (wdCarousel.classList.contains('vertical-scroll')) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchMoved = false;
+    }, { passive: true });
+    wdCarousel.addEventListener('touchmove', () => { touchMoved = true; }, { passive: true });
+    wdCarousel.addEventListener('touchend', (e) => {
+      if (wdCarousel.classList.contains('vertical-scroll')) return;
+      if (!touchMoved) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dy) > Math.abs(dx)) return;
+      if (dx < -SWIPE_THRESHOLD && wdCurrentPage < wdTotalPages - 1) {
+        goToWdPage(wdCurrentPage + 1);
+      } else if (dx > SWIPE_THRESHOLD && wdCurrentPage > 0) {
+        goToWdPage(wdCurrentPage - 1);
+      }
+    }, { passive: true });
+  }
+
 });
