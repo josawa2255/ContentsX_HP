@@ -13,6 +13,7 @@
   var details = detailArea ? detailArea.querySelectorAll('.rc-detail') : [];
 
   var posSection = document.getElementById('positions');
+  var detailSection = document.getElementById('rc-detail-section');
 
   var selectedPos = null;
   var currentView = null;
@@ -31,21 +32,33 @@
     sales:      { url: "url('material/images/recruit/sales.webp')",      bgPos: '38% center' }
   };
 
-  // Switch positions section background with fade
+  // Switch positions + detail section background with fade
   function switchPosBg(pos) {
     if (!posSection) return;
     posSection.classList.add('rc-positions--fade');
+    if (detailSection) detailSection.classList.add('rc-detail-section--fade');
     setTimeout(function() {
       if (pos && posData[pos]) {
         posSection.style.backgroundImage = posData[pos].url;
         posSection.style.backgroundPosition = posData[pos].bgPos;
         posSection.classList.add('rc-positions--has-bg');
+        if (detailSection) {
+          detailSection.style.backgroundImage = posData[pos].url;
+          detailSection.style.backgroundPosition = posData[pos].bgPos;
+          detailSection.classList.add('rc-detail-section--has-bg');
+        }
       } else {
         posSection.style.backgroundImage = '';
         posSection.style.backgroundPosition = '';
         posSection.classList.remove('rc-positions--has-bg');
+        if (detailSection) {
+          detailSection.style.backgroundImage = '';
+          detailSection.style.backgroundPosition = '';
+          detailSection.classList.remove('rc-detail-section--has-bg');
+        }
       }
       posSection.classList.remove('rc-positions--fade');
+      if (detailSection) detailSection.classList.remove('rc-detail-section--fade');
     }, 300);
   }
 

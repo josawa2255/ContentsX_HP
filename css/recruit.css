@@ -288,8 +288,14 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: scroll; /* fixed はWindows/モバイルで描画崩れ・見切れ発生のため scroll に変更 */
+  background-attachment: scroll; /* デフォルトはscroll（モバイル/Windowsで描画崩れ回避） */
   transition: opacity 0.3s ease;
+}
+/* デスクトップ（ホバー可能でポインター精度あり）のみ fixed */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .rc-positions--has-bg {
+    background-attachment: fixed;
+  }
 }
 .rc-positions--has-bg .rc-positions-overlay {
   position: absolute;
@@ -435,11 +441,43 @@
   border-color: var(--accent);
 }
 
-/* ---------- Detail Section（独立セクション） ---------- */
+/* ---------- Detail Section（独立セクション、positions と同じ背景を共有） ---------- */
 .rc-detail-section {
+  position: relative;
   background: var(--bg-white, #fff);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  transition: opacity 0.3s ease;
 }
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .rc-detail-section--has-bg {
+    background-attachment: fixed;
+  }
+}
+.rc-detail-section--has-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
+/* スマホでは背景画像を出さない */
+@media (max-width: 767px) {
+  .rc-detail-section--has-bg {
+    background-image: none !important;
+  }
+  .rc-detail-section--has-bg::before { display: none; }
+  .rc-positions--has-bg {
+    background-image: none !important;
+  }
+  .rc-positions--has-bg .rc-positions-overlay { display: none; }
+}
+.rc-detail-section--fade { opacity: 0; }
 .rc-detail-section-inner {
+  position: relative;
+  z-index: 1;
   max-width: 960px;
   margin: 0 auto;
   padding: 0 48px 80px;
@@ -450,12 +488,15 @@
 }
 .rc-detail {
   display: none;
-  padding: 0;
-  background: #fff;
-  border-radius: 0;
-  border: none;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   max-width: 720px;
   margin: 0 auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 .rc-detail.is-visible {
   display: block;
