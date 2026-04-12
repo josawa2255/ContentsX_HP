@@ -2092,6 +2092,34 @@ section { padding: 100px 0; }
   .nav { display: none; }
   .hamburger { display: flex; }
 
+  /* ===== モバイルヘッダー調整（ハンバーガー確実タップ） ===== */
+  .header-inner { padding: 0 16px; }
+  .logo-img { height: 48px; }
+  .header-right {
+    gap: 8px;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  /* 言語ボタンを縮小 */
+  .header-lang-btn {
+    width: 44px;
+    height: 32px;
+    font-size: 11px;
+  }
+  /* ハンバーガーを最後（右端）に強制 + shrinkしない */
+  .hamburger {
+    order: 10;
+    flex-shrink: 0;
+    padding: 12px;
+    min-width: 44px;
+    min-height: 44px;
+    z-index: 10003;
+  }
+  .header-lang-switch {
+    order: 5;
+    flex-shrink: 0;
+  }
+
   .nav.open {
     display: flex;
     flex-direction: column;
