@@ -5,12 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const introLine1 = document.getElementById('heroIntroLine1');
   const introLine2 = document.getElementById('heroIntroLine2');
 
-  // ロゴアニメを一時停止（イントロ終了後に発火させる）
-  const heroLogoMain = document.getElementById('heroLogoMain');
-  if (heroLogoMain) {
-    heroLogoMain.style.animationPlayState = 'paused';
-    heroLogoMain.style.opacity = '0';
-  }
+  // テキストロゴの再生はCSS animation-play-state: paused + .hero-logo-text--play で制御
+  const heroLogoText = document.getElementById('heroLogoText');
 
   var introTimers = [];
   var introFinished = false;
@@ -60,13 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function startHeroAnimation() {
-    // ロゴアニメーション再開
-    if (heroLogoMain) {
-      heroLogoMain.style.animation = 'none';
-      // reflow を強制
-      void heroLogoMain.offsetWidth;
-      heroLogoMain.style.animation = '';
-      heroLogoMain.style.animationPlayState = 'running';
+    // テキストロゴの pop-up エフェクト発動
+    if (heroLogoText) {
+      heroLogoText.classList.add('hero-logo-text--play');
     }
 
     // Phase 2: 5.5秒後にカルーセルへトランジション

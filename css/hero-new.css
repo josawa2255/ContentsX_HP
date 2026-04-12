@@ -216,55 +216,77 @@
 .hero-center * {
   pointer-events: auto;
 }
-.hero-logo-wrap {
-  position: relative;
+/* ===== テキストロゴ (animista: text-pop-up-top) ===== */
+.hero-logo-text {
+  margin: 0;
+  font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  font-size: clamp(52px, 10vw, 140px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #fff;
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 #d4d4d4, 0 2px 0 #cfcfcf, 0 50px 30px rgba(0,0,0,0.0);
+}
+.hero-logo-text .hlt-char,
+.hero-logo-text .hlt-space {
   display: inline-block;
-  line-height: 0;
-}
-.hero-logo-main {
-  width: clamp(280px, 40vw, 650px);
-  height: auto;
+  transform: translateY(0);
+  transform-origin: 50% 50%;
   opacity: 0;
-  animation: heroLogoIn 1.5s ease 1s forwards;
-  filter: drop-shadow(0 4px 24px rgba(0,0,0,0.5));
+  animation-name: heroTextPopUpTop;
+  animation-duration: 0.9s;
+  animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  animation-fill-mode: forwards;
+  animation-play-state: paused;
 }
-/* ロゴを横切るマゼンタ光のスイープ */
-.hero-logo-shine {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    100deg,
-    transparent 38%,
-    rgba(var(--accent-rgb, 233,30,140), 0.0) 44%,
-    rgba(var(--accent-rgb, 233,30,140), 0.55) 50%,
-    rgba(var(--accent-rgb, 233,30,140), 0.0) 56%,
-    transparent 62%
-  );
-  mix-blend-mode: screen;
-  opacity: 0;
-  -webkit-mask-image: url("../material/images/hero/ContentsX_hero.webp");
-  mask-image: url("../material/images/hero/ContentsX_hero.webp");
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  background-size: 250% 100%;
-  background-position: 100% 50%;
-  animation: heroLogoShineIn 1s ease 2.6s forwards,
-             heroLogoShine 6s ease-in-out 3.6s infinite;
+/* intro終了後にheroCenterにclass付与して開始 */
+.hero--phase2 .hero-logo-text .hlt-char,
+.hero--phase2 .hero-logo-text .hlt-space,
+.hero-logo-text--play .hlt-char,
+.hero-logo-text--play .hlt-space {
+  animation-play-state: running;
 }
-@keyframes heroLogoShineIn {
-  to { opacity: 1; }
+.hero-logo-text .hlt-char:nth-child(1)  { animation-delay: 0.00s; }
+.hero-logo-text .hlt-char:nth-child(2)  { animation-delay: 0.08s; }
+.hero-logo-text .hlt-char:nth-child(3)  { animation-delay: 0.16s; }
+.hero-logo-text .hlt-char:nth-child(4)  { animation-delay: 0.24s; }
+.hero-logo-text .hlt-char:nth-child(5)  { animation-delay: 0.32s; }
+.hero-logo-text .hlt-char:nth-child(6)  { animation-delay: 0.40s; }
+.hero-logo-text .hlt-char:nth-child(7)  { animation-delay: 0.48s; }
+.hero-logo-text .hlt-char:nth-child(8)  { animation-delay: 0.56s; }
+.hero-logo-text .hlt-space              { animation-delay: 0.64s; }
+.hero-logo-text .hlt-char:nth-child(10) { animation-delay: 0.72s; }
+.hero-logo-text .hlt-char--x {
+  color: var(--accent, #E91E8C);
 }
-@keyframes heroLogoShine {
-  0%   { background-position: 130% 50%; }
-  45%  { background-position: -30% 50%; }
-  100% { background-position: -30% 50%; }
-}
-@keyframes heroLogoIn {
-  0% { opacity: 0; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1); }
+@keyframes heroTextPopUpTop {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+    text-shadow: none;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-18px);
+    text-shadow:
+      0 1px 0 #d4d4d4,
+      0 2px 0 #cfcfcf,
+      0 3px 0 #c9c9c9,
+      0 4px 0 #c2c2c2,
+      0 5px 0 #bdbdbd,
+      0 6px 0 #b6b6b6,
+      0 7px 0 #b0b0b0,
+      0 8px 0 #aaaaaa,
+      0 9px 0 #a4a4a4,
+      0 40px 30px rgba(0, 0, 0, 0.35);
+  }
 }
 /* ===== タグライン（1文字ずつ波シャイン） ===== */
 .hero-tagline {
