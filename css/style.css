@@ -169,12 +169,14 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   left: 0;
   right: 0;
   z-index: 10000;
+  isolation: isolate;
   background: rgba(255, 255, 255, 0.92);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   transition: box-shadow 0.3s ease, background 0.3s ease;
 }
+.header-right { position: relative; z-index: 10 !important; }
 
 .header-inner {
   max-width: 100%;
@@ -2111,10 +2113,17 @@ section { padding: 100px 0; }
     order: 10;
     flex-shrink: 0;
     padding: 12px;
-    min-width: 44px;
-    min-height: 44px;
-    z-index: 10003;
+    min-width: 48px;
+    min-height: 48px;
+    position: relative;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    cursor: pointer;
   }
+  /* ヒーローイントロが被らないように — intro overlay を header 下に */
+  .hero-intro-overlay { pointer-events: none !important; }
+  .hero-intro-skip { pointer-events: auto !important; }
   .header-lang-switch {
     order: 5;
     flex-shrink: 0;

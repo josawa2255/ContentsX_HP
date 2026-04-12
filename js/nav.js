@@ -196,16 +196,21 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('hamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', function() {
+    var toggleMenu = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
-      // メニュー閉じたらドロップダウンもリセット
       if (!nav.classList.contains('open')) {
         nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
           d.classList.remove('is-open');
         });
       }
-    });
+    };
+    hamburger.addEventListener('click', toggleMenu);
+    // iOS Safari 対策: touchend でも発火
+    hamburger.addEventListener('touchend', function(e) {
+      toggleMenu(e);
+    }, { passive: false });
     // モバイル: ドロップダウン親をタップ
     // 1回目 → サブメニュー開く、2回目 → リンク先へ遷移
     nav.querySelectorAll('.nav-dropdown-toggle').forEach(function(toggle) {
