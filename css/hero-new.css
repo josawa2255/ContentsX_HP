@@ -71,6 +71,59 @@
   opacity: 1;
   transform: translateY(0);
 }
+/* 1文字ずつ波打つ */
+.hero-intro-line .hii-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(30px) scale(0.85);
+}
+.hero-intro-line.visible .hii-char {
+  animation: heroIntroCharWave 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+/* 登場後も常時ゆらぎ続ける */
+.hero-intro-line.visible .hii-char::after {
+  /* placeholder for chained animation — use additional animation via nth or parallel */
+}
+.hero-intro-line.visible .hii-char {
+  animation: heroIntroCharWave 0.8s cubic-bezier(0.16, 1, 0.3, 1) both,
+             heroIntroCharFloat 3.2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 60ms),
+                   calc(800ms + var(--i, 0) * 120ms);
+}
+@keyframes heroIntroCharWave {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.85);
+    text-shadow: 0 0 0 rgba(var(--accent-rgb, 233, 30, 140), 0);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
+  }
+}
+@keyframes heroIntroCharFloat {
+  0%, 100% {
+    transform: translateY(0);
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
+  }
+  50% {
+    transform: translateY(-6px);
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 22px rgba(var(--accent-rgb, 233, 30, 140), 0.6);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-intro-line .hii-char {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
 
 /* ===== HERO: ZOON + 集英社 スタイル ===== */
 .hero {

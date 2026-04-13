@@ -5,6 +5,23 @@ document.addEventListener('DOMContentLoaded', function() {
   const introLine1 = document.getElementById('heroIntroLine1');
   const introLine2 = document.getElementById('heroIntroLine2');
 
+  // イントロ文字を1文字ずつ spanに分割 (波打ちエフェクト用)
+  function splitIntroLine(line) {
+    if (!line) return;
+    const text = line.getAttribute('data-ja') || line.textContent;
+    line.innerHTML = '';
+    const chars = Array.from(text);
+    chars.forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'hii-char';
+      span.textContent = ch === ' ' ? '\u00a0' : ch;
+      span.style.setProperty('--i', i);
+      line.appendChild(span);
+    });
+  }
+  splitIntroLine(introLine1);
+  splitIntroLine(introLine2);
+
   // テキストロゴの再生はCSS animation-play-state: paused + .hero-logo-text--play で制御
   const heroLogoText = document.getElementById('heroLogoText');
 
