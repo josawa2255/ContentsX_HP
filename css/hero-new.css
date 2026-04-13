@@ -134,7 +134,7 @@
   max-height: 100dvh;
   max-height: -webkit-fill-available; /* Safari対策 */
   overflow: hidden;
-  background: #000;
+  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat fixed;
   box-sizing: border-box;
 }
 
