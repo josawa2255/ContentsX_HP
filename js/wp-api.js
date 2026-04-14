@@ -52,15 +52,10 @@
     }
   }
 
-  /* ── グローバルブロックリスト ──
-     WPに登録されているが殻だけの作品（実ページなし）を全表示から除外 */
-  const WORKS_BLOCKLIST = new Set(['omatome-ninja-new']);
-
   /* ── 漫画事例データを上書き ── */
   async function loadWorks() {
-    const raw = await apiFetch('/works?site=contentsx');
-    if (!raw || !Array.isArray(raw)) return;
-    const data = raw.filter(w => !WORKS_BLOCKLIST.has(w.id));
+    const data = await apiFetch('/works?site=contentsx');
+    if (!data || !Array.isArray(data)) return;
 
     /* グローバル変数を上書き */
     if (typeof WORKS_DETAIL_DATA !== 'undefined') {
@@ -69,7 +64,7 @@
     } else {
       window.WORKS_DETAIL_DATA = data;
     }
-    console.log(`[WP-API] 漫画事例: ${data.length}件 loaded (filtered ${raw.length - data.length})`);
+    console.log(`[WP-API] 漫画事例: ${data.length}件 loaded`);
   }
 
   /* ── 新作情報データを上書き ── */

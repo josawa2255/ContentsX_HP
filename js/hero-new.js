@@ -120,11 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!heroWorksBg || !worksMap) return;
     /* show_hero_site でフィルタ: 'both' or 'contentsx' → ContentsXヒーローに表示 */
     /* 後方互換: show_hero_site がない場合は旧 show_hero フラグで判定 */
-    /* ブロックリスト: 殻だけ作成された作品（実ページなし）をヒーローから除外 */
-    const HERO_BLOCKLIST = new Set(['omatome-ninja-new']);
     const allWorks = WORKS_DETAIL_DATA;
     const works = allWorks.filter(w => {
-      if (HERO_BLOCKLIST.has(w.id)) return false;
       if ('show_hero_site' in w) {
         return w.show_hero_site === 'both' || w.show_hero_site === 'contentsx';
       }
