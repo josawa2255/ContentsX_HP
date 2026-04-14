@@ -181,7 +181,8 @@ window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル�
 | image alt | hero キャラ画像に alt が無い |
 | image width/height | 未指定 → CLS悪化要因 |
 | description | **2026-04-14 index/news/news-detail/our-thoughts/recruit の5ページを73〜90文字に拡充**（meta/og/twitter/JSON-LD の4箇所同期） |
-| Organization.sameAs | 空配列 → SNS URLを追加推奨 |
+| Organization.sameAs | **2026-04-14 `https://x.com/Bizmanga_` 追加**。他SNSは未開設 |
+| Organization 詳細 | **2026-04-14 `foundingDate: 2026-03-03` / `address`（目黒区） / `subOrganization`（BizManga） / `alternateName` を追加** |
 | OG画像 | 全ページ共通で `ContentsX.webp`（ロゴ）を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 | data-theme | 現在 `magenta-hot` がデフォルト（`var(--accent): #FF0090`）|
 
