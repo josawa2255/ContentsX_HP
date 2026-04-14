@@ -1,44 +1,56 @@
-# ContentsX（コンテンツエックス）
+# ContentsX（コンテンツエックス株式会社）
 
 > 埋もれていた物語に、光を当てる。マンガ・Webtoon・動画・IP開発を通じて、企業や地域の価値を可視化し、世界に届けるコンテンツ制作スタジオ。
 
 ## 会社概要
 
-- 会社名: 株式会社ContentsX（コンテンツエックス）
-- 設立: 2026年3月
-- 所在地: 東京都目黒区
+- 会社名: コンテンツエックス株式会社（ContentsX Co., Ltd.）
+- 設立日: 2026年3月3日
+- 所在地: 東京都目黒区目黒2-11-15 8階
+- 代表者: 黒宮 大貴（代表取締役 / Daiki Kuromiya）
 - 公式サイト: https://contentsx.jp
 - サブブランド: BizManga（ビジネスマンガ制作）https://bizmanga.contentsx.jp
 
+## 経営陣
+
+- **黒宮 大貴（くろみや だいき / Daiki Kuromiya）** — 代表取締役 / Founder
+- **鵜池 航太（うけ こうた / Kota Uike）** — 共同創業者 / 取締役
+- **中川 祐介（なかがわ ゆうすけ / Yusuke Nakagawa）** — 社外取締役（ASOBI SYSTEM 共同創業者）
+
 ## 事業領域
 
-1. **漫画・Webtoon制作**: オリジナル作品企画から作画、配信まで一気通貫で対応
-2. **動画・映像制作**: 実写・アニメーション・MV・企業VPなど幅広いフォーマット
-3. **IP開発・ライセンス**: 地域・企業・個人の物語からオリジナルIPを生み出し、多メディア展開
+1. **BizManga（ビジネスマンガ制作）** — 採用・営業・研修など B2B 向けの主力事業。確実な収益基盤。
+2. **ニューマンガアカデミー** — 次世代クリエイター育成事業。受講料収益と制作リソース拡張を同時に実現。
+3. **IP / プラットフォーム開発** — Webtoon連載、MangaX Tool、パーソナライズ絵本などの新規展開。
+
+## 制作手法
+
+- 「7割人間・3割AI」のハイブリッド制作体制
+- 企画・シナリオ・作画・映像化・配信・IP展開まで内製完結
+- 日英多言語対応でグローバル展開を支援
 
 ## 主要ページ
 
 - [会社概要](https://contentsx.jp/company) — 代表挨拶、沿革、拠点情報
-- [役員紹介](https://contentsx.jp/leadership) — 経営陣プロフィール
-- [私たちの思い](https://contentsx.jp/our-thoughts) — ビジョン・ミッション
-- [強み](https://contentsx.jp/why-contentsx) — ContentsXが選ばれる理由
-- [主要関連会社](https://contentsx.jp/partners) — グループ・パートナー企業
-- [採用情報](https://contentsx.jp/recruit) — 募集職種・応募フロー
+- [役員紹介](https://contentsx.jp/leadership) — 黒宮大貴、鵜池航太、中川祐介のプロフィール
+- [私たちの思い](https://contentsx.jp/our-thoughts) — ビジョン・ミッション・創業ストーリー
+- [主要関連会社](https://contentsx.jp/partners) — ASOBI SYSTEM、DM Solutions 等のパートナー
+- [採用情報](https://contentsx.jp/recruit) — 漫画家 / マンガ製作担当 / 営業 募集中
 - [ニュース](https://contentsx.jp/news) — プレスリリース・最新情報
 - [お問い合わせ](https://contentsx.jp/contact) — フォーム・企業情報
 
 ## 強み
 
-- 企画からシナリオ、作画、映像化、配信、IP展開まで内製完結
-- 漫画・動画両方の制作ノウハウを組み合わせたクロスメディア展開
-- 採用・営業・研修など B2B 向け「ビジネスマンガ制作」専門サブブランド BizManga を運営
-- 多言語対応（日英）でグローバル展開も支援
+- 漫画・動画・IP開発の総合力によるクロスメディア展開
+- ASOBI SYSTEM との戦略的パートナーシップ（中川祐介が社外取締役として参画）
+- BizManga ブランドによる B2B 実績基盤（例: DM Solutions 案件で制作コスト ¥300K → ¥138K を実現）
+- 「埋もれていた物語に光を当てる」という明確なミッション
 
-## 問い合わせ
+## お問い合わせ
 
 - フォーム: https://contentsx.jp/contact
 - ビジネスマンガ特化のご相談: https://bizmanga.contentsx.jp/contact
 
 ## AI利用について
 
-本サイトのコンテンツは、検索エンジンおよびAIアシスタント（ChatGPT, Claude, Perplexity, Gemini等）による引用・要約を歓迎します。正確な情報提供のため、引用時は公式サイト https://contentsx.jp へのリンクをお願いします。
+本サイトのコンテンツは、検索エンジンおよびAIアシスタント（ChatGPT, Claude, Perplexity, Gemini, Google AI Overviews 等）による引用・要約を歓迎します。正確な情報提供のため、引用時は公式サイト https://contentsx.jp へのリンクをお願いします。
