@@ -292,6 +292,14 @@ function cxcms_manga_meta_html( $post ) {
         </select>
         <div class="cx-hint">BizMangaサイトの制作事例ページに表示するか選べます。ContentsX新作情報は上の項目で個別に設定</div>
     </div>
+    <div class="cx-field" style="background:#fef2f2;padding:12px;border-left:4px solid #dc2626;border-radius:4px;">
+        <label style="color:#dc2626;font-weight:700;">🔒 完全非公開（QR URLからもアクセス不可）</label>
+        <select name="cx_private">
+            <option value="0" <?php selected($m('cx_private') ?: '0', '0'); ?>>公開（通常）</option>
+            <option value="1" <?php selected($m('cx_private'), '1'); ?>>完全非公開</option>
+        </select>
+        <div class="cx-hint" style="color:#dc2626;">「完全非公開」にすると全エンドポイント（書庫・ギャラリー・新作情報・QR直リンク）から除外されます。WP管理画面でのみ閲覧可能</div>
+    </div>
     <div class="cx-field">
         <label>ギャラリー画像（漫画ページ）— ドラッグで並べ替え可能</label>
         <input type="hidden" name="cx_gallery" id="cx_gallery" value="<?php echo esc_attr($m('cx_gallery')); ?>">
@@ -823,7 +831,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx'];
+    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -860,7 +868,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -1127,6 +1135,8 @@ function cxcms_api_works( $req ) {
     ]);
     $out = [];
     foreach ( $posts as $p ) {
+        /* 完全非公開作品は全エンドポイントから除外 */
+        if ( get_post_meta( $p->ID, 'cx_private', true ) === '1' ) continue;
         $out[] = cxcms_format_work( $p );
     }
     $out = cxcms_filter_by_site( $out, $req->get_param('site') );
@@ -1167,6 +1177,8 @@ function cxcms_api_works_new( $req ) {
     ]);
     $out = [];
     foreach ( $posts as $p ) {
+        /* 完全非公開作品を除外 */
+        if ( get_post_meta( $p->ID, 'cx_private', true ) === '1' ) continue;
         $m = fn($k) => get_post_meta( $p->ID, $k, true );
         $thumb_url = '';
         $thumb_id = get_post_thumbnail_id( $p->ID );
@@ -1289,6 +1301,11 @@ function cxcms_api_manga_single( $req ) {
         return new WP_REST_Response( [ 'error' => 'not found' ], 404 );
     }
 
+    /* 完全非公開作品はQR直リンクからもアクセス不可 */
+    if ( get_post_meta( $posts[0]->ID, 'cx_private', true ) === '1' ) {
+        return new WP_REST_Response( [ 'error' => 'not found' ], 404 );
+    }
+
     return new WP_REST_Response( cxcms_format_work( $posts[0] ), 200 );
 }
 
@@ -1307,6 +1324,8 @@ function cxcms_api_library( $req ) {
     foreach ( $posts as $p ) {
         $m = fn($k) => get_post_meta( $p->ID, $k, true );
 
+        /* 完全非公開作品を除外 */
+        if ( $m('cx_private') === '1' ) continue;
         /* ビズ書庫非表示の作品をスキップ */
         if ( $m('cx_show_library') === '0' ) continue;
 
