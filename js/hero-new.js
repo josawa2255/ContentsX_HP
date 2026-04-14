@@ -45,25 +45,25 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function startIntro() {
-    // 0.3s → 1行目表示
+    // 0.1s → 1行目表示
     introTimers.push(setTimeout(function() {
       if (introLine1) introLine1.classList.add('visible');
-    }, 300));
+    }, 100));
 
-    // 0.9s → 2行目表示
+    // 0.4s → 2行目表示
     introTimers.push(setTimeout(function() {
       if (introLine2) introLine2.classList.add('visible');
-    }, 900));
+    }, 400));
 
-    // 2.8s → フェードアウト開始
+    // 1.1s → フェードアウト開始
     introTimers.push(setTimeout(function() {
       if (introOverlay) introOverlay.classList.add('fade-out');
-    }, 2800));
+    }, 1100));
 
-    // 3.6s → オーバーレイ完全除去 & ヒーローアニメーション開始
+    // 1.5s → オーバーレイ完全除去 & ヒーローアニメーション開始
     introTimers.push(setTimeout(function() {
       finishIntro();
-    }, 3600));
+    }, 1500));
   }
 
   // SKIPボタン
@@ -78,11 +78,11 @@ document.addEventListener('DOMContentLoaded', function() {
       heroLogoText.classList.add('hero-logo-text--play');
     }
 
-    // Phase 2: 5.5秒後にカルーセルへトランジション
+    // Phase 2: 2秒後にカルーセルへトランジション（LCP後）
     setTimeout(function() {
       if (heroSection) heroSection.classList.add('hero--phase2');
       window.dispatchEvent(new CustomEvent('hero-phase2-start'));
-    }, 5500);
+    }, 2000);
   }
 
   startIntro();
@@ -101,8 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
       bizcharImgs[bizcharIdx].classList.remove('active');
       bizcharIdx = (bizcharIdx + 1) % bizcharImgs.length;
       const nextImg = bizcharImgs[bizcharIdx];
-      /* 遅延読込: data-src を src に昇格（LCP後に実行される） */
+      /* 遅延読込: data-src/srcset を昇格（LCP後に実行される） */
       if (!nextImg.src && nextImg.dataset.src) {
+        if (nextImg.dataset.srcset) nextImg.srcset = nextImg.dataset.srcset;
         nextImg.src = nextImg.dataset.src;
       }
       nextImg.classList.add('active');

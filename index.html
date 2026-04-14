@@ -74,8 +74,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <!-- LCP優先: 初期表示のビズちゃん画像をpreload -->
-  <link rel="preload" href="material/images/characters/hero_biz_rooftop.webp" as="image" type="image/webp" fetchpriority="high">
+  <!-- LCP優先: 初期表示のビズちゃん画像をpreload（モバイル/デスクトップ別） -->
+  <link rel="preload" href="material/images/characters/hero_biz_rooftop_sp.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
+  <link rel="preload" href="material/images/characters/hero_biz_rooftop.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
   <link rel="stylesheet" href="css/hero-new.css">
   <link rel="stylesheet" href="css/dl-modal.css">
 </head>
@@ -130,9 +131,21 @@
 
   <!-- Phase 1: ビズちゃんアニメーション背景 -->
   <div class="hero-bizchar" id="heroBizchar">
-    <img width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="" fetchpriority="high" decoding="async">
-    <img width="1200" height="800" data-src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" alt="" loading="lazy" decoding="async">
-    <img width="1200" height="800" data-src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img" alt="" loading="lazy" decoding="async">
+    <img width="1200" height="800"
+         src="material/images/characters/hero_biz_rooftop.webp"
+         srcset="material/images/characters/hero_biz_rooftop_sp.webp 800w, material/images/characters/hero_biz_rooftop.webp 1600w"
+         sizes="(max-width: 768px) 100vw, 1200px"
+         class="hero-bizchar-img active" alt="" fetchpriority="high" decoding="async">
+    <img width="1200" height="800"
+         data-src="material/images/characters/hero_biz_manga_studio.webp"
+         data-srcset="material/images/characters/hero_biz_manga_studio_sp.webp 800w, material/images/characters/hero_biz_manga_studio.webp 1600w"
+         sizes="(max-width: 768px) 100vw, 1200px"
+         class="hero-bizchar-img" alt="" loading="lazy" decoding="async">
+    <img width="1200" height="800"
+         data-src="material/images/characters/hero_biz_ocean.webp"
+         data-srcset="material/images/characters/hero_biz_ocean_sp.webp 800w, material/images/characters/hero_biz_ocean.webp 1600w"
+         sizes="(max-width: 768px) 100vw, 1200px"
+         class="hero-bizchar-img" alt="" loading="lazy" decoding="async">
   </div>
 
   <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->
