@@ -192,6 +192,25 @@ window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル�
 - index.html のヒーローロゴを `<h2>` → `<h1>` に変更し、sr-only h1 を削除（見出し順序の正規化）
 - `<meta name="referrer" content="strict-origin-when-cross-origin">` を全ページに追加
 - ルートに [llms.txt](llms.txt) を新設（AI検索エンジン向け事業概要・主要ページ一覧）
+- 5ページ（index / news / news-detail / our-thoughts / recruit）の meta/og/twitter/JSON-LD description を73〜90文字に拡充
+- Organization スキーマに `foundingDate` / `address` / `alternateName` / `sameAs`（X: Bizmanga_）/ `subOrganization` を追加
+- **news-detail 個別記事のインデックス対応**:
+  - [tools/generate-sitemap.py](tools/generate-sitemap.py) を新設（WP APIから news 一覧取得して sitemap.xml を再生成）
+  - sitemap.xml を `?id=N` 形式で個別記事URLを列挙する構成に変更
+  - news-detail.html に canonical / OG / twitter / description / JSON-LD `NewsArticle` の動的更新スクリプトを追加
+  - `why-contentsx` は孤立ページのためsitemapから一旦削除（他事業展開後に復帰予定）
+
+### sitemap再生成ルール
+
+ニュース記事を WordPress で追加・更新したら以下を実行:
+
+```bash
+cd ContentX
+python3 tools/generate-sitemap.py
+git add sitemap.xml && git commit -m "chore(sitemap): news更新" && git push
+```
+
+GitHub Actions 等で月次自動化も可能（TODO）。
 
 ## 13. テーマカラー
 

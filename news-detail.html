@@ -232,6 +232,47 @@
         const title = lang === 'en' ? (data.title_en || data.title_ja) : data.title_ja;
         document.title = `${title} | ContentsX`;
 
+        /* SEO: canonical/OG/description を記事ごとに動的更新 */
+        const articleUrl = `https://contentsx.jp/news-detail?id=${encodeURIComponent(newsId)}`;
+        const plainText = (data.content || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+        const descText = plainText.slice(0, 120) || `${title} | ContentsXのニュース詳細`;
+        const setMeta = (sel, attr, val) => {
+          const el = document.querySelector(sel);
+          if (el) el.setAttribute(attr, val);
+        };
+        setMeta('link[rel="canonical"]', 'href', articleUrl);
+        setMeta('meta[name="description"]', 'content', descText);
+        setMeta('meta[property="og:url"]', 'content', articleUrl);
+        setMeta('meta[property="og:title"]', 'content', `${title} | ContentsX`);
+        setMeta('meta[property="og:description"]', 'content', descText);
+        setMeta('meta[property="og:type"]', 'content', 'article');
+        setMeta('meta[name="twitter:title"]', 'content', `${title} | ContentsX`);
+        setMeta('meta[name="twitter:description"]', 'content', descText);
+
+        /* JSON-LD NewsArticle を動的挿入 */
+        const existingLd = document.getElementById('news-article-ld');
+        if (existingLd) existingLd.remove();
+        const ldScript = document.createElement('script');
+        ldScript.type = 'application/ld+json';
+        ldScript.id = 'news-article-ld';
+        ldScript.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "NewsArticle",
+          "headline": title,
+          "datePublished": (data.date || '').replace(/\./g, '-'),
+          "url": articleUrl,
+          "description": descText,
+          "publisher": {
+            "@type": "Organization",
+            "name": "ContentsX",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://contentsx.jp/material/images/logo/ContentsX.webp"
+            }
+          }
+        });
+        document.head.appendChild(ldScript);
+
         /* データ反映 */
         document.getElementById('newsDate').textContent = data.date;
 
