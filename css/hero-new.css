@@ -76,6 +76,9 @@
   display: inline-block;
   opacity: 0;
   transform: translateY(30px) scale(0.85);
+  /* 影を静的に付与（アニメーションさせない = GPU合成可能） */
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
+  will-change: transform, opacity;
 }
 .hero-intro-line.visible .hii-char {
   animation: heroIntroCharWave 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -95,7 +98,6 @@
   0% {
     opacity: 0;
     transform: translateY(30px) scale(0.85);
-    text-shadow: 0 0 0 rgba(var(--accent-rgb, 233, 30, 140), 0);
   }
   60% {
     opacity: 1;
@@ -104,17 +106,14 @@
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
   }
 }
 @keyframes heroIntroCharFloat {
   0%, 100% {
     transform: translateY(0);
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
   }
   50% {
     transform: translateY(-6px);
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 22px rgba(var(--accent-rgb, 233, 30, 140), 0.6);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -290,6 +289,19 @@
   transform: translateY(0);
   transform-origin: 50% 50%;
   opacity: 0;
+  /* 立体エンボス影を静的に付与（アニメーションさせない = GPU合成可能） */
+  text-shadow:
+    0 1px 0 #d4d4d4,
+    0 2px 0 #cfcfcf,
+    0 3px 0 #c9c9c9,
+    0 4px 0 #c2c2c2,
+    0 5px 0 #bdbdbd,
+    0 6px 0 #b6b6b6,
+    0 7px 0 #b0b0b0,
+    0 8px 0 #aaaaaa,
+    0 9px 0 #a4a4a4,
+    0 40px 30px rgba(0, 0, 0, 0.35);
+  will-change: transform, opacity;
   animation-name: heroTextPopUpTop;
   animation-duration: 0.9s;
   animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
@@ -320,7 +332,6 @@
   0% {
     opacity: 0;
     transform: translateY(40px);
-    text-shadow: none;
   }
   40% {
     opacity: 1;
@@ -328,17 +339,6 @@
   100% {
     opacity: 1;
     transform: translateY(-18px);
-    text-shadow:
-      0 1px 0 #d4d4d4,
-      0 2px 0 #cfcfcf,
-      0 3px 0 #c9c9c9,
-      0 4px 0 #c2c2c2,
-      0 5px 0 #bdbdbd,
-      0 6px 0 #b6b6b6,
-      0 7px 0 #b0b0b0,
-      0 8px 0 #aaaaaa,
-      0 9px 0 #a4a4a4,
-      0 40px 30px rgba(0, 0, 0, 0.35);
   }
 }
 /* ===== タグライン（1文字ずつ波シャイン） ===== */
@@ -382,16 +382,12 @@
 @keyframes cxCharRipple {
   0%, 100% {
     transform: translateY(0) scale(1);
-    text-shadow: none;
   }
   4% {
     transform: translateY(-14px) scale(1.12);
-    text-shadow: 0 6px 18px rgba(var(--accent-rgb, 233,30,140), 0.7),
-                 0 0 22px rgba(255,255,255,0.5);
   }
   10% {
     transform: translateY(0) scale(1);
-    text-shadow: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
