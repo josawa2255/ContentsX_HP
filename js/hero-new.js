@@ -45,25 +45,25 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function startIntro() {
-    // 0.1s → 1行目表示
+    // 0.3s → 1行目表示
     introTimers.push(setTimeout(function() {
       if (introLine1) introLine1.classList.add('visible');
-    }, 100));
+    }, 300));
 
-    // 0.4s → 2行目表示
+    // 0.9s → 2行目表示
     introTimers.push(setTimeout(function() {
       if (introLine2) introLine2.classList.add('visible');
-    }, 400));
+    }, 900));
 
-    // 1.1s → フェードアウト開始
+    // 2.8s → フェードアウト開始
     introTimers.push(setTimeout(function() {
       if (introOverlay) introOverlay.classList.add('fade-out');
-    }, 1100));
+    }, 2800));
 
-    // 1.5s → オーバーレイ完全除去 & ヒーローアニメーション開始
+    // 3.6s → オーバーレイ完全除去 & ヒーローアニメーション開始
     introTimers.push(setTimeout(function() {
       finishIntro();
-    }, 1500));
+    }, 3600));
   }
 
   // SKIPボタン
@@ -78,11 +78,11 @@ document.addEventListener('DOMContentLoaded', function() {
       heroLogoText.classList.add('hero-logo-text--play');
     }
 
-    // Phase 2: 2秒後にカルーセルへトランジション（LCP後）
+    // Phase 2: 5.5秒後にカルーセルへトランジション
     setTimeout(function() {
       if (heroSection) heroSection.classList.add('hero--phase2');
       window.dispatchEvent(new CustomEvent('hero-phase2-start'));
-    }, 2000);
+    }, 5500);
   }
 
   startIntro();
