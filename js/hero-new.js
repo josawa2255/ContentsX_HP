@@ -66,10 +66,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 3600));
   }
 
-  // SKIPボタン
+  // SKIPボタン: イントロとPhase1を両方飛ばしてPhase2（カルーセル）に直行
   var introSkipBtn = document.getElementById('heroIntroSkip');
   if (introSkipBtn) {
-    introSkipBtn.addEventListener('click', finishIntro);
+    introSkipBtn.addEventListener('click', function() {
+      finishIntro();
+      var heroSec = document.getElementById('hero');
+      if (heroSec && !heroSec.classList.contains('hero--phase2')) {
+        heroSec.classList.add('hero--phase2');
+        window.dispatchEvent(new CustomEvent('hero-phase2-start'));
+      }
+    });
   }
 
   function startHeroAnimation() {
