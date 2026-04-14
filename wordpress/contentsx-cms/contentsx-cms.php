@@ -1010,6 +1010,16 @@ add_action( 'rest_api_init', function() {
         'permission_callback' => '__return_true',
     ]);
 
+    /* GET /wp-json/contentsx/v1/manga/(?P<id>[a-z0-9-]+) — QRダイレクトアクセス用（単一作品、表示フラグ無関係） */
+    register_rest_route( 'contentsx/v1', '/manga/(?P<id>[a-z0-9-]+)', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_manga_single',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [ 'required' => true, 'sanitize_callback' => 'sanitize_title' ],
+        ],
+    ]);
+
     /* GET /wp-json/contentsx/v1/preproduction — 赤ペン・ネーム一覧 */
     register_rest_route( 'contentsx/v1', '/preproduction', [
         'methods'  => 'GET',
@@ -1245,6 +1255,41 @@ function cxcms_api_news_single( $req ) {
         'url'       => $m('cx_news_url') ?: '',
         'content'   => $content,
     ], 200 );
+}
+
+/* ── 単一作品取得 (QRダイレクトアクセス用) ── */
+/* 表示フラグに関係なく、cx_work_id で特定の作品を返す */
+function cxcms_api_manga_single( $req ) {
+    $manga_id = sanitize_title( $req->get_param('id') );
+    if ( empty($manga_id) ) {
+        return new WP_REST_Response( [ 'error' => 'missing id' ], 400 );
+    }
+
+    $posts = get_posts([
+        'post_type'      => 'manga_work',
+        'posts_per_page' => 1,
+        'post_status'    => 'publish',
+        'meta_query'     => [[
+            'key'   => 'cx_work_id',
+            'value' => $manga_id,
+        ]],
+    ]);
+
+    if ( empty($posts) ) {
+        /* cx_work_id が空の場合は slug で再検索（後方互換） */
+        $posts = get_posts([
+            'post_type'   => 'manga_work',
+            'name'        => $manga_id,
+            'post_status' => 'publish',
+            'numberposts' => 1,
+        ]);
+    }
+
+    if ( empty($posts) ) {
+        return new WP_REST_Response( [ 'error' => 'not found' ], 404 );
+    }
+
+    return new WP_REST_Response( cxcms_format_work( $posts[0] ), 200 );
 }
 
 /* ── ビズ書庫（漫画を読むページ）── */
