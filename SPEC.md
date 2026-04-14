@@ -180,7 +180,7 @@ window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル�
 | hreflang | **2026-04-14 全ページから削除済**（JS言語切替1URL構成のため誤実装だった。sitemap.xml からも削除） |
 | image alt | hero キャラ画像に alt が無い |
 | image width/height | 未指定 → CLS悪化要因 |
-| description | 現状68文字で短い。推奨 120-160字 |
+| description | **2026-04-14 index/news/news-detail/our-thoughts/recruit の5ページを73〜90文字に拡充**（meta/og/twitter/JSON-LD の4箇所同期） |
 | Organization.sameAs | 空配列 → SNS URLを追加推奨 |
 | OG画像 | 全ページ共通で `ContentsX.webp`（ロゴ）を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 | data-theme | 現在 `magenta-hot` がデフォルト（`var(--accent): #FF0090`）|
