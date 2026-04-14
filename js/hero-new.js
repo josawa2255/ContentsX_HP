@@ -126,11 +126,12 @@ document.addEventListener('DOMContentLoaded', function() {
         nextImg.src = nextImg.dataset.src;
       }
       nextImg.classList.add('active');
-      if (bizcharIdx !== 0) {
-        setTimeout(nextBizchar, 1200);
+      /* phase2（カルーセル表示）に入るまで無限ループ */
+      if (!heroSection || !heroSection.classList.contains('hero--phase2')) {
+        setTimeout(nextBizchar, 1800);
       }
     }
-    setTimeout(nextBizchar, 1200);
+    setTimeout(nextBizchar, 1800);
   }
 
   // --- 鎖アニメーション (requestAnimationFrame で60fps滑らか制御) ---
