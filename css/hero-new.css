@@ -303,7 +303,7 @@
     0 40px 30px rgba(0, 0, 0, 0.35);
   will-change: transform, opacity;
   animation-name: heroTextPopUpTop;
-  animation-duration: 0.9s;
+  animation-duration: 1.7s;
   animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
   animation-fill-mode: forwards;
   animation-play-state: paused;
