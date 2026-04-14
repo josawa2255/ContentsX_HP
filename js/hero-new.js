@@ -71,13 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
   if (introSkipBtn) {
     introSkipBtn.addEventListener('click', function() {
       finishIntro();
-      try { localStorage.setItem('cx-intro-seen', '1'); } catch (e) {}
+      try { sessionStorage.setItem('cx-intro-seen', '1'); } catch (e) {}
     });
   }
 
-  // 初回訪問判定: 2回目以降はイントロをスキップ
+  // セッション内で既に見たかの判定: 同タブ内リロードはスキップ、新規タブは再生
   var introAlreadySeen = false;
-  try { introAlreadySeen = localStorage.getItem('cx-intro-seen') === '1'; } catch (e) {}
+  try { introAlreadySeen = sessionStorage.getItem('cx-intro-seen') === '1'; } catch (e) {}
   if (introAlreadySeen && introOverlay) {
     introOverlay.style.display = 'none';
   }
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     startIntro();
     // イントロを最後まで見たら「見た」フラグを立てる
     introTimers.push(setTimeout(function() {
-      try { localStorage.setItem('cx-intro-seen', '1'); } catch (e) {}
+      try { sessionStorage.setItem('cx-intro-seen', '1'); } catch (e) {}
     }, 3600));
   }
 
