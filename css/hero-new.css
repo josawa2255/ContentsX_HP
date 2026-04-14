@@ -315,16 +315,9 @@
 .hero-logo-text--play .hlt-space {
   animation-play-state: running;
 }
-.hero-logo-text .hlt-char:nth-child(1)  { animation-delay: 0.00s; }
-.hero-logo-text .hlt-char:nth-child(2)  { animation-delay: 0.08s; }
-.hero-logo-text .hlt-char:nth-child(3)  { animation-delay: 0.16s; }
-.hero-logo-text .hlt-char:nth-child(4)  { animation-delay: 0.24s; }
-.hero-logo-text .hlt-char:nth-child(5)  { animation-delay: 0.32s; }
-.hero-logo-text .hlt-char:nth-child(6)  { animation-delay: 0.40s; }
-.hero-logo-text .hlt-char:nth-child(7)  { animation-delay: 0.48s; }
-.hero-logo-text .hlt-char:nth-child(8)  { animation-delay: 0.56s; }
-.hero-logo-text .hlt-space              { animation-delay: 0.64s; }
-.hero-logo-text .hlt-char:nth-child(10) { animation-delay: 0.72s; }
+/* 全文字同時に「バーン」と出現 */
+.hero-logo-text .hlt-char,
+.hero-logo-text .hlt-space { animation-delay: 0s; }
 .hero-logo-text .hlt-char--x {
   color: var(--accent, #E91E8C);
 }
