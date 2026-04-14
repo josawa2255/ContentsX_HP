@@ -74,9 +74,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <!-- 初期表示漫画の表紙をプリロード -->
-  <link rel="preload" href="material/manga/ichinohe-home/01.webp" as="image" type="image/webp">
-  <link rel="preload" href="material/manga/ichinohe-home/02.webp" as="image" type="image/webp">
+  <!-- 初期表示漫画の表紙をプリロード（LCP対象1枚のみ） -->
+  <link rel="preload" href="material/manga/ichinohe-home/01.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="preload" href="js/page-flip.browser.js" as="script">
   <link rel="stylesheet" href="css/hero-new.css">
   <link rel="stylesheet" href="css/dl-modal.css">
@@ -87,7 +86,7 @@
   <header class="header" id="header">
     <div class="header-inner">
       <a href="#" class="logo">
-        <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+        <img width="180" height="36" src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
       </a>
       <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
       <div class="header-right">
@@ -98,6 +97,8 @@
       </div>
     </div>
   </header>
+
+  <main id="main">
 
   <!-- ===== セクションサイドナビ（ZOON風） ===== -->
   <nav class="section-dots" id="sectionDots">
@@ -130,9 +131,9 @@
 
   <!-- Phase 1: ビズちゃんアニメーション背景 -->
   <div class="hero-bizchar" id="heroBizchar">
-    <img src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="">
-    <img src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" alt="">
-    <img src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img" alt="">
+    <img width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="">
+    <img width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" alt="">
+    <img width="1200" height="800" src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img" alt="">
   </div>
 
   <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->
@@ -258,7 +259,7 @@
           <div class="portfolio-item-bg" style="background-image: url('material/images/bizmanga/ip_platform_card_03.webp')"></div>
           <div class="portfolio-item-overlay"></div>
           <div class="portfolio-item-content">
-            <img src="material/images/logo/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
+            <img width="180" height="36" src="material/images/logo/bizmanga-logo.webp" alt="ビズマンガ" class="portfolio-logo">
             <p class="portfolio-tag" data-ja="確実な収益基盤" data-en="Stable Revenue Base">確実な収益基盤</p>
             <p class="portfolio-desc" data-ja="ビジネス特化型漫画制作で、企業の課題を解決する主力事業。" data-en="Core business solving corporate challenges through business-specialized manga production.">ビジネス特化型漫画制作で、企業の課題を解決する主力事業。</p>
           </div>
@@ -267,7 +268,7 @@
           <div class="portfolio-item-bg" style="background-image: url('material/images/AI school/aischool_lightblue.webp')"></div>
           <div class="portfolio-item-overlay"></div>
           <div class="portfolio-item-content">
-            <img src="material/images/AI school/new_manga_school_logo.webp" alt="ニューマンガアカデミー" class="portfolio-logo portfolio-logo--large">
+            <img width="400" height="300" src="material/images/AI school/new_manga_school_logo.webp" alt="ニューマンガアカデミー" class="portfolio-logo portfolio-logo--large">
             <p class="portfolio-tag" data-ja="人材育成・制作拡張" data-en="Talent Development & Production Scaling">人材育成・制作拡張</p>
             <p class="portfolio-desc" data-ja="次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。" data-en="Education business for next-gen New Manga creators. Achieving tuition revenue and production resource growth simultaneously.">次世代ニューマンガクリエイターの教育事業。受講料収益と制作リソース確保を同時に実現。</p>
           </div>
@@ -276,7 +277,7 @@
           <div class="portfolio-item-bg" style="background-image: url('material/images/IP platform/ipplatform_yellow.webp')"></div>
           <div class="portfolio-item-overlay"></div>
           <div class="portfolio-item-content">
-            <img src="material/images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
+            <img width="400" height="300" src="material/images/IP platform/ip_platform_logo_yellow.webp" alt="IP / プラットフォーム" class="portfolio-logo">
             <p class="portfolio-tag" data-ja="爆発的成長" data-en="Explosive Growth">爆発的成長</p>
             <p class="portfolio-desc" data-ja="Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。" data-en="New initiatives including Webtoon serialization, MangaX Tool, and personalized picture books.">Webtoon連載・MangaX Tool・パーソナライズ絵本などの新規展開。</p>
           </div>
@@ -339,11 +340,13 @@
   </div>
 
   <!-- ===== フッター ===== -->
+  </main>
+
   <footer class="footer">
     <div class="container">
       <div class="footer-inner">
         <div class="footer-brand">
-          <img src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+          <img width="180" height="36" src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
           <p class="footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
           <p class="footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo, Japan">東京都目黒区目黒2-11-15 8階</p>
         </div>

@@ -120,8 +120,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!heroWorksBg || !worksMap) return;
     /* show_hero_site でフィルタ: 'both' or 'contentsx' → ContentsXヒーローに表示 */
     /* 後方互換: show_hero_site がない場合は旧 show_hero フラグで判定 */
+    /* ブロックリスト: 殻だけ作成された作品（実ページなし）をヒーローから除外 */
+    const HERO_BLOCKLIST = new Set(['omatome-ninja-new']);
     const allWorks = WORKS_DETAIL_DATA;
     const works = allWorks.filter(w => {
+      if (HERO_BLOCKLIST.has(w.id)) return false;
       if ('show_hero_site' in w) {
         return w.show_hero_site === 'both' || w.show_hero_site === 'contentsx';
       }
@@ -156,6 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
         /* WordPress画像があればそちら、なければローカルパス */
         img.src = item.thumbnail || `material/manga/${item.id}/01.webp`;
         img.alt = item.title_ja;
+        /* CLS対策: width/height 明示（CSS で比率維持、object-fit: cover） */
+        img.width = 200;
+        img.height = 280;
         /* 最初の1セットだけeager、複製分はlazyで帯域節約 */
         const isFirstSet = idx < itemCount;
         img.loading = isFirstSet ? 'eager' : 'lazy';
