@@ -177,12 +177,20 @@ window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル�
 
 | 事項 | 詳細 |
 |---|---|
-| hreflang | 現状 ja/en/x-default 全て同じURL → 英語版がない場合は**削除が正しい**（SEO監査で指摘済） |
+| hreflang | **2026-04-14 全ページから削除済**（JS言語切替1URL構成のため誤実装だった。sitemap.xml からも削除） |
 | image alt | hero キャラ画像に alt が無い |
 | image width/height | 未指定 → CLS悪化要因 |
 | description | 現状68文字で短い。推奨 120-160字 |
 | Organization.sameAs | 空配列 → SNS URLを追加推奨 |
+| OG画像 | 全ページ共通で `ContentsX.webp`（ロゴ）を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 | data-theme | 現在 `magenta-hot` がデフォルト（`var(--accent): #FF0090`）|
+
+### 2026-04-14 SEO改善実施
+
+- hreflangタグを全HTML・sitemap.xmlから削除（誤実装解消）
+- index.html のヒーローロゴを `<h2>` → `<h1>` に変更し、sr-only h1 を削除（見出し順序の正規化）
+- `<meta name="referrer" content="strict-origin-when-cross-origin">` を全ページに追加
+- ルートに [llms.txt](llms.txt) を新設（AI検索エンジン向け事業概要・主要ページ一覧）
 
 ## 13. テーマカラー
 
