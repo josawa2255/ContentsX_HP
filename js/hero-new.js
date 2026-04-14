@@ -69,7 +69,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // SKIPボタン
   var introSkipBtn = document.getElementById('heroIntroSkip');
   if (introSkipBtn) {
-    introSkipBtn.addEventListener('click', finishIntro);
+    introSkipBtn.addEventListener('click', function() {
+      finishIntro();
+      try { localStorage.setItem('cx-intro-seen', '1'); } catch (e) {}
+    });
+  }
+
+  // 初回訪問判定: 2回目以降はイントロをスキップ
+  var introAlreadySeen = false;
+  try { introAlreadySeen = localStorage.getItem('cx-intro-seen') === '1'; } catch (e) {}
+  if (introAlreadySeen && introOverlay) {
+    introOverlay.style.display = 'none';
   }
 
   function startHeroAnimation() {
@@ -85,7 +95,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5500);
   }
 
-  startIntro();
+  if (introAlreadySeen) {
+    // 2回目以降: イントロ飛ばして即本編へ
+    finishIntro();
+  } else {
+    startIntro();
+    // イントロを最後まで見たら「見た」フラグを立てる
+    introTimers.push(setTimeout(function() {
+      try { localStorage.setItem('cx-intro-seen', '1'); } catch (e) {}
+    }, 3600));
+  }
 
   // ===== ヒーロー: ビズちゃんアニメーション + 作品カルーセル =====
   const heroSection = document.getElementById('hero');
