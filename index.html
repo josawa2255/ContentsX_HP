@@ -74,9 +74,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <!-- 初期表示漫画の表紙をプリロード（LCP対象1枚のみ） -->
-  <link rel="preload" href="material/manga/ichinohe-home/01.webp" as="image" type="image/webp" fetchpriority="high">
-  <link rel="preload" href="js/page-flip.browser.js" as="script">
+  <!-- LCP優先: 初期表示のビズちゃん画像をpreload -->
+  <link rel="preload" href="material/images/characters/hero_biz_rooftop.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="css/hero-new.css">
   <link rel="stylesheet" href="css/dl-modal.css">
 </head>
@@ -131,9 +130,9 @@
 
   <!-- Phase 1: ビズちゃんアニメーション背景 -->
   <div class="hero-bizchar" id="heroBizchar">
-    <img width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="">
-    <img width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" alt="">
-    <img width="1200" height="800" src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img" alt="">
+    <img width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="" fetchpriority="high" decoding="async">
+    <img width="1200" height="800" data-src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" alt="" loading="lazy" decoding="async">
+    <img width="1200" height="800" data-src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img" alt="" loading="lazy" decoding="async">
   </div>
 
   <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->

@@ -100,7 +100,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function nextBizchar() {
       bizcharImgs[bizcharIdx].classList.remove('active');
       bizcharIdx = (bizcharIdx + 1) % bizcharImgs.length;
-      bizcharImgs[bizcharIdx].classList.add('active');
+      const nextImg = bizcharImgs[bizcharIdx];
+      /* 遅延読込: data-src を src に昇格（LCP後に実行される） */
+      if (!nextImg.src && nextImg.dataset.src) {
+        nextImg.src = nextImg.dataset.src;
+      }
+      nextImg.classList.add('active');
       if (bizcharIdx !== 0) {
         setTimeout(nextBizchar, 1200);
       }
