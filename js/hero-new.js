@@ -100,19 +100,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function nextBizchar() {
       bizcharImgs[bizcharIdx].classList.remove('active');
       bizcharIdx = (bizcharIdx + 1) % bizcharImgs.length;
-      const nextImg = bizcharImgs[bizcharIdx];
-      /* 遅延読込: data-src/srcset を昇格（LCP後に実行される） */
-      if (!nextImg.src && nextImg.dataset.src) {
-        if (nextImg.dataset.srcset) nextImg.srcset = nextImg.dataset.srcset;
-        nextImg.src = nextImg.dataset.src;
-      }
-      nextImg.classList.add('active');
-      /* phase2（カルーセル表示）に入るまで無限ループ */
-      if (!heroSection || !heroSection.classList.contains('hero--phase2')) {
-        setTimeout(nextBizchar, 1800);
+      bizcharImgs[bizcharIdx].classList.add('active');
+      if (bizcharIdx !== 0) {
+        setTimeout(nextBizchar, 1200);
       }
     }
-    setTimeout(nextBizchar, 1800);
+    setTimeout(nextBizchar, 1200);
   }
 
   // --- 鎖アニメーション (requestAnimationFrame で60fps滑らか制御) ---
