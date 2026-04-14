@@ -212,6 +212,11 @@ git add sitemap.xml && git commit -m "chore(sitemap): news更新" && git push
 
 GitHub Actions 等で月次自動化も可能（TODO）。
 
+### 2026-04-14 Medium優先度対応
+
+- 全ページに `BreadcrumbList` JSON-LD を追加
+- 全ページに `twitter:site: @Bizmanga_` を追加
+
 ## 13. テーマカラー
 
 CSS変数 `--accent` は `data-theme` で切替可能:
