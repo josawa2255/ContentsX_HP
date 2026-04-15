@@ -205,23 +205,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   buildHeroCarousel();
 
-  /* WordPress データ到着後にサムネURLだけ差し替え（DOM再構築せず高速） */
+  /* WordPress データ到着後:
+     静的 WORKS_DETAIL_DATA には show_hero_site が無いため、
+     初回 buildHeroCarousel() は全作品を表示してしまう。
+     WP データには CMS 設定の show_hero_site / hero_order_cx が入っているので、
+     到着後に worksMap を更新して **再構築** しフィルターを効かせる。 */
   window.addEventListener('wp-data-ready', function() {
     if (typeof WORKS_DETAIL_DATA !== 'undefined') {
       Object.keys(worksMap || {}).forEach(k => delete worksMap[k]);
       WORKS_DETAIL_DATA.forEach(w => { if (worksMap) worksMap[w.id] = w; });
     }
-    // 既存のimgタグのsrcをWPサムネイルに差し替え
-    if (heroWorksBg) {
-      heroWorksBg.querySelectorAll('.hero-works-cover').forEach(div => {
-        const id = div.dataset.workId;
-        const work = worksMap && worksMap[id];
-        if (work && work.thumbnail) {
-          const img = div.querySelector('img');
-          if (img && img.src !== work.thumbnail) img.src = work.thumbnail;
-        }
-      });
-    }
+    buildHeroCarousel();
   });
 
   // ===== 制作事例モーダル (BizMangaスタイル) =====

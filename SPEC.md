@@ -247,7 +247,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば6ページ全てに反映される（手動コピペ禁止）
 2. **モバイルでハンバーガー押せない** → §7.1 のチェックリスト
 3. **新作情報に漫画事例を出したい** → WP `cx_show_new_contentsx` フラグを立てる（`/works-new` エンドポイント）
-4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に
+4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に（2026-04-16修正: 静的 `WORKS_DETAIL_DATA` には `show_hero_site` が無いので初回描画は全作品表示。`wp-data-ready` で `buildHeroCarousel()` を再実行してフィルターを効かせている。サムネ差し替えのみだとCMS設定が反映されない）
 5. **i18n 切替が動かない** → `i18n.js` が `nav.js` より先にロードされているか確認
 6. **テキストロゴの X だけ色を変えたい** → `.hlt-char--x` クラス
 7. **ヒーロー演出のタイミング変更** → `hero-new.js` の `startIntro()` / `startHeroAnimation()` の setTimeout 数値
