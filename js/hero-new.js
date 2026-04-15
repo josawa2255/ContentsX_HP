@@ -85,7 +85,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5500);
   }
 
-  startIntro();
+  // モバイル(≤768px)はOPをスキップして即Phase2(カルーセル)へ
+  var isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    if (introOverlay) introOverlay.style.display = 'none';
+    finishIntro();
+    // Phase1もスキップして即Phase2へ
+    var heroSecEarly = document.getElementById('hero');
+    if (heroSecEarly) {
+      heroSecEarly.classList.add('hero--phase2');
+      window.dispatchEvent(new CustomEvent('hero-phase2-start'));
+    }
+  } else {
+    startIntro();
+  }
 
   // ===== ヒーロー: ビズちゃんアニメーション + 作品カルーセル =====
   const heroSection = document.getElementById('hero');
