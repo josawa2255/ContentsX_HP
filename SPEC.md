@@ -100,6 +100,7 @@ window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル�
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
+| Google Analytics 4 | アクセス解析 | 測定ID `G-B000C4JCCX`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | WordPress REST API | 漫画事例 / ニュース | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | GitHub Pages | ホスティング | `contentsx.jp` (CNAME) |
 
