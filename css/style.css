@@ -2321,21 +2321,30 @@ section { padding: 100px 0; }
   .nav.open .nav-dropdown.is-open .nav-dropdown-arrow {
     transform: rotate(180deg);
   }
-  /* サブメニュー: 閉じた状態、開くとスライド */
+  /* サブメニュー: デスクトップ用のmax-height/opacity/overflowを全解除 */
   .nav.open .nav-dropdown-menu {
     position: static;
+    top: auto;
+    left: auto;
     transform: none;
     display: none;
     box-shadow: none;
     background: #fafafa;
     padding: 0;
     text-align: left;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
     opacity: 1;
     pointer-events: auto;
+    border-radius: 0;
     border-bottom: 1px solid #e8e8e8;
+    transition: none;
   }
   .nav.open .nav-dropdown.is-open .nav-dropdown-menu {
     display: block;
+    max-height: none;
+    padding: 0;
   }
   .nav.open .nav-dropdown-item {
     display: flex;
