@@ -320,6 +320,15 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   padding: 0 0 8px;
   transform: translateX(-50%) translateY(0);
 }
+/* クリック後の強制閉じ: 一度 dropdown から離れるまで開かない */
+.nav-dropdown.nav-dropdown-dismissed:hover .nav-dropdown-menu,
+.nav-dropdown.nav-dropdown-dismissed:focus-within .nav-dropdown-menu {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  padding: 0 !important;
+  transform: translateX(-50%) translateY(-4px) !important;
+}
 .nav-dropdown:hover .nav-dropdown-menu::before,
 .nav-dropdown:focus-within .nav-dropdown-menu::before {
   opacity: 1;

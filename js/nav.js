@@ -277,9 +277,25 @@
       hamburger.classList.remove('is-open');
       document.body.classList.remove('nav-locked');
     };
+    // PC: サブメニュークリック後は一度ドロップダウンから離れるまで閉じたままにする
+    var dismissDesktopDropdown = function(dropdown) {
+      if (!dropdown) return;
+      dropdown.classList.add('nav-dropdown-dismissed');
+      var reset = function() {
+        dropdown.classList.remove('nav-dropdown-dismissed');
+        dropdown.removeEventListener('mouseleave', reset);
+      };
+      dropdown.addEventListener('mouseleave', reset);
+    };
     // サブメニュー項目クリックでメニュー閉じる
     nav.querySelectorAll('.nav-dropdown-item').forEach(function(link) {
-      link.addEventListener('click', closeMenu);
+      link.addEventListener('click', function() {
+        closeMenu();
+        /* PCホバードロップダウンの強制閉じ */
+        if (window.innerWidth > 768) {
+          dismissDesktopDropdown(link.closest('.nav-dropdown'));
+        }
+      });
     });
     // 通常リンククリックでメニュー閉じる
     nav.querySelectorAll('.nav-link:not(.nav-dropdown-toggle)').forEach(function(link) {
