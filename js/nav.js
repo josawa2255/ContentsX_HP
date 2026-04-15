@@ -196,19 +196,35 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('hamburger');
   if (hamburger) {
+    /* a11y属性の初期化 */
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-controls', 'nav');
+    nav.setAttribute('aria-label', 'メインナビゲーション');
+
     var toggleMenu = function(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
       var willOpen = !nav.classList.contains('open');
       nav.classList.toggle('open', willOpen);
       hamburger.classList.toggle('active', willOpen);
       hamburger.classList.toggle('is-open', willOpen); /* X化 */
+      hamburger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      hamburger.setAttribute('aria-label', willOpen ? 'メニューを閉じる' : 'メニューを開く');
       document.body.classList.toggle('nav-locked', willOpen); /* スクロールロック */
       if (!willOpen) {
         nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
           d.classList.remove('is-open');
+          var toggle = d.querySelector('.nav-dropdown-toggle');
+          if (toggle) toggle.setAttribute('aria-expanded', 'false');
         });
       }
     };
+    /* ESCキーで閉じる */
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        toggleMenu();
+        hamburger.focus();
+      }
+    });
     hamburger.addEventListener('click', toggleMenu);
     // iOS Safari 対策: touchend でも発火
     hamburger.addEventListener('touchend', function(e) {
@@ -217,6 +233,8 @@
     // モバイル: ドロップダウン親をタップ
     // 1回目 → サブメニュー開く、2回目 → リンク先へ遷移
     nav.querySelectorAll('.nav-dropdown-toggle').forEach(function(toggle) {
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-haspopup', 'true');
       var handleDropdownTap = function(e) {
         if (!nav.classList.contains('open')) return;
         var dropdown = toggle.closest('.nav-dropdown');
@@ -226,9 +244,14 @@
           e.stopPropagation();
           // 他の開いてるドロップダウンを閉じる（同時に1つだけ開く）
           nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
-            if (d !== dropdown) d.classList.remove('is-open');
+            if (d !== dropdown) {
+              d.classList.remove('is-open');
+              var otherToggle = d.querySelector('.nav-dropdown-toggle');
+              if (otherToggle) otherToggle.setAttribute('aria-expanded', 'false');
+            }
           });
           dropdown.classList.add('is-open');
+          toggle.setAttribute('aria-expanded', 'true');
         }
         // 2回目（is-open状態）→ デフォルト動作で遷移
       };
