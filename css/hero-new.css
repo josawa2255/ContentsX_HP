@@ -134,7 +134,7 @@
   max-height: 100dvh;
   max-height: -webkit-fill-available; /* Safari対策 */
   overflow: hidden;
-  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat;
+  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat fixed;
   box-sizing: border-box;
 }
 
@@ -658,7 +658,7 @@
   .hero-bizchar-img {
     width: 100%;
     height: 100%;
-    object-position: center 30%;
+    object-position: 65% center;
   }
   .hero-logo-main {
     width: clamp(200px, 55vw, 380px);
@@ -697,7 +697,7 @@
 
 @media (max-width: 480px) {
   .hero-bizchar-img {
-    object-position: center 30%;
+    object-position: 70% center;
   }
   .hero-works-cover {
     width: 100px;
