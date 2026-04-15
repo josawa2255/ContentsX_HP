@@ -2249,7 +2249,7 @@ section { padding: 100px 0; }
     flex-shrink: 0;
   }
 
-  /* ===== モバイルナビ（BizMangaスタイル: 左寄せ・縦リスト・コンパクト） ===== */
+  /* ===== モバイルナビ（Toyotaスタイル: 全画面ドロワー / 大きいタップ領域） ===== */
   .nav.open {
     display: flex;
     flex-direction: column;
@@ -2259,72 +2259,123 @@ section { padding: 100px 0; }
     top: 64px;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.98);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    padding: 4px 20px 16px;
+    bottom: 0;
+    background: #ffffff;
+    padding: 8px 0 120px;
     gap: 0;
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
     z-index: 10002;
-    max-height: calc(100vh - 64px);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    animation: navSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
+  @keyframes navSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* 各メニュー項目: 大きく、チェブロン付き、区切り線 */
   .nav.open .nav-link,
   .nav.open .nav-dropdown-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--border);
+    padding: 22px 24px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    border-bottom: 1px solid #e8e8e8;
     text-align: left;
     width: 100%;
+    min-height: 64px;
+    letter-spacing: 0.02em;
   }
-  .nav.open .nav-link::after { display: none; }
+  .nav.open .nav-link:active,
+  .nav.open .nav-dropdown-toggle:active {
+    background: rgba(229, 0, 90, 0.04);
+  }
+  /* 右端のチェブロン (ドロップダウン以外) */
+  .nav.open .nav-link::after {
+    content: '›';
+    display: inline-block;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 0.5;
+    transform: translateY(-2px);
+  }
   .nav.open .nav-dropdown {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     width: 100%;
   }
-  /* サブメニュー: デフォルト閉じる、is-openで開く */
+  /* ドロップダウン矢印（下向き、展開時回転） */
+  .nav.open .nav-dropdown-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-left: 8px;
+  }
+  .nav.open .nav-dropdown.is-open .nav-dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  /* サブメニュー: 閉じた状態、開くとスライド */
   .nav.open .nav-dropdown-menu {
     position: static;
     transform: none;
     display: none;
     box-shadow: none;
-    background: transparent;
-    padding: 0 0 4px 16px;
+    background: #fafafa;
+    padding: 0;
     text-align: left;
     opacity: 1;
     pointer-events: auto;
+    border-bottom: 1px solid #e8e8e8;
   }
   .nav.open .nav-dropdown.is-open .nav-dropdown-menu {
     display: block;
   }
   .nav.open .nav-dropdown-item {
-    display: block;
-    padding: 10px 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 18px 24px 18px 44px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    min-height: 56px;
+    position: relative;
+  }
+  .nav.open .nav-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    width: 12px;
+    height: 1px;
+    background: var(--accent);
   }
   .nav.open .nav-dropdown-item:last-child {
     border-bottom: none;
   }
-  .nav.open .nav-dropdown-arrow {
-    display: inline-block;
-    transition: transform 0.25s ease;
-    font-size: 11px;
-    margin-left: 8px;
+  .nav.open .nav-dropdown-item:active {
+    background: rgba(229, 0, 90, 0.04);
   }
-  .nav.open .nav-dropdown.is-open .nav-dropdown-arrow {
-    transform: rotate(180deg);
+  /* ハンバーガー → X 変化 */
+  .hamburger.is-open span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .hamburger.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.is-open span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+  /* ナビ開時に背後コンテンツをスクロールロック補助（body側で実装する場合） */
+  body.nav-locked {
+    overflow: hidden;
   }
 
   /* .hero { padding: 100px 24px 60px; } — hero-new.css に移行済み */

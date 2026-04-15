@@ -198,9 +198,12 @@
   if (hamburger) {
     var toggleMenu = function(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
-      nav.classList.toggle('open');
-      hamburger.classList.toggle('active');
-      if (!nav.classList.contains('open')) {
+      var willOpen = !nav.classList.contains('open');
+      nav.classList.toggle('open', willOpen);
+      hamburger.classList.toggle('active', willOpen);
+      hamburger.classList.toggle('is-open', willOpen); /* X化 */
+      document.body.classList.toggle('nav-locked', willOpen); /* スクロールロック */
+      if (!willOpen) {
         nav.querySelectorAll('.nav-dropdown.is-open').forEach(function(d) {
           d.classList.remove('is-open');
         });
@@ -245,19 +248,19 @@
         // is-openなら何もしない → click が自然に遷移
       }, { passive: false });
     });
+    var closeMenu = function() {
+      nav.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.classList.remove('is-open');
+      document.body.classList.remove('nav-locked');
+    };
     // サブメニュー項目クリックでメニュー閉じる
     nav.querySelectorAll('.nav-dropdown-item').forEach(function(link) {
-      link.addEventListener('click', function() {
-        nav.classList.remove('open');
-        hamburger.classList.remove('active');
-      });
+      link.addEventListener('click', closeMenu);
     });
     // 通常リンククリックでメニュー閉じる
     nav.querySelectorAll('.nav-link:not(.nav-dropdown-toggle)').forEach(function(link) {
-      link.addEventListener('click', function() {
-        nav.classList.remove('open');
-        hamburger.classList.remove('active');
-      });
+      link.addEventListener('click', closeMenu);
     });
   }
 
