@@ -393,20 +393,31 @@
           heroEl.style.display = 'block';
         }
 
-        /* XSS対策: WordPress APIからのHTMLをサニタイズ */
-        var rawContent = data.content || '<p>詳細情報はありません。</p>';
+        /* XSS対策: WordPress APIからのHTMLをサニタイズ（日英両方） */
         var contentEl = document.getElementById('newsContent');
-        var tempDiv = document.createElement('div');
-        tempDiv.innerHTML = rawContent;
-        tempDiv.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
-        tempDiv.querySelectorAll('*').forEach(function(el) {
-          Array.from(el.attributes).forEach(function(attr) {
-            if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('javascript:') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('data:text/html')) {
-              el.removeAttribute(attr.name);
-            }
+        function sanitizeHTML(raw) {
+          var tmp = document.createElement('div');
+          tmp.innerHTML = raw || '';
+          tmp.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
+          tmp.querySelectorAll('*').forEach(function(el) {
+            Array.from(el.attributes).forEach(function(attr) {
+              if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('javascript:') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('data:text/html')) {
+                el.removeAttribute(attr.name);
+              }
+            });
           });
+          return tmp.innerHTML;
+        }
+        var contentJaSafe = sanitizeHTML(data.content || '<p>詳細情報はありません。</p>');
+        var contentEnSafe = data.content_en ? sanitizeHTML(data.content_en) : '';
+        function applyContent(l) {
+          contentEl.innerHTML = (l === 'en' && contentEnSafe) ? contentEnSafe : contentJaSafe;
+        }
+        applyContent(lang);
+        /* i18n言語切替イベントを監視して本文を差し替える */
+        document.addEventListener('i18n-lang-changed', function(e) {
+          applyContent((e && e.detail && e.detail.lang) || document.documentElement.lang || 'ja');
         });
-        contentEl.innerHTML = tempDiv.innerHTML;
 
         loadingEl.style.display = 'none';
         articleEl.style.display = 'block';

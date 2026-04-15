@@ -600,7 +600,7 @@ function cxcms_news_meta_html( $post ) {
     wp_nonce_field( 'cxcms_news_save', 'cxcms_news_nonce' );
     $m = fn($k) => get_post_meta( $post->ID, $k, true );
     ?>
-    <style>.cx-field{margin:10px 0}.cx-field label{display:block;font-weight:700;margin-bottom:4px}.cx-field input{width:100%;padding:6px 8px}.cx-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}</style>
+    <style>.cx-field{margin:10px 0}.cx-field label{display:block;font-weight:700;margin-bottom:4px}.cx-field input,.cx-field textarea{width:100%;padding:6px 8px;box-sizing:border-box}.cx-field textarea{min-height:200px;font-family:inherit}.cx-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cx-hint{color:#666;font-size:12px;margin-top:2px}</style>
     <div class="cx-row">
         <div class="cx-field">
             <label>タイトル（英語）</label>
@@ -610,6 +610,11 @@ function cxcms_news_meta_html( $post ) {
             <label>リンクURL（任意）</label>
             <input name="cx_news_url" value="<?php echo esc_attr($m('cx_news_url')); ?>" placeholder="https://...">
         </div>
+    </div>
+    <div class="cx-field">
+        <label>本文（英語）</label>
+        <textarea name="cx_news_content_en" placeholder="Leave blank to show Japanese content even in English mode."><?php echo esc_textarea($m('cx_news_content_en')); ?></textarea>
+        <div class="cx-hint">HTMLタグも使用可。空欄の場合、英語表示時も日本語本文が表示されます。</div>
     </div>
     <div class="cx-field">
         <label>表示先サイト</label>
@@ -855,6 +860,35 @@ function cxcms_save_news_meta( $post_id ) {
     $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
+    }
+    /* 本文英語はHTMLタグ許可のためwp_kses_post */
+    if ( isset($_POST['cx_news_content_en']) ) {
+        update_post_meta( $post_id, 'cx_news_content_en', wp_kses_post($_POST['cx_news_content_en']) );
+    }
+}
+
+/* ── ニュース一覧画面にカスタム列を追加（英語入力状況） ── */
+add_filter( 'manage_cx_news_posts_columns', 'cxcms_news_columns' );
+function cxcms_news_columns( $cols ) {
+    $new = [];
+    foreach ( $cols as $k => $v ) {
+        $new[$k] = $v;
+        if ( $k === 'title' ) {
+            $new['cx_en_title']   = 'ENタイトル';
+            $new['cx_en_content'] = 'EN本文';
+        }
+    }
+    return $new;
+}
+add_action( 'manage_cx_news_posts_custom_column', 'cxcms_news_columns_render', 10, 2 );
+function cxcms_news_columns_render( $col, $post_id ) {
+    if ( $col === 'cx_en_title' ) {
+        $v = get_post_meta( $post_id, 'cx_news_title_en', true );
+        echo $v ? '<span style="color:#2ecc71;font-size:16px">✓</span>' : '<span style="color:#bbb">—</span>';
+    }
+    if ( $col === 'cx_en_content' ) {
+        $v = get_post_meta( $post_id, 'cx_news_content_en', true );
+        echo $v ? '<span style="color:#2ecc71;font-size:16px">✓</span>' : '<span style="color:#bbb">—</span>';
     }
 }
 
@@ -1256,6 +1290,8 @@ function cxcms_api_news_single( $req ) {
     $m = fn($k) => get_post_meta( $p->ID, $k, true );
     $tag = cxcms_get_first_term( $p->ID, 'news_tag' );
     $content = apply_filters( 'the_content', $p->post_content );
+    $content_en_raw = $m('cx_news_content_en');
+    $content_en = $content_en_raw ? apply_filters( 'the_content', $content_en_raw ) : '';
 
     /* アイキャッチ画像 */
     $thumb_url = '';
@@ -1266,15 +1302,16 @@ function cxcms_api_news_single( $req ) {
     }
 
     return new WP_REST_Response([
-        'id'        => $p->ID,
-        'date'      => get_the_date( 'Y.m.d', $p ),
-        'tag_ja'    => $tag,
-        'tag_en'    => cxcms_get_first_term_en( $p->ID, 'news_tag' ),
-        'title_ja'  => $p->post_title,
-        'title_en'  => $m('cx_news_title_en'),
-        'url'       => $m('cx_news_url') ?: '',
-        'thumbnail' => $thumb_url,
-        'content'   => $content,
+        'id'         => $p->ID,
+        'date'       => get_the_date( 'Y.m.d', $p ),
+        'tag_ja'     => $tag,
+        'tag_en'     => cxcms_get_first_term_en( $p->ID, 'news_tag' ),
+        'title_ja'   => $p->post_title,
+        'title_en'   => $m('cx_news_title_en'),
+        'url'        => $m('cx_news_url') ?: '',
+        'thumbnail'  => $thumb_url,
+        'content'    => $content,
+        'content_en' => $content_en,
     ], 200 );
 }
 
