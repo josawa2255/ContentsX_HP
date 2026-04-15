@@ -655,6 +655,16 @@
 
 /* === レスポンシブ === */
 @media (max-width: 768px) {
+  /* モバイルではOPを完全スキップ(JSより先にCSSで非表示化) */
+  .hero-intro-overlay { display: none !important; }
+  .hero-bizchar { display: none !important; }
+  .hero-works-bg { opacity: 1 !important; }
+  .hero-center { opacity: 1 !important; visibility: visible !important; }
+  .hero-logo-text .hlt-char,
+  .hero-logo-text .hlt-space {
+    animation-play-state: running !important;
+  }
+
   .hero-bizchar-img {
     width: 100%;
     height: 100%;
