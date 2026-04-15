@@ -63,7 +63,7 @@ function cxcms_register_post_types() {
         'show_in_rest' => true,
         'rest_base'    => 'cx-news',
         'menu_icon'    => 'dashicons-megaphone',
-        'supports'     => [ 'title', 'editor', 'custom-fields' ],
+        'supports'     => [ 'title', 'editor', 'custom-fields', 'thumbnail' ],
         'has_archive'  => false,
         'rewrite'      => false,
     ]);
