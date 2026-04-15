@@ -10,8 +10,7 @@
       children: [
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
         { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
-        { label: 'サービス',         labelEn: 'Services',      href: '#about' },
-        { label: '漫画制作フロー',    labelEn: 'Workflow',      href: '#flow' }
+        { label: 'サービス',         labelEn: 'Services',      href: '#about' }
       ]
     },
     { label: '企業',   labelEn: 'Corporate',      href: 'company',  indexHref: 'company',
