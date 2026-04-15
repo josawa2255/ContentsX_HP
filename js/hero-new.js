@@ -147,9 +147,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       return w.show_hero !== false;
     }).slice().sort((a, b) => {
-      /* hero_order 昇順。未設定(9999)は末尾 */
-      const ao = typeof a.hero_order === 'number' ? a.hero_order : 9999;
-      const bo = typeof b.hero_order === 'number' ? b.hero_order : 9999;
+      /* hero_order_cx 昇順。未設定(9999)は末尾 */
+      const ao = typeof a.hero_order_cx === 'number' ? a.hero_order_cx : 9999;
+      const bo = typeof b.hero_order_cx === 'number' ? b.hero_order_cx : 9999;
       return ao - bo;
     });
     const row1 = document.getElementById('heroWorksRow1');

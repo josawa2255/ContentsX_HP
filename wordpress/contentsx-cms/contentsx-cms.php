@@ -239,28 +239,33 @@ function cxcms_manga_meta_html( $post ) {
         <label>表示順（数字が小さい＝先に表示）</label>
         <input type="number" name="cx_sort_order" value="<?php echo esc_attr($m('cx_sort_order') ?: '0'); ?>">
     </div>
+    <div class="cx-field">
+        <label>Heroカルーセルに表示</label>
+        <?php
+        // 後方互換: 旧 cx_show_hero ('1'/'0') → 新 cx_show_hero_site ('both'/'none'/etc.)
+        $hero_site_raw = $m('cx_show_hero_site');
+        if ( empty($hero_site_raw) ) {
+            $hero_site_raw = $m('cx_show_hero') !== '0' ? 'both' : 'none';
+        }
+        ?>
+        <select name="cx_show_hero_site">
+            <option value="both" <?php selected($hero_site_raw, 'both'); ?>>両方（BizManga + ContentsX）</option>
+            <option value="bizmanga" <?php selected($hero_site_raw, 'bizmanga'); ?>>BizMangaのみ</option>
+            <option value="contentsx" <?php selected($hero_site_raw, 'contentsx'); ?>>ContentsXのみ</option>
+            <option value="none" <?php selected($hero_site_raw, 'none'); ?>>表示しない</option>
+        </select>
+        <div class="cx-hint">トップページのHero背景カルーセルにどちらのサイトで表示するか選べます（デフォルト: 両方）</div>
+    </div>
     <div class="cx-row">
         <div class="cx-field">
-            <label>Heroカルーセルに表示</label>
-            <?php
-            // 後方互換: 旧 cx_show_hero ('1'/'0') → 新 cx_show_hero_site ('both'/'none'/etc.)
-            $hero_site_raw = $m('cx_show_hero_site');
-            if ( empty($hero_site_raw) ) {
-                $hero_site_raw = $m('cx_show_hero') !== '0' ? 'both' : 'none';
-            }
-            ?>
-            <select name="cx_show_hero_site">
-                <option value="both" <?php selected($hero_site_raw, 'both'); ?>>両方（BizManga + ContentsX）</option>
-                <option value="bizmanga" <?php selected($hero_site_raw, 'bizmanga'); ?>>BizMangaのみ</option>
-                <option value="contentsx" <?php selected($hero_site_raw, 'contentsx'); ?>>ContentsXのみ</option>
-                <option value="none" <?php selected($hero_site_raw, 'none'); ?>>表示しない</option>
-            </select>
-            <div class="cx-hint">トップページのHero背景カルーセルにどちらのサイトで表示するか選べます（デフォルト: 両方）</div>
+            <label>Hero順番（BizManga）</label>
+            <input type="number" name="cx_hero_order_bm" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="例: 1">
+            <div class="cx-hint">BizMangaトップのHero表示順。重複すると既存作品が1つずつ後ろにずれます。空欄で末尾。</div>
         </div>
         <div class="cx-field">
-            <label>Hero表示順番</label>
-            <input type="number" name="cx_hero_order" value="<?php echo esc_attr($m('cx_hero_order') ?: ''); ?>" placeholder="例: 1">
-            <div class="cx-hint">数字が小さいほど先頭。重複した場合、既存作品が自動で1つずつ後ろにずれます。空欄なら末尾。</div>
+            <label>Hero順番（ContentsX）</label>
+            <input type="number" name="cx_hero_order_cx" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="例: 1">
+            <div class="cx-hint">ContentsXトップのHero表示順。重複すると既存作品が1つずつ後ろにずれます。空欄で末尾。</div>
         </div>
     </div>
     <div class="cx-field">
@@ -843,29 +848,32 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
-    /* Hero順番の重複解消: この記事と同じ番号の他作品を1つずつ後ろにずらす */
-    if ( isset($_POST['cx_hero_order']) && $_POST['cx_hero_order'] !== '' ) {
-        $new_order = (int) $_POST['cx_hero_order'];
-        if ( $new_order > 0 ) {
-            cxcms_shift_hero_order( $post_id, $new_order );
+    /* Hero順番の重複解消: BM・CX それぞれ独立してシフト */
+    foreach ( ['bm' => 'cx_hero_order_bm', 'cx' => 'cx_hero_order_cx'] as $site => $key ) {
+        if ( isset($_POST[$key]) && $_POST[$key] !== '' ) {
+            $new_order = (int) $_POST[$key];
+            if ( $new_order > 0 ) {
+                cxcms_shift_hero_order( $post_id, $new_order, $key );
+            }
         }
     }
 }
 
 /* ── Hero順番: 重複時に既存作品を1つずつ後ろにずらす ──
-   new_orderと同じ番号以降を持つ他作品を、数字が大きい方から順に+1ずつシフト */
-function cxcms_shift_hero_order( $current_post_id, $new_order ) {
+   $meta_key は cx_hero_order_bm または cx_hero_order_cx（サイトごとに独立）
+   new_orderと同じ番号を持つ他作品がいれば、new_order以降を大きい順に+1シフト */
+function cxcms_shift_hero_order( $current_post_id, $new_order, $meta_key ) {
     $conflicts = get_posts([
         'post_type'      => 'manga_work',
         'posts_per_page' => -1,
         'post_status'    => 'any',
         'post__not_in'   => [ $current_post_id ],
         'meta_query'     => [[
-            'key'     => 'cx_hero_order',
+            'key'     => $meta_key,
             'value'   => $new_order,
             'compare' => '=',
             'type'    => 'NUMERIC',
@@ -873,26 +881,25 @@ function cxcms_shift_hero_order( $current_post_id, $new_order ) {
         'fields'         => 'ids',
     ]);
     if ( empty($conflicts) ) return;
-    /* 衝突があった場合、new_order以降を持つ全作品を大きい順に+1シフト */
     $to_shift = get_posts([
         'post_type'      => 'manga_work',
         'posts_per_page' => -1,
         'post_status'    => 'any',
         'post__not_in'   => [ $current_post_id ],
         'meta_query'     => [[
-            'key'     => 'cx_hero_order',
+            'key'     => $meta_key,
             'value'   => $new_order,
             'compare' => '>=',
             'type'    => 'NUMERIC',
         ]],
-        'meta_key'       => 'cx_hero_order',
+        'meta_key'       => $meta_key,
         'orderby'        => 'meta_value_num',
         'order'          => 'DESC',
         'fields'         => 'ids',
     ]);
     foreach ( $to_shift as $pid ) {
-        $old = (int) get_post_meta( $pid, 'cx_hero_order', true );
-        update_post_meta( $pid, 'cx_hero_order', $old + 1 );
+        $old = (int) get_post_meta( $pid, $meta_key, true );
+        update_post_meta( $pid, $meta_key, $old + 1 );
     }
 }
 
@@ -956,7 +963,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -1191,7 +1198,8 @@ function cxcms_format_work( $p ) {
         'comment'   => $m('cx_comment'),
         'show_hero'    => $m('cx_show_hero') !== '0',
         'show_hero_site' => $m('cx_show_hero_site') ?: ( $m('cx_show_hero') !== '0' ? 'both' : 'none' ),
-        'hero_order'   => (int) ( $m('cx_hero_order') ?: 9999 ),
+        'hero_order_bm' => (int) ( $m('cx_hero_order_bm') ?: 9999 ),
+        'hero_order_cx' => (int) ( $m('cx_hero_order_cx') ?: 9999 ),
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
         'thumbnail' => $thumb_url,
@@ -1558,7 +1566,8 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
             $new['cx_client']  = 'クライアント';
             $new['cx_pages']   = 'ページ';
             $new['cx_show_hero_site'] = 'Hero';
-            $new['cx_hero_order'] = 'Hero順';
+            $new['cx_hero_order_bm'] = 'BM順';
+            $new['cx_hero_order_cx'] = 'CX順';
             $new['cx_is_new']  = '新作';
             $new['cx_show_library'] = '書庫';
             $new['cx_show_site'] = 'BM事例';
@@ -1598,7 +1607,7 @@ add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
         echo esc_html( $labels[$hs] ?? '両方' );
         return;
     }
-    if ( $col === 'cx_hero_order' ) {
+    if ( $col === 'cx_hero_order_bm' || $col === 'cx_hero_order_cx' ) {
         echo $v ? '<strong>' . esc_html($v) . '</strong>' : '<span style="color:#bbb">—</span>';
         return;
     }
