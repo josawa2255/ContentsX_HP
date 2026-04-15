@@ -494,6 +494,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   transition: background 0.25s ease, color 0.25s ease;
   background: transparent;
   color: var(--accent);
+  white-space: nowrap;
 }
 .header-lang-btn:first-child {
   border-right: 0.75px solid var(--accent);
@@ -2344,7 +2345,7 @@ section { padding: 100px 0; }
 @media (max-width: 480px) {
   .header-inner { padding: 0 12px; height: 56px; }
   .logo-img { height: 48px; }
-  .header-lang-btn { width: 44px; height: 32px; font-size: 11px; }
+  .header-lang-btn { width: 52px; height: 32px; font-size: 11px; padding: 0 4px; }
 
   .results-grid { grid-template-columns: 1fr; }
   .hero-title { font-size: 30px; }
