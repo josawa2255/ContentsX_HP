@@ -50,7 +50,9 @@
   {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": "https://contentsx.jp/#organization",
     "name": "ContentsX（コンテンツエックス株式会社）",
+    "legalName": "コンテンツエックス株式会社",
     "alternateName": ["ContentsX", "コンテンツエックス", "Contents X Co., Ltd."],
     "url": "https://contentsx.jp",
     "logo": {
@@ -88,6 +90,26 @@
       "@type": "Organization",
       "name": "ビズマンガ（BizManga）",
       "url": "https://bizmanga.contentsx.jp/"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://contentsx.jp/#website",
+    "url": "https://contentsx.jp/",
+    "name": "ContentsX",
+    "description": "埋もれていた物語に、光を当てる。",
+    "inLanguage": "ja",
+    "publisher": { "@id": "https://contentsx.jp/#organization" },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://contentsx.jp/news?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
     }
   }
   </script>

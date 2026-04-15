@@ -29,20 +29,38 @@
   <meta name="twitter:description" content="ContentsXの最新ニュース記事。漫画制作・Webtoon・IP開発事業の新着情報、プレスリリース、イベント告知、業界トピックをお届けします。">
   <meta name="twitter:image" content="https://contentsx.jp/material/images/og/og-news.webp">
   <!-- JSON-LD -->
-  <script type="application/ld+json">
+  <script type="application/ld+json" id="newsArticleSchema">
   {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "ニュース | ContentsX",
+    "@type": "NewsArticle",
+    "headline": "ニュース | ContentsX",
     "description": "ContentsXの最新ニュース記事。漫画制作・Webtoon・IP開発事業の新着情報、プレスリリース、イベント告知、業界トピックをお届けします。",
     "url": "https://contentsx.jp/news-detail",
+    "image": [
+      "https://contentsx.jp/material/images/og/og-news.webp"
+    ],
+    "datePublished": "2026-03-03",
+    "dateModified": "2026-04-14",
+    "author": {
+      "@type": "Organization",
+      "@id": "https://contentsx.jp/#organization",
+      "name": "ContentsX",
+      "url": "https://contentsx.jp"
+    },
     "publisher": {
       "@type": "Organization",
+      "@id": "https://contentsx.jp/#organization",
       "name": "ContentsX",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://contentsx.jp/material/images/logo/ContentsX.webp"
+        "url": "https://contentsx.jp/material/images/logo/ContentsX.webp",
+        "width": 180,
+        "height": 36
       }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://contentsx.jp/news-detail"
     }
   }
   </script>
@@ -279,9 +297,13 @@
         setMeta('meta[name="twitter:title"]', 'content', `${title} | ContentsX`);
         setMeta('meta[name="twitter:description"]', 'content', descText);
 
-        /* JSON-LD NewsArticle を動的挿入 */
+        /* JSON-LD NewsArticle を動的更新（静的フォールバックを上書き） */
+        const staticLd = document.getElementById('newsArticleSchema');
+        if (staticLd) staticLd.remove();
         const existingLd = document.getElementById('news-article-ld');
         if (existingLd) existingLd.remove();
+        const articleImage = data.thumbnail || data.image || 'https://contentsx.jp/material/images/og/og-news.webp';
+        const pubDate = (data.date || '').replace(/\./g, '-');
         const ldScript = document.createElement('script');
         ldScript.type = 'application/ld+json';
         ldScript.id = 'news-article-ld';
@@ -289,16 +311,31 @@
           "@context": "https://schema.org",
           "@type": "NewsArticle",
           "headline": title,
-          "datePublished": (data.date || '').replace(/\./g, '-'),
-          "url": articleUrl,
           "description": descText,
+          "url": articleUrl,
+          "image": [articleImage],
+          "datePublished": pubDate,
+          "dateModified": pubDate,
+          "author": {
+            "@type": "Organization",
+            "@id": "https://contentsx.jp/#organization",
+            "name": "ContentsX",
+            "url": "https://contentsx.jp"
+          },
           "publisher": {
             "@type": "Organization",
+            "@id": "https://contentsx.jp/#organization",
             "name": "ContentsX",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://contentsx.jp/material/images/logo/ContentsX.webp"
+              "url": "https://contentsx.jp/material/images/logo/ContentsX.webp",
+              "width": 180,
+              "height": 36
             }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": articleUrl
           }
         });
         document.head.appendChild(ldScript);
