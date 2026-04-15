@@ -865,11 +865,12 @@ function cxcms_save_manga_meta( $post_id ) {
 
 /* ── Hero順番: 重複時に既存作品を1つずつ後ろにずらす ──
    $meta_key は cx_hero_order_bm または cx_hero_order_cx（サイトごとに独立）
-   new_orderと同じ番号を持つ他作品がいれば、new_order以降を大きい順に+1シフト */
+   new_order以上の他作品を大きい順に+1シフト。new_orderにちょうど誰かいれば衝突解消される */
 function cxcms_shift_hero_order( $current_post_id, $new_order, $meta_key ) {
-    $conflicts = get_posts([
+    /* まず同じ番号が既に使われているか確認（衝突がなければシフト不要） */
+    $has_collision = get_posts([
         'post_type'      => 'manga_work',
-        'posts_per_page' => -1,
+        'posts_per_page' => 1,
         'post_status'    => 'any',
         'post__not_in'   => [ $current_post_id ],
         'meta_query'     => [[
@@ -880,7 +881,8 @@ function cxcms_shift_hero_order( $current_post_id, $new_order, $meta_key ) {
         ]],
         'fields'         => 'ids',
     ]);
-    if ( empty($conflicts) ) return;
+    if ( empty($has_collision) ) return;
+
     $to_shift = get_posts([
         'post_type'      => 'manga_work',
         'posts_per_page' => -1,
