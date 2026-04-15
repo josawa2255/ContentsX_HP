@@ -135,23 +135,27 @@ document.addEventListener('DOMContentLoaded', function() {
     ? WORKS_DETAIL_DATA.reduce((map, w) => { map[w.id] = w; return map; }, Object.create(null))
     : null;
 
-  // --- 作品カルーセル構築 (集英社スタイル) ---
-  function buildHeroCarousel() {
-    if (!heroWorksBg || !worksMap) return;
-    /* show_hero_site でフィルタ: 'both' or 'contentsx' → ContentsXヒーローに表示 */
-    /* 後方互換: show_hero_site がない場合は旧 show_hero フラグで判定 */
-    const allWorks = WORKS_DETAIL_DATA;
-    const works = allWorks.filter(w => {
+  /* フィルタ済み作品リスト（show_hero_site + hero_order_cx） */
+  function getHeroWorks() {
+    return WORKS_DETAIL_DATA.filter(w => {
       if ('show_hero_site' in w) {
         return w.show_hero_site === 'both' || w.show_hero_site === 'contentsx';
       }
       return w.show_hero !== false;
     }).slice().sort((a, b) => {
-      /* hero_order_cx 昇順。未設定(9999)は末尾 */
       const ao = typeof a.hero_order_cx === 'number' ? a.hero_order_cx : 9999;
       const bo = typeof b.hero_order_cx === 'number' ? b.hero_order_cx : 9999;
       return ao - bo;
     });
+  }
+
+  /* 最後に描画した並び順を保持（差分検出用） */
+  let lastRenderedOrder = null;
+
+  // --- 作品カルーセル構築 (集英社スタイル) ---
+  function buildHeroCarousel() {
+    if (!heroWorksBg || !worksMap) return;
+    const works = getHeroWorks();
     const row1 = document.getElementById('heroWorksRow1');
     const row2 = document.getElementById('heroWorksRow2');
     const row3 = document.getElementById('heroWorksRow3');
@@ -202,20 +206,34 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       rowEl.appendChild(frag);
     });
+    lastRenderedOrder = works.map(w => w.id).join(',');
   }
   buildHeroCarousel();
 
   /* WordPress データ到着後:
-     静的 WORKS_DETAIL_DATA には show_hero_site が無いため、
-     初回 buildHeroCarousel() は全作品を表示してしまう。
-     WP データには CMS 設定の show_hero_site / hero_order_cx が入っているので、
-     到着後に worksMap を更新して **再構築** しフィルターを効かせる。 */
+     静的 WORKS_DETAIL_DATA は show_hero_site を持たないため初回は全作品表示。
+     WP データ到着後にフィルター結果を比較し、
+       - 並び順が同じ → サムネURLだけ差し替え（高速パス、DOM再構築なし）
+       - 並び順が変わる → 再構築
+     という二段構えで最小コストで整合させる。 */
   window.addEventListener('wp-data-ready', function() {
     if (typeof WORKS_DETAIL_DATA !== 'undefined') {
       Object.keys(worksMap || {}).forEach(k => delete worksMap[k]);
       WORKS_DETAIL_DATA.forEach(w => { if (worksMap) worksMap[w.id] = w; });
     }
-    buildHeroCarousel();
+    const nextWorks = getHeroWorks();
+    const nextOrder = nextWorks.map(w => w.id).join(',');
+    if (nextOrder === lastRenderedOrder && heroWorksBg) {
+      heroWorksBg.querySelectorAll('.hero-works-cover').forEach(div => {
+        const work = worksMap && worksMap[div.dataset.workId];
+        if (work && work.thumbnail) {
+          const img = div.querySelector('img');
+          if (img && img.src !== work.thumbnail) img.src = work.thumbnail;
+        }
+      });
+    } else {
+      buildHeroCarousel();
+    }
   });
 
   // ===== 制作事例モーダル (BizMangaスタイル) =====
