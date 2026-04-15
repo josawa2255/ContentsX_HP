@@ -257,8 +257,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 /* ---- ドロップダウンナビ ---- */
 .nav-dropdown {
   position: relative;
-  padding-bottom: 12px;
-  margin-bottom: -12px;
+  /* サブメニューへのホバーブリッジ: 24pxのデッドゾーン解消 */
+  padding-bottom: 24px;
+  margin-bottom: -24px;
 }
 .nav-dropdown-toggle {
   display: flex;
@@ -278,7 +279,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 /* グリッド厳格整列 / 装飾最小 / タイポ主導の階層 */
 .nav-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  /* 親の padding-bottom(24px) と一致させギャップを物理的にゼロに */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
   min-width: 240px;
