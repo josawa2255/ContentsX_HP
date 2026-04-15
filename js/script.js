@@ -186,19 +186,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ===== ヘッダースクロールエフェクト =====
+  // CSSクラストグルでforced layout回避
   const header = document.getElementById('header');
-  let lastScroll = 0;
+  let headerScrolled = false;
+  let headerTicking = false;
 
   window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-
-    if (currentScroll > 100) {
-      header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
-    } else {
-      header.style.boxShadow = 'none';
-    }
-
-    lastScroll = currentScroll;
+    if (headerTicking) return;
+    headerTicking = true;
+    requestAnimationFrame(() => {
+      const shouldBeScrolled = window.pageYOffset > 100;
+      if (shouldBeScrolled !== headerScrolled) {
+        headerScrolled = shouldBeScrolled;
+        header.classList.toggle('header--scrolled', shouldBeScrolled);
+      }
+      headerTicking = false;
+    });
   }, { passive: true });
 
 
