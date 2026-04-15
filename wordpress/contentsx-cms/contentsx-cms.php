@@ -1257,6 +1257,14 @@ function cxcms_api_news_single( $req ) {
     $tag = cxcms_get_first_term( $p->ID, 'news_tag' );
     $content = apply_filters( 'the_content', $p->post_content );
 
+    /* アイキャッチ画像 */
+    $thumb_url = '';
+    $thumb_id = get_post_thumbnail_id( $p->ID );
+    if ( $thumb_id ) {
+        $img = wp_get_attachment_image_src( $thumb_id, 'large' );
+        if ( $img ) $thumb_url = $img[0];
+    }
+
     return new WP_REST_Response([
         'id'        => $p->ID,
         'date'      => get_the_date( 'Y.m.d', $p ),
@@ -1265,6 +1273,7 @@ function cxcms_api_news_single( $req ) {
         'title_ja'  => $p->post_title,
         'title_en'  => $m('cx_news_title_en'),
         'url'       => $m('cx_news_url') ?: '',
+        'thumbnail' => $thumb_url,
         'content'   => $content,
     ], 200 );
 }
