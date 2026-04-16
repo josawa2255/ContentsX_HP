@@ -2528,25 +2528,6 @@ function cxcms_save_column_meta( $post_id ) {
     }
 }
 
-/* ── コラム公開時に GitHub Actions を自動トリガー ── */
-add_action( 'transition_post_status', 'cxcms_trigger_column_build', 10, 3 );
-function cxcms_trigger_column_build( $new_status, $old_status, $post ) {
-    if ( $post->post_type !== 'cx_column' ) return;
-    if ( $new_status !== 'publish' ) return;
-    if ( ! defined('CXCMS_GITHUB_TOKEN') || empty(CXCMS_GITHUB_TOKEN) ) return;
-
-    $url = 'https://api.github.com/repos/josawa2255/bizmanga/actions/workflows/build-columns.yml/dispatches';
-    wp_remote_post( $url, [
-        'headers' => [
-            'Authorization' => 'Bearer ' . CXCMS_GITHUB_TOKEN,
-            'Accept'        => 'application/vnd.github+json',
-            'User-Agent'    => 'ContentsX-CMS/1.0',
-        ],
-        'body'    => wp_json_encode([ 'ref' => 'main' ]),
-        'timeout' => 10,
-    ]);
-}
-
 /* ── コラム管理画面カスタム列 ── */
 add_filter( 'manage_cx_column_posts_columns', function( $cols ) {
     $new = [];
