@@ -2416,3 +2416,241 @@ function cxcms_api_testimonial_single( $request ) {
 
     return rest_ensure_response( $data );
 }
+
+/* ============================================================
+   コラム (cx_column) — 2026-04-16 追加
+   BizManga / ContentsX の知識発信ブログ
+   ============================================================ */
+
+/* ── カスタム投稿タイプ登録 ── */
+add_action( 'init', 'cxcms_register_column_cpt' );
+function cxcms_register_column_cpt() {
+    register_post_type( 'cx_column', [
+        'labels' => [
+            'name'               => 'コラム',
+            'singular_name'      => 'コラム',
+            'add_new'            => '新規追加',
+            'add_new_item'       => 'コラムを追加',
+            'edit_item'          => 'コラムを編集',
+            'all_items'          => 'すべてのコラム',
+            'search_items'       => 'コラムを検索',
+            'not_found'          => 'コラムが見つかりません',
+        ],
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_rest' => true,
+        'rest_base'    => 'cx-columns',
+        'menu_icon'    => 'dashicons-edit',
+        'supports'     => [ 'title', 'editor', 'thumbnail', 'excerpt' ],
+        'has_archive'  => false,
+        'rewrite'      => false,
+    ]);
+
+    /* ── コラムカテゴリ ── */
+    register_taxonomy( 'column_category', 'cx_column', [
+        'labels' => [
+            'name'          => 'カテゴリ',
+            'singular_name' => 'カテゴリ',
+            'add_new_item'  => 'カテゴリを追加',
+        ],
+        'show_in_rest'      => true,
+        'rest_base'         => 'column-categories',
+        'hierarchical'      => true,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+    ]);
+}
+
+/* ── コラム メタボックス ── */
+add_action( 'add_meta_boxes', function() {
+    add_meta_box( 'cx_column_fields', 'コラム詳細', 'cxcms_column_meta_html', 'cx_column', 'normal', 'high' );
+});
+
+function cxcms_column_meta_html( $post ) {
+    wp_nonce_field( 'cxcms_column_save', 'cxcms_column_nonce' );
+    $m = fn($k) => get_post_meta( $post->ID, $k, true );
+    ?>
+    <style>.cx-field{margin:10px 0}.cx-field label{display:block;font-weight:700;margin-bottom:4px}.cx-field input,.cx-field textarea{width:100%;padding:6px 8px;box-sizing:border-box}.cx-field textarea{min-height:120px;font-family:inherit}.cx-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cx-hint{color:#666;font-size:12px;margin-top:2px}</style>
+    <div class="cx-row">
+        <div class="cx-field">
+            <label>タイトル（英語）</label>
+            <input name="cx_column_title_en" value="<?php echo esc_attr($m('cx_column_title_en')); ?>">
+        </div>
+        <div class="cx-field">
+            <label>表示先サイト</label>
+            <select name="cx_column_show_site" style="width:100%;padding:6px 8px">
+                <option value="both" <?php selected($m('cx_column_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
+                <option value="bizmanga" <?php selected($m('cx_column_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
+                <option value="contentsx" <?php selected($m('cx_column_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
+            </select>
+        </div>
+    </div>
+    <div class="cx-field">
+        <label>抜粋（日本語）</label>
+        <textarea name="cx_column_excerpt_ja" placeholder="カード表示用の短い説明文。空欄なら本文冒頭から自動抽出"><?php echo esc_textarea($m('cx_column_excerpt_ja')); ?></textarea>
+        <div class="cx-hint">カードに表示される120文字程度の要約。空欄で本文から自動抽出。</div>
+    </div>
+    <div class="cx-field">
+        <label>抜粋（英語）</label>
+        <textarea name="cx_column_excerpt_en" placeholder="Short description for the card"><?php echo esc_textarea($m('cx_column_excerpt_en')); ?></textarea>
+    </div>
+    <div class="cx-field">
+        <label>本文（英語）</label>
+        <textarea name="cx_column_content_en" style="min-height:240px" placeholder="Leave blank to show Japanese content even in English mode."><?php echo esc_textarea($m('cx_column_content_en')); ?></textarea>
+        <div class="cx-hint">HTMLタグ使用可。空欄なら英語表示時も日本語本文が表示されます。</div>
+    </div>
+    <p class="cx-hint">※ サムネイル画像は右サイドバーの「アイキャッチ画像」から設定してください（推奨 1200×630）。</p>
+    <?php
+}
+
+/* ── コラム保存 ── */
+add_action( 'save_post_cx_column', 'cxcms_save_column_meta' );
+function cxcms_save_column_meta( $post_id ) {
+    if ( ! isset($_POST['cxcms_column_nonce']) || ! wp_verify_nonce($_POST['cxcms_column_nonce'], 'cxcms_column_save') ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    $fields = ['cx_column_title_en','cx_column_show_site'];
+    foreach ( $fields as $f ) {
+        if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
+    }
+    $text_fields = ['cx_column_excerpt_ja','cx_column_excerpt_en'];
+    foreach ( $text_fields as $f ) {
+        if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_textarea_field($_POST[$f]) );
+    }
+    if ( isset($_POST['cx_column_content_en']) ) {
+        update_post_meta( $post_id, 'cx_column_content_en', wp_kses_post($_POST['cx_column_content_en']) );
+    }
+}
+
+/* ── コラム管理画面カスタム列 ── */
+add_filter( 'manage_cx_column_posts_columns', function( $cols ) {
+    $new = [];
+    foreach ( $cols as $k => $v ) {
+        $new[$k] = $v;
+        if ( $k === 'title' ) {
+            $new['cx_col_thumb'] = '表紙';
+            $new['cx_col_en']    = 'EN';
+            $new['cx_col_site']  = 'サイト';
+        }
+    }
+    return $new;
+});
+add_action( 'manage_cx_column_posts_custom_column', function( $col, $post_id ) {
+    if ( $col === 'cx_col_thumb' ) {
+        $thumb_id = get_post_thumbnail_id( $post_id );
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
+            if ( $img ) echo '<img src="' . esc_url($img[0]) . '" style="width:60px;height:34px;object-fit:cover;border-radius:3px">';
+        } else echo '<span style="color:#bbb">—</span>';
+    }
+    if ( $col === 'cx_col_en' ) {
+        $t = get_post_meta( $post_id, 'cx_column_title_en', true );
+        $c = get_post_meta( $post_id, 'cx_column_content_en', true );
+        echo ($t && $c) ? '<span style="color:#2ecc71;font-size:16px">✓</span>' : '<span style="color:#bbb">—</span>';
+    }
+    if ( $col === 'cx_col_site' ) {
+        $s = get_post_meta( $post_id, 'cx_column_show_site', true ) ?: 'both';
+        $labels = ['both' => '両方', 'bizmanga' => 'BM', 'contentsx' => 'CX'];
+        echo esc_html( $labels[$s] ?? '両方' );
+    }
+}, 10, 2 );
+
+/* ── REST フィールド公開 ── */
+add_action( 'rest_api_init', function() {
+    $column_fields = ['cx_column_title_en','cx_column_excerpt_ja','cx_column_excerpt_en','cx_column_show_site'];
+    foreach ( $column_fields as $f ) {
+        register_rest_field( 'cx_column', $f, [
+            'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
+            'schema'       => [ 'type' => 'string' ],
+        ]);
+    }
+});
+
+/* ── REST ルート ── */
+add_action( 'rest_api_init', function() {
+    register_rest_route( 'contentsx/v1', '/columns', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_columns',
+        'permission_callback' => '__return_true',
+    ]);
+    register_rest_route( 'contentsx/v1', '/columns/(?P<id>\d+)', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_column_single',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [ 'validate_callback' => function($v){return is_numeric($v);} ],
+        ],
+    ]);
+});
+
+/* ── コラム整形ヘルパー ── */
+function cxcms_format_column( $p ) {
+    $m = fn($k) => get_post_meta( $p->ID, $k, true );
+
+    /* カテゴリ（最初の1件） */
+    $cat_ja = '';
+    $terms = get_the_terms( $p->ID, 'column_category' );
+    if ( $terms && ! is_wp_error($terms) ) {
+        $cat_ja = $terms[0]->name;
+    }
+
+    /* アイキャッチ */
+    $thumb_url = '';
+    $thumb_id = get_post_thumbnail_id( $p->ID );
+    if ( $thumb_id ) {
+        $img = wp_get_attachment_image_src( $thumb_id, 'large' );
+        if ( $img ) $thumb_url = $img[0];
+    }
+
+    /* 抜粋 — 明示抜粋 > the_excerpt > 本文冒頭 120 字 */
+    $excerpt_ja = $m('cx_column_excerpt_ja') ?: '';
+    if ( empty( $excerpt_ja ) ) {
+        $excerpt_ja = has_excerpt( $p ) ? get_the_excerpt( $p ) : wp_trim_words( wp_strip_all_tags( $p->post_content ), 60, '…' );
+    }
+
+    return [
+        'id'         => $p->ID,
+        'date'       => get_the_date( 'Y.m.d', $p ),
+        'date_ymd'   => get_the_date( 'Y-m-d', $p ),
+        'category'   => $cat_ja,
+        'title_ja'   => $p->post_title,
+        'title_en'   => $m('cx_column_title_en') ?: '',
+        'excerpt_ja' => $excerpt_ja,
+        'excerpt_en' => $m('cx_column_excerpt_en') ?: '',
+        'thumbnail'  => $thumb_url,
+        'show_site'  => $m('cx_column_show_site') ?: 'both',
+    ];
+}
+
+/* ── コラム一覧 API ── */
+function cxcms_api_columns( $req ) {
+    $limit = (int) ( $req->get_param('per_page') ?: 50 );
+    $posts = get_posts([
+        'post_type'      => 'cx_column',
+        'posts_per_page' => min( $limit, 100 ),
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'post_status'    => 'publish',
+    ]);
+    $out = [];
+    foreach ( $posts as $p ) {
+        $out[] = cxcms_format_column( $p );
+    }
+    $out = cxcms_filter_by_site( $out, $req->get_param('site') );
+    return rest_ensure_response( $out );
+}
+
+/* ── コラム個別 API ── */
+function cxcms_api_column_single( $req ) {
+    $post_id = (int) $req['id'];
+    $p = get_post( $post_id );
+    if ( ! $p || $p->post_type !== 'cx_column' || $p->post_status !== 'publish' ) {
+        return new WP_Error( 'not_found', 'コラムが見つかりません', [ 'status' => 404 ] );
+    }
+    $data = cxcms_format_column( $p );
+    $content = apply_filters( 'the_content', $p->post_content );
+    $content_en_raw = get_post_meta( $p->ID, 'cx_column_content_en', true );
+    $content_en = $content_en_raw ? apply_filters( 'the_content', $content_en_raw ) : '';
+    $data['content']    = $content;
+    $data['content_en'] = $content_en;
+    return rest_ensure_response( $data );
+}
