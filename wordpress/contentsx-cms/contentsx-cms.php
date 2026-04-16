@@ -2616,6 +2616,7 @@ function cxcms_format_column( $p ) {
 
     return [
         'id'         => $p->ID,
+        'slug'       => $p->post_name,
         'date'       => get_the_date( 'Y.m.d', $p ),
         'date_ymd'   => get_the_date( 'Y-m-d', $p ),
         'category'   => $cat_ja,
