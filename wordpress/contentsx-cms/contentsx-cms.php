@@ -2444,7 +2444,7 @@ function cxcms_register_column_cpt() {
             'not_found'          => 'コラムが見つかりません',
         ],
         'public'       => true,
-        'publicly_queryable' => false,
+        'publicly_queryable' => true,
         'show_ui'      => true,
         'show_in_rest' => true,
         'rest_base'    => 'cx-columns',
