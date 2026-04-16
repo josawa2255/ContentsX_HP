@@ -12,6 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /* WPの画像自動縮小を無効化（縦読み漫画が劣化するのを防止） */
 add_filter( 'big_image_size_threshold', '__return_false' );
 
+/* アップロード画像を自動WebP変換（サムネイル・medium・large等の生成サイズが対象） */
+add_filter( 'image_editor_output_format', function( $formats ) {
+    $formats['image/jpeg'] = 'image/webp';
+    $formats['image/png']  = 'image/webp';
+    return $formats;
+});
+
 /* ==========================================================
    1. カスタム投稿タイプ登録
    ========================================================== */
