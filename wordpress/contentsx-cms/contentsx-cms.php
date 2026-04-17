@@ -2562,6 +2562,33 @@ add_action( 'manage_cx_column_posts_custom_column', function( $col, $post_id ) {
     }
 }, 10, 2 );
 
+/* ── お客様の声 管理画面カスタム列 ── */
+add_filter( 'manage_cx_testimonial_posts_columns', function( $cols ) {
+    $new = [];
+    foreach ( $cols as $k => $v ) {
+        $new[$k] = $v;
+        if ( $k === 'title' ) {
+            $new['cx_tm_thumb'] = '写真';
+            $new['cx_tm_site']  = 'サイト';
+        }
+    }
+    return $new;
+});
+add_action( 'manage_cx_testimonial_posts_custom_column', function( $col, $post_id ) {
+    if ( $col === 'cx_tm_thumb' ) {
+        $thumb_id = get_post_thumbnail_id( $post_id );
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
+            if ( $img ) echo '<img src="' . esc_url($img[0]) . '" style="width:60px;height:60px;object-fit:cover;border-radius:50%">';
+        } else echo '<span style="color:#bbb">—</span>';
+    }
+    if ( $col === 'cx_tm_site' ) {
+        $s = get_post_meta( $post_id, 'cx_testimonial_show_site', true ) ?: 'both';
+        $labels = ['both' => '両方', 'bizmanga' => 'BM', 'contentsx' => 'CX'];
+        echo esc_html( $labels[$s] ?? '両方' );
+    }
+}, 10, 2 );
+
 /* ── REST フィールド公開 ── */
 add_action( 'rest_api_init', function() {
     $column_fields = ['cx_column_title_en','cx_column_excerpt_ja','cx_column_excerpt_en','cx_column_show_site'];
