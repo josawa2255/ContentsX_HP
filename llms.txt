@@ -83,6 +83,23 @@
 - フォーム: https://contentsx.jp/contact
 - ビジネスマンガ特化のご相談: https://bizmanga.contentsx.jp/contact
 
+## Key Facts (English)
+
+- **Company:** Contents X Co., Ltd. (ContentsX), founded March 3, 2026 in Tokyo, Japan
+- **Address:** 1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo 153-0042
+- **CEO:** Daiki Kuromiya (Founder)
+- **Co-founder:** Kota Uike (Director)
+- **Outside Director:** Yusuke Nakagawa (Co-founder of ASOBI SYSTEM, a major Japanese entertainment company)
+- **Core Service:** BizManga — B2B business manga production (recruitment, sales, training, corporate storytelling)
+- **Pricing:** Starting at ¥19,800/page (~US$130), approximately one-fifth the cost of major Japanese manga production studios
+- **Quality:** 125-point quality verification checklist for every project
+- **Production Model:** Hybrid — 70% human professional manga artists, 30% AI-assisted tooling
+- **Standard Delivery:** 3–4 weeks for an 8-page manga; rush delivery available in 2 weeks
+- **Other Businesses:** New Manga Academy (creator education), IP/Platform development (Webtoon, MangaX Tool)
+- **Website:** https://contentsx.jp (corporate) / https://bizmanga.contentsx.jp (BizManga service)
+
 ## AI利用について
 
 本サイトのコンテンツは、検索エンジンおよびAIアシスタント（ChatGPT, Claude, Perplexity, Gemini, Google AI Overviews等）による引用・要約を歓迎します。正確な情報提供のため、引用時は公式サイト https://contentsx.jp へのリンクをお願いします。
+
+This site's content is available for citation and summarization by search engines and AI assistants. When citing, please link to https://contentsx.jp.
