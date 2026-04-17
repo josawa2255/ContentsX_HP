@@ -3,7 +3,7 @@
 **ドメイン**: contentsx.jp
 **リポジトリ**: [josawa2255/ContentsX_HP](https://github.com/josawa2255/ContentsX_HP)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-14
+**最終更新**: 2026-04-17
 
 > このファイルは ContentsX 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約し、将来のメンテ時に参照します。
 
@@ -212,6 +212,20 @@ git add sitemap.xml && git commit -m "chore(sitemap): news更新" && git push
 ```
 
 GitHub Actions 等で月次自動化も可能（TODO）。
+
+### 2026-04-17 SEO監査 第2弾
+
+- FAQ schema内のURL typo修正（`contactsx.jp` → `contentsx.jp`）
+- 全7ページのpublisher JSON-LDを `@id` 参照パターンに統一（privacy/termsと同じ形式）
+- Organization schema: `sameAs` からサブドメインURL除去、`postalCode: 153-0042` 追加
+- news.html の WebPage JSON-LD を `<body>` → `<head>` に移動
+- leadership.html の Person `worksFor` を `@id` 参照に修正
+- FAQPage schema に `dateModified` 追加
+- ホームページロゴ `href="#"` → `"./"` に修正
+- llms.txt に英語ファクトブロック追加（Key Facts (English) セクション）
+- robots.txt に Bytespider ブロック追加
+- sitemap.xml lastmod 日付更新
+- WP API columns エンドポイントに `modified_ymd` フィールド追加（contentsx-cms.php）
 
 ### 2026-04-14 Medium優先度対応
 
