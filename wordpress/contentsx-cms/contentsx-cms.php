@@ -275,6 +275,25 @@ function cxcms_manga_meta_html( $post ) {
             <div class="cx-hint">ContentsXトップのHero表示順。重複すると既存作品が1つずつ後ろにずれます。空欄で末尾。</div>
         </div>
     </div>
+    <div class="cx-row">
+        <div class="cx-field">
+            <label>Hero行（BizManga）</label>
+            <select name="cx_hero_row_bm" style="width:100%;padding:6px 8px">
+                <option value="" <?php selected($m('cx_hero_row_bm'), ''); ?>>自動</option>
+                <option value="1" <?php selected($m('cx_hero_row_bm'), '1'); ?>>1行目</option>
+                <option value="2" <?php selected($m('cx_hero_row_bm'), '2'); ?>>2行目</option>
+                <option value="3" <?php selected($m('cx_hero_row_bm'), '3'); ?>>3行目</option>
+                <option value="4" <?php selected($m('cx_hero_row_bm'), '4'); ?>>4行目 (タブレット・SP)</option>
+                <option value="5" <?php selected($m('cx_hero_row_bm'), '5'); ?>>5行目 (SPのみ)</option>
+            </select>
+            <div class="cx-hint">PC: 1〜3行目のみ表示。4行目はタブレット以下、5行目はスマホのみ。</div>
+        </div>
+        <div class="cx-field">
+            <label>Hero列（BizManga）</label>
+            <input type="number" name="cx_hero_col_bm" value="<?php echo esc_attr($m('cx_hero_col_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
+            <div class="cx-hint">その行の何番目に配置するか。空欄でその行の末尾。</div>
+        </div>
+    </div>
     <div class="cx-field">
         <label>BizManga ギャラリーに表示</label>
         <select name="cx_show_gallery_bizmanga">
@@ -855,7 +874,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -972,7 +991,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -1209,6 +1228,8 @@ function cxcms_format_work( $p ) {
         'show_hero_site' => $m('cx_show_hero_site') ?: ( $m('cx_show_hero') !== '0' ? 'both' : 'none' ),
         'hero_order_bm' => (int) ( $m('cx_hero_order_bm') ?: 9999 ),
         'hero_order_cx' => (int) ( $m('cx_hero_order_cx') ?: 9999 ),
+        'hero_row_bm'  => (int) ( $m('cx_hero_row_bm') ?: 0 ),
+        'hero_col_bm'  => (int) ( $m('cx_hero_col_bm') ?: 0 ),
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
         'thumbnail' => $thumb_url,
