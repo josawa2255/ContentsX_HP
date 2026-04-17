@@ -26,4 +26,7 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
+User-agent: Bytespider
+Disallow: /
+
 Sitemap: https://contentsx.jp/sitemap.xml
