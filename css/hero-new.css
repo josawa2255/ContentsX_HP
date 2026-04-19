@@ -271,6 +271,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* ロゴ＋tagline の固まりをやや下寄りに */
+  padding-top: 8vh;
   pointer-events: none;
 }
 .hero-center * {
