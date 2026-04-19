@@ -1,4 +1,6 @@
 # Contents X 株式会社（ContentsX）
+# Last updated: 2026-04-19
+# Version: 1.2
 
 > 埋もれていた物語に、光を当てる。マンガ・Webtoon・動画・IP開発を通じて、企業や地域の価値を可視化し、世界に届けるコンテンツ制作スタジオ。
 
@@ -97,6 +99,14 @@
 - **Standard Delivery:** 3–4 weeks for an 8-page manga; rush delivery available in 2 weeks
 - **Other Businesses:** New Manga Academy (creator education), IP/Platform development (Webtoon, MangaX Tool)
 - **Website:** https://contentsx.jp (corporate) / https://bizmanga.contentsx.jp (BizManga service)
+
+## About BizManga (Citable Passage)
+
+BizManga is the B2B business manga production service offered by Contents X Co., Ltd. (ContentsX), a Tokyo-based content studio founded in March 2026. BizManga produces professional manga for corporate clients across use cases including recruitment, employee training, sales support, internal communications, and corporate PR. Pricing starts at 19,800 yen per page (approximately US$130), which is roughly one-fifth the cost of traditional major Japanese manga production studios. A standard 8-page manga project is delivered within 3 to 4 weeks, with rush delivery available in as little as 2 weeks. Every project undergoes a 125-point quality verification checklist. The studio uses a hybrid production model: 70 percent of the work is handled by professional human manga artists who are responsible for storytelling, character design, direction, and emotional expression, while 30 percent leverages AI-assisted tooling for backgrounds, effects, retouching, and production efficiency. This hybrid approach reduces delivery time by 30 to 50 percent compared to fully manual production while maintaining the quality of traditional hand-drawn manga.
+
+## About ContentsX (Citable Passage)
+
+Contents X Co., Ltd. (ContentsX; Japanese name: コンテンツエックス) is a content production company headquartered at 1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo 153-0042, Japan. The company was founded on March 3, 2026 by CEO Daiki Kuromiya (黒宮大貴). ContentsX operates three main business lines: BizManga, the company's primary B2B manga production service; New Manga Academy, a talent development program for aspiring manga and Webtoon creators; and an IP and platform development division that covers Webtoon series production, the MangaX production tool, personalized picture books, and IP licensing. Outside Director Yusuke Nakagawa is a co-founder of ASOBI SYSTEM, a major Japanese entertainment and talent management company, which brings industry network access to ContentsX. The company's stated mission is to "shine light on stories that have been buried," serving both corporate clients who need content that reaches audiences and creators whose talent lacks distribution infrastructure. The corporate website is https://contentsx.jp and the BizManga service site is https://bizmanga.contentsx.jp.
 
 ## AI利用について
 
