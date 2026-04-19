@@ -142,7 +142,8 @@ const WORKS_DETAIL_DATA = [
     media: ["LP", "SNS投稿"],
     spec: { pages: "26P", period: "3週間" },
     point: "スクールの魅力と卒業生の成功体験をストーリーで伝達。入学への不安を解消し、申込みへの心理的ハードルを下げる構成。",
-    comment: "漫画を導入してから、LPからの問い合わせ率が大幅に改善しました。"
+    comment: "漫画を導入してから、LPからの問い合わせ率が大幅に改善しました。",
+    show_hero_site: "none"
   },
   {
     id: "bms-unso",
@@ -178,7 +179,8 @@ const WORKS_DETAIL_DATA = [
     media: ["メールマガジン", "Web掲載"],
     spec: { pages: "10P", period: "10日間" },
     point: "メルマガの開封率・クリック率を漫画コンテンツで劇的に改善。読者の「続きが読みたい」心理を活用した連載型。",
-    comment: "開封率が平均の2倍以上になり、CVRも大幅に改善しました。"
+    comment: "開封率が平均の2倍以上になり、CVRも大幅に改善しました。",
+    show_hero_site: "none"
   },
   {
     id: "shohin-shokai",
@@ -214,7 +216,8 @@ const WORKS_DETAIL_DATA = [
     media: ["キャラクターデザイン", "SNS"],
     spec: { pages: "4P", period: "1週間" },
     point: "著名人をモチーフにしたオリジナルキャラクターデザイン。IP展開を見据えた設計で、グッズ化・メディアミックスに対応。",
-    comment: "キャラクターの完成度が高く、ファンからの反響も大きかったです。"
+    comment: "キャラクターの完成度が高く、ファンからの反響も大きかったです。",
+    show_hero_site: "none"
   },
   {
     id: "torutoru-kun",

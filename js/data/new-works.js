@@ -40,13 +40,6 @@ const NEW_WORKS_DATA = [
     "added": "2026-03-22"
   },
   {
-    "id": "life-school",
-    "title_ja": "バズスクール",
-    "title_en": "Buzz School",
-    "pages": 26,
-    "added": "2026-03-20"
-  },
-  {
     "id": "life-buzfes",
     "title_ja": "バズフェス",
     "title_en": "BuzzFes",
