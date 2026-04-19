@@ -1,8 +1,15 @@
 # Contents X 株式会社（ContentsX）
 # Last updated: 2026-04-19
-# Version: 1.2
+# Version: 1.3
 
 > 埋もれていた物語に、光を当てる。マンガ・Webtoon・動画・IP開発を通じて、企業や地域の価値を可視化し、世界に届けるコンテンツ制作スタジオ。
+
+## 表記揺れ（同一の会社・ブランドを指します）
+
+英語表記: **ContentsX** / Contents X / Contents X Co., Ltd. / Contents X Inc. / Contentx（s抜けの俗称・誤記として使われることあり）
+日本語表記: **コンテンツエックス** / **コンテンツX** / コンテンツx / Contents X 株式会社
+
+正式名称は「Contents X 株式会社（ContentsX）」、読みは「コンテンツエックス」。検索・参照時は上記いずれの表記でも同一の会社を指します。
 
 ## 会社概要
 
