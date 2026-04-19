@@ -160,10 +160,17 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transform: scale(1.0);
+  transition: opacity 0.9s ease;
 }
+/* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出 */
 .hero-bizchar-img.active {
   opacity: 1;
+  animation: heroBizcharKenBurns 5s ease-out forwards;
+}
+@keyframes heroBizcharKenBurns {
+  0%   { transform: scale(1.0) translateY(0); filter: brightness(0.95); }
+  100% { transform: scale(1.08) translateY(-1%); filter: brightness(1.05); }
 }
 
 /* === 作品カルーセル背景（集英社スタイル3行マーキー） === */
@@ -269,7 +276,49 @@
 .hero-center * {
   pointer-events: auto;
 }
-/* ===== テキストロゴ (animista: text-pop-up-top) ===== */
+/* ===== 画像ロゴ (ContentsX_hero.webp 前提 / 派手に登場) ===== */
+.hero-logo-wrap {
+  margin: 0 0 32px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 0;
+  opacity: 0;
+  transform: translateY(28px) scale(0.78);
+  filter: drop-shadow(0 0 0 rgba(255,255,255,0));
+  transition: opacity 0.7s cubic-bezier(0.19,1,0.22,1),
+              transform 0.9s cubic-bezier(0.19,1,0.22,1),
+              filter 1.2s ease;
+}
+.hero-logo-img {
+  width: min(62vw, 560px);
+  height: auto;
+  /* ContentsX_hero.webp は元から白ロゴ（透過） */
+  filter: drop-shadow(0 6px 30px rgba(0,0,0,0.55));
+}
+.hero--phase2 .hero-logo-wrap,
+.hero-logo-wrap--play {
+  opacity: 1;
+  transform: translateY(-18px) scale(1.0);
+  animation: heroLogoBounce 1.2s cubic-bezier(0.25, 1.4, 0.5, 1) 0.05s forwards,
+             heroLogoGlow 3s ease-in-out 0.9s infinite alternate;
+}
+@keyframes heroLogoBounce {
+  0%   { transform: translateY(28px) scale(0.78); opacity: 0; }
+  55%  { transform: translateY(-28px) scale(1.08); opacity: 1; }
+  80%  { transform: translateY(-12px) scale(0.98); opacity: 1; }
+  100% { transform: translateY(-18px) scale(1.0); opacity: 1; }
+}
+@keyframes heroLogoGlow {
+  from { filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+  to   { filter: drop-shadow(0 0 22px rgba(var(--accent-rgb, 233,30,140), 0.55)); }
+}
+@media (max-width: 768px) {
+  .hero-logo-wrap { margin-bottom: 20px; }
+  .hero-logo-img { width: min(78vw, 420px); }
+}
+/* ===== テキストロゴ (レガシー / dead code - .hero-logo-wrap 導入後未使用) ===== */
 .hero-logo-text {
   margin: 0;
   font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;

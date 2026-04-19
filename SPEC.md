@@ -38,19 +38,22 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ## 3. Hero セクション（トップページ）
 
-### 3.1 フェーズ構成
+### 3.1 フェーズ構成（⭐ 変更禁止・OP保護対象）
 | フェーズ | 時間 | 内容 |
 |---|---|---|
 | イントロオーバーレイ | 0〜3.6s | 「埋もれていた物語に、光を当てる。」を1文字ずつ波打ちで表示（SKIP可） |
-| Phase 1 | 3.6〜9.1s | ビズちゃんキャラクター（屋上/スタジオ/海）が1.2秒ごとにクロスフェード + テキストロゴ "Contents X" がポップアップ |
+| Phase 1 | 3.6〜9.1s | OP前絵3枚（`cx_hero_01`/`cx_hero_02`/`cx2_hero`）が1.2秒ごとにクロスフェード + Ken Burns zoom 5s + 白ロゴ `ContentsX_hero.webp` がbounce登場＋マゼンタglow |
 | Phase 2 | 9.1s〜 | カルーセル背景（5行マーキー）+ タグラインが波・点滅で登場 |
+
+**⚠️ 変更時は必ず** [tools/test_hero_op.py](tools/test_hero_op.py) **で回帰テストを通すこと**（OP保護のため）。
 
 ### 3.2 主要要素
 | 要素 | 詳細 |
 |---|---|
 | 背景画像 | `hp-material-1.webp` 固定 (`background-attachment: fixed`)、BizMangaと共通 |
 | Intro overlay | SKIPボタン付き。クリックで `finishIntro()` → `hero-intro-done` イベント発火 |
-| テキストロゴ | `.hero-logo-text` 内に C/o/n/t/e/n/t/s/空白/X の span。**X だけマゼンタ**。animista `text-pop-up-top` エフェクト（3Dっぽい多段text-shadow + 下から突き上げ） |
+| OP前絵 3枚 | `material/images/hero/cx_hero_01.webp` / `cx_hero_02.webp` / `cx2_hero.webp` の `.hero-bizchar-img`。`.active` 付与中に `heroBizcharKenBurns` 5s ease-out で scale 1.0→1.08 |
+| 白ロゴ画像 | `.hero-logo-wrap > img.hero-logo-img` (`ContentsX_hero.webp`, 520×104)。`.hero-logo-wrap--play` 付与で `heroLogoBounce` 1.2s + `heroLogoGlow` 3s infinite alternate |
 | タグライン | 「埋もれていた物語に光を当てる」— `visibility: hidden` でスタート、`hero-phase2-start` イベントで発動 |
 | タグライン点滅 | 8秒周期で 白 ⇔ マゼンタ |
 | タグライン波 | 6秒周期で文字ごとに0.15sずつ時差の `cxCharRipple`（scale+translateY+グロウ） |
@@ -61,6 +64,29 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 window.dispatchEvent(new CustomEvent('hero-intro-done'));    // introフェードアウト時
 window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル切替時
 ```
+
+### 3.4 OP保護ルール（⭐必須）
+
+**触ってはいけないもの**（変更するとOP演出が崩れる）:
+- HTML id: `#heroIntroOverlay` / `#heroIntroLine1` / `#heroIntroLine2` / `#heroIntroSkip`
+- CSS class: `.hero-intro-overlay` / `.hero-intro-line` / `.hii-char` / `@keyframes heroIntroCharWave` / `@keyframes heroIntroCharFloat`
+- JS 関数: `splitIntroLine()` / `startIntro()` / `finishIntro()` / `startHeroAnimation()` のタイミング（0.3s/0.9s/2.8s/3.6s/5.5s）
+
+**触ってよいもの**（hero 中央ロゴや装飾の差し替え）:
+- `.hero-logo-wrap` / `.hero-logo-img` / `#heroLogoWrap`（ロゴ画像そのもの）
+- `.hero-tagline`（タグライン）
+- `.hero-scroll-hint`（SCROLLインジケータ）
+- `.hero-bizchar-img` の src（前絵画像差し替え）
+
+**変更後の検証**:
+```bash
+cd ContentX && source ../.venv/bin/activate && \
+  PYTHONUNBUFFERED=1 python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
+    --server "python3 -m http.server 8765" --port 8765 \
+    -- python3 tools/test_hero_op.py
+```
+
+OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを画像化した際、OPのクライマックス感が減退してユーザーからrevert指示。以降、回帰テストで固定保護。
 
 ## 4. 共通 JS コンポーネント
 
