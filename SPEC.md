@@ -18,7 +18,6 @@
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | 私たちの思い | `our-thoughts.html` | cta.js, dl-modal.js | |
 | 主要関連会社 | `partners.html` | script.js, dl-modal.js | 提携3社（ASOBISYSTEM / DM Solutions / KIRINZ） |
-| 強み | `why-contentsx.html` | cta.js, dl-modal.js + インラインJS | ⚠️ メニューから非表示中（BizManga特化のため） |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
@@ -225,7 +224,7 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
   - [tools/generate-sitemap.py](tools/generate-sitemap.py) を新設（WP APIから news 一覧取得して sitemap.xml を再生成）
   - sitemap.xml を `?id=N` 形式で個別記事URLを列挙する構成に変更
   - news-detail.html に canonical / OG / twitter / description / JSON-LD `NewsArticle` の動的更新スクリプトを追加
-  - `why-contentsx` は孤立ページのためsitemapから一旦削除（他事業展開後に復帰予定）
+  - `why-contentsx.html` および `css/why-contentsx.css` を削除（2026-04-19）。元々メニューから非表示・孤立ページだったため完全撤去
 
 ### sitemap再生成ルール
 

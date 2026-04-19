@@ -46,7 +46,6 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 | 役員紹介 | leadership.html | script.js, dl-modal.js |
 | 私たちの思い | our-thoughts.html | dl-modal.js |
 | 主要関連会社 | partners.html | script.js, dl-modal.js |
-| 強み | why-contentsx.html | dl-modal.js + インラインJS |
 | 採用情報 | recruit.html | recruit.js, dl-modal.js |
 | お問い合わせ | contact.html | contact.js |
 | ニュース一覧 | news.html | wp-config.js, wp-api.js, script.js |
