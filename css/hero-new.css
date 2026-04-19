@@ -269,6 +269,34 @@
 .hero-center * {
   pointer-events: auto;
 }
+/* ===== 画像ロゴ（白化filter・2026-04-19 新） ===== */
+.hero-logo-wrap {
+  margin: 0 0 32px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 0;
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  transition: opacity 1.0s cubic-bezier(0.19,1,0.22,1) 0.1s,
+              transform 1.1s cubic-bezier(0.19,1,0.22,1) 0.1s;
+}
+.hero-logo-img {
+  width: min(62vw, 560px);
+  height: auto;
+  /* 元ロゴはダーク → 白化して hero 暗背景上で浮かせる */
+  filter: brightness(0) invert(1) drop-shadow(0 4px 24px rgba(0,0,0,0.45));
+}
+.hero--phase2 .hero-logo-wrap,
+.hero-logo-wrap--play {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+@media (max-width: 768px) {
+  .hero-logo-wrap { margin-bottom: 20px; }
+  .hero-logo-img { width: min(78vw, 420px); }
+}
 /* ===== テキストロゴ (animista: text-pop-up-top) ===== */
 .hero-logo-text {
   margin: 0;
