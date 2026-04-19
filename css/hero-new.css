@@ -285,8 +285,8 @@
 .hero-logo-img {
   width: min(62vw, 560px);
   height: auto;
-  /* 元ロゴはダーク → 白化して hero 暗背景上で浮かせる */
-  filter: brightness(0) invert(1) drop-shadow(0 4px 24px rgba(0,0,0,0.45));
+  /* ContentsX_hero.webp は元から白ロゴ（透過） */
+  filter: drop-shadow(0 4px 24px rgba(0,0,0,0.45));
 }
 .hero--phase2 .hero-logo-wrap,
 .hero-logo-wrap--play {
