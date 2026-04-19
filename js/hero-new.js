@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
   splitIntroLine(introLine1);
   splitIntroLine(introLine2);
 
-  // 画像ロゴの再生は .hero-logo-wrap--play で制御（2026-04-19 画像ロゴ化）
-  const heroLogoWrap = document.getElementById('heroLogoWrap');
+  // テキストロゴの再生はCSS animation-play-state: paused + .hero-logo-text--play で制御
+  const heroLogoText = document.getElementById('heroLogoText');
 
   var introTimers = [];
   var introFinished = false;
@@ -80,9 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function startHeroAnimation() {
-    // 画像ロゴのフェード＋微スケール発動
-    if (heroLogoWrap) {
-      heroLogoWrap.classList.add('hero-logo-wrap--play');
+    // テキストロゴの pop-up エフェクト発動
+    if (heroLogoText) {
+      heroLogoText.classList.add('hero-logo-text--play');
     }
 
     // Phase 2: 5.5秒後にカルーセルへトランジション
