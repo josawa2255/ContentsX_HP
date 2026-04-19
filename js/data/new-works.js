@@ -40,13 +40,6 @@ const NEW_WORKS_DATA = [
     "added": "2026-03-22"
   },
   {
-    "id": "merumaga",
-    "title_ja": "メルマガ漫画",
-    "title_en": "Newsletter Manga",
-    "pages": 10,
-    "added": "2026-03-20"
-  },
-  {
     "id": "life-school",
     "title_ja": "バズスクール",
     "title_en": "Buzz School",
