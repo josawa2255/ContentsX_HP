@@ -2781,3 +2781,43 @@ section { padding: 100px 0; }
   .partners-recruit-btn { padding: 14px 32px; font-size: 14px; }
   .recruit-type { padding: 12px 0; }
 }
+
+/* ============================================
+   日本語テキストの禁則処理 (2026-04-20 追加)
+   末尾1文字だけ改行落ちする"孤立文字"を防ぐ。
+   text-wrap: pretty (Chrome 117+/Safari 17.4+/Firefox 121+) で
+   行末の孤立文字を自動で回避。未対応ブラウザは通常wrap。
+   ============================================ */
+:lang(ja) h1,
+:lang(ja) h2,
+:lang(ja) h3,
+:lang(ja) h4,
+html[lang="ja"] h1,
+html[lang="ja"] h2,
+html[lang="ja"] h3,
+html[lang="ja"] h4,
+h1, h2, h3, h4,
+.hero-title,
+.mv-title,
+.section-title,
+.news-heading,
+.new-works-heading,
+.new-works-card-title,
+.partners-title,
+.partners-recruit-title,
+.partners-recruit-lead,
+.showcase-title,
+.cta-title,
+.flow-title,
+.theme-panel-title {
+  line-break: strict;
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+
+/* 段落の読みやすさ向上 */
+:lang(ja) p,
+html[lang="ja"] p {
+  text-wrap: pretty;
+  line-break: strict;
+}
