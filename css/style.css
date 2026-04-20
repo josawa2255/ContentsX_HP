@@ -2788,6 +2788,7 @@ section { padding: 100px 0; }
    text-wrap: pretty (Chrome 117+/Safari 17.4+/Firefox 121+) で
    行末の孤立文字を自動で回避。未対応ブラウザは通常wrap。
    ============================================ */
+/* 見出し: balance で行長均等化、孤立文字を極力回避 */
 :lang(ja) h1,
 :lang(ja) h2,
 :lang(ja) h3,
@@ -2811,8 +2812,9 @@ h1, h2, h3, h4,
 .flow-title,
 .theme-panel-title {
   line-break: strict;
-  text-wrap: pretty;
+  text-wrap: balance;
   word-break: auto-phrase;
+  overflow-wrap: break-word;
 }
 
 /* 段落の読みやすさ向上 */
@@ -2820,4 +2822,6 @@ h1, h2, h3, h4,
 html[lang="ja"] p {
   text-wrap: pretty;
   line-break: strict;
+  word-break: auto-phrase;
+  overflow-wrap: break-word;
 }
