@@ -3,7 +3,7 @@
 **ドメイン**: contentsx.jp
 **リポジトリ**: [josawa2255/ContentsX_HP](https://github.com/josawa2255/ContentsX_HP)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-17
+**最終更新**: 2026-04-20
 
 > このファイルは ContentsX 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約し、将来のメンテ時に参照します。
 
@@ -237,6 +237,23 @@ git add sitemap.xml && git commit -m "chore(sitemap): news更新" && git push
 ```
 
 GitHub Actions 等で月次自動化も可能（TODO）。
+
+### 2026-04-20 SEO採点反映改善（監査スコア 81/100）
+
+**[bizmanga サブディレクトリ強化]**（6ページ）
+- `contentsx.jp/bizmanga/{index,works,biz-library,pricing,faq,contact}.html` に以下を一括注入:
+  - `<link rel="alternate" hreflang="ja">` + `hreflang="x-default"`（メインサイトと一致）
+  - `BreadcrumbList` JSON-LD（ホーム → ビズマンガ → 該当ページ）
+  - index.html のみ `Organization` + `Service` + `AggregateOffer`（lowPrice 11,300 JPY）JSON-LD も追加
+- 注入スクリプト: `.seo-audit/tmp-bizmanga-subdir-patch.py`（一時ツール。再実行は冪等）
+
+**[OG画像の個別化]**
+- `ContentX/material/images/og/` に `og-faq.webp` / `og-terms.webp` / `og-privacy.webp` を新規生成（1200×630 WebP、黒背景 + 赤アクセント `#E53935`）
+- `faq.html` / `terms.html` / `privacy.html` の `og:image` / `twitter:image` 参照を個別画像に差替
+- 生成スクリプト: `.seo-audit/tmp-og-gen.py`（Pillow + Hiragino Sans GB）
+
+**[ニュースfallback現行化]**
+- `index.html` の news-list fallback 3件を古い日付（2026.02-03月）から WP API 最新3件（2026.03.15-03.27）に置換。リンクを `news-detail?id={id}` に接続
 
 ### 2026-04-17 SEO監査 第2弾
 
