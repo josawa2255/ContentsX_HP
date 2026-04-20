@@ -238,6 +238,11 @@ git add sitemap.xml && git commit -m "chore(sitemap): news更新" && git push
 
 GitHub Actions 等で月次自動化も可能（TODO）。
 
+### 2026-04-20 SEO採点反映改善 第2弾（81→86→90+目標）
+
+- **画像 width/height 属性を一括追加**（CLS対策）: ヘッダーロゴなど主要画像にwidth/height明示
+- alt属性欠落: 0件を確認（空alt はすべて `role="presentation"` / JS動的代入 / WP本文で問題なし）
+
 ### 2026-04-20 SEO採点反映改善（監査スコア 81/100）
 
 **[bizmanga サブディレクトリ強化]**（6ページ）
