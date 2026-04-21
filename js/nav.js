@@ -13,7 +13,7 @@
         { label: 'サービス',         labelEn: 'Services',      href: '#about' }
       ]
     },
-    { label: '企業',   labelEn: 'Corporate',      href: 'company',  indexHref: 'company',
+    { label: '企業案内', labelEn: 'Corporate',      href: 'company',  indexHref: 'company',
       children: [
         { label: '私たちの思い',    labelEn: 'Our Thoughts',   href: 'our-thoughts' },
         { label: '会社概要',       labelEn: 'Company',        href: 'company' },
