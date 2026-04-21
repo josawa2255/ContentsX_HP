@@ -1,6 +1,6 @@
 # Contents X 株式会社（ContentsX）
-# Last updated: 2026-04-19
-# Version: 1.4
+# Last updated: 2026-04-21
+# Version: 1.5
 
 > 埋もれていた物語に、光を当てる。マンガ・Webtoon・動画・IP開発を通じて、企業や地域の価値を可視化し、世界に届けるコンテンツ制作スタジオ。
 
@@ -95,7 +95,7 @@
 ## Key Facts (English)
 
 - **Company:** Contents X Co., Ltd. (ContentsX), founded March 3, 2026 in Tokyo, Japan
-- **Address:** 1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo 153-0042
+- **Address:** 1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo 153-0061
 - **CEO:** Daiki Kuromiya (Founder)
 - **Co-founder:** Kota Uike (Director)
 - **Outside Director:** Yusuke Nakagawa (Co-founder of ASOBI SYSTEM, a major Japanese entertainment company)
@@ -113,7 +113,7 @@ BizManga is the B2B business manga production service offered by Contents X Co.,
 
 ## About ContentsX (Citable Passage)
 
-Contents X Co., Ltd. (ContentsX; Japanese name: コンテンツエックス) is a content production company headquartered at 1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo 153-0042, Japan. The company was founded on March 3, 2026 by CEO Daiki Kuromiya (黒宮大貴). ContentsX operates three main business lines: BizManga, the company's primary B2B manga production service; New Manga Academy, a talent development program for aspiring manga and Webtoon creators; and an IP and platform development division that covers Webtoon series production, the MangaX production tool, personalized picture books, and IP licensing. Outside Director Yusuke Nakagawa is a co-founder of ASOBI SYSTEM, a major Japanese entertainment and talent management company, which brings industry network access to ContentsX. The company's stated mission is to "shine light on stories that have been buried," serving both corporate clients who need content that reaches audiences and creators whose talent lacks distribution infrastructure. The corporate website is https://contentsx.jp and the BizManga service site is https://bizmanga.contentsx.jp.
+Contents X Co., Ltd. (ContentsX; Japanese name: コンテンツエックス) is a content production company headquartered at 1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo 153-0061, Japan. The company was founded on March 3, 2026 by CEO Daiki Kuromiya (黒宮大貴). ContentsX operates three main business lines: BizManga, the company's primary B2B manga production service; New Manga Academy, a talent development program for aspiring manga and Webtoon creators; and an IP and platform development division that covers Webtoon series production, the MangaX production tool, personalized picture books, and IP licensing. Outside Director Yusuke Nakagawa is a co-founder of ASOBI SYSTEM, a major Japanese entertainment and talent management company, which brings industry network access to ContentsX. The company's stated mission is to "shine light on stories that have been buried," serving both corporate clients who need content that reaches audiences and creators whose talent lacks distribution infrastructure. The corporate website is https://contentsx.jp and the BizManga service site is https://bizmanga.contentsx.jp.
 
 ## 経営陣プロフィール（Citable Passage・日本語）
 
@@ -136,7 +136,7 @@ ContentsX は3つの柱で事業を展開する：
 
 ## 所在地情報（Local SEO）
 
-- 本社所在地: 〒153-0042 東京都目黒区中目黒1-8-8 目黒F2ビル1F
+- 本社所在地: 〒153-0061 東京都目黒区中目黒1-8-8 目黒F2ビル1F
 - 最寄駅: 東急東横線・東京メトロ日比谷線「中目黒駅」徒歩圏
 - エリア: 中目黒、目黒区、東京都
 - 業態: コンテンツ制作会社 / マンガ制作会社 / Webtoon制作スタジオ / IP開発会社
