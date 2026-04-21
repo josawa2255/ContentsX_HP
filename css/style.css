@@ -809,9 +809,8 @@ section { padding: 100px 0; }
   align-items: center;
   gap: 56px;
   width: max-content;
-  animation: clientLogosMarquee 40s linear infinite;
+  animation: clientLogosMarquee 20s linear infinite;
 }
-.client-logos-track:hover { animation-play-state: paused; }
 .client-logo-item {
   flex-shrink: 0;
   display: inline-flex;
@@ -821,18 +820,14 @@ section { padding: 100px 0; }
   padding: 0 12px;
   color: #333;
   text-decoration: none;
-  opacity: 0.55;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: transform .2s ease;
 }
-.client-logo-item:hover { opacity: 1; transform: translateY(-1px); }
+.client-logo-item:hover { transform: translateY(-1px); }
 .client-logo-item img {
   max-height: 44px;
   width: auto;
   object-fit: contain;
-  filter: grayscale(100%);
-  transition: filter .2s ease;
 }
-.client-logo-item:hover img { filter: grayscale(0); }
 .client-logo-text {
   font-size: 17px;
   font-weight: 700;
@@ -848,7 +843,7 @@ section { padding: 100px 0; }
 }
 @media (max-width: 768px) {
   .client-logos { padding: 40px 0 32px; }
-  .client-logos-track { gap: 36px; animation-duration: 28s; }
+  .client-logos-track { gap: 36px; animation-duration: 14s; }
   .client-logo-item { height: 40px; }
   .client-logo-text { font-size: 15px; }
   .client-logo-item img { max-height: 36px; }
