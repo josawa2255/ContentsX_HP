@@ -816,16 +816,19 @@ section { padding: 100px 0; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
-  padding: 0 12px;
+  width: 180px;
+  height: 64px;
+  padding: 0 8px;
   color: #333;
   text-decoration: none;
   transition: transform .2s ease;
 }
 .client-logo-item:hover { transform: translateY(-1px); }
 .client-logo-item img {
-  max-height: 44px;
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
+  height: auto;
   object-fit: contain;
 }
 .client-logo-text {
@@ -844,9 +847,8 @@ section { padding: 100px 0; }
 @media (max-width: 768px) {
   .client-logos { padding: 40px 0 32px; }
   .client-logos-track { gap: 36px; animation-duration: 14s; }
-  .client-logo-item { height: 40px; }
+  .client-logo-item { width: 140px; height: 52px; }
   .client-logo-text { font-size: 15px; }
-  .client-logo-item img { max-height: 36px; }
 }
 
 /* ============================================
