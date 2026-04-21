@@ -19,8 +19,8 @@
     const track = document.getElementById('clientLogosTrack');
     if (!track || typeof CLIENT_LOGOS === 'undefined' || !CLIENT_LOGOS.length) return;
     const items = CLIENT_LOGOS.map(renderItem).join('');
-    // 2セット並べることで translateX(-50%) のシームレスループが成立する
-    track.innerHTML = items + items;
+    // 社数が少なくても幅を確保するため6セット複製し、translateX(-16.6667%) でループ
+    track.innerHTML = items.repeat(6);
   }
 
   if (document.readyState === 'loading') {

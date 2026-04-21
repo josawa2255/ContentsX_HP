@@ -841,7 +841,7 @@ section { padding: 100px 0; }
 }
 @keyframes clientLogosMarquee {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-16.6667%); }
 }
 @media (prefers-reduced-motion: reduce) {
   .client-logos-track { animation: none; }
