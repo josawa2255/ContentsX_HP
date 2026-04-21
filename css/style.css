@@ -782,6 +782,79 @@ section { padding: 100px 0; }
 }
 .text-center { text-align: center; }
 /* ============================================
+   Client Logos (無限カルーセル)
+   ============================================ */
+.client-logos {
+  background: var(--bg-white);
+  padding: 56px 0 48px;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.client-logos-label {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: #999;
+  text-transform: uppercase;
+  margin: 0 0 28px;
+  font-weight: 600;
+}
+.client-logos-track-wrapper {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+.client-logos-track {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  width: max-content;
+  animation: clientLogosMarquee 40s linear infinite;
+}
+.client-logos-track:hover { animation-play-state: paused; }
+.client-logo-item {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 12px;
+  color: #333;
+  text-decoration: none;
+  opacity: 0.55;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.client-logo-item:hover { opacity: 1; transform: translateY(-1px); }
+.client-logo-item img {
+  max-height: 44px;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  transition: filter .2s ease;
+}
+.client-logo-item:hover img { filter: grayscale(0); }
+.client-logo-text {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+@keyframes clientLogosMarquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .client-logos-track { animation: none; }
+}
+@media (max-width: 768px) {
+  .client-logos { padding: 40px 0 32px; }
+  .client-logos-track { gap: 36px; animation-duration: 28s; }
+  .client-logo-item { height: 40px; }
+  .client-logo-text { font-size: 15px; }
+  .client-logo-item img { max-height: 36px; }
+}
+
+/* ============================================
    News
    ============================================ */
 .news-section {
