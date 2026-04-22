@@ -57,7 +57,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | タグライン点滅 | 8秒周期で 白 ⇔ マゼンタ |
 | タグライン波 | 6秒周期で文字ごとに0.15sずつ時差の `cxCharRipple`（scale+translateY+グロウ） |
 | カルーセル | 5行マーキー、`WORKS_DETAIL_DATA` から `show_hero_site` が `both` or `contentsx` のものを表示 |
-| スカート風揺れ | `js/hero-wind.js` — `logo` フェーズ（屋上画像）のみ有効。Three.js + GLSL シェーダ + 8段 Verlet スプリングチェーンで物理シミュ。腰固定・裾ほど大振幅、慣性遅延あり。モバイル(<=768px) と prefers-reduced-motion はスキップ。Phase2 突入時に 800ms 遅延で停止 |
+| スカート風揺れ | `js/hero-wind.js`（Verlet物理実装済み、**2026-04-22 現在停止中**：index.html で script 読込をコメントアウト）。再有効化時はコメント解除するだけで復活 |
 
 ### 3.3 重要イベント
 ```javascript
