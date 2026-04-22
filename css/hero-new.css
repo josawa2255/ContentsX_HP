@@ -159,18 +159,22 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* 画像の上側を基準に表示（中央 cover だと顔・空が見切れる） */
+  object-position: center top;
   opacity: 0;
   transform: scale(1.0);
   transition: opacity 0.9s ease;
 }
-/* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出 */
+/* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出
+   transform-origin を上端中央にして、ズーム中も上側が見切れないようにする */
 .hero-bizchar-img.active {
   opacity: 1;
+  transform-origin: 50% 0%;
   animation: heroBizcharKenBurns 5s ease-out forwards;
 }
 @keyframes heroBizcharKenBurns {
-  0%   { transform: scale(1.0) translateY(0); filter: brightness(0.95); }
-  100% { transform: scale(1.08) translateY(-1%); filter: brightness(1.05); }
+  0%   { transform: scale(1.0); filter: brightness(0.95); }
+  100% { transform: scale(1.06); filter: brightness(1.05); }
 }
 
 /* === 作品カルーセル背景（集英社スタイル3行マーキー） === */
