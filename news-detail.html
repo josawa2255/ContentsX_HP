@@ -401,6 +401,8 @@
           const heroImg = document.getElementById('newsHeroImg');
           heroImg.src = data.thumbnail;
           heroImg.alt = title;
+          if (data.image_fit)      heroImg.style.objectFit      = data.image_fit;
+          if (data.image_position) heroImg.style.objectPosition = data.image_position;
           heroEl.style.display = 'block';
         }
 

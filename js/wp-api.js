@@ -123,6 +123,7 @@
       img.alt = item.title_ja || '';
       img.loading = 'lazy';
       img.width = 200; img.height = 120;
+      if (item.image_fit)      img.style.objectFit      = item.image_fit;
       if (item.image_position) img.style.objectPosition = item.image_position;
       img.onerror = function() { this.src = FALLBACK_THUMB; };
       thumbWrap.appendChild(img);

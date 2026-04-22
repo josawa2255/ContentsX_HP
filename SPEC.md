@@ -144,7 +144,9 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 ### ニュース（cx_news）の編集可能フィールド
 - `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
 - `cx_news_show_site` — 表示先サイト（both/bizmanga/contentsx）
-- `cx_news_image_position` — サムネ画像の `object-position`（center/top/bottom/left/right/4隅）。`.news-thumb img` は `object-fit: cover` で枠を埋めるため、顔切れを防ぐには `top` を選ぶ
+- `cx_news_image_fit` — サムネ画像の `object-fit`（cover=埋める / contain=全体表示 / fill=引き伸ばす）
+- `cx_news_image_position` — サムネ画像の `object-position`（`"50% 30%"` 等のパーセント表記、0-100%で微調整可）
+- WP管理画面ではライブプレビュー・スライダー・9プリセットで視覚的に編集可能
 
 ## 7. ヘッダー/ナビ仕様
 

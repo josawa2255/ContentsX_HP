@@ -1040,22 +1040,137 @@ function cxcms_news_meta_html( $post ) {
         </select>
         <div class="cx-hint">このニュースをどちらのサイトに表示するか選べます</div>
     </div>
+    <?php
+    /* アイキャッチのURL取得（プレビュー用） */
+    $thumb_id_for_preview = get_post_thumbnail_id( $post->ID );
+    $thumb_url_for_preview = '';
+    if ( $thumb_id_for_preview ) {
+        $_img = wp_get_attachment_image_src( $thumb_id_for_preview, 'medium' );
+        if ( $_img ) $thumb_url_for_preview = $_img[0];
+    }
+    /* 既存値を X/Y % に正規化（旧 named position 値にも後方互換） */
+    $fit = $m('cx_news_image_fit') ?: 'cover';
+    $pos_raw = $m('cx_news_image_position') ?: '50% 50%';
+    $x_pct = 50; $y_pct = 50;
+    if ( preg_match('/(-?\d+)\s*%\s+(-?\d+)\s*%/', $pos_raw, $mm) ) {
+        $x_pct = max(0, min(100, (int) $mm[1]));
+        $y_pct = max(0, min(100, (int) $mm[2]));
+    } else {
+        $named = [
+            'center'=>[50,50],'top'=>[50,0],'bottom'=>[50,100],'left'=>[0,50],'right'=>[100,50],
+            'left top'=>[0,0],'right top'=>[100,0],'left bottom'=>[0,100],'right bottom'=>[100,100],
+        ];
+        if ( isset($named[$pos_raw]) ) { $x_pct = $named[$pos_raw][0]; $y_pct = $named[$pos_raw][1]; }
+    }
+    ?>
     <div class="cx-field">
-        <label>サムネイル画像の表示位置（トリミング基準点）</label>
-        <?php $pos = $m('cx_news_image_position') ?: 'center'; ?>
-        <select name="cx_news_image_position">
-            <option value="center"       <?php selected($pos,'center');       ?>>中央（デフォルト）</option>
-            <option value="top"          <?php selected($pos,'top');          ?>>上</option>
-            <option value="bottom"       <?php selected($pos,'bottom');       ?>>下</option>
-            <option value="left"         <?php selected($pos,'left');         ?>>左</option>
-            <option value="right"        <?php selected($pos,'right');        ?>>右</option>
-            <option value="left top"     <?php selected($pos,'left top');     ?>>左上</option>
-            <option value="right top"    <?php selected($pos,'right top');    ?>>右上</option>
-            <option value="left bottom"  <?php selected($pos,'left bottom');  ?>>左下</option>
-            <option value="right bottom" <?php selected($pos,'right bottom'); ?>>右下</option>
-        </select>
-        <div class="cx-hint">サムネイル枠（160×100など）に画像を埋める時の中心位置。顔が切れる場合は「上」を選ぶと顔が残ります。</div>
+        <label>サムネイル画像の表示（トリミング設定）</label>
+        <div class="cx-img-editor">
+            <div class="cx-img-previews">
+                <div class="cx-img-preview-block">
+                    <div class="cx-img-preview-label">トップページ枠 (200×120)</div>
+                    <div class="cx-img-preview" style="width:200px;height:120px;">
+                        <?php if ($thumb_url_for_preview): ?>
+                        <img class="cx-img-preview-el" src="<?php echo esc_url($thumb_url_for_preview); ?>"
+                             style="object-fit:<?php echo esc_attr($fit); ?>;object-position:<?php echo esc_attr($x_pct); ?>% <?php echo esc_attr($y_pct); ?>%;">
+                        <?php else: ?>
+                        <div class="cx-img-preview-empty">アイキャッチ画像を設定してください</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="cx-img-preview-block">
+                    <div class="cx-img-preview-label">詳細ページ枠 (400×240)</div>
+                    <div class="cx-img-preview" style="width:400px;height:240px;">
+                        <?php if ($thumb_url_for_preview): ?>
+                        <img class="cx-img-preview-el" src="<?php echo esc_url($thumb_url_for_preview); ?>"
+                             style="object-fit:<?php echo esc_attr($fit); ?>;object-position:<?php echo esc_attr($x_pct); ?>% <?php echo esc_attr($y_pct); ?>%;">
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <div class="cx-img-controls">
+                <div class="cx-img-row">
+                    <label class="cx-img-label">表示モード</label>
+                    <select id="cxNewsImgFit" name="cx_news_image_fit">
+                        <option value="cover"   <?php selected($fit,'cover');   ?>>埋める (cover) — 枠いっぱいに画像、はみ出しはカット</option>
+                        <option value="contain" <?php selected($fit,'contain'); ?>>全体表示 (contain) — 画像全体を見せる、余白あり</option>
+                        <option value="fill"    <?php selected($fit,'fill');    ?>>引き伸ばす (fill) — 枠に合わせて変形</option>
+                    </select>
+                </div>
+                <div class="cx-img-row">
+                    <label class="cx-img-label">横位置 <span id="cxNewsImgXv"><?php echo $x_pct; ?></span>%</label>
+                    <input id="cxNewsImgX" type="range" min="0" max="100" value="<?php echo $x_pct; ?>" class="cx-img-slider">
+                </div>
+                <div class="cx-img-row">
+                    <label class="cx-img-label">縦位置 <span id="cxNewsImgYv"><?php echo $y_pct; ?></span>%</label>
+                    <input id="cxNewsImgY" type="range" min="0" max="100" value="<?php echo $y_pct; ?>" class="cx-img-slider">
+                </div>
+                <div class="cx-img-row">
+                    <label class="cx-img-label">プリセット位置</label>
+                    <div class="cx-img-presets">
+                        <button type="button" data-x="0"   data-y="0">左上</button>
+                        <button type="button" data-x="50"  data-y="0">上</button>
+                        <button type="button" data-x="100" data-y="0">右上</button>
+                        <button type="button" data-x="0"   data-y="50">左</button>
+                        <button type="button" data-x="50"  data-y="50">中央</button>
+                        <button type="button" data-x="100" data-y="50">右</button>
+                        <button type="button" data-x="0"   data-y="100">左下</button>
+                        <button type="button" data-x="50"  data-y="100">下</button>
+                        <button type="button" data-x="100" data-y="100">右下</button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="cxNewsImgPos" name="cx_news_image_position" value="<?php echo esc_attr($x_pct); ?>% <?php echo esc_attr($y_pct); ?>%">
+        </div>
+        <div class="cx-hint">画像の「見せたい部分」を基準点として選べます。スライダーを動かすとプレビューがリアルタイムで更新されます。「見切れさせたくない」→ contain（全体表示）／「枠を埋めたい」→ cover（埋める、はみ出しカット）。</div>
     </div>
+    <style>
+        .cx-img-editor{border:1px solid #e5e5e5;background:#fafafa;padding:16px;border-radius:6px}
+        .cx-img-previews{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+        .cx-img-preview-block{display:flex;flex-direction:column;gap:6px}
+        .cx-img-preview-label{font-size:11px;color:#666;font-weight:600}
+        .cx-img-preview{background:#fff;border:1px solid #ccc;overflow:hidden;position:relative}
+        .cx-img-preview-el{width:100%;height:100%;display:block}
+        .cx-img-preview-empty{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#999;font-size:12px;text-align:center;padding:8px}
+        .cx-img-controls{display:flex;flex-direction:column;gap:10px}
+        .cx-img-row{display:flex;align-items:center;gap:12px}
+        .cx-img-label{min-width:110px;font-weight:600;font-size:12px}
+        .cx-img-slider{flex:1;max-width:400px}
+        .cx-img-presets{display:grid;grid-template-columns:repeat(3,60px);gap:4px}
+        .cx-img-presets button{padding:6px 4px;background:#fff;border:1px solid #ccc;border-radius:3px;cursor:pointer;font-size:11px}
+        .cx-img-presets button:hover{background:#f0f0f0;border-color:#888}
+    </style>
+    <script>
+    (function(){
+        var fit = document.getElementById('cxNewsImgFit');
+        var rx  = document.getElementById('cxNewsImgX');
+        var ry  = document.getElementById('cxNewsImgY');
+        var xv  = document.getElementById('cxNewsImgXv');
+        var yv  = document.getElementById('cxNewsImgYv');
+        var hid = document.getElementById('cxNewsImgPos');
+        var prvs = document.querySelectorAll('.cx-img-preview-el');
+        if (!fit || !rx || !ry || !hid) return;
+        function update() {
+            var x = rx.value, y = ry.value;
+            xv.textContent = x; yv.textContent = y;
+            hid.value = x + '% ' + y + '%';
+            prvs.forEach(function(el){
+                el.style.objectFit = fit.value;
+                el.style.objectPosition = x + '% ' + y + '%';
+            });
+        }
+        fit.addEventListener('change', update);
+        rx.addEventListener('input', update);
+        ry.addEventListener('input', update);
+        document.querySelectorAll('.cx-img-presets button').forEach(function(b){
+            b.addEventListener('click', function(){
+                rx.value = b.getAttribute('data-x');
+                ry.value = b.getAttribute('data-y');
+                update();
+            });
+        });
+    })();
+    </script>
     <?php
 }
 
@@ -1342,7 +1457,7 @@ add_action( 'save_post_cx_news', 'cxcms_save_news_meta' );
 function cxcms_save_news_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_news_nonce']) || ! wp_verify_nonce($_POST['cxcms_news_nonce'], 'cxcms_news_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site','cx_news_image_position'];
+    $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site','cx_news_image_position','cx_news_image_fit'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -1772,7 +1887,8 @@ function cxcms_api_news( $req ) {
             'has_detail' => $has_detail,
             'show_site' => $m('cx_news_show_site') ?: 'both',
             'thumbnail' => $thumb_url,
-            'image_position' => $m('cx_news_image_position') ?: 'center',
+            'image_position' => $m('cx_news_image_position') ?: '50% 50%',
+            'image_fit'      => $m('cx_news_image_fit') ?: 'cover',
         ];
     }
     $out = cxcms_filter_by_site( $out, $req->get_param('site') );
@@ -1811,7 +1927,8 @@ function cxcms_api_news_single( $req ) {
         'title_en'   => $m('cx_news_title_en'),
         'url'        => $m('cx_news_url') ?: '',
         'thumbnail'  => $thumb_url,
-        'image_position' => $m('cx_news_image_position') ?: 'center',
+        'image_position' => $m('cx_news_image_position') ?: '50% 50%',
+        'image_fit'      => $m('cx_news_image_fit') ?: 'cover',
         'content'    => $content,
         'content_en' => $content_en,
     ], 200 );
