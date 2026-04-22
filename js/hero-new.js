@@ -31,22 +31,22 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function startIntro() {
-    // 0.3s → 1行目表示
+    // 0.3s → 1行目「埋もれていた物語に」表示
     introTimers.push(setTimeout(function() {
       if (introLine1) introLine1.classList.add('visible');
     }, 300));
 
-    // 0.9s → 2行目表示
+    // 1.5s → 2行目「光を当てる」表示（line1 を 1.2秒読ませてから／OP尺は維持）
     introTimers.push(setTimeout(function() {
       if (introLine2) introLine2.classList.add('visible');
-    }, 900));
+    }, 1500));
 
-    // 2.8s → フェードアウト開始
+    // 2.8s → フェードアウト開始（OP尺維持）
     introTimers.push(setTimeout(function() {
       if (introOverlay) introOverlay.classList.add('fade-out');
     }, 2800));
 
-    // 3.6s → オーバーレイ完全除去 & ヒーローアニメーション開始
+    // 3.6s → オーバーレイ完全除去 & ヒーローアニメーション開始（OP尺維持）
     introTimers.push(setTimeout(function() {
       finishIntro();
     }, 3600));
@@ -109,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
       img.classList.toggle('active', img.dataset.step === step);
     });
   }
-  // line2 切替 (0.9s に合わせて)
-  setTimeout(function() { activateBizcharStep('line2'); }, 900);
+  // line2 切替 (1.5s に合わせて)
+  setTimeout(function() { activateBizcharStep('line2'); }, 1500);
   // logo 切替 (finishIntro 直前 = 3.6s)
   setTimeout(function() { activateBizcharStep('logo'); }, 3600);
 
