@@ -75,7 +75,7 @@
     var uniforms = {
       uTex:       { value: null },
       uTime:      { value: 0 },
-      uIntensity: { value: 3.0 }, // 強めに（後で微調整）
+      uIntensity: { value: 1.0 }, // ほどよい風感
       uAspect:    { value: 1.0 },
       uTexAspect: { value: 1.5 } // 1200/800
     };
@@ -118,16 +118,19 @@
       'void main(){',
       '  vec2 uv = coverUv(vUv);',
       '',
-      '  // 全面に波（検証用 — Y プロファイルは一旦無効化して見える事を確認）',
-      '  float windStr = uIntensity;',
+      '  // Y 座標プロファイル（uv.y=0 上端, 1 下端 / TextureLoader flipY:true）',
+      '  // スカート相当（下半身）: 強, 髪相当（上半身）: 控えめ, 顔: ほぼ動かず',
+      '  float skirtArea = smoothstep(0.50, 0.98, uv.y);   // 下半身が強い',
+      '  float hairArea  = smoothstep(0.30, 0.0, uv.y) * 0.5; // 髪は半分の強さ',
+      '  float windStr   = (skirtArea + hairArea) * uIntensity;',
       '',
-      '  // 大きな振幅の二重サイン波 — 確実に見える強度',
-      '  float wave1 = sin(uv.y * 5.0 + uTime * 2.5) * 0.06;',
-      '  float wave2 = sin(uv.y * 11.0 - uTime * 1.4) * 0.03;',
+      '  // 二重サイン波（自然な風感）',
+      '  float wave1 = sin(uv.y * 6.0 + uTime * 1.8) * 0.018;',
+      '  float wave2 = sin(uv.y * 13.0 - uTime * 1.0) * 0.008;',
       '  float displacementX = (wave1 + wave2) * windStr;',
       '',
-      '  // 縦方向にもごく小さな揺れ（ふわっと感）',
-      '  float waveY = sin(uv.x * 4.0 + uTime * 1.8) * 0.015 * windStr;',
+      '  // 縦方向はごく微弱（スカートが少しふわっと持ち上がる感）',
+      '  float waveY = sin(uv.x * 3.0 + uTime * 1.4) * 0.004 * skirtArea * uIntensity;',
       '',
       '  uv.x += displacementX;',
       '  uv.y += waveY;',
