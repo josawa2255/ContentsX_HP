@@ -141,6 +141,11 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 - `cx_show_hero_site` — Heroカルーセル表示先（both/bizmanga/contentsx/none）
 - `cx_show_new_contentsx` — 新作情報表示フラグ
 
+### ニュース（cx_news）の編集可能フィールド
+- `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
+- `cx_news_show_site` — 表示先サイト（both/bizmanga/contentsx）
+- `cx_news_image_position` — サムネ画像の `object-position`（center/top/bottom/left/right/4隅）。`.news-thumb img` は `object-fit: cover` で枠を埋めるため、顔切れを防ぐには `top` を選ぶ
+
 ## 7. ヘッダー/ナビ仕様
 
 ### 7.1 モバイルヘッダー必須ルール ⭐再発防止

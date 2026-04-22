@@ -1040,6 +1040,22 @@ function cxcms_news_meta_html( $post ) {
         </select>
         <div class="cx-hint">このニュースをどちらのサイトに表示するか選べます</div>
     </div>
+    <div class="cx-field">
+        <label>サムネイル画像の表示位置（トリミング基準点）</label>
+        <?php $pos = $m('cx_news_image_position') ?: 'center'; ?>
+        <select name="cx_news_image_position">
+            <option value="center"       <?php selected($pos,'center');       ?>>中央（デフォルト）</option>
+            <option value="top"          <?php selected($pos,'top');          ?>>上</option>
+            <option value="bottom"       <?php selected($pos,'bottom');       ?>>下</option>
+            <option value="left"         <?php selected($pos,'left');         ?>>左</option>
+            <option value="right"        <?php selected($pos,'right');        ?>>右</option>
+            <option value="left top"     <?php selected($pos,'left top');     ?>>左上</option>
+            <option value="right top"    <?php selected($pos,'right top');    ?>>右上</option>
+            <option value="left bottom"  <?php selected($pos,'left bottom');  ?>>左下</option>
+            <option value="right bottom" <?php selected($pos,'right bottom'); ?>>右下</option>
+        </select>
+        <div class="cx-hint">サムネイル枠（160×100など）に画像を埋める時の中心位置。顔が切れる場合は「上」を選ぶと顔が残ります。</div>
+    </div>
     <?php
 }
 
@@ -1326,7 +1342,7 @@ add_action( 'save_post_cx_news', 'cxcms_save_news_meta' );
 function cxcms_save_news_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_news_nonce']) || ! wp_verify_nonce($_POST['cxcms_news_nonce'], 'cxcms_news_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site'];
+    $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site','cx_news_image_position'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -1756,6 +1772,7 @@ function cxcms_api_news( $req ) {
             'has_detail' => $has_detail,
             'show_site' => $m('cx_news_show_site') ?: 'both',
             'thumbnail' => $thumb_url,
+            'image_position' => $m('cx_news_image_position') ?: 'center',
         ];
     }
     $out = cxcms_filter_by_site( $out, $req->get_param('site') );
@@ -1794,6 +1811,7 @@ function cxcms_api_news_single( $req ) {
         'title_en'   => $m('cx_news_title_en'),
         'url'        => $m('cx_news_url') ?: '',
         'thumbnail'  => $thumb_url,
+        'image_position' => $m('cx_news_image_position') ?: 'center',
         'content'    => $content,
         'content_en' => $content_en,
     ], 200 );
