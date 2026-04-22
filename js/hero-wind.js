@@ -43,19 +43,20 @@
   });
 
   // --- スカート Verlet 物理パラメータ ---
-  var CHAIN_N      = 8;       // 鎖の段数（必ずシェーダ内 array サイズと合わせる）
-  var SKIRT_TOP    = 0.51;    // 腰位置 (画像 uv.y)
-  var SKIRT_BOTTOM = 0.64;    // 裾位置 (画像 uv.y)
-  var DAMPING      = 0.93;    // 速度減衰（1=減衰なし、0=即停止）
-  var STIFFNESS    = 0.22;    // 親への追従バネ強度
-  var WIND_AMP     = 0.0055;  // 1 段あたりの風入力（uv 単位）
+  var CHAIN_N      = 8;
+  var SKIRT_TOP    = 0.47;    // 腰位置 (画像 uv.y) — 実測に合わせ上げた
+  var SKIRT_BOTTOM = 0.55;    // 裾位置 (画像 uv.y)
+  var SKIRT_FADE   = 0.58;    // ここまでに完全0（太もも保護）
+  var DAMPING      = 0.93;
+  var STIFFNESS    = 0.22;
+  var WIND_AMP     = 0.0055;
 
-  // --- 髪 Verlet 物理パラメータ（顔を避けるため X マスクあり） ---
+  // --- 髪 Verlet 物理パラメータ（顔・胸を避けるため厳しめ X マスク） ---
   var HAIR_N         = 6;
-  var HAIR_TOP       = 0.08;  // 頭頂部寄り
-  var HAIR_BOTTOM    = 0.22;  // 髪先（顔横）
-  var HAIR_X_MIN     = 0.55;  // この uv.x より右のみ揺れる（顔避け）
-  var HAIR_X_FADE    = 0.62;  // ここから完全有効
+  var HAIR_TOP       = 0.08;
+  var HAIR_BOTTOM    = 0.20;
+  var HAIR_X_MIN     = 0.62;  // ベスト右端を避けるため 0.55→0.62
+  var HAIR_X_FADE    = 0.68;
   var HAIR_DAMPING   = 0.90;
   var HAIR_STIFFNESS = 0.30;
   var HAIR_WIND_AMP  = 0.0028;
@@ -174,8 +175,9 @@
       'void main(){',
       '  vec2 uv = coverUv(vUv);',
       '',
-      '  // スカート: Y帯（腰〜裾）',
-      '  float skirtMask = smoothstep(0.51, 0.64, uv.y) * (1.0 - smoothstep(0.64, 0.68, uv.y));',
+      '  // スカート: Y帯（腰〜裾 / 裾→太もも保護で急速に0）',
+      '  float skirtMask = smoothstep(uSkirtTop, uSkirtBottom, uv.y)',
+      '                  * (1.0 - smoothstep(uSkirtBottom, uSkirtBottom + 0.03, uv.y));',
       '  float skirtDispX = chainDispAt(uv.y) * skirtMask;',
       '',
       '  // 髪: Y帯（頭頂〜髪先）× X帯（顔より右のみ）',
