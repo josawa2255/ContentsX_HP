@@ -1387,6 +1387,12 @@ function cxcms_api_news( $req ) {
         $tag = cxcms_get_first_term( $p->ID, 'news_tag' );
         $content = apply_filters( 'the_content', $p->post_content );
         $has_detail = ! empty( trim( $p->post_content ) );
+        $thumb_url = '';
+        $thumb_id = get_post_thumbnail_id( $p->ID );
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'medium_large' );
+            if ( $img ) $thumb_url = $img[0];
+        }
         $out[] = [
             'id'        => $p->ID,
             'date'      => get_the_date( 'Y.m.d', $p ),
@@ -1397,6 +1403,7 @@ function cxcms_api_news( $req ) {
             'url'       => $m('cx_news_url') ?: '',
             'has_detail' => $has_detail,
             'show_site' => $m('cx_news_show_site') ?: 'both',
+            'thumbnail' => $thumb_url,
         ];
     }
     $out = cxcms_filter_by_site( $out, $req->get_param('site') );

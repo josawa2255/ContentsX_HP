@@ -99,19 +99,40 @@
     const isHome = !document.body.hasAttribute('data-page-news');
     const displayData = isHome ? data.slice(0, NEWS_HOME_LIMIT) : data;
 
-    list.innerHTML = '';
+    while (list.firstChild) list.removeChild(list.firstChild);
+    const FALLBACK_THUMB = 'https://contentsx.jp/material/images/og/og-index.webp';
 
     displayData.forEach(item => {
       const li = document.createElement('li');
       li.className = 'news-item';
 
-      const time = document.createElement('time');
-      time.className = 'news-date';
-      time.textContent = item.date;
+      const hasLink = item.url || (item.has_detail && item.id);
+      const linkUrl = hasLink ? (item.url || ('news-detail.html?id=' + item.id)) : '';
 
-      li.appendChild(time);
+      /* サムネイル（左） */
+      let thumbWrap;
+      if (hasLink) {
+        thumbWrap = document.createElement('a');
+        thumbWrap.href = linkUrl;
+      } else {
+        thumbWrap = document.createElement('div');
+      }
+      thumbWrap.className = 'news-thumb';
+      const img = document.createElement('img');
+      img.src = item.thumbnail || FALLBACK_THUMB;
+      img.alt = item.title_ja || '';
+      img.loading = 'lazy';
+      img.width = 200; img.height = 120;
+      img.onerror = function() { this.src = FALLBACK_THUMB; };
+      thumbWrap.appendChild(img);
+      li.appendChild(thumbWrap);
 
-      /* タグが空の場合はタグ要素を生成しない */
+      /* 右側: メタ + タイトル */
+      const body = document.createElement('div');
+      body.className = 'news-body';
+
+      const meta = document.createElement('div');
+      meta.className = 'news-meta';
       const tagText = lang === 'en' ? (item.tag_en || item.tag_ja) : item.tag_ja;
       if (tagText) {
         const tag = document.createElement('span');
@@ -119,15 +140,19 @@
         tag.setAttribute('data-ja', item.tag_ja || '');
         tag.setAttribute('data-en', item.tag_en || item.tag_ja || '');
         tag.textContent = tagText;
-        li.appendChild(tag);
+        meta.appendChild(tag);
       }
+      const time = document.createElement('time');
+      time.className = 'news-date';
+      time.textContent = item.date;
+      meta.appendChild(time);
+      body.appendChild(meta);
 
-      const hasLink = item.url || (item.has_detail && item.id);
       let titleEl;
       if (hasLink) {
         titleEl = document.createElement('a');
         titleEl.className = 'news-link';
-        titleEl.href = item.url || ('news-detail.html?id=' + item.id);
+        titleEl.href = linkUrl;
       } else {
         titleEl = document.createElement('span');
         titleEl.className = 'news-link news-link--plain';
@@ -136,7 +161,8 @@
       titleEl.setAttribute('data-en', item.title_en || item.title_ja || '');
       titleEl.textContent = lang === 'en' ? (item.title_en || item.title_ja) : item.title_ja;
 
-      li.appendChild(titleEl);
+      body.appendChild(titleEl);
+      li.appendChild(body);
       list.appendChild(li);
     });
 
