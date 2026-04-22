@@ -220,6 +220,27 @@ function cxcms_manga_meta_html( $post ) {
             <input name="cx_client" value="<?php echo esc_attr($m('cx_client')); ?>">
         </div>
     </div>
+    <div class="cx-field" style="background:#fff7ed;padding:12px;border-left:4px solid #EB5200;border-radius:4px;">
+        <label style="color:#EB5200;font-weight:700;">📣 BizMangaビズ書庫 最終ページCTA</label>
+        <div class="cx-hint" style="margin-bottom:10px;">漫画を読み終わった最終ページに「公式サイトを見る」ボタンを表示。URL未入力＝非表示。</div>
+        <div class="cx-row">
+            <div class="cx-field">
+                <label>クライアント公式URL</label>
+                <input name="cx_client_url" value="<?php echo esc_attr($m('cx_client_url')); ?>" placeholder="https://example.co.jp">
+                <div class="cx-hint">空欄ならCTAボタンは表示されません</div>
+            </div>
+            <div class="cx-field">
+                <label>CTAラベル（日本語）</label>
+                <input name="cx_cta_label_ja" value="<?php echo esc_attr($m('cx_cta_label_ja')); ?>" placeholder="例: 公式サイトを見る →／採用情報を見る">
+                <div class="cx-hint">空欄なら日本語表示時はCTA非表示</div>
+            </div>
+            <div class="cx-field">
+                <label>CTAラベル（英語）</label>
+                <input name="cx_cta_label_en" value="<?php echo esc_attr($m('cx_cta_label_en')); ?>" placeholder="例: Visit Official Site →">
+                <div class="cx-hint">空欄なら英語表示時はCTA非表示</div>
+            </div>
+        </div>
+    </div>
     <div class="cx-row">
         <div class="cx-field">
             <label>制作ページ数</label>
@@ -874,7 +895,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -991,7 +1012,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -1217,6 +1238,9 @@ function cxcms_format_work( $p ) {
         'pages'       => (int) $m('cx_pages'),
         'category'  => cxcms_get_first_term( $p->ID, 'manga_category' ),
         'client'    => $m('cx_client'),
+        'client_url'    => $m('cx_client_url'),
+        'cta_label_ja'  => $m('cx_cta_label_ja'),
+        'cta_label_en'  => $m('cx_cta_label_en'),
         'media'     => $media,
         'spec'      => [
             'pages'  => $m('cx_spec_pages'),
