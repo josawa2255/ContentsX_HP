@@ -36,7 +36,11 @@
   }
 
   loadThree(function() {
-    if (!window.THREE) return;
+    if (!window.THREE) {
+      console.warn('[hero-wind] THREE未ロード');
+      return;
+    }
+    console.log('[hero-wind] Three.js loaded, init wind effect');
     init();
   });
 
@@ -71,7 +75,7 @@
     var uniforms = {
       uTex:       { value: null },
       uTime:      { value: 0 },
-      uIntensity: { value: 1.0 },
+      uIntensity: { value: 3.0 }, // 強めに（後で微調整）
       uAspect:    { value: 1.0 },
       uTexAspect: { value: 1.5 } // 1200/800
     };
@@ -115,14 +119,15 @@
       '  vec2 uv = coverUv(vUv);',
       '',
       '  // Y 座標ベースの風強度プロファイル',
-      '  // 下半身（uv.y < 0.5）: 強, 上半身（uv.y > 0.7）: 控えめ, 顔: 微弱',
-      '  float skirtArea = smoothstep(0.55, 0.05, uv.y);   // 下が強い',
-      '  float hairArea  = smoothstep(0.65, 1.0, uv.y) * 0.4;',
+      '  // テクスチャUVは上が0、下が1なので注意（vUv はWebGLで通常下=0だがTHREE.TextureLoader経由は flipY:true で上=0）',
+      '  // 下半身（uv.y > 0.5）: 強, 上半身（uv.y < 0.3）: 控えめ',
+      '  float skirtArea = smoothstep(0.45, 0.95, uv.y);  // 下が強い（uv.y=1が下端）',
+      '  float hairArea  = smoothstep(0.35, 0.0, uv.y) * 0.5;',
       '  float windStr   = (skirtArea + hairArea) * uIntensity;',
       '',
-      '  // 二重サイン波で複雑な波形（自然な風感）',
-      '  float wave1 = sin(uv.y * 9.0 + uTime * 1.6) * 0.010;',
-      '  float wave2 = sin(uv.y * 17.0 - uTime * 0.9) * 0.005;',
+      '  // 二重サイン波で複雑な波形（自然な風感）— 振幅を大きく',
+      '  float wave1 = sin(uv.y * 6.0 + uTime * 2.0) * 0.025;',
+      '  float wave2 = sin(uv.y * 13.0 - uTime * 1.2) * 0.012;',
       '  float displacement = (wave1 + wave2) * windStr;',
       '',
       '  uv.x += displacement;',
@@ -186,6 +191,7 @@
         uniforms.uTexAspect.value = activeImg.naturalWidth / activeImg.naturalHeight;
       }
       sizeCanvas();
+      console.log('[hero-wind] active step:', step, 'tex loaded:', tex.image && tex.image.complete);
       start();
     }
 
