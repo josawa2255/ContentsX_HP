@@ -154,25 +154,6 @@
   transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden;
 }
-/* WebGL 風揺れ canvas（active 画像を覆う） */
-.hero-bizchar-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-  will-change: opacity;
-}
-.hero-bizchar-canvas.active { opacity: 1; }
-/* canvas が active 時は元 img を非表示（同じ絵がGPUで描かれているため）
-   Ken Burns ズームも止める（風揺れが見えなくなるため） */
-.hero-bizchar.has-wind .hero-bizchar-img.active {
-  opacity: 0;
-  animation: none !important;
-}
 /* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出 */
 .hero-bizchar-img.active {
   opacity: 1;
