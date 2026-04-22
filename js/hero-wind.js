@@ -50,6 +50,16 @@
   var STIFFNESS    = 0.22;    // 親への追従バネ強度
   var WIND_AMP     = 0.0055;  // 1 段あたりの風入力（uv 単位）
 
+  // --- 髪 Verlet 物理パラメータ（顔を避けるため X マスクあり） ---
+  var HAIR_N         = 6;
+  var HAIR_TOP       = 0.08;  // 頭頂部寄り
+  var HAIR_BOTTOM    = 0.22;  // 髪先（顔横）
+  var HAIR_X_MIN     = 0.55;  // この uv.x より右のみ揺れる（顔避け）
+  var HAIR_X_FADE    = 0.62;  // ここから完全有効
+  var HAIR_DAMPING   = 0.90;
+  var HAIR_STIFFNESS = 0.30;
+  var HAIR_WIND_AMP  = 0.0028;
+
   function init() {
     var THREE = window.THREE;
 
@@ -82,6 +92,10 @@
     for (var i = 0; i < CHAIN_N; i++) chain.push({ pos: 0, prev: 0 });
     var chainArr = new Float32Array(CHAIN_N);
 
+    var hairChain = [];
+    for (var hi = 0; hi < HAIR_N; hi++) hairChain.push({ pos: 0, prev: 0 });
+    var hairArr = new Float32Array(HAIR_N);
+
     var uniforms = {
       uTex:         { value: null },
       uTime:        { value: 0 },
@@ -90,7 +104,12 @@
       uTexAspect:   { value: 1.5 },
       uChain:       { value: chainArr },
       uSkirtTop:    { value: SKIRT_TOP },
-      uSkirtBottom: { value: SKIRT_BOTTOM }
+      uSkirtBottom: { value: SKIRT_BOTTOM },
+      uHair:        { value: hairArr },
+      uHairTop:     { value: HAIR_TOP },
+      uHairBottom:  { value: HAIR_BOTTOM },
+      uHairXMin:    { value: HAIR_X_MIN },
+      uHairXFade:   { value: HAIR_X_FADE }
     };
 
     var vertex = [
@@ -111,6 +130,11 @@
       'uniform float uChain[8];',
       'uniform float uSkirtTop;',
       'uniform float uSkirtBottom;',
+      'uniform float uHair[6];',
+      'uniform float uHairTop;',
+      'uniform float uHairBottom;',
+      'uniform float uHairXMin;',
+      'uniform float uHairXFade;',
       'varying vec2 vUv;',
       '',
       'vec2 coverUv(vec2 uv){',
@@ -124,7 +148,7 @@
       '  return result;',
       '}',
       '',
-      '// チェーン配列を線形補間して uv.y 位置の水平変位を返す',
+      '// スカートチェーン補間',
       'float chainDispAt(float y){',
       '  float t  = clamp((y - uSkirtTop) / (uSkirtBottom - uSkirtTop), 0.0, 1.0);',
       '  float fi = t * 7.0;   // CHAIN_N - 1',
@@ -135,13 +159,32 @@
       '  }',
       '  return disp;',
       '}',
+      '// 髪チェーン補間',
+      'float hairDispAt(float y){',
+      '  float t  = clamp((y - uHairTop) / (uHairBottom - uHairTop), 0.0, 1.0);',
+      '  float fi = t * 5.0;   // HAIR_N - 1',
+      '  float disp = 0.0;',
+      '  for (int i = 0; i < 6; i++) {',
+      '    float w = max(0.0, 1.0 - abs(float(i) - fi));',
+      '    disp += uHair[i] * w;',
+      '  }',
+      '  return disp;',
+      '}',
       '',
       'void main(){',
       '  vec2 uv = coverUv(vUv);',
       '',
-      '  // スカートマスク（腰0.51〜裾0.64、その下は急速に0）',
+      '  // スカート: Y帯（腰〜裾）',
       '  float skirtMask = smoothstep(0.51, 0.64, uv.y) * (1.0 - smoothstep(0.64, 0.68, uv.y));',
-      '  float dispX = chainDispAt(uv.y) * skirtMask * uIntensity;',
+      '  float skirtDispX = chainDispAt(uv.y) * skirtMask;',
+      '',
+      '  // 髪: Y帯（頭頂〜髪先）× X帯（顔より右のみ）',
+      '  float hairYMask = smoothstep(uHairTop, uHairTop + 0.04, uv.y)',
+      '                  * (1.0 - smoothstep(uHairBottom - 0.02, uHairBottom + 0.04, uv.y));',
+      '  float hairXMask = smoothstep(uHairXMin, uHairXFade, uv.x);',
+      '  float hairDispX = hairDispAt(uv.y) * hairYMask * hairXMask;',
+      '',
+      '  float dispX = (skirtDispX + hairDispX) * uIntensity;',
       '',
       '  uv.x += dispX;',
       '  uv = clamp(uv, 0.001, 0.999);',
@@ -185,23 +228,35 @@
       var w = windAt(t);
 
       for (var s = 0; s < sub; s++) {
-        // i=0 は腰（pin）
+        // スカート: i=0 は腰（pin）
         chain[0].pos = 0;
         chain[0].prev = 0;
         for (var i = 1; i < CHAIN_N; i++) {
-          var hemRatio = i / (CHAIN_N - 1);          // 0..1
-          // 各ノードの目標位置 = 親の位置 + 風入力（裾ほど強い）
+          var hemRatio = i / (CHAIN_N - 1);
           var target = chain[i-1].pos + w * WIND_AMP * hemRatio;
-          // Verlet 風: 速度（前回比）+ 目標へのバネ
           var velocity = (chain[i].pos - chain[i].prev) * DAMPING;
           var force    = (target - chain[i].pos) * STIFFNESS;
           var newPos   = chain[i].pos + velocity + force;
           chain[i].prev = chain[i].pos;
           chain[i].pos  = newPos;
         }
+        // 髪: j=0 は頭根本（pin）。位相を少しずらして自然なずれを出す
+        var wHair = w * 0.85 + Math.sin(t * 2.3 + 0.7) * 0.15;
+        hairChain[0].pos = 0;
+        hairChain[0].prev = 0;
+        for (var j = 1; j < HAIR_N; j++) {
+          var tipRatio = j / (HAIR_N - 1);
+          var hTarget = hairChain[j-1].pos + wHair * HAIR_WIND_AMP * tipRatio;
+          var hVel    = (hairChain[j].pos - hairChain[j].prev) * HAIR_DAMPING;
+          var hForce  = (hTarget - hairChain[j].pos) * HAIR_STIFFNESS;
+          var hNew    = hairChain[j].pos + hVel + hForce;
+          hairChain[j].prev = hairChain[j].pos;
+          hairChain[j].pos  = hNew;
+        }
       }
 
       for (var k = 0; k < CHAIN_N; k++) chainArr[k] = chain[k].pos;
+      for (var m = 0; m < HAIR_N; m++) hairArr[m] = hairChain[m].pos;
     }
 
     function frame() {
