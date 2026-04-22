@@ -174,7 +174,150 @@ function cxcms_add_meta_boxes() {
     add_meta_box( 'cx_news_fields', 'ニュース詳細', 'cxcms_news_meta_html', 'cx_news', 'normal', 'high' );
     add_meta_box( 'cx_testimonial_fields', 'お客様の声 詳細', 'cxcms_testimonial_meta_html', 'cx_testimonial', 'normal', 'high' );
     add_meta_box( 'cx_preproduction_fields', '赤ペン・ネーム 詳細', 'cxcms_preproduction_meta_html', 'cx_preproduction', 'normal', 'high' );
+    /* 漫画事例 → ニュース作成 ボタン（右サイドバー） */
+    add_meta_box( 'manga_create_news', '📰 ニュース作成', 'cxcms_manga_create_news_box', 'manga_work', 'side', 'high' );
 }
+
+/* 漫画→ニュース作成 ボタン UI（サイドバー版 + タイトル直下版で共有） */
+function cxcms_render_create_news_button( $post, $compact = false ) {
+    if ( $post->post_status === 'auto-draft' ) {
+        echo '<p style="color:#666;font-size:12px;margin:0;">先に「下書き保存」または「公開」してください</p>';
+        return;
+    }
+    $url = wp_nonce_url(
+        admin_url( 'admin-post.php?action=cxcms_create_news_from_manga&manga_id=' . $post->ID ),
+        'cxcms_create_news_' . $post->ID
+    );
+    /* 既存下書きがあるか確認 */
+    $existing = get_posts([
+        'post_type'      => 'cx_news',
+        'post_status'    => ['draft', 'pending', 'publish'],
+        'meta_key'       => 'cx_news_from_manga',
+        'meta_value'     => $post->ID,
+        'posts_per_page' => 1,
+    ]);
+    $has_existing = ! empty( $existing );
+
+    if ( $compact ) {
+        echo '<div style="display:inline-flex;align-items:center;gap:10px;margin:10px 0 16px;padding:10px 16px;background:#fff7ed;border:2px solid #EB5200;border-radius:8px;">';
+        echo '<a href="' . esc_url($url) . '" class="button button-primary" style="background:#EB5200;border-color:#EB5200;font-weight:700;">📰 この漫画でニュースを作成</a>';
+        if ( $has_existing ) {
+            echo '<span style="font-size:12px;color:#EB5200;font-weight:700;">※ 既存下書きを開きます</span>';
+        }
+        echo '</div>';
+    } else {
+        echo '<div style="text-align:center;">';
+        echo '<a href="' . esc_url($url) . '" class="button button-primary button-large" style="background:#EB5200;border-color:#EB5200;font-weight:700;width:100%;text-align:center;">📰 この漫画でニュースを作成</a>';
+        echo '<p style="margin-top:10px;font-size:12px;color:#666;line-height:1.5;">表紙画像 + タイトル + 本文テンプレが入った<br>ニュース下書きを自動生成します。</p>';
+        if ( $has_existing ) {
+            echo '<p style="margin-top:8px;font-size:12px;color:#EB5200;font-weight:700;">⚠️ 既存の関連ニュース下書きが<br>あるためそちらを開きます</p>';
+        }
+        echo '</div>';
+    }
+}
+
+function cxcms_manga_create_news_box( $post ) {
+    cxcms_render_create_news_button( $post, false );
+}
+
+/* タイトル直下にもボタン表示 */
+add_action( 'edit_form_after_title', function( $post ) {
+    if ( $post->post_type !== 'manga_work' ) return;
+    cxcms_render_create_news_button( $post, true );
+});
+
+/* 漫画→ニュース 作成ハンドラー */
+add_action( 'admin_post_cxcms_create_news_from_manga', 'cxcms_create_news_from_manga_handler' );
+function cxcms_create_news_from_manga_handler() {
+    if ( ! current_user_can( 'edit_posts' ) ) wp_die( '権限がありません' );
+
+    $manga_id = isset($_GET['manga_id']) ? (int) $_GET['manga_id'] : 0;
+    if ( ! $manga_id || ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'cxcms_create_news_' . $manga_id ) ) {
+        wp_die( 'Invalid request' );
+    }
+    $manga = get_post( $manga_id );
+    if ( ! $manga || $manga->post_type !== 'manga_work' ) wp_die( 'Manga not found' );
+
+    /* 既存下書き/関連ニュースがあればそれを開く（重複防止） */
+    $existing = get_posts([
+        'post_type'      => 'cx_news',
+        'post_status'    => ['draft', 'pending', 'publish'],
+        'meta_key'       => 'cx_news_from_manga',
+        'meta_value'     => $manga_id,
+        'posts_per_page' => 1,
+    ]);
+    if ( ! empty( $existing ) ) {
+        wp_safe_redirect( admin_url( 'post.php?post=' . $existing[0]->ID . '&action=edit' ) );
+        exit;
+    }
+
+    /* テンプレ生成 */
+    $m            = fn($k) => get_post_meta( $manga_id, $k, true );
+    $title_ja     = $manga->post_title;
+    $title_en     = $m('cx_title_en') ?: $title_ja;
+    $slug         = $m('cx_work_id') ?: sanitize_title( $title_ja );
+    $point        = trim( (string) $m('cx_point') );
+    $library_url  = 'https://bizmanga.contentsx.jp/biz-library?manga=' . rawurlencode( $slug );
+
+    $news_title   = sprintf( '「%s」を公開しました', $title_ja );
+    $news_title_en = sprintf( 'New manga "%s" released', $title_en );
+
+    $body_lines = [];
+    $body_lines[] = sprintf( 'このたび、新作マンガ「%s」を公開いたしました。', $title_ja );
+    $body_lines[] = '';
+    if ( $point !== '' ) {
+        $body_lines[] = $point;
+        $body_lines[] = '';
+    }
+    $body_lines[] = 'ぜひご覧ください。';
+    $body_lines[] = sprintf( '👉 ビズ書庫で読む: %s', $library_url );
+    $news_content = implode( "\n", $body_lines );
+
+    $body_lines_en = [];
+    $body_lines_en[] = sprintf( 'We are pleased to release our new manga "%s".', $title_en );
+    $body_lines_en[] = '';
+    $body_lines_en[] = 'Please take a look.';
+    $body_lines_en[] = sprintf( '👉 Read on Biz Library: %s', $library_url );
+    $news_content_en = implode( "\n", $body_lines_en );
+
+    /* ニュース下書き作成 */
+    $news_id = wp_insert_post([
+        'post_type'    => 'cx_news',
+        'post_status'  => 'draft',
+        'post_title'   => $news_title,
+        'post_content' => $news_content,
+    ], true );
+
+    if ( is_wp_error( $news_id ) ) wp_die( 'ニュース作成失敗: ' . $news_id->get_error_message() );
+
+    /* 表紙画像をアイキャッチに引き継ぐ */
+    $thumb_id = get_post_thumbnail_id( $manga_id );
+    if ( $thumb_id ) {
+        set_post_thumbnail( $news_id, $thumb_id );
+    }
+
+    /* メタ情報セット */
+    update_post_meta( $news_id, 'cx_news_from_manga', $manga_id );
+    update_post_meta( $news_id, 'cx_news_title_en', $news_title_en );
+    update_post_meta( $news_id, 'cx_news_content_en', $news_content_en );
+    update_post_meta( $news_id, 'cx_news_show_site', 'both' );
+    update_post_meta( $news_id, 'cx_news_url', '' );
+
+    /* タグ「お知らせ」を自動付与（既に存在すれば紐付け、なければ作成） */
+    wp_set_object_terms( $news_id, 'お知らせ', 'news_tag' );
+
+    /* 編集画面へリダイレクト */
+    wp_safe_redirect( admin_url( 'post.php?post=' . $news_id . '&action=edit&from_manga=1' ) );
+    exit;
+}
+
+/* 編集画面で「漫画から自動生成された」旨のお知らせを表示 */
+add_action( 'admin_notices', function() {
+    $screen = get_current_screen();
+    if ( ! $screen || $screen->post_type !== 'cx_news' ) return;
+    if ( empty( $_GET['from_manga'] ) ) return;
+    echo '<div class="notice notice-success"><p>📰 漫画事例から自動生成しました。タイトル・本文・公開設定を確認して「公開」してください。</p></div>';
+});
 
 /* ── 漫画事例 メタボックス HTML ── */
 function cxcms_manga_meta_html( $post ) {
