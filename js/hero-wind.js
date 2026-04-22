@@ -49,7 +49,7 @@
   var SKIRT_FADE   = 0.58;    // ここまでに完全0（太もも保護）
   var DAMPING      = 0.93;
   var STIFFNESS    = 0.22;
-  var WIND_AMP     = 0.0025;
+  var WIND_AMP     = 0.00025;
 
   // --- 髪 Verlet 物理パラメータ（顔・胸を避けるため厳しめ X マスク） ---
   var HAIR_N         = 6;
@@ -59,7 +59,7 @@
   var HAIR_X_FADE    = 0.68;
   var HAIR_DAMPING   = 0.90;
   var HAIR_STIFFNESS = 0.30;
-  var HAIR_WIND_AMP  = 0.0014;
+  var HAIR_WIND_AMP  = 0.00014;
 
   function init() {
     var THREE = window.THREE;
