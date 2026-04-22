@@ -167,8 +167,12 @@
   will-change: opacity;
 }
 .hero-bizchar-canvas.active { opacity: 1; }
-/* canvas が active 時は元 img を非表示（同じ絵がGPUで描かれているため） */
-.hero-bizchar.has-wind .hero-bizchar-img.active { opacity: 0; }
+/* canvas が active 時は元 img を非表示（同じ絵がGPUで描かれているため）
+   Ken Burns ズームも止める（風揺れが見えなくなるため） */
+.hero-bizchar.has-wind .hero-bizchar-img.active {
+  opacity: 0;
+  animation: none !important;
+}
 /* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出 */
 .hero-bizchar-img.active {
   opacity: 1;
