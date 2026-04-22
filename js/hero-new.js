@@ -138,6 +138,15 @@ document.addEventListener('DOMContentLoaded', function() {
   /* 最後に描画した並び順を保持（差分検出用） */
   let lastRenderedOrder = null;
 
+  // ===== デバイス別表示行数 =====
+  // PC=3行 / タブレット=4行 / スマホ=5行（順番後ろの作品ほどスマホでだけ追加表示）
+  function getActiveRowCount() {
+    const w = window.innerWidth;
+    if (w >= 1024) return 3;
+    if (w >= 768) return 4;
+    return 5;
+  }
+
   // --- 作品カルーセル構築 (集英社スタイル) ---
   function buildHeroCarousel() {
     if (!heroWorksBg || !worksMap) return;
@@ -149,8 +158,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const row5 = document.getElementById('heroWorksRow5');
     if (!row1 || !row2 || !row3) return;
 
-    const rowEls = [row1, row2, row3, row4, row5].filter(Boolean);
-    const numRows = rowEls.length;
+    const allRowEls = [row1, row2, row3, row4, row5].filter(Boolean);
+    const numRows = Math.min(getActiveRowCount(), allRowEls.length);
+
+    // 余った行は非表示
+    allRowEls.forEach((el, idx) => {
+      el.style.display = idx < numRows ? '' : 'none';
+    });
+
+    const rowEls = allRowEls.slice(0, numRows);
     const rows = Array.from({ length: numRows }, () => []);
     works.forEach((w, i) => rows[i % numRows].push(w));
 
@@ -220,6 +236,21 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       buildHeroCarousel();
     }
+  });
+
+  // ブレークポイントを跨ぐリサイズで再振り分け（debounce）
+  let lastRowCount = getActiveRowCount();
+  let resizeTimer = null;
+  window.addEventListener('resize', function() {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      const current = getActiveRowCount();
+      if (current !== lastRowCount) {
+        lastRowCount = current;
+        lastRenderedOrder = null; // 再構築強制
+        buildHeroCarousel();
+      }
+    }, 200);
   });
 
   // ===== 制作事例モーダル (BizMangaスタイル) =====

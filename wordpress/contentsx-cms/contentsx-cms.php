@@ -425,7 +425,7 @@ function cxcms_manga_meta_html( $post ) {
     ?>
     <div class="cx-field cx-hero-panel" style="background:#f0f7ff;padding:14px 16px 12px;border-left:4px solid #2563EB;border-radius:4px;">
         <label style="color:#2563EB;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:4px;">🎬 Heroカルーセル設定</label>
-        <div class="cx-hint" style="margin-bottom:12px;">トップページの背景カルーセル表示。空欄なら自動で末尾に配置。</div>
+        <div class="cx-hint" style="margin-bottom:12px;">トップページの背景カルーセル表示。順番が前のほど目立つ位置に出ます（PC=3行 / タブレット=4行 / スマホ=5行に自動振り分け）。</div>
 
         <div class="cx-field" style="margin:0 0 12px;">
             <label style="font-size:13px;">表示先</label>
@@ -438,39 +438,17 @@ function cxcms_manga_meta_html( $post ) {
         </div>
 
         <div class="cx-hero-detail" style="<?php echo $hero_disabled ? 'opacity:0.4;pointer-events:none;' : ''; ?>">
-            <div class="cx-row" style="margin-bottom:10px;">
+            <div class="cx-row" style="margin-bottom:6px;">
                 <div class="cx-field" style="margin:0;">
                     <label style="font-size:13px;color:#EB5200;">📚 BizManga 順番</label>
-                    <input type="number" name="cx_hero_order_bm" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="空欄＝末尾">
+                    <input type="number" name="cx_hero_order_bm" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
                 </div>
                 <div class="cx-field" style="margin:0;">
                     <label style="font-size:13px;color:#E91E63;">✨ ContentsX 順番</label>
-                    <input type="number" name="cx_hero_order_cx" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="空欄＝末尾">
+                    <input type="number" name="cx_hero_order_cx" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
                 </div>
             </div>
-            <div class="cx-hint" style="margin:0 0 12px;font-size:11px;">数字を入れると、その位置に挿入され既存が1つずつ後ろにずれる</div>
-
-            <details style="background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px 12px;">
-                <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#666;">⚙️ BizManga 詳細配置（行・列を指定）</summary>
-                <div class="cx-row" style="margin-top:10px;">
-                    <div class="cx-field" style="margin:0;">
-                        <label style="font-size:12px;">行</label>
-                        <select name="cx_hero_row_bm">
-                            <option value="" <?php selected($m('cx_hero_row_bm'), ''); ?>>自動</option>
-                            <option value="1" <?php selected($m('cx_hero_row_bm'), '1'); ?>>1行目</option>
-                            <option value="2" <?php selected($m('cx_hero_row_bm'), '2'); ?>>2行目</option>
-                            <option value="3" <?php selected($m('cx_hero_row_bm'), '3'); ?>>3行目</option>
-                            <option value="4" <?php selected($m('cx_hero_row_bm'), '4'); ?>>4行目 (タブ・SP)</option>
-                            <option value="5" <?php selected($m('cx_hero_row_bm'), '5'); ?>>5行目 (SPのみ)</option>
-                        </select>
-                    </div>
-                    <div class="cx-field" style="margin:0;">
-                        <label style="font-size:12px;">列</label>
-                        <input type="number" name="cx_hero_col_bm" value="<?php echo esc_attr($m('cx_hero_col_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
-                    </div>
-                </div>
-                <div class="cx-hint" style="margin-top:6px;font-size:11px;">PC: 1〜3行目のみ。4=タブレット以下、5=スマホのみ</div>
-            </details>
+            <div class="cx-hint" style="margin:0;font-size:11px;">数字を入れると、その位置に挿入され既存が1つずつ後ろにずれる</div>
         </div>
     </div>
     <script>
@@ -1065,7 +1043,7 @@ add_action( 'save_post_manga_work', 'cxcms_save_manga_meta' );
 function cxcms_save_manga_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_manga_nonce']) || ! wp_verify_nonce($_POST['cxcms_manga_nonce'], 'cxcms_manga_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_show_hero','cx_show_hero_site','cx_hero_order_bm','cx_hero_order_cx','cx_is_new','cx_added_date','cx_gallery','cx_akapen_gallery','cx_name_gallery','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -1184,7 +1162,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_cta_enabled','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_cta_enabled','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -1425,8 +1403,7 @@ function cxcms_format_work( $p ) {
         'show_hero_site' => $m('cx_show_hero_site') ?: ( $m('cx_show_hero') !== '0' ? 'both' : 'none' ),
         'hero_order_bm' => (int) ( $m('cx_hero_order_bm') ?: 9999 ),
         'hero_order_cx' => (int) ( $m('cx_hero_order_cx') ?: 9999 ),
-        'hero_row_bm'  => (int) ( $m('cx_hero_row_bm') ?: 0 ),
-        'hero_col_bm'  => (int) ( $m('cx_hero_col_bm') ?: 0 ),
+        /* hero_row_bm/hero_col_bm: 廃止（順番ベース自動振り分けに移行） */
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
         'thumbnail' => $thumb_url,
