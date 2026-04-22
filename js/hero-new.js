@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       // 縦読み判定: 1ページ目 or 2ページ目が縦長なら縦スクロール
-      const isVerticalRatio = (r) => r < 0.2;
+      const isVerticalRatio = (r) => r < 0.85;
       function applyVertical() {
         wdCarousel.classList.add('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
@@ -343,15 +343,24 @@ document.addEventListener('DOMContentLoaded', function() {
       // 即座にカルーセルモードで仮表示（体感速度向上）
       applyCarousel();
 
-      // 1ページ目で縦読み判定
+      // 1ページ目 or 2ページ目で縦読み判定（表紙が横長でも本編が縦長なら縦読み）
       const hasGal = work.gallery && work.gallery.length > 0;
       const firstSrc = (hasGal && work.gallery[0]) ? work.gallery[0] : `material/manga/${work.id}/01.webp`;
+      const secondSrc = (hasGal && work.gallery[1]) ? work.gallery[1] : `material/manga/${work.id}/02.webp`;
 
       const testImg = new Image();
       testImg.src = firstSrc;
       testImg.onload = () => {
         if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVertical();
+        } else if (work.pages > 1) {
+          const testImg2 = new Image();
+          testImg2.src = secondSrc;
+          testImg2.onload = () => {
+            if (isVerticalRatio(testImg2.naturalWidth / testImg2.naturalHeight)) {
+              applyVertical();
+            }
+          };
         }
       };
     }
