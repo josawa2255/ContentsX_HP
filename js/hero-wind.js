@@ -185,12 +185,13 @@
       var activeImg = bizchar.querySelector('.hero-bizchar-img.active');
       if (!activeImg) { stop(); return; }
       var step = activeImg.dataset.step;
+      // 風揺れは「logo」フェーズ（屋上=最後の画像）のみ有効
+      if (step !== 'logo') { stop(); currentStep = step; return; }
       if (step === currentStep && running) return;
       currentStep = step;
       var tex = textures[step];
       if (!tex) { stop(); return; }
       uniforms.uTex.value = tex;
-      // 各画像のアスペクト
       if (activeImg.naturalWidth > 0) {
         uniforms.uTexAspect.value = activeImg.naturalWidth / activeImg.naturalHeight;
       }
