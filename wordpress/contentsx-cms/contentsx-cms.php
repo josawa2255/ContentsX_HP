@@ -1559,6 +1559,10 @@ function cxcms_api_library( $req ) {
             'gallery'   => $gallery_urls,
             'akapen_gallery' => $akapen_urls,
             'name_gallery'   => $name_urls,
+            'client_url'     => $m('cx_client_url'),
+            'cta_label_ja'   => $m('cx_cta_label_ja'),
+            'cta_label_en'   => $m('cx_cta_label_en'),
+            'cta_enabled'    => $m('cx_cta_enabled') === '1',
         ];
     }
     return new WP_REST_Response( $out, 200 );
