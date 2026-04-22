@@ -415,54 +415,76 @@ function cxcms_manga_meta_html( $post ) {
         <label>表示順（数字が小さい＝先に表示）</label>
         <input type="number" name="cx_sort_order" value="<?php echo esc_attr($m('cx_sort_order') ?: '0'); ?>">
     </div>
-    <div class="cx-field">
-        <label>Heroカルーセルに表示</label>
-        <?php
-        // 後方互換: 旧 cx_show_hero ('1'/'0') → 新 cx_show_hero_site ('both'/'none'/etc.)
-        $hero_site_raw = $m('cx_show_hero_site');
-        if ( empty($hero_site_raw) ) {
-            $hero_site_raw = $m('cx_show_hero') !== '0' ? 'both' : 'none';
-        }
-        ?>
-        <select name="cx_show_hero_site">
-            <option value="both" <?php selected($hero_site_raw, 'both'); ?>>両方（BizManga + ContentsX）</option>
-            <option value="bizmanga" <?php selected($hero_site_raw, 'bizmanga'); ?>>BizMangaのみ</option>
-            <option value="contentsx" <?php selected($hero_site_raw, 'contentsx'); ?>>ContentsXのみ</option>
-            <option value="none" <?php selected($hero_site_raw, 'none'); ?>>表示しない</option>
-        </select>
-        <div class="cx-hint">トップページのHero背景カルーセルにどちらのサイトで表示するか選べます（デフォルト: 両方）</div>
-    </div>
-    <div class="cx-row">
-        <div class="cx-field">
-            <label>Hero順番（BizManga）</label>
-            <input type="number" name="cx_hero_order_bm" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="例: 1">
-            <div class="cx-hint">BizMangaトップのHero表示順。重複すると既存作品が1つずつ後ろにずれます。空欄で末尾。</div>
-        </div>
-        <div class="cx-field">
-            <label>Hero順番（ContentsX）</label>
-            <input type="number" name="cx_hero_order_cx" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="例: 1">
-            <div class="cx-hint">ContentsXトップのHero表示順。重複すると既存作品が1つずつ後ろにずれます。空欄で末尾。</div>
-        </div>
-    </div>
-    <div class="cx-row">
-        <div class="cx-field">
-            <label>Hero行（BizManga）</label>
-            <select name="cx_hero_row_bm" style="width:100%;padding:6px 8px">
-                <option value="" <?php selected($m('cx_hero_row_bm'), ''); ?>>自動</option>
-                <option value="1" <?php selected($m('cx_hero_row_bm'), '1'); ?>>1行目</option>
-                <option value="2" <?php selected($m('cx_hero_row_bm'), '2'); ?>>2行目</option>
-                <option value="3" <?php selected($m('cx_hero_row_bm'), '3'); ?>>3行目</option>
-                <option value="4" <?php selected($m('cx_hero_row_bm'), '4'); ?>>4行目 (タブレット・SP)</option>
-                <option value="5" <?php selected($m('cx_hero_row_bm'), '5'); ?>>5行目 (SPのみ)</option>
+    <?php
+    // 後方互換: 旧 cx_show_hero ('1'/'0') → 新 cx_show_hero_site
+    $hero_site_raw = $m('cx_show_hero_site');
+    if ( empty($hero_site_raw) ) {
+        $hero_site_raw = $m('cx_show_hero') !== '0' ? 'both' : 'none';
+    }
+    $hero_disabled = ( $hero_site_raw === 'none' );
+    ?>
+    <div class="cx-field cx-hero-panel" style="background:#f0f7ff;padding:14px 16px 12px;border-left:4px solid #2563EB;border-radius:4px;">
+        <label style="color:#2563EB;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:4px;">🎬 Heroカルーセル設定</label>
+        <div class="cx-hint" style="margin-bottom:12px;">トップページの背景カルーセル表示。空欄なら自動で末尾に配置。</div>
+
+        <div class="cx-field" style="margin:0 0 12px;">
+            <label style="font-size:13px;">表示先</label>
+            <select name="cx_show_hero_site" id="cx_show_hero_site">
+                <option value="both" <?php selected($hero_site_raw, 'both'); ?>>両方（B + C）</option>
+                <option value="bizmanga" <?php selected($hero_site_raw, 'bizmanga'); ?>>BizMangaのみ</option>
+                <option value="contentsx" <?php selected($hero_site_raw, 'contentsx'); ?>>ContentsXのみ</option>
+                <option value="none" <?php selected($hero_site_raw, 'none'); ?>>表示しない</option>
             </select>
-            <div class="cx-hint">PC: 1〜3行目のみ表示。4行目はタブレット以下、5行目はスマホのみ。</div>
         </div>
-        <div class="cx-field">
-            <label>Hero列（BizManga）</label>
-            <input type="number" name="cx_hero_col_bm" value="<?php echo esc_attr($m('cx_hero_col_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
-            <div class="cx-hint">その行の何番目に配置するか。空欄でその行の末尾。</div>
+
+        <div class="cx-hero-detail" style="<?php echo $hero_disabled ? 'opacity:0.4;pointer-events:none;' : ''; ?>">
+            <div class="cx-row" style="margin-bottom:10px;">
+                <div class="cx-field" style="margin:0;">
+                    <label style="font-size:13px;color:#EB5200;">📚 BizManga 順番</label>
+                    <input type="number" name="cx_hero_order_bm" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="空欄＝末尾">
+                </div>
+                <div class="cx-field" style="margin:0;">
+                    <label style="font-size:13px;color:#E91E63;">✨ ContentsX 順番</label>
+                    <input type="number" name="cx_hero_order_cx" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="空欄＝末尾">
+                </div>
+            </div>
+            <div class="cx-hint" style="margin:0 0 12px;font-size:11px;">数字を入れると、その位置に挿入され既存が1つずつ後ろにずれる</div>
+
+            <details style="background:#fff;border:1px solid #ddd;border-radius:4px;padding:8px 12px;">
+                <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#666;">⚙️ BizManga 詳細配置（行・列を指定）</summary>
+                <div class="cx-row" style="margin-top:10px;">
+                    <div class="cx-field" style="margin:0;">
+                        <label style="font-size:12px;">行</label>
+                        <select name="cx_hero_row_bm">
+                            <option value="" <?php selected($m('cx_hero_row_bm'), ''); ?>>自動</option>
+                            <option value="1" <?php selected($m('cx_hero_row_bm'), '1'); ?>>1行目</option>
+                            <option value="2" <?php selected($m('cx_hero_row_bm'), '2'); ?>>2行目</option>
+                            <option value="3" <?php selected($m('cx_hero_row_bm'), '3'); ?>>3行目</option>
+                            <option value="4" <?php selected($m('cx_hero_row_bm'), '4'); ?>>4行目 (タブ・SP)</option>
+                            <option value="5" <?php selected($m('cx_hero_row_bm'), '5'); ?>>5行目 (SPのみ)</option>
+                        </select>
+                    </div>
+                    <div class="cx-field" style="margin:0;">
+                        <label style="font-size:12px;">列</label>
+                        <input type="number" name="cx_hero_col_bm" value="<?php echo esc_attr($m('cx_hero_col_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
+                    </div>
+                </div>
+                <div class="cx-hint" style="margin-top:6px;font-size:11px;">PC: 1〜3行目のみ。4=タブレット以下、5=スマホのみ</div>
+            </details>
         </div>
     </div>
+    <script>
+    (function(){
+        var sel = document.getElementById('cx_show_hero_site');
+        if (!sel) return;
+        var detail = sel.closest('.cx-hero-panel').querySelector('.cx-hero-detail');
+        sel.addEventListener('change', function(){
+            var off = this.value === 'none';
+            detail.style.opacity = off ? '0.4' : '';
+            detail.style.pointerEvents = off ? 'none' : '';
+        });
+    })();
+    </script>
     <div class="cx-field">
         <label>BizManga ギャラリーに表示</label>
         <select name="cx_show_gallery_bizmanga">
