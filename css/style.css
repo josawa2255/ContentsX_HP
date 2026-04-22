@@ -902,8 +902,6 @@ section { padding: 100px 0; }
   width: 160px;
   height: 100px;
   overflow: hidden;
-  border-radius: 6px;
-  background: var(--bg-light);
   display: block;
   text-decoration: none;
 }
