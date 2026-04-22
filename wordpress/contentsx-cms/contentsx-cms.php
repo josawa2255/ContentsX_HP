@@ -437,9 +437,18 @@ function cxcms_manga_meta_html( $post ) {
         <label>お客様の声</label>
         <textarea name="cx_comment"><?php echo esc_textarea($m('cx_comment')); ?></textarea>
     </div>
-    <div class="cx-field">
-        <label>表示順（数字が小さい＝先に表示）</label>
-        <input type="number" name="cx_sort_order" value="<?php echo esc_attr($m('cx_sort_order') ?: '0'); ?>">
+    <div class="cx-row">
+        <div class="cx-field">
+            <label>表示順（数字が小さい＝先に表示）</label>
+            <input type="number" name="cx_sort_order" value="<?php echo esc_attr($m('cx_sort_order') ?: '0'); ?>">
+        </div>
+        <div class="cx-field">
+            <label style="display:flex;align-items:center;gap:8px;margin-top:24px;padding:8px 10px;background:#f0f7ff;border:2px solid #2563eb;border-radius:6px;cursor:pointer;font-weight:700;color:#2563eb;">
+                <input type="checkbox" name="cx_vertical_read" value="1" <?php checked($m('cx_vertical_read'), '1'); ?> style="width:18px;height:18px;margin:0;">
+                縦読みモード
+            </label>
+            <div class="cx-hint">ONにすると縦スクロールで表示（Webtoon・縦読み漫画用）</div>
+        </div>
     </div>
     <?php
     // 後方互換: 旧 cx_show_hero ('1'/'0') → 新 cx_show_hero_site
@@ -1248,6 +1257,7 @@ function cxcms_save_manga_meta( $post_id ) {
     }
     /* チェックボックス: 未チェック時は POST に来ないので '0' を明示保存 */
     update_post_meta( $post_id, 'cx_cta_enabled', isset($_POST['cx_cta_enabled']) ? '1' : '0' );
+    update_post_meta( $post_id, 'cx_vertical_read', isset($_POST['cx_vertical_read']) ? '1' : '0' );
     /* Hero順番の重複解消: BM・CX それぞれ独立してシフト */
     foreach ( ['bm' => 'cx_hero_order_bm', 'cx' => 'cx_hero_order_cx'] as $site => $key ) {
         if ( isset($_POST[$key]) && $_POST[$key] !== '' ) {
@@ -1605,6 +1615,7 @@ function cxcms_format_work( $p ) {
         /* hero_row_bm/hero_col_bm: 廃止（順番ベース自動振り分けに移行） */
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
+        'mode'      => $m('cx_vertical_read') === '1' ? 'vertical' : 'carousel',
         'thumbnail' => $thumb_url,
         'gallery'   => $gallery_urls,
         'akapen_gallery' => $akapen_urls,
