@@ -177,7 +177,8 @@
 
 
   <!-- Phase 1: OP前絵（intro text と同期して3枚切替）
-       data-step で finishIntro/intro line と同期、JS が active を付け替える -->
+       data-step で finishIntro/intro line と同期、JS が active を付け替える
+       Three.js 風揺れシェーダの canvas が overlay する -->
   <div class="hero-bizchar" id="heroBizchar">
     <!-- 埋もれていた物語に = 海 -->
     <img loading="eager" fetchpriority="high" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img active" data-step="line1" alt="">
@@ -185,6 +186,8 @@
     <img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" data-step="line2" alt="">
     <!-- ContentsX ロゴ = 屋上 -->
     <img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img" data-step="logo" alt="">
+    <!-- WebGL 風揺れエフェクト用 canvas（JS で動的に配置） -->
+    <canvas class="hero-bizchar-canvas" id="heroBizcharCanvas" aria-hidden="true"></canvas>
   </div>
 
   <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->
@@ -443,6 +446,7 @@
   <script src="js/dl-modal.js" defer></script>
   <script src="js/hero-new.js" defer></script>
   <script src="js/hero-fx.js" defer></script>
+  <script src="js/hero-wind.js" defer></script>
   <!-- ビズちゃん追従はCSS stickyで実装 -->
 <!-- Start of HubSpot Embed Code -->
 <script>
