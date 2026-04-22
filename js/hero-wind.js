@@ -1,13 +1,15 @@
 /**
- * Hero 風揺れエフェクト (Three.js + GLSL シェーダ)
+ * Hero 風揺れエフェクト (Three.js + GLSL シェーダ + Verlet スプリングチェーン)
  *
- * 既存の .hero-bizchar-img active 状態を canvas overlay で置き換え、
- * Y座標に応じて画面下側ほど強い水平変位（風）を与える。
- * マスク無しで「スカート相当の領域だけ揺れる」効果を出す。
+ * スカートを縦8段のスプリング鎖で物理シミュレートし、
+ * 慣性・遅延付きで「布が遅れて揺れて戻る」リアル挙動を再現する Live2D 風実装。
+ *  - JS 側: Verlet 統合 + 親追従スプリング、突風ノイズで駆動
+ *  - GLSL 側: チェーン配列を補間して uv.x にディスプレース
  *
  * パフォーマンス:
  *  - 1 RTT (Plane) のみ、軽量シェーダ
- *  - DPR は 1.5 でクランプして塗り過ぎ防止
+ *  - 物理は 8 ノードのみ → 1 フレーム数十演算で完了
+ *  - DPR は 1.5 でクランプ
  *  - active な画像が無い間は requestAnimationFrame を停止
  *  - prefers-reduced-motion / モバイル(<=768px) はスキップ
  */
@@ -15,7 +17,7 @@
   'use strict';
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.innerWidth <= 768) return; // モバイルはスキップ（OPもスキップ済み）
+  if (window.innerWidth <= 768) return;
 
   var canvas = document.getElementById('heroBizcharCanvas');
   var bizchar = document.getElementById('heroBizchar');
@@ -24,25 +26,29 @@
   var imgs = Array.from(bizchar.querySelectorAll('.hero-bizchar-img'));
   if (imgs.length === 0) return;
 
-  // Three.js を CDN から動的ロード（小さく抑えるため core のみ）
   function loadThree(cb) {
     if (window.THREE) return cb();
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js';
     s.async = true;
     s.onload = cb;
-    s.onerror = function() { console.warn('[hero-wind] Three.js load failed, falling back to static image'); };
+    s.onerror = function() { console.warn('[hero-wind] Three.js load failed'); };
     document.head.appendChild(s);
   }
 
   loadThree(function() {
-    if (!window.THREE) {
-      console.warn('[hero-wind] THREE未ロード');
-      return;
-    }
+    if (!window.THREE) { console.warn('[hero-wind] THREE未ロード'); return; }
     console.log('[hero-wind] Three.js loaded, init wind effect');
     init();
   });
+
+  // --- スカート Verlet 物理パラメータ ---
+  var CHAIN_N      = 8;       // 鎖の段数（必ずシェーダ内 array サイズと合わせる）
+  var SKIRT_TOP    = 0.51;    // 腰位置 (画像 uv.y)
+  var SKIRT_BOTTOM = 0.64;    // 裾位置 (画像 uv.y)
+  var DAMPING      = 0.93;    // 速度減衰（1=減衰なし、0=即停止）
+  var STIFFNESS    = 0.22;    // 親への追従バネ強度
+  var WIND_AMP     = 0.0055;  // 1 段あたりの風入力（uv 単位）
 
   function init() {
     var THREE = window.THREE;
@@ -60,7 +66,6 @@
     var scene = new THREE.Scene();
     var camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-    // テクスチャ事前ロード
     var loader = new THREE.TextureLoader();
     var textures = {};
     imgs.forEach(function(img) {
@@ -72,12 +77,20 @@
       textures[step] = tex;
     });
 
+    // チェーン状態（pos/prev は uv 単位の水平変位）
+    var chain = [];
+    for (var i = 0; i < CHAIN_N; i++) chain.push({ pos: 0, prev: 0 });
+    var chainArr = new Float32Array(CHAIN_N);
+
     var uniforms = {
-      uTex:       { value: null },
-      uTime:      { value: 0 },
-      uIntensity: { value: 1.0 }, // ほどよい風感
-      uAspect:    { value: 1.0 },
-      uTexAspect: { value: 1.5 } // 1200/800
+      uTex:         { value: null },
+      uTime:        { value: 0 },
+      uIntensity:   { value: 1.0 },
+      uAspect:      { value: 1.0 },
+      uTexAspect:   { value: 1.5 },
+      uChain:       { value: chainArr },
+      uSkirtTop:    { value: SKIRT_TOP },
+      uSkirtBottom: { value: SKIRT_BOTTOM }
     };
 
     var vertex = [
@@ -88,10 +101,6 @@
       '}'
     ].join('\n');
 
-    // フラグメント: 風揺れ
-    //   - 下側ほど強い水平変位（スカート相当）
-    //   - 上側にも控えめに横揺れ（髪相当）
-    //   - 画面アスペクトに合わせて UV を「cover」相当に補正
     var fragment = [
       'precision mediump float;',
       'uniform sampler2D uTex;',
@@ -99,60 +108,42 @@
       'uniform float uIntensity;',
       'uniform float uAspect;',
       'uniform float uTexAspect;',
+      'uniform float uChain[8];',
+      'uniform float uSkirtTop;',
+      'uniform float uSkirtBottom;',
       'varying vec2 vUv;',
       '',
-      '// --- 2D 値ノイズ（Perlin風、軽量実装） ---',
-      'vec2 hash22(vec2 p){',
-      '  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));',
-      '  return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);',
-      '}',
-      'float noise2(vec2 p){',
-      '  vec2 i = floor(p);',
-      '  vec2 f = fract(p);',
-      '  vec2 u = f * f * (3.0 - 2.0 * f);',
-      '  return mix(',
-      '    mix(dot(hash22(i + vec2(0.0,0.0)), f - vec2(0.0,0.0)),',
-      '        dot(hash22(i + vec2(1.0,0.0)), f - vec2(1.0,0.0)), u.x),',
-      '    mix(dot(hash22(i + vec2(0.0,1.0)), f - vec2(0.0,1.0)),',
-      '        dot(hash22(i + vec2(1.0,1.0)), f - vec2(1.0,1.0)), u.x),',
-      '    u.y);',
-      '}',
-      '// 2 オクターブの fBm（ゆったり + 細かい揺らぎ）',
-      'float fbm(vec2 p){',
-      '  return 0.65 * noise2(p) + 0.35 * noise2(p * 2.3);',
-      '}',
-      '',
-      '// object-fit: cover 相当の UV 計算（中央クロップ）',
       'vec2 coverUv(vec2 uv){',
       '  float r = uAspect / uTexAspect;',
       '  vec2 result = uv;',
       '  if (r > 1.0) {',
-      '    // canvas が画像より横長 → 縦をクロップ',
       '    result.y = (uv.y - 0.5) / r + 0.5;',
       '  } else {',
-      '    // canvas が画像より縦長 → 横をクロップ',
       '    result.x = (uv.x - 0.5) * r + 0.5;',
       '  }',
       '  return result;',
       '}',
       '',
+      '// チェーン配列を線形補間して uv.y 位置の水平変位を返す',
+      'float chainDispAt(float y){',
+      '  float t  = clamp((y - uSkirtTop) / (uSkirtBottom - uSkirtTop), 0.0, 1.0);',
+      '  float fi = t * 7.0;   // CHAIN_N - 1',
+      '  float disp = 0.0;',
+      '  for (int i = 0; i < 8; i++) {',
+      '    float w = max(0.0, 1.0 - abs(float(i) - fi));',
+      '    disp += uChain[i] * w;',
+      '  }',
+      '  return disp;',
+      '}',
+      '',
       'void main(){',
       '  vec2 uv = coverUv(vUv);',
       '',
-      '  // Y 座標プロファイル（画像 uv.y=0 上端, 1 下端 / 1200x800 屋上画像基準）',
-      '  // スカート: 腰(0.51)〜裾(0.64) のみ。脚(>0.66)・上半身(<0.51)は固定。',
-      '  float skirtShape = smoothstep(0.51, 0.64, uv.y) * (1.0 - smoothstep(0.64, 0.68, uv.y));',
-      '  skirtShape = pow(skirtShape, 1.2);',
+      '  // スカートマスク（腰0.51〜裾0.64、その下は急速に0）',
+      '  float skirtMask = smoothstep(0.51, 0.64, uv.y) * (1.0 - smoothstep(0.64, 0.68, uv.y));',
+      '  float dispX = chainDispAt(uv.y) * skirtMask * uIntensity;',
       '',
-      '  // --- 連続体としての布スイング ---',
-      '  float gust = fbm(vec2(uTime * 0.35, 0.0));         // 突風の強弱 -1..1',
-      '  float skirtSwing = sin(uTime * 1.4) * 0.025;',
-      '  float displacementX = skirtSwing * skirtShape * (0.6 + 0.4 * gust) * uIntensity;',
-      '',
-      '  // 横風のみ（縦揺れなし）',
-      '  uv.x += displacementX;',
-      '',
-      '  // クロップ範囲外（黒）防止',
+      '  uv.x += dispX;',
       '  uv = clamp(uv, 0.001, 0.999);',
       '',
       '  gl_FragColor = texture2D(uTex, uv);',
@@ -171,19 +162,64 @@
 
     var rafId = null;
     var startTime = performance.now();
+    var lastT = null;
     var running = false;
     var currentStep = null;
 
+    // 風入力（時間のみ依存・複数周波数の合成）
+    function windAt(t) {
+      return (
+        Math.sin(t * 0.7)             * 0.55 +
+        Math.sin(t * 1.6 + 1.3)       * 0.30 +
+        Math.sin(t * 3.1 + 2.7)       * 0.15
+      );
+    }
+
+    // チェーン物理ステップ（1フレーム）
+    function stepChain(t) {
+      if (lastT === null) lastT = t;
+      var dt = Math.min(0.040, t - lastT);
+      lastT = t;
+      // 60fps 想定でステップを正規化（dt変動への耐性）
+      var sub = Math.max(1, Math.round(dt / 0.016));
+      var w = windAt(t);
+
+      for (var s = 0; s < sub; s++) {
+        // i=0 は腰（pin）
+        chain[0].pos = 0;
+        chain[0].prev = 0;
+        for (var i = 1; i < CHAIN_N; i++) {
+          var hemRatio = i / (CHAIN_N - 1);          // 0..1
+          // 各ノードの目標位置 = 親の位置 + 風入力（裾ほど強い）
+          var target = chain[i-1].pos + w * WIND_AMP * hemRatio;
+          // Verlet 風: 速度（前回比）+ 目標へのバネ
+          var velocity = (chain[i].pos - chain[i].prev) * DAMPING;
+          var force    = (target - chain[i].pos) * STIFFNESS;
+          var newPos   = chain[i].pos + velocity + force;
+          chain[i].prev = chain[i].pos;
+          chain[i].pos  = newPos;
+        }
+      }
+
+      for (var k = 0; k < CHAIN_N; k++) chainArr[k] = chain[k].pos;
+    }
+
     function frame() {
-      uniforms.uTime.value = (performance.now() - startTime) / 1000;
+      var now = performance.now();
+      var t = (now - startTime) / 1000;
+      uniforms.uTime.value = t;
       var rect = bizchar.getBoundingClientRect();
       uniforms.uAspect.value = rect.width / rect.height;
+
+      stepChain(t);
+
       renderer.render(scene, camera);
       rafId = requestAnimationFrame(frame);
     }
     function start() {
       if (running) return;
       running = true;
+      lastT = null;
       bizchar.classList.add('has-wind');
       canvas.classList.add('active');
       frame();
@@ -201,7 +237,6 @@
       var activeImg = bizchar.querySelector('.hero-bizchar-img.active');
       if (!activeImg) { stop(); return; }
       var step = activeImg.dataset.step;
-      // 風揺れは「logo」フェーズ（屋上=最後の画像）のみ有効
       if (step !== 'logo') { stop(); currentStep = step; return; }
       if (step === currentStep && running) return;
       currentStep = step;
@@ -212,19 +247,16 @@
         uniforms.uTexAspect.value = activeImg.naturalWidth / activeImg.naturalHeight;
       }
       sizeCanvas();
-      console.log('[hero-wind] active step:', step, 'tex loaded:', tex.image && tex.image.complete);
+      console.log('[hero-wind] active step:', step);
       start();
     }
 
-    // .active 切替を監視（JS が classList.toggle するタイミング）
     var observer = new MutationObserver(applyActive);
     imgs.forEach(function(img) {
       observer.observe(img, { attributes: true, attributeFilter: ['class'] });
     });
 
-    // Phase 2 突入で停止
     window.addEventListener('hero-phase2-start', function() {
-      // 0.6s フェード分の余裕を持って停止
       setTimeout(stop, 800);
     });
 
