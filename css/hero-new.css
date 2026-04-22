@@ -543,6 +543,8 @@
   max-height: 70vh;
   overflow-y: auto;
   border-radius: 12px 0 0 12px;
+  align-self: flex-start;  /* flex stretchで伸ばされて下に余白が出るのを防ぐ */
+  background: transparent; /* 画像が短い時に灰色枠が見えないように */
 }
 .work-detail-carousel {
   display: flex;
