@@ -28,7 +28,7 @@
   function loadThree(cb) {
     if (window.THREE) return cb();
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js';
+    s.src = 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js';
     s.async = true;
     s.onload = cb;
     s.onerror = function() { console.warn('[hero-wind] Three.js load failed, falling back to static image'); };
