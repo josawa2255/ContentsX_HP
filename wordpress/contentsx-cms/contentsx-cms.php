@@ -222,22 +222,27 @@ function cxcms_manga_meta_html( $post ) {
     </div>
     <div class="cx-field" style="background:#fff7ed;padding:12px;border-left:4px solid #EB5200;border-radius:4px;">
         <label style="color:#EB5200;font-weight:700;">📣 BizMangaビズ書庫 最終ページCTA</label>
-        <div class="cx-hint" style="margin-bottom:10px;">漫画を読み終わった最終ページに「公式サイトを見る」ボタンを表示。URL未入力＝非表示。</div>
+        <div class="cx-hint" style="margin-bottom:10px;">漫画を読み終わった最終ページに「公式サイトを見る」ボタンを表示。表示ON/OFFは右下のチェックボックスで切替。</div>
         <div class="cx-row">
             <div class="cx-field">
                 <label>クライアント公式URL</label>
                 <input name="cx_client_url" value="<?php echo esc_attr($m('cx_client_url')); ?>" placeholder="https://example.co.jp">
-                <div class="cx-hint">空欄ならCTAボタンは表示されません</div>
+                <div class="cx-hint">CTAボタンの遷移先URL</div>
             </div>
             <div class="cx-field">
                 <label>CTAラベル（日本語）</label>
                 <input name="cx_cta_label_ja" value="<?php echo esc_attr($m('cx_cta_label_ja')); ?>" placeholder="例: 公式サイトを見る →／採用情報を見る">
-                <div class="cx-hint">空欄なら日本語表示時はCTA非表示</div>
+                <div class="cx-hint">空欄時は「公式サイトを見る →」</div>
             </div>
             <div class="cx-field">
                 <label>CTAラベル（英語）</label>
                 <input name="cx_cta_label_en" value="<?php echo esc_attr($m('cx_cta_label_en')); ?>" placeholder="例: Visit Official Site →">
-                <div class="cx-hint">空欄なら英語表示時はCTA非表示</div>
+                <div class="cx-hint">空欄時は「Visit Official Site →」</div>
+                <label style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:#fff;border:2px solid #EB5200;border-radius:6px;cursor:pointer;font-weight:700;color:#EB5200;">
+                    <input type="checkbox" name="cx_cta_enabled" value="1" <?php checked($m('cx_cta_enabled'), '1'); ?> style="width:18px;height:18px;margin:0;">
+                    CTAボタンを表示する
+                </label>
+                <div class="cx-hint">チェック ON のときのみCTAが最終ページに表示されます</div>
             </div>
         </div>
     </div>
@@ -899,6 +904,8 @@ function cxcms_save_manga_meta( $post_id ) {
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
+    /* チェックボックス: 未チェック時は POST に来ないので '0' を明示保存 */
+    update_post_meta( $post_id, 'cx_cta_enabled', isset($_POST['cx_cta_enabled']) ? '1' : '0' );
     /* Hero順番の重複解消: BM・CX それぞれ独立してシフト */
     foreach ( ['bm' => 'cx_hero_order_bm', 'cx' => 'cx_hero_order_cx'] as $site => $key ) {
         if ( isset($_POST[$key]) && $_POST[$key] !== '' ) {
@@ -1012,7 +1019,7 @@ add_action( 'rest_api_init', 'cxcms_register_rest_fields' );
 function cxcms_register_rest_fields() {
 
     /* ── 漫画事例のフィールド ── */
-    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
+    $manga_fields = ['cx_work_id','cx_title_en','cx_subtitle_ja','cx_subtitle_en','cx_pages','cx_client','cx_client_url','cx_cta_label_ja','cx_cta_label_en','cx_cta_enabled','cx_spec_pages','cx_spec_period','cx_media','cx_point','cx_comment','cx_sort_order','cx_hero_order_bm','cx_hero_order_cx','cx_hero_row_bm','cx_hero_col_bm','cx_is_new','cx_added_date','cx_show_library','cx_show_site','cx_show_gallery_bizmanga','cx_show_new_contentsx','cx_private'];
     foreach ( $manga_fields as $f ) {
         register_rest_field( 'manga_work', $f, [
             'get_callback' => fn($obj) => get_post_meta( $obj['id'], $f, true ),
@@ -1241,6 +1248,7 @@ function cxcms_format_work( $p ) {
         'client_url'    => $m('cx_client_url'),
         'cta_label_ja'  => $m('cx_cta_label_ja'),
         'cta_label_en'  => $m('cx_cta_label_en'),
+        'cta_enabled'   => $m('cx_cta_enabled') === '1',
         'media'     => $media,
         'spec'      => [
             'pages'  => $m('cx_spec_pages'),
