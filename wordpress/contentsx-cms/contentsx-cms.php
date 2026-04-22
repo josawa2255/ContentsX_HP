@@ -319,6 +319,32 @@ add_action( 'admin_notices', function() {
     echo '<div class="notice notice-success"><p>📰 漫画事例から自動生成しました。タイトル・本文・公開設定を確認して「公開」してください。</p></div>';
 });
 
+/* Hero順番ドラッグ並べ替え 保存ハンドラー */
+add_action( 'wp_ajax_cxcms_hero_reorder', 'cxcms_hero_reorder_handler' );
+function cxcms_hero_reorder_handler() {
+    if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( '権限なし' );
+    if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'cxcms_hero_reorder' ) ) wp_send_json_error( 'nonce不正' );
+
+    $site = $_POST['site'] ?? '';
+    if ( ! in_array( $site, ['bm', 'cx'], true ) ) wp_send_json_error( 'site不正' );
+
+    $ids_raw = $_POST['ids'] ?? '[]';
+    $ids = json_decode( wp_unslash( $ids_raw ), true );
+    if ( ! is_array( $ids ) ) wp_send_json_error( 'ids不正' );
+
+    $meta_key = $site === 'bm' ? 'cx_hero_order_bm' : 'cx_hero_order_cx';
+    $count = 0;
+    foreach ( $ids as $idx => $post_id ) {
+        $post_id = (int) $post_id;
+        if ( $post_id <= 0 ) continue;
+        $p = get_post( $post_id );
+        if ( ! $p || $p->post_type !== 'manga_work' ) continue;
+        update_post_meta( $post_id, $meta_key, $idx + 1 );
+        $count++;
+    }
+    wp_send_json_success([ 'updated' => $count ]);
+}
+
 /* ── 漫画事例 メタボックス HTML ── */
 function cxcms_manga_meta_html( $post ) {
     wp_nonce_field( 'cxcms_manga_save', 'cxcms_manga_nonce' );
@@ -423,11 +449,52 @@ function cxcms_manga_meta_html( $post ) {
     }
     $hero_disabled = ( $hero_site_raw === 'none' );
     ?>
+    <?php
+    /* Hero対象の全作品を取得（順番昇順）→ ドラッグ並べ替え用UIに渡す */
+    $hero_works_all = get_posts([
+        'post_type'      => 'manga_work',
+        'posts_per_page' => 200,
+        'post_status'    => 'publish',
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    ]);
+    $hero_bm_list = []; $hero_cx_list = [];
+    foreach ( $hero_works_all as $w ) {
+        $w_meta = fn($k) => get_post_meta( $w->ID, $k, true );
+        $site_raw = $w_meta('cx_show_hero_site');
+        if ( empty($site_raw) ) {
+            $site_raw = $w_meta('cx_show_hero') !== '0' ? 'both' : 'none';
+        }
+        if ( $site_raw === 'none' ) continue;
+        $thumb_id = get_post_thumbnail_id( $w->ID );
+        $thumb_url = '';
+        if ( $thumb_id ) {
+            $img = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
+            if ( $img ) $thumb_url = $img[0];
+        }
+        $entry = [
+            'id'    => $w->ID,
+            'title' => $w->post_title,
+            'thumb' => $thumb_url,
+        ];
+        if ( $site_raw === 'both' || $site_raw === 'bizmanga' ) {
+            $entry['order'] = (int) ( $w_meta('cx_hero_order_bm') ?: 9999 );
+            $hero_bm_list[] = $entry;
+        }
+        if ( $site_raw === 'both' || $site_raw === 'contentsx' ) {
+            $entry['order'] = (int) ( $w_meta('cx_hero_order_cx') ?: 9999 );
+            $hero_cx_list[] = $entry;
+        }
+    }
+    usort( $hero_bm_list, fn($a, $b) => $a['order'] - $b['order'] );
+    usort( $hero_cx_list, fn($a, $b) => $a['order'] - $b['order'] );
+    $current_id = $post->ID;
+    ?>
     <div class="cx-field cx-hero-panel" style="background:#f0f7ff;padding:14px 16px 12px;border-left:4px solid #2563EB;border-radius:4px;">
         <label style="color:#2563EB;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:4px;">🎬 Heroカルーセル設定</label>
-        <div class="cx-hint" style="margin-bottom:12px;">トップページの背景カルーセル表示。順番が前のほど目立つ位置に出ます（PC=3行 / タブレット=4行 / スマホ=5行に自動振り分け）。</div>
+        <div class="cx-hint" style="margin-bottom:12px;">トップページの背景カルーセル表示。<strong>サムネイルをドラッグで並べ替え</strong>できます。PC=3行 / タブレット=4行 / スマホ=5行に自動振り分け。</div>
 
-        <div class="cx-field" style="margin:0 0 12px;">
+        <div class="cx-field" style="margin:0 0 16px;">
             <label style="font-size:13px;">表示先</label>
             <select name="cx_show_hero_site" id="cx_show_hero_site">
                 <option value="both" <?php selected($hero_site_raw, 'both'); ?>>両方（B + C）</option>
@@ -438,28 +505,160 @@ function cxcms_manga_meta_html( $post ) {
         </div>
 
         <div class="cx-hero-detail" style="<?php echo $hero_disabled ? 'opacity:0.4;pointer-events:none;' : ''; ?>">
-            <div class="cx-row" style="margin-bottom:6px;">
-                <div class="cx-field" style="margin:0;">
-                    <label style="font-size:13px;color:#EB5200;">📚 BizManga 順番</label>
-                    <input type="number" name="cx_hero_order_bm" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
+            <!-- BizManga ドラッグ並べ替え -->
+            <div style="margin-bottom:18px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <strong style="color:#EB5200;font-size:13px;">📚 BizManga カルーセル順番</strong>
+                    <span class="cx-hero-status" data-site="bm" style="font-size:11px;color:#666;"></span>
                 </div>
-                <div class="cx-field" style="margin:0;">
-                    <label style="font-size:13px;color:#E91E63;">✨ ContentsX 順番</label>
-                    <input type="number" name="cx_hero_order_cx" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
+                <div class="cx-hero-sortable" data-site="bm" data-current="<?php echo (int) $current_id; ?>"
+                    style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#fff;border:1px dashed #cbd5e1;border-radius:6px;min-height:96px;">
+                    <?php foreach ( $hero_bm_list as $item ): ?>
+                        <div class="cx-hero-thumb<?php echo $item['id'] == $current_id ? ' is-current' : ''; ?>"
+                             data-id="<?php echo (int) $item['id']; ?>"
+                             title="<?php echo esc_attr( $item['title'] ); ?>"
+                             style="position:relative;cursor:grab;width:60px;<?php echo $item['id'] == $current_id ? 'box-shadow:0 0 0 3px #EB5200;' : ''; ?>">
+                            <?php if ( $item['thumb'] ): ?>
+                                <img src="<?php echo esc_url( $item['thumb'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>"
+                                     style="width:60px;height:80px;object-fit:cover;border-radius:4px;display:block;">
+                            <?php else: ?>
+                                <div style="width:60px;height:80px;background:#eee;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999;text-align:center;padding:4px;">No Img</div>
+                            <?php endif; ?>
+                            <span class="cx-hero-num" style="position:absolute;top:-4px;left:-4px;background:#EB5200;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;"></span>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
-            <div class="cx-hint" style="margin:0;font-size:11px;">数字を入れると、その位置に挿入され既存が1つずつ後ろにずれる</div>
+
+            <!-- ContentsX ドラッグ並べ替え -->
+            <div style="margin-bottom:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <strong style="color:#E91E63;font-size:13px;">✨ ContentsX カルーセル順番</strong>
+                    <span class="cx-hero-status" data-site="cx" style="font-size:11px;color:#666;"></span>
+                </div>
+                <div class="cx-hero-sortable" data-site="cx" data-current="<?php echo (int) $current_id; ?>"
+                    style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#fff;border:1px dashed #cbd5e1;border-radius:6px;min-height:96px;">
+                    <?php foreach ( $hero_cx_list as $item ): ?>
+                        <div class="cx-hero-thumb<?php echo $item['id'] == $current_id ? ' is-current' : ''; ?>"
+                             data-id="<?php echo (int) $item['id']; ?>"
+                             title="<?php echo esc_attr( $item['title'] ); ?>"
+                             style="position:relative;cursor:grab;width:60px;<?php echo $item['id'] == $current_id ? 'box-shadow:0 0 0 3px #E91E63;' : ''; ?>">
+                            <?php if ( $item['thumb'] ): ?>
+                                <img src="<?php echo esc_url( $item['thumb'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>"
+                                     style="width:60px;height:80px;object-fit:cover;border-radius:4px;display:block;">
+                            <?php else: ?>
+                                <div style="width:60px;height:80px;background:#eee;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999;text-align:center;padding:4px;">No Img</div>
+                            <?php endif; ?>
+                            <span class="cx-hero-num" style="position:absolute;top:-4px;left:-4px;background:#E91E63;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;"></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <details style="margin-top:8px;">
+                <summary style="cursor:pointer;font-size:12px;color:#666;">⚙️ 数値で直接指定（ドラッグの代わり）</summary>
+                <div class="cx-row" style="margin-top:8px;">
+                    <div class="cx-field" style="margin:0;">
+                        <label style="font-size:12px;color:#EB5200;">BizManga 順番</label>
+                        <input type="number" name="cx_hero_order_bm" id="cx_hero_order_bm_input" value="<?php echo esc_attr($m('cx_hero_order_bm') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
+                    </div>
+                    <div class="cx-field" style="margin:0;">
+                        <label style="font-size:12px;color:#E91E63;">ContentsX 順番</label>
+                        <input type="number" name="cx_hero_order_cx" id="cx_hero_order_cx_input" value="<?php echo esc_attr($m('cx_hero_order_cx') ?: ''); ?>" placeholder="空欄＝末尾" min="1">
+                    </div>
+                </div>
+            </details>
         </div>
     </div>
+    <?php wp_nonce_field( 'cxcms_hero_reorder', 'cxcms_hero_reorder_nonce' ); ?>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <style>
+        .cx-hero-thumb { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .cx-hero-thumb:hover { transform: translateY(-2px); }
+        .cx-hero-thumb.sortable-chosen { opacity: 0.6; cursor: grabbing; }
+        .cx-hero-thumb.sortable-ghost { opacity: 0.3; }
+        .cx-hero-status.saving { color: #2563EB; }
+        .cx-hero-status.saved { color: #059669; }
+        .cx-hero-status.error { color: #dc2626; }
+    </style>
     <script>
     (function(){
         var sel = document.getElementById('cx_show_hero_site');
-        if (!sel) return;
-        var detail = sel.closest('.cx-hero-panel').querySelector('.cx-hero-detail');
-        sel.addEventListener('change', function(){
-            var off = this.value === 'none';
-            detail.style.opacity = off ? '0.4' : '';
-            detail.style.pointerEvents = off ? 'none' : '';
+        if (sel) {
+            var detail = sel.closest('.cx-hero-panel').querySelector('.cx-hero-detail');
+            sel.addEventListener('change', function(){
+                var off = this.value === 'none';
+                detail.style.opacity = off ? '0.4' : '';
+                detail.style.pointerEvents = off ? 'none' : '';
+            });
+        }
+
+        if (typeof Sortable === 'undefined') return;
+        var nonce = document.getElementById('cxcms_hero_reorder_nonce').value;
+        var ajaxUrl = '<?php echo esc_js( admin_url('admin-ajax.php') ); ?>';
+
+        function refreshNumbers(container) {
+            container.querySelectorAll('.cx-hero-thumb').forEach(function(el, idx) {
+                var num = el.querySelector('.cx-hero-num');
+                if (num) num.textContent = idx + 1;
+            });
+        }
+        function setStatus(site, text, cls) {
+            var status = document.querySelector('.cx-hero-status[data-site="' + site + '"]');
+            if (!status) return;
+            status.textContent = text;
+            status.className = 'cx-hero-status' + (cls ? ' ' + cls : '');
+        }
+        function syncCurrentInput(site, container) {
+            var current = container.dataset.current;
+            var thumbs = container.querySelectorAll('.cx-hero-thumb');
+            for (var i = 0; i < thumbs.length; i++) {
+                if (thumbs[i].dataset.id === current) {
+                    var input = document.getElementById('cx_hero_order_' + site + '_input');
+                    if (input) input.value = i + 1;
+                    return;
+                }
+            }
+        }
+        function saveOrder(site, container) {
+            var ids = Array.from(container.querySelectorAll('.cx-hero-thumb')).map(function(el) {
+                return el.dataset.id;
+            });
+            setStatus(site, '保存中...', 'saving');
+            var fd = new FormData();
+            fd.append('action', 'cxcms_hero_reorder');
+            fd.append('nonce', nonce);
+            fd.append('site', site);
+            fd.append('ids', JSON.stringify(ids));
+            fetch(ajaxUrl, { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(function(r) { return r.json(); })
+                .then(function(json) {
+                    if (json && json.success) {
+                        var d = new Date();
+                        setStatus(site, '✓ 保存しました ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'), 'saved');
+                    } else {
+                        setStatus(site, '保存失敗: ' + (json && json.data ? json.data : 'エラー'), 'error');
+                    }
+                })
+                .catch(function(e) {
+                    setStatus(site, '通信エラー', 'error');
+                });
+        }
+
+        document.querySelectorAll('.cx-hero-sortable').forEach(function(container) {
+            var site = container.dataset.site;
+            refreshNumbers(container);
+            syncCurrentInput(site, container);
+            new Sortable(container, {
+                animation: 180,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                onEnd: function() {
+                    refreshNumbers(container);
+                    syncCurrentInput(site, container);
+                    saveOrder(site, container);
+                }
+            });
         });
     })();
     </script>
