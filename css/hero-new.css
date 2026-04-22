@@ -287,11 +287,11 @@
   align-items: center;
   line-height: 0;
   opacity: 0;
-  transform: translateY(28px) scale(0.78);
-  filter: drop-shadow(0 0 0 rgba(255,255,255,0));
-  transition: opacity 0.7s cubic-bezier(0.19,1,0.22,1),
-              transform 0.9s cubic-bezier(0.19,1,0.22,1),
-              filter 1.2s ease;
+  /* translate3d でGPUレイヤーに昇格、will-change で合成最適化 */
+  transform: translate3d(0, 28px, 0) scale(0.78);
+  will-change: transform, opacity;
+  /* transition は廃止: animation と衝突してカクついていたため。
+     filter transition も重い drop-shadow ぼかしで負荷が高いため削除 */
 }
 .hero-logo-img {
   width: min(62vw, 560px);
@@ -301,14 +301,12 @@
 }
 .hero--phase2 .hero-logo-wrap,
 .hero-logo-wrap--play {
-  opacity: 1;
-  transform: scale(1.0);
   animation: heroLogoAppear 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
 }
-/* 控えめ: ほんの少し縮小状態からフェード+ごく軽いscale up */
+/* 開始状態を base と一致させてスナップ防止、translate3d でGPU合成 */
 @keyframes heroLogoAppear {
-  0%   { transform: scale(0.94); opacity: 0; }
-  100% { transform: scale(1.0); opacity: 1; }
+  0%   { opacity: 0; transform: translate3d(0, 28px, 0) scale(0.78); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.0); }
 }
 @media (max-width: 768px) {
   .hero-logo-wrap { margin-bottom: 20px; }
