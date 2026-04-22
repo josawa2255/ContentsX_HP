@@ -176,9 +176,15 @@
   </div>
 
 
-  <!-- Phase 1: OP前絵（1枚固定 + Ken Burns zoom） -->
+  <!-- Phase 1: OP前絵（intro text と同期して3枚切替）
+       data-step で finishIntro/intro line と同期、JS が active を付け替える -->
   <div class="hero-bizchar" id="heroBizchar">
-    <img loading="eager" fetchpriority="high" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img active" alt="">
+    <!-- 埋もれていた物語に = 海 -->
+    <img loading="eager" fetchpriority="high" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img active" data-step="line1" alt="">
+    <!-- 光を当てる = スタジオ -->
+    <img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" data-step="line2" alt="">
+    <!-- ContentsX ロゴ = 屋上 -->
+    <img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img" data-step="logo" alt="">
   </div>
 
   <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->

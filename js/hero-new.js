@@ -99,20 +99,20 @@ document.addEventListener('DOMContentLoaded', function() {
   const heroWorksBg = document.getElementById('heroWorksBg');
   const bizcharImgs = heroBizchar ? heroBizchar.querySelectorAll('.hero-bizchar-img') : [];
 
-  // --- Phase 1: ビズちゃんクロスフェード (1.2秒ごとに切替) ---
-  // 修正: setInterval → setTimeout チェーンで確実にクリーンアップ
-  if (bizcharImgs.length > 1) {
-    let bizcharIdx = 0;
-    function nextBizchar() {
-      bizcharImgs[bizcharIdx].classList.remove('active');
-      bizcharIdx = (bizcharIdx + 1) % bizcharImgs.length;
-      bizcharImgs[bizcharIdx].classList.add('active');
-      if (bizcharIdx !== 0) {
-        setTimeout(nextBizchar, 1200);
-      }
-    }
-    setTimeout(nextBizchar, 1200);
+  // --- Phase 1: ビズちゃん画像切替（intro text と同期）---
+  // data-step="line1" は初期active（埋もれていた物語に=海）
+  // line2 表示時(0.9s) → data-step="line2" (光を当てる=スタジオ)
+  // logo 表示時(3.6s) → data-step="logo" (ContentsX=屋上)
+  function activateBizcharStep(step) {
+    if (!bizcharImgs.length) return;
+    bizcharImgs.forEach(function(img) {
+      img.classList.toggle('active', img.dataset.step === step);
+    });
   }
+  // line2 切替 (0.9s に合わせて)
+  setTimeout(function() { activateBizcharStep('line2'); }, 900);
+  // logo 切替 (finishIntro 直前 = 3.6s)
+  setTimeout(function() { activateBizcharStep('logo'); }, 3600);
 
   // --- 鎖アニメーション (requestAnimationFrame で60fps滑らか制御) ---
 
