@@ -63,60 +63,44 @@
   font-weight: 900;
   color: #fff;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translate3d(0, 24px, 0);
+  /* GPU合成 + 長めの easing で滑らかに */
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   line-height: 1.4;
 }
 .hero-intro-line.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 }
-/* 1文字ずつ波打つ */
+/* 1文字ずつ波打つ（登場時のみ、infinite float は廃止：常時アニメは重く
+   ロゴ/画像と同時動作で顕著にカクついていた）*/
 .hero-intro-line .hii-char {
   display: inline-block;
   opacity: 0;
-  transform: translateY(30px) scale(0.85);
+  transform: translate3d(0, 24px, 0) scale(0.9);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
 }
 .hero-intro-line.visible .hii-char {
-  animation: heroIntroCharWave 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--i, 0) * 60ms);
-}
-/* 登場後も常時ゆらぎ続ける */
-.hero-intro-line.visible .hii-char::after {
-  /* placeholder for chained animation — use additional animation via nth or parallel */
-}
-.hero-intro-line.visible .hii-char {
-  animation: heroIntroCharWave 0.8s cubic-bezier(0.16, 1, 0.3, 1) both,
-             heroIntroCharFloat 3.2s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * 60ms),
-                   calc(800ms + var(--i, 0) * 120ms);
+  animation: heroIntroCharWave 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 50ms);
 }
 @keyframes heroIntroCharWave {
   0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.85);
-    text-shadow: 0 0 0 rgba(var(--accent-rgb, 233, 30, 140), 0);
-  }
-  60% {
-    opacity: 1;
-    transform: translateY(-6px) scale(1.06);
+    transform: translate3d(0, 24px, 0) scale(0.9);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
     text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
   }
 }
-@keyframes heroIntroCharFloat {
-  0%, 100% {
-    transform: translateY(0);
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(var(--accent-rgb, 233, 30, 140), 0.3);
-  }
-  50% {
-    transform: translateY(-6px);
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 22px rgba(var(--accent-rgb, 233, 30, 140), 0.6);
-  }
-}
+/* heroIntroCharFloat（infinite per-char）は削除：
+   常時アニメは GPU 負荷が高く、画像切替・ロゴ登場と重なって顕著にカクついていた */
 @media (prefers-reduced-motion: reduce) {
   .hero-intro-line .hii-char {
     animation: none !important;
@@ -162,20 +146,25 @@
   /* 画像の上側を基準に表示（中央 cover だと顔・空が見切れる） */
   object-position: center top;
   opacity: 0;
-  transform: scale(1.0);
-  transition: opacity 0.9s ease;
+  transform: translate3d(0, 0, 0) scale(1.0);
+  /* GPU合成レイヤーに昇格してフレーム落ち防止 */
+  will-change: opacity, transform;
+  transform-origin: 50% 0%;
+  /* よりじっくり長めの crossfade。ease-in-out で滑らかに */
+  transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
 }
-/* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出
-   transform-origin を上端中央にして、ズーム中も上側が見切れないようにする */
+/* Ken Burns zoom: 表示中の1枚に対してゆっくりズームを走らせ「前絵」感を演出 */
 .hero-bizchar-img.active {
   opacity: 1;
-  transform-origin: 50% 0%;
-  animation: heroBizcharKenBurns 5s ease-out forwards;
+  animation: heroBizcharKenBurns 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 @keyframes heroBizcharKenBurns {
-  0%   { transform: scale(1.0); filter: brightness(0.95); }
-  100% { transform: scale(1.06); filter: brightness(1.05); }
+  0%   { transform: translate3d(0, 0, 0) scale(1.0); }
+  100% { transform: translate3d(0, 0, 0) scale(1.05); }
 }
+/* filter ブライトネスは静止状態に固定（毎フレーム filter 計算は重い） */
+.hero-bizchar-img.active { filter: brightness(1.02); }
 
 /* === 作品カルーセル背景（集英社スタイル3行マーキー） === */
 .hero-works-bg {
