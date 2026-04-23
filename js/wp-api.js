@@ -118,15 +118,38 @@
         thumbWrap = document.createElement('div');
       }
       thumbWrap.className = 'news-thumb';
-      const img = document.createElement('img');
-      img.src = item.thumbnail || FALLBACK_THUMB;
-      img.alt = item.title_ja || '';
-      img.loading = 'lazy';
-      img.width = 200; img.height = 120;
-      if (item.image_fit)      img.style.objectFit      = item.image_fit;
-      if (item.image_position) img.style.objectPosition = item.image_position;
-      img.onerror = function() { this.src = FALLBACK_THUMB; };
-      thumbWrap.appendChild(img);
+      const src = item.thumbnail || FALLBACK_THUMB;
+      const mode = item.image_mode || 'contain';
+      if (mode === 'crop' && item.thumbnail) {
+        // トリミングモード: aspect-ratio + background で範囲表現
+        const w = parseFloat(item.image_crop_w) || 100;
+        const h = parseFloat(item.image_crop_h) || 100;
+        const x = parseFloat(item.image_crop_x) || 0;
+        const y = parseFloat(item.image_crop_y) || 0;
+        const cropEl = document.createElement('div');
+        cropEl.className = 'news-thumb-crop';
+        cropEl.setAttribute('role', 'img');
+        cropEl.setAttribute('aria-label', item.title_ja || '');
+        cropEl.style.aspectRatio = (w / h).toFixed(4);
+        cropEl.style.backgroundImage = 'url(' + src + ')';
+        cropEl.style.backgroundSize = (10000 / w).toFixed(2) + '% auto';
+        const bgX = (100 - w > 0) ? (x / (100 - w) * 100).toFixed(2) + '%' : '50%';
+        const bgY = (100 - h > 0) ? (y / (100 - h) * 100).toFixed(2) + '%' : '50%';
+        cropEl.style.backgroundPosition = bgX + ' ' + bgY;
+        thumbWrap.appendChild(cropEl);
+      } else {
+        // 全体表示（contain）モード or 旧データ
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = item.title_ja || '';
+        img.loading = 'lazy';
+        img.width = 200; img.height = 120;
+        // 旧データ後方互換
+        if (!item.image_mode && item.image_fit)      img.style.objectFit      = item.image_fit;
+        if (!item.image_mode && item.image_position) img.style.objectPosition = item.image_position;
+        img.onerror = function() { this.src = FALLBACK_THUMB; };
+        thumbWrap.appendChild(img);
+      }
       li.appendChild(thumbWrap);
 
       /* 右側: メタ + タイトル */

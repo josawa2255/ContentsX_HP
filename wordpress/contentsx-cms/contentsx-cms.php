@@ -1045,130 +1045,207 @@ function cxcms_news_meta_html( $post ) {
     $thumb_id_for_preview = get_post_thumbnail_id( $post->ID );
     $thumb_url_for_preview = '';
     if ( $thumb_id_for_preview ) {
-        $_img = wp_get_attachment_image_src( $thumb_id_for_preview, 'medium' );
+        $_img = wp_get_attachment_image_src( $thumb_id_for_preview, 'large' );
         if ( $_img ) $thumb_url_for_preview = $_img[0];
     }
-    /* 既存値を X/Y % に正規化（旧 named position 値にも後方互換） */
-    $fit = $m('cx_news_image_fit') ?: 'cover';
-    $pos_raw = $m('cx_news_image_position') ?: '50% 50%';
-    $x_pct = 50; $y_pct = 50;
-    if ( preg_match('/(-?\d+)\s*%\s+(-?\d+)\s*%/', $pos_raw, $mm) ) {
-        $x_pct = max(0, min(100, (int) $mm[1]));
-        $y_pct = max(0, min(100, (int) $mm[2]));
-    } else {
-        $named = [
-            'center'=>[50,50],'top'=>[50,0],'bottom'=>[50,100],'left'=>[0,50],'right'=>[100,50],
-            'left top'=>[0,0],'right top'=>[100,0],'left bottom'=>[0,100],'right bottom'=>[100,100],
-        ];
-        if ( isset($named[$pos_raw]) ) { $x_pct = $named[$pos_raw][0]; $y_pct = $named[$pos_raw][1]; }
+    /* 新フィールド: mode + crop_x/y/w/h（%） */
+    $img_mode = $m('cx_news_image_mode') ?: 'contain';
+    $crop_x = floatval($m('cx_news_image_crop_x'));
+    $crop_y = floatval($m('cx_news_image_crop_y'));
+    $crop_w = floatval($m('cx_news_image_crop_w'));
+    $crop_h = floatval($m('cx_news_image_crop_h'));
+    if ($crop_w <= 0 || $crop_h <= 0) {
+        $crop_x = 0; $crop_y = 0; $crop_w = 100; $crop_h = 100;
     }
     ?>
     <div class="cx-field">
-        <label>サムネイル画像の表示（トリミング設定）</label>
+        <label>サムネイル画像の表示</label>
         <div class="cx-img-editor">
+            <div class="cx-img-mode">
+                <label class="cx-radio">
+                    <input type="radio" name="cx_news_image_mode" value="contain" <?php checked($img_mode, 'contain'); ?>>
+                    <span><strong>全体表示</strong> — 画像全体を見せる（縦横比そのまま、余白なし）</span>
+                </label>
+                <label class="cx-radio">
+                    <input type="radio" name="cx_news_image_mode" value="crop" <?php checked($img_mode, 'crop'); ?>>
+                    <span><strong>トリミング</strong> — 画像の使う範囲を視覚的に選ぶ（下の枠をドラッグ＆四隅でリサイズ）</span>
+                </label>
+            </div>
+
+            <?php if ($thumb_url_for_preview): ?>
+            <div class="cx-cropper-wrap" id="cxCropperWrap">
+                <img id="cxCropperImg" src="<?php echo esc_url($thumb_url_for_preview); ?>" style="max-width:100%;display:block;">
+            </div>
+            <?php else: ?>
+            <div class="cx-img-preview-empty" style="padding:40px;background:#fff;border:1px dashed #ccc;text-align:center;color:#999;border-radius:4px;">
+                アイキャッチ画像を設定するとプレビューが表示されます
+            </div>
+            <?php endif; ?>
+
             <div class="cx-img-previews">
                 <div class="cx-img-preview-block">
-                    <div class="cx-img-preview-label">トップページ枠 (200×120)</div>
-                    <div class="cx-img-preview" style="width:200px;height:120px;">
-                        <?php if ($thumb_url_for_preview): ?>
-                        <img class="cx-img-preview-el" src="<?php echo esc_url($thumb_url_for_preview); ?>"
-                             style="object-fit:<?php echo esc_attr($fit); ?>;object-position:<?php echo esc_attr($x_pct); ?>% <?php echo esc_attr($y_pct); ?>%;">
-                        <?php else: ?>
-                        <div class="cx-img-preview-empty">アイキャッチ画像を設定してください</div>
-                        <?php endif; ?>
-                    </div>
+                    <div class="cx-img-preview-label">サイト表示プレビュー（小・幅 200px）</div>
+                    <div class="cx-img-preview-container" id="cxPreviewTop"></div>
                 </div>
                 <div class="cx-img-preview-block">
-                    <div class="cx-img-preview-label">詳細ページ枠 (400×240)</div>
-                    <div class="cx-img-preview" style="width:400px;height:240px;">
-                        <?php if ($thumb_url_for_preview): ?>
-                        <img class="cx-img-preview-el" src="<?php echo esc_url($thumb_url_for_preview); ?>"
-                             style="object-fit:<?php echo esc_attr($fit); ?>;object-position:<?php echo esc_attr($x_pct); ?>% <?php echo esc_attr($y_pct); ?>%;">
-                        <?php endif; ?>
-                    </div>
+                    <div class="cx-img-preview-label">サイト表示プレビュー（大・幅 400px）</div>
+                    <div class="cx-img-preview-container" id="cxPreviewDetail"></div>
                 </div>
             </div>
-            <div class="cx-img-controls">
-                <div class="cx-img-row">
-                    <label class="cx-img-label">表示モード</label>
-                    <select id="cxNewsImgFit" name="cx_news_image_fit">
-                        <option value="cover"   <?php selected($fit,'cover');   ?>>埋める (cover) — 枠いっぱいに画像、はみ出しはカット</option>
-                        <option value="contain" <?php selected($fit,'contain'); ?>>全体表示 (contain) — 画像全体を見せる、余白あり</option>
-                        <option value="fill"    <?php selected($fit,'fill');    ?>>引き伸ばす (fill) — 枠に合わせて変形</option>
-                    </select>
-                </div>
-                <div class="cx-img-row">
-                    <label class="cx-img-label">横位置 <span id="cxNewsImgXv"><?php echo $x_pct; ?></span>%</label>
-                    <input id="cxNewsImgX" type="range" min="0" max="100" value="<?php echo $x_pct; ?>" class="cx-img-slider">
-                </div>
-                <div class="cx-img-row">
-                    <label class="cx-img-label">縦位置 <span id="cxNewsImgYv"><?php echo $y_pct; ?></span>%</label>
-                    <input id="cxNewsImgY" type="range" min="0" max="100" value="<?php echo $y_pct; ?>" class="cx-img-slider">
-                </div>
-                <div class="cx-img-row">
-                    <label class="cx-img-label">プリセット位置</label>
-                    <div class="cx-img-presets">
-                        <button type="button" data-x="0"   data-y="0">左上</button>
-                        <button type="button" data-x="50"  data-y="0">上</button>
-                        <button type="button" data-x="100" data-y="0">右上</button>
-                        <button type="button" data-x="0"   data-y="50">左</button>
-                        <button type="button" data-x="50"  data-y="50">中央</button>
-                        <button type="button" data-x="100" data-y="50">右</button>
-                        <button type="button" data-x="0"   data-y="100">左下</button>
-                        <button type="button" data-x="50"  data-y="100">下</button>
-                        <button type="button" data-x="100" data-y="100">右下</button>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" id="cxNewsImgPos" name="cx_news_image_position" value="<?php echo esc_attr($x_pct); ?>% <?php echo esc_attr($y_pct); ?>%">
+
+            <input type="hidden" name="cx_news_image_crop_x" id="cxCropX" value="<?php echo esc_attr($crop_x); ?>">
+            <input type="hidden" name="cx_news_image_crop_y" id="cxCropY" value="<?php echo esc_attr($crop_y); ?>">
+            <input type="hidden" name="cx_news_image_crop_w" id="cxCropW" value="<?php echo esc_attr($crop_w); ?>">
+            <input type="hidden" name="cx_news_image_crop_h" id="cxCropH" value="<?php echo esc_attr($crop_h); ?>">
         </div>
-        <div class="cx-hint">画像の「見せたい部分」を基準点として選べます。スライダーを動かすとプレビューがリアルタイムで更新されます。「見切れさせたくない」→ contain（全体表示）／「枠を埋めたい」→ cover（埋める、はみ出しカット）。</div>
+        <div class="cx-hint">
+            <strong>全体表示</strong>: 横長/縦長の画像をそのまま全部表示。サイトの行幅は揃いますが、画像の高さは画像比に応じて変わります。<br>
+            <strong>トリミング</strong>: 画像内から「使いたい部分」をドラッグして選択。四隅をドラッグすればリサイズも可能。選んだ範囲の縦横比でサイトに表示されます。
+        </div>
     </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
     <style>
         .cx-img-editor{border:1px solid #e5e5e5;background:#fafafa;padding:16px;border-radius:6px}
-        .cx-img-previews{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+        .cx-img-mode{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #e5e5e5}
+        .cx-radio{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:8px;border-radius:4px;transition:background 0.15s;background:#fff;border:1px solid transparent}
+        .cx-radio:hover{background:#fff;border-color:#ccc}
+        .cx-radio input{margin-top:3px}
+        .cx-radio strong{color:#0073aa}
+        .cx-cropper-wrap{max-width:600px;margin-bottom:16px;background:#fff;border:1px solid #ddd}
+        .cx-cropper-wrap.disabled{opacity:0.4;pointer-events:none;position:relative}
+        .cx-cropper-wrap.disabled::after{content:'「トリミング」を選ぶと使えます';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.85);color:#666;font-weight:600;font-size:13px}
+        .cx-img-previews{display:flex;gap:20px;flex-wrap:wrap}
         .cx-img-preview-block{display:flex;flex-direction:column;gap:6px}
         .cx-img-preview-label{font-size:11px;color:#666;font-weight:600}
-        .cx-img-preview{background:#fff;border:1px solid #ccc;overflow:hidden;position:relative}
-        .cx-img-preview-el{width:100%;height:100%;display:block}
-        .cx-img-preview-empty{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#999;font-size:12px;text-align:center;padding:8px}
-        .cx-img-controls{display:flex;flex-direction:column;gap:10px}
-        .cx-img-row{display:flex;align-items:center;gap:12px}
-        .cx-img-label{min-width:110px;font-weight:600;font-size:12px}
-        .cx-img-slider{flex:1;max-width:400px}
-        .cx-img-presets{display:grid;grid-template-columns:repeat(3,60px);gap:4px}
-        .cx-img-presets button{padding:6px 4px;background:#fff;border:1px solid #ccc;border-radius:3px;cursor:pointer;font-size:11px}
-        .cx-img-presets button:hover{background:#f0f0f0;border-color:#888}
+        .cx-img-preview-container{background:#f5f5f5;border:1px solid #ccc;overflow:hidden}
+        #cxPreviewTop{width:200px;min-height:120px}
+        #cxPreviewDetail{width:400px;min-height:240px}
+        .cx-hint{color:#666;font-size:12px;margin-top:8px;line-height:1.7}
     </style>
+
     <script>
     (function(){
-        var fit = document.getElementById('cxNewsImgFit');
-        var rx  = document.getElementById('cxNewsImgX');
-        var ry  = document.getElementById('cxNewsImgY');
-        var xv  = document.getElementById('cxNewsImgXv');
-        var yv  = document.getElementById('cxNewsImgYv');
-        var hid = document.getElementById('cxNewsImgPos');
-        var prvs = document.querySelectorAll('.cx-img-preview-el');
-        if (!fit || !rx || !ry || !hid) return;
-        function update() {
-            var x = rx.value, y = ry.value;
-            xv.textContent = x; yv.textContent = y;
-            hid.value = x + '% ' + y + '%';
-            prvs.forEach(function(el){
-                el.style.objectFit = fit.value;
-                el.style.objectPosition = x + '% ' + y + '%';
+        var img = document.getElementById('cxCropperImg');
+        var modeRadios = document.querySelectorAll('input[name="cx_news_image_mode"]');
+        var cropX = document.getElementById('cxCropX');
+        var cropY = document.getElementById('cxCropY');
+        var cropW = document.getElementById('cxCropW');
+        var cropH = document.getElementById('cxCropH');
+        var wrap = document.getElementById('cxCropperWrap');
+        var previewTop = document.getElementById('cxPreviewTop');
+        var previewDetail = document.getElementById('cxPreviewDetail');
+        var cropper = null;
+
+        function getMode() {
+            for (var i = 0; i < modeRadios.length; i++) {
+                if (modeRadios[i].checked) return modeRadios[i].value;
+            }
+            return 'contain';
+        }
+
+        function clearChildren(el) {
+            while (el.firstChild) el.removeChild(el.firstChild);
+        }
+
+        function updatePreviews() {
+            if (!img) return;
+            var mode = getMode();
+            var src = img.src;
+            var x = parseFloat(cropX.value) || 0;
+            var y = parseFloat(cropY.value) || 0;
+            var w = parseFloat(cropW.value) || 100;
+            var h = parseFloat(cropH.value) || 100;
+            renderPreview(previewTop, src, mode, x, y, w, h);
+            renderPreview(previewDetail, src, mode, x, y, w, h);
+        }
+
+        function renderPreview(container, src, mode, x, y, w, h) {
+            clearChildren(container);
+            if (mode === 'contain') {
+                var im = document.createElement('img');
+                im.src = src;
+                im.style.cssText = 'width:100%;height:auto;display:block;';
+                container.appendChild(im);
+            } else {
+                var aspect = w / h;
+                var div = document.createElement('div');
+                var bgSize = (10000/w) + '%';
+                var bgPosX = (100 - w > 0) ? (x/(100-w)*100).toFixed(2) + '%' : '50%';
+                var bgPosY = (100 - h > 0) ? (y/(100-h)*100).toFixed(2) + '%' : '50%';
+                div.style.cssText =
+                    'width:100%;' +
+                    'aspect-ratio:' + aspect + ';' +
+                    'background-image:url(' + src + ');' +
+                    'background-size:' + bgSize + ' auto;' +
+                    'background-position:' + bgPosX + ' ' + bgPosY + ';' +
+                    'background-repeat:no-repeat;';
+                container.appendChild(div);
+            }
+        }
+
+        function initCropper() {
+            if (cropper || !img) return;
+            cropper = new Cropper(img, {
+                viewMode: 1,
+                autoCrop: true,
+                zoomable: false,
+                movable: false,
+                scalable: false,
+                rotatable: false,
+                background: false,
+                checkOrientation: false,
+                ready: function() {
+                    var data = cropper.getImageData();
+                    var nx = (parseFloat(cropX.value) || 0) / 100 * data.naturalWidth;
+                    var ny = (parseFloat(cropY.value) || 0) / 100 * data.naturalHeight;
+                    var nw = (parseFloat(cropW.value) || 100) / 100 * data.naturalWidth;
+                    var nh = (parseFloat(cropH.value) || 100) / 100 * data.naturalHeight;
+                    cropper.setData({ x: nx, y: ny, width: nw, height: nh });
+                },
+                crop: function() {
+                    var data = cropper.getImageData();
+                    var d = cropper.getData(true);
+                    if (!data.naturalWidth) return;
+                    cropX.value = (d.x / data.naturalWidth * 100).toFixed(2);
+                    cropY.value = (d.y / data.naturalHeight * 100).toFixed(2);
+                    cropW.value = (d.width / data.naturalWidth * 100).toFixed(2);
+                    cropH.value = (d.height / data.naturalHeight * 100).toFixed(2);
+                    updatePreviews();
+                }
             });
         }
-        fit.addEventListener('change', update);
-        rx.addEventListener('input', update);
-        ry.addEventListener('input', update);
-        document.querySelectorAll('.cx-img-presets button').forEach(function(b){
-            b.addEventListener('click', function(){
-                rx.value = b.getAttribute('data-x');
-                ry.value = b.getAttribute('data-y');
-                update();
-            });
-        });
+
+        function destroyCropper() {
+            if (cropper) { cropper.destroy(); cropper = null; }
+        }
+
+        function onModeChange() {
+            var mode = getMode();
+            if (!wrap) { updatePreviews(); return; }
+            if (mode === 'crop') {
+                wrap.classList.remove('disabled');
+                initCropper();
+            } else {
+                wrap.classList.add('disabled');
+                destroyCropper();
+            }
+            updatePreviews();
+        }
+
+        for (var i = 0; i < modeRadios.length; i++) {
+            modeRadios[i].addEventListener('change', onModeChange);
+        }
+
+        if (img) {
+            if (img.complete && img.naturalWidth) {
+                onModeChange();
+            } else {
+                img.addEventListener('load', onModeChange);
+            }
+        }
     })();
     </script>
     <?php
@@ -1457,7 +1534,13 @@ add_action( 'save_post_cx_news', 'cxcms_save_news_meta' );
 function cxcms_save_news_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_news_nonce']) || ! wp_verify_nonce($_POST['cxcms_news_nonce'], 'cxcms_news_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_news_title_en','cx_news_url','cx_news_show_site','cx_news_image_position','cx_news_image_fit'];
+    $fields = [
+        'cx_news_title_en','cx_news_url','cx_news_show_site',
+        'cx_news_image_position','cx_news_image_fit', // 旧フィールド（後方互換）
+        'cx_news_image_mode',                          // 新: contain | crop
+        'cx_news_image_crop_x','cx_news_image_crop_y',
+        'cx_news_image_crop_w','cx_news_image_crop_h',
+    ];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -1891,6 +1974,11 @@ function cxcms_api_news( $req ) {
             'thumbnail' => $thumb_url,
             'image_position' => $m('cx_news_image_position') ?: '50% 50%',
             'image_fit'      => $m('cx_news_image_fit') ?: 'cover',
+            'image_mode'     => $m('cx_news_image_mode') ?: 'contain',
+            'image_crop_x'   => floatval($m('cx_news_image_crop_x')),
+            'image_crop_y'   => floatval($m('cx_news_image_crop_y')),
+            'image_crop_w'   => floatval($m('cx_news_image_crop_w')) ?: 100,
+            'image_crop_h'   => floatval($m('cx_news_image_crop_h')) ?: 100,
         ];
     }
     $out = cxcms_filter_by_site( $out, $req->get_param('site') );
@@ -1931,6 +2019,11 @@ function cxcms_api_news_single( $req ) {
         'thumbnail'  => $thumb_url,
         'image_position' => $m('cx_news_image_position') ?: '50% 50%',
         'image_fit'      => $m('cx_news_image_fit') ?: 'cover',
+        'image_mode'     => $m('cx_news_image_mode') ?: 'contain',
+        'image_crop_x'   => floatval($m('cx_news_image_crop_x')),
+        'image_crop_y'   => floatval($m('cx_news_image_crop_y')),
+        'image_crop_w'   => floatval($m('cx_news_image_crop_w')) ?: 100,
+        'image_crop_h'   => floatval($m('cx_news_image_crop_h')) ?: 100,
         'content'    => $content,
         'content_en' => $content_en,
     ], 200 );

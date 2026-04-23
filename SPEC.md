@@ -145,9 +145,12 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 ### ニュース（cx_news）の編集可能フィールド
 - `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
 - `cx_news_show_site` — 表示先サイト（both/bizmanga/contentsx）
-- `cx_news_image_fit` — サムネ画像の `object-fit`（cover=埋める / contain=全体表示 / fill=引き伸ばす）
-- `cx_news_image_position` — サムネ画像の `object-position`（`"50% 30%"` 等のパーセント表記、0-100%で微調整可）
-- WP管理画面ではライブプレビュー・スライダー・9プリセットで視覚的に編集可能
+- `cx_news_image_mode` — `contain`（全体表示）または `crop`（トリミング）。デフォルト `contain`
+- `cx_news_image_crop_x` / `_crop_y` / `_crop_w` / `_crop_h` — トリミング範囲（全て0-100%、画像左上基準）
+- `cx_news_image_fit` / `cx_news_image_position` — 旧フィールド（後方互換のため残す）
+- **WP管理画面**: Cropper.js（CDN）統合の視覚的UI。「全体表示／トリミング」をラジオで選び、トリミング選択時は画像上にL字マーカー付き枠が出てドラッグ＆四隅リサイズで範囲指定。トップ用(200px)と詳細用(400px)のリアルタイムプレビュー2枠付き
+- **フロント描画**: `mode=contain` は `<img>` で width:100% height:auto（行幅は揃い、画像高さは画像比に追従）。`mode=crop` は `<div role="img">` に background-image + aspect-ratio で範囲を再現
+- **CSS**: `.news-thumb` は `width: 200px / max-height: 280px / align-self: flex-start`（SP は 100px）
 
 ## 7. ヘッダー/ナビ仕様
 

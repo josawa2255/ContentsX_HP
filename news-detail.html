@@ -399,11 +399,36 @@
         if (data.thumbnail) {
           const heroEl = document.getElementById('newsHero');
           const heroImg = document.getElementById('newsHeroImg');
-          heroImg.src = data.thumbnail;
-          heroImg.alt = title;
-          if (data.image_fit)      heroImg.style.objectFit      = data.image_fit;
-          if (data.image_position) heroImg.style.objectPosition = data.image_position;
-          heroEl.style.display = 'block';
+          const mode = data.image_mode || 'contain';
+          if (mode === 'crop') {
+            // トリミングモード: img を background-image の div で置き換え
+            const w = parseFloat(data.image_crop_w) || 100;
+            const h = parseFloat(data.image_crop_h) || 100;
+            const x = parseFloat(data.image_crop_x) || 0;
+            const y = parseFloat(data.image_crop_y) || 0;
+            heroImg.removeAttribute('src');
+            heroImg.style.display = 'none';
+            const cropEl = document.createElement('div');
+            cropEl.setAttribute('role', 'img');
+            cropEl.setAttribute('aria-label', title);
+            cropEl.style.cssText =
+              'width:100%;max-width:720px;' +
+              'aspect-ratio:' + (w / h).toFixed(4) + ';' +
+              'background-image:url(' + data.thumbnail + ');' +
+              'background-size:' + (10000 / w).toFixed(2) + '% auto;' +
+              'background-position:' +
+                ((100 - w > 0) ? (x / (100 - w) * 100).toFixed(2) + '%' : '50%') + ' ' +
+                ((100 - h > 0) ? (y / (100 - h) * 100).toFixed(2) + '%' : '50%') + ';' +
+              'background-repeat:no-repeat;border-radius:8px;';
+            heroEl.appendChild(cropEl);
+          } else {
+            heroImg.src = data.thumbnail;
+            heroImg.alt = title;
+            // 後方互換（旧 image_fit/position）
+            if (!data.image_mode && data.image_fit)      heroImg.style.objectFit      = data.image_fit;
+            if (!data.image_mode && data.image_position) heroImg.style.objectPosition = data.image_position;
+          }
+          heroEl.style.display = 'flex';
         }
 
         var contentEl = document.getElementById('newsContent');
