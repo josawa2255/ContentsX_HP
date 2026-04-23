@@ -1209,12 +1209,7 @@ function cxcms_news_meta_html( $post ) {
         .cx-img-preview-container{background:#fff;border:1px dashed #ccc;overflow:hidden;width:100%;max-width:280px;min-height:60px;border-radius:3px}
 
         .cx-hint{color:#666;font-size:11px;margin-top:10px;line-height:1.7;padding:8px 10px;background:#fffbf0;border-left:3px solid #f0b849;border-radius:3px}
-
-        @media (min-width: 1200px) {
-            .cx-img-blocks{flex-direction:row}
-            .cx-img-block{flex:1;min-width:0}
-            .cx-img-mode-text small{font-size:10.5px}
-        }
+        /* 2ブロックは常に縦並び（サイドバー配置でも潰れないため） */
     </style>
 
     <script>
