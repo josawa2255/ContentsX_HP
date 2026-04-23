@@ -1849,6 +1849,7 @@ function cxcms_api_works_new( $req ) {
             'added'       => $m('cx_added_date'),
             'show_site'   => $m('cx_show_site') ?: 'both',
             'thumbnail'   => $thumb_url,
+            'view_type'   => $m('cx_vertical_read') === '1' ? 'vertical_only' : 'spread',
         ];
     }
     return new WP_REST_Response( array_slice($out, 0, 10), 200 );
