@@ -900,26 +900,35 @@ section { padding: 100px 0; }
 .news-thumb {
   flex-shrink: 0;
   width: 200px;
-  max-height: 280px;
+  aspect-ratio: 5 / 3;        /* 統一感のため枠を固定（200×120） */
   overflow: hidden;
   display: block;
   text-decoration: none;
-  align-self: flex-start; /* テキスト側の高さに引きずられない */
+  align-self: flex-start;
+  background: #f5f5f5;        /* contain時の余白色 */
+  border-radius: 6px;
 }
 .news-thumb img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;        /* 全体表示モード: 画像全体が見える、縦長は左右余白 */
+  object-position: center;
   display: block;
   transition: transform 0.4s ease;
+  background: #f5f5f5;
 }
-/* トリミングモード: aspect-ratio + background で範囲表現 */
+/* トリミングモード: 親枠を完全に埋める（範囲はクロップ中心点で位置決め） */
 .news-thumb-crop {
   width: 100%;
+  height: 100%;
   background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   display: block;
   transition: transform 0.4s ease;
 }
 a.news-thumb:hover .news-thumb-crop { transform: scale(1.05); }
+a.news-thumb:hover img { transform: scale(1.05); }
 a.news-thumb:hover img { transform: scale(1.05); }
 .news-body {
   display: flex;
@@ -967,7 +976,7 @@ a.news-thumb:hover img { transform: scale(1.05); }
 }
 @media (max-width: 480px) {
   .news-item { gap: 12px; padding: 16px 0; }
-  .news-thumb { width: 100px; max-height: 200px; }
+  .news-thumb { width: 100px; }
   .news-link { font-size: 14px; }
   .news-meta { gap: 8px; }
   .news-date { font-size: 12px; }

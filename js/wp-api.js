@@ -119,23 +119,21 @@
       }
       thumbWrap.className = 'news-thumb';
       const src = item.thumbnail || FALLBACK_THUMB;
-      // ホーム/一覧用は image_mode_top を優先、なければ旧 image_mode
       const mode = item.image_mode_top || item.image_mode || 'contain';
       if (mode === 'crop' && item.thumbnail) {
+        // crop: 親枠 (aspect-ratio:5/3) を cover で埋め、クロップ中心を背景中央に置く
         const w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
         const h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
         const x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
         const y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
+        const cropCenterX = Math.max(0, Math.min(100, x + w / 2));
+        const cropCenterY = Math.max(0, Math.min(100, y + h / 2));
         const cropEl = document.createElement('div');
         cropEl.className = 'news-thumb-crop';
         cropEl.setAttribute('role', 'img');
         cropEl.setAttribute('aria-label', item.title_ja || '');
-        cropEl.style.aspectRatio = (w / h).toFixed(4);
         cropEl.style.backgroundImage = 'url(' + src + ')';
-        cropEl.style.backgroundSize = (10000 / w).toFixed(2) + '% auto';
-        const bgX = (100 - w > 0) ? (x / (100 - w) * 100).toFixed(2) + '%' : '50%';
-        const bgY = (100 - h > 0) ? (y / (100 - h) * 100).toFixed(2) + '%' : '50%';
-        cropEl.style.backgroundPosition = bgX + ' ' + bgY;
+        cropEl.style.backgroundPosition = cropCenterX.toFixed(2) + '% ' + cropCenterY.toFixed(2) + '%';
         thumbWrap.appendChild(cropEl);
       } else {
         const img = document.createElement('img');
@@ -143,7 +141,7 @@
         img.alt = item.title_ja || '';
         img.loading = 'lazy';
         img.width = 200; img.height = 120;
-        // 旧データ後方互換（mode系の指定がない場合のみ）
+        // 旧データ後方互換
         if (!item.image_mode_top && !item.image_mode && item.image_fit)      img.style.objectFit      = item.image_fit;
         if (!item.image_mode_top && !item.image_mode && item.image_position) img.style.objectPosition = item.image_position;
         img.onerror = function() { this.src = FALLBACK_THUMB; };
