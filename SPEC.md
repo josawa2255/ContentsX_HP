@@ -145,12 +145,21 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 ### ニュース（cx_news）の編集可能フィールド
 - `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
 - `cx_news_show_site` — 表示先サイト（both/bizmanga/contentsx）
-- `cx_news_image_mode` — `contain`（全体表示）または `crop`（トリミング）。デフォルト `contain`
-- `cx_news_image_crop_x` / `_crop_y` / `_crop_w` / `_crop_h` — トリミング範囲（全て0-100%、画像左上基準）
-- `cx_news_image_fit` / `cx_news_image_position` — 旧フィールド（後方互換のため残す）
-- **WP管理画面**: Cropper.js（CDN）統合の視覚的UI。「全体表示／トリミング」をラジオで選び、トリミング選択時は画像上にL字マーカー付き枠が出てドラッグ＆四隅リサイズで範囲指定。トップ用(200px)と詳細用(400px)のリアルタイムプレビュー2枠付き
-- **フロント描画**: `mode=contain` は `<img>` で width:100% height:auto（行幅は揃い、画像高さは画像比に追従）。`mode=crop` は `<div role="img">` に background-image + aspect-ratio で範囲を再現
-- **CSS**: `.news-thumb` は `width: 200px / max-height: 280px / align-self: flex-start`（SP は 100px）
+**画像表示設定（top/detail 別々に保存）**
+- `cx_news_image_mode_top` / `_mode_detail` — `contain`（全体表示）か `crop`（トリミング）
+- `cx_news_image_crop_x_top` / `_y_top` / `_w_top` / `_h_top` — ホーム/一覧用のトリミング範囲（全て0-100%）
+- `cx_news_image_crop_x_detail` / `_y_detail` / `_w_detail` / `_h_detail` — 詳細ページ用のトリミング範囲
+- 旧 `cx_news_image_mode` / `_crop_*` / `_fit` / `_position` — 後方互換のため残置（top/detail未設定時のフォールバック）
+
+**WP管理画面**: 「画像表示の調節」`<details>` 折りたたみボタンを開くと、「ホーム・一覧表示」「記事詳細ページ」の2ブロックが現れる。各ブロックに「全体表示／トリミング」のセグメントコントロール風タブ + Cropper.js (CDN 1.6.1) のクロップUI + リアルタイム表示プレビュー。1200px以上で2ブロック横並び、それ以下は縦並び（サイドバー幅対応）
+
+**フロント描画**:
+- `wp-api.js`（一覧描画）→ `image_mode_top` + `image_crop_*_top` を使用、なければ旧 `image_mode` 系にフォールバック
+- `news-detail.html`（詳細）→ `image_mode_detail` + `image_crop_*_detail` を使用、なければ旧 `image_mode` 系にフォールバック
+- `mode=contain` → `<img>` で width:100% height:auto（行幅は揃い、画像高さは画像比追従）
+- `mode=crop` → `<div role="img">` + `aspect-ratio` + `background-image/size/position` で範囲再現
+
+**CSS**: `.news-thumb` は `width: 200px / max-height: 280px / align-self: flex-start`（SP は 100px）
 
 ## 7. ヘッダー/ナビ仕様
 

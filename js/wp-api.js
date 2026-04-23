@@ -119,13 +119,13 @@
       }
       thumbWrap.className = 'news-thumb';
       const src = item.thumbnail || FALLBACK_THUMB;
-      const mode = item.image_mode || 'contain';
+      // ホーム/一覧用は image_mode_top を優先、なければ旧 image_mode
+      const mode = item.image_mode_top || item.image_mode || 'contain';
       if (mode === 'crop' && item.thumbnail) {
-        // トリミングモード: aspect-ratio + background で範囲表現
-        const w = parseFloat(item.image_crop_w) || 100;
-        const h = parseFloat(item.image_crop_h) || 100;
-        const x = parseFloat(item.image_crop_x) || 0;
-        const y = parseFloat(item.image_crop_y) || 0;
+        const w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
+        const h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
+        const x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
+        const y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
         const cropEl = document.createElement('div');
         cropEl.className = 'news-thumb-crop';
         cropEl.setAttribute('role', 'img');
@@ -138,15 +138,14 @@
         cropEl.style.backgroundPosition = bgX + ' ' + bgY;
         thumbWrap.appendChild(cropEl);
       } else {
-        // 全体表示（contain）モード or 旧データ
         const img = document.createElement('img');
         img.src = src;
         img.alt = item.title_ja || '';
         img.loading = 'lazy';
         img.width = 200; img.height = 120;
-        // 旧データ後方互換
-        if (!item.image_mode && item.image_fit)      img.style.objectFit      = item.image_fit;
-        if (!item.image_mode && item.image_position) img.style.objectPosition = item.image_position;
+        // 旧データ後方互換（mode系の指定がない場合のみ）
+        if (!item.image_mode_top && !item.image_mode && item.image_fit)      img.style.objectFit      = item.image_fit;
+        if (!item.image_mode_top && !item.image_mode && item.image_position) img.style.objectPosition = item.image_position;
         img.onerror = function() { this.src = FALLBACK_THUMB; };
         thumbWrap.appendChild(img);
       }

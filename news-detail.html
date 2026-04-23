@@ -399,13 +399,13 @@
         if (data.thumbnail) {
           const heroEl = document.getElementById('newsHero');
           const heroImg = document.getElementById('newsHeroImg');
-          const mode = data.image_mode || 'contain';
+          // 詳細ページ用: image_mode_detail を優先、なければ旧 image_mode
+          const mode = data.image_mode_detail || data.image_mode || 'contain';
           if (mode === 'crop') {
-            // トリミングモード: img を background-image の div で置き換え
-            const w = parseFloat(data.image_crop_w) || 100;
-            const h = parseFloat(data.image_crop_h) || 100;
-            const x = parseFloat(data.image_crop_x) || 0;
-            const y = parseFloat(data.image_crop_y) || 0;
+            const w = parseFloat(data.image_crop_w_detail || data.image_crop_w) || 100;
+            const h = parseFloat(data.image_crop_h_detail || data.image_crop_h) || 100;
+            const x = parseFloat(data.image_crop_x_detail || data.image_crop_x) || 0;
+            const y = parseFloat(data.image_crop_y_detail || data.image_crop_y) || 0;
             heroImg.removeAttribute('src');
             heroImg.style.display = 'none';
             const cropEl = document.createElement('div');
@@ -424,9 +424,8 @@
           } else {
             heroImg.src = data.thumbnail;
             heroImg.alt = title;
-            // 後方互換（旧 image_fit/position）
-            if (!data.image_mode && data.image_fit)      heroImg.style.objectFit      = data.image_fit;
-            if (!data.image_mode && data.image_position) heroImg.style.objectPosition = data.image_position;
+            if (!data.image_mode_detail && !data.image_mode && data.image_fit)      heroImg.style.objectFit      = data.image_fit;
+            if (!data.image_mode_detail && !data.image_mode && data.image_position) heroImg.style.objectPosition = data.image_position;
           }
           heroEl.style.display = 'flex';
         }
