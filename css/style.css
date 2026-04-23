@@ -47,6 +47,25 @@ body {
    Base Reset & Typography
    ============================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ---------- 日本語の改行制御（iOS/Android差を縮める） ----------
+ * line-break: strict     — 厳格な禁則処理（句読点が行頭に来るのを防ぐ）
+ * word-break: keep-all   — 単語/文節を不要な位置で切らない
+ * overflow-wrap: anywhere — それでも溢れる場合のみ任意位置で改行
+ * text-wrap: pretty      — 行末の孤立文字を防いで均等化
+ *                          （Chrome 117+ / Safari 17.4+。未対応ブラウザは無視）
+ */
+body, p, h1, h2, h3, h4, h5, h6, li, a, span, button, label {
+  line-break: strict;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+h1, h2, h3, h4, h5, h6,
+.news-link, .ot-hero h1, .ot-section-num,
+.ab-hero-title, .ab-section-jp, .ab-statement-lead {
+  text-wrap: pretty;
+}
+
 .sr-only {
   position: absolute; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden;
