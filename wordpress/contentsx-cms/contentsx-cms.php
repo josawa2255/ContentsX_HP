@@ -1108,22 +1108,30 @@ function cxcms_news_meta_html( $post ) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <style>
-        .cx-img-editor{border:1px solid #e5e5e5;background:#fafafa;padding:16px;border-radius:6px}
-        .cx-img-mode{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #e5e5e5}
-        .cx-radio{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:8px;border-radius:4px;transition:background 0.15s;background:#fff;border:1px solid transparent}
+        .cx-img-editor{border:1px solid #e5e5e5;background:#fafafa;padding:14px;border-radius:6px;max-width:100%;box-sizing:border-box}
+        .cx-img-mode{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #e5e5e5}
+        .cx-radio{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:8px;border-radius:4px;transition:background 0.15s;background:#fff;border:1px solid transparent;font-size:12px;line-height:1.5}
         .cx-radio:hover{background:#fff;border-color:#ccc}
-        .cx-radio input{margin-top:3px}
+        .cx-radio input{margin-top:3px;flex-shrink:0}
         .cx-radio strong{color:#0073aa}
-        .cx-cropper-wrap{max-width:600px;margin-bottom:16px;background:#fff;border:1px solid #ddd}
+        .cx-cropper-wrap{max-width:100%;margin-bottom:14px;background:#fff;border:1px solid #ddd}
+        .cx-cropper-wrap img{max-width:100%;display:block}
         .cx-cropper-wrap.disabled{opacity:0.4;pointer-events:none;position:relative}
-        .cx-cropper-wrap.disabled::after{content:'「トリミング」を選ぶと使えます';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.85);color:#666;font-weight:600;font-size:13px}
-        .cx-img-previews{display:flex;gap:20px;flex-wrap:wrap}
-        .cx-img-preview-block{display:flex;flex-direction:column;gap:6px}
+        .cx-cropper-wrap.disabled::after{content:'「トリミング」を選ぶと使えます';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.85);color:#666;font-weight:600;font-size:12px;text-align:center;padding:8px}
+        .cx-img-previews{display:flex;flex-direction:column;gap:12px}
+        .cx-img-preview-block{display:flex;flex-direction:column;gap:4px}
         .cx-img-preview-label{font-size:11px;color:#666;font-weight:600}
-        .cx-img-preview-container{background:#f5f5f5;border:1px solid #ccc;overflow:hidden}
-        #cxPreviewTop{width:200px;min-height:120px}
-        #cxPreviewDetail{width:400px;min-height:240px}
-        .cx-hint{color:#666;font-size:12px;margin-top:8px;line-height:1.7}
+        .cx-img-preview-container{background:#f5f5f5;border:1px solid #ccc;overflow:hidden;width:100%}
+        #cxPreviewTop{max-width:200px;min-height:60px}
+        #cxPreviewDetail{max-width:400px;min-height:120px}
+        .cx-hint{color:#666;font-size:11px;margin-top:8px;line-height:1.6}
+        /* サイドバー幅でも収まるよう、2カラム的余裕がある時だけ横並び */
+        @media (min-width: 900px) {
+            .cx-img-editor{padding:16px}
+            .cx-img-previews{flex-direction:row;flex-wrap:wrap;gap:20px}
+            .cx-radio{font-size:13px}
+            .cx-hint{font-size:12px}
+        }
     </style>
 
     <script>
