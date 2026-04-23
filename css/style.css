@@ -809,13 +809,23 @@ section { padding: 100px 0; }
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
-.client-logos-label {
+.client-logos-heading {
   text-align: center;
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  color: #999;
-  text-transform: uppercase;
-  margin: 0 0 28px;
+  margin: 0 0 32px;
+}
+.client-logos-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  margin: 0;
+}
+.client-logos-subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
   font-weight: 600;
 }
 .client-logos-track-wrapper {
