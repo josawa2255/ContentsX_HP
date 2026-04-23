@@ -102,7 +102,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-nav-link {
   position: relative;
-  font-size: 14px; font-weight: 600; color: var(--bm-text-muted);
+  font-size: 15px; font-weight: 600; color: var(--bm-text-muted);
+  font-family: inherit;
   transition: color 0.3s;
   white-space: nowrap;
   padding: 8px 0;
