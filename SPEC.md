@@ -16,7 +16,8 @@
 | トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero (イントロ + テキストロゴ + タグライン) + 新作情報 + About + CTA |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
-| 私たちの思い | `our-thoughts.html` | cta.js, dl-modal.js | |
+| Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
+| トップメッセージ | `message.html` | cta.js, dl-modal.js | 旧 our-thoughts を代表 黒宮 一人称メッセージにリニューアル。CSSは `our-thoughts.css` 流用（ot-* クラス）。旧 `our-thoughts.html` は `/message` への JS+meta リダイレクト |
 | 主要関連会社 | `partners.html` | script.js, dl-modal.js | 提携3社（ASOBISYSTEM / DM Solutions / KIRINZ） |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
@@ -170,7 +171,7 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 
 ### 7.3 現在のメニュー構成
 ```
-ホーム | 企業 ▾ (会社概要/主要関連会社/役員紹介) | 採用情報 | お問い合わせ
+ホーム | 企業案内 ▾ (Contents Xについて / トップメッセージ / 会社概要 / 役員紹介 / 主要関連会社) | 採用情報 | お問い合わせ
 ```
 - ⚠️ 「強み」は一時削除中（BizManga特化のため）→ 他事業展開後に全面刷新してメニュー復帰予定
 
