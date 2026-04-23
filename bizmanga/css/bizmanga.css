@@ -148,6 +148,17 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-nav-cta:hover { background: var(--bm-accent-hover); transform: translateY(-1px); }
 
+/* LINE相談ボタン（ヘッダー右・お問い合わせの右隣） */
+.bm-nav-cta--line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #06C755;
+  color: #fff;
+}
+.bm-nav-cta--line:hover { background: #059a44; }
+.bm-nav-cta-line-icon { flex-shrink: 0; }
+
 /* 言語切替ボタン */
 .bm-lang-switch {
   display: flex;
