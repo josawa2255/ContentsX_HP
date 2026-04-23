@@ -3398,6 +3398,15 @@ add_action( 'rest_api_init', function() {
             'id' => [ 'validate_callback' => function($v){return is_numeric($v);} ],
         ],
     ]);
+    /* ── コラム プレビュー API（下書き/予約投稿を管理者のみ取得可能） ── */
+    register_rest_route( 'contentsx/v1', '/columns/(?P<id>\d+)/preview', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_column_preview',
+        'permission_callback' => 'cxcms_column_preview_permission',
+        'args' => [
+            'id' => [ 'validate_callback' => function($v){return is_numeric($v);} ],
+        ],
+    ]);
 });
 
 /* ── コラム整形ヘルパー ── */
@@ -3474,3 +3483,61 @@ function cxcms_api_column_single( $req ) {
     $data['content_en'] = $content_en;
     return rest_ensure_response( $data );
 }
+
+/* ── コラム プレビュー: 下書き/予約投稿/非公開 全てを返す（権限チェック必須） ── */
+function cxcms_column_preview_permission( $req ) {
+    /* 管理画面ログイン（cx_column 編集権限あり）を必須にする */
+    if ( ! is_user_logged_in() || ! current_user_can( 'edit_posts' ) ) {
+        return new WP_Error( 'forbidden', 'プレビューには管理画面ログインが必要です', [ 'status' => 401 ] );
+    }
+    /* 管理画面側で発行したノンスを検証してCSRFを防ぐ */
+    $nonce = $req->get_param('_wpnonce');
+    if ( ! $nonce ) {
+        $nonce = $req->get_header('x_wp_nonce');
+    }
+    if ( ! $nonce || ! wp_verify_nonce( $nonce, 'cxcms_preview_column_' . (int) $req['id'] ) ) {
+        return new WP_Error( 'bad_nonce', 'nonce不正', [ 'status' => 403 ] );
+    }
+    return true;
+}
+
+function cxcms_api_column_preview( $req ) {
+    $post_id = (int) $req['id'];
+    $p = get_post( $post_id );
+    if ( ! $p || $p->post_type !== 'cx_column' ) {
+        return new WP_Error( 'not_found', 'コラムが見つかりません', [ 'status' => 404 ] );
+    }
+    /* 公開含めどのステータスでも返すが、ゴミ箱だけ除外 */
+    if ( $p->post_status === 'trash' ) {
+        return new WP_Error( 'trashed', 'ゴミ箱のコラムです', [ 'status' => 410 ] );
+    }
+    $data = cxcms_format_column( $p );
+    /* 最新リビジョン（プレビュー用）を反映 */
+    $preview = wp_get_post_autosave( $post_id );
+    if ( $preview && $preview->post_modified > $p->post_modified ) {
+        $raw_title = $preview->post_title;
+        $raw_content = $preview->post_content;
+        if ( $raw_title ) $data['title_ja'] = $raw_title;
+    } else {
+        $raw_content = $p->post_content;
+    }
+    $data['content']    = apply_filters( 'the_content', $raw_content );
+    $content_en_raw     = get_post_meta( $p->ID, 'cx_column_content_en', true );
+    $data['content_en'] = $content_en_raw ? apply_filters( 'the_content', $content_en_raw ) : '';
+    $data['post_status'] = $p->post_status;
+    $data['is_preview']  = true;
+    return rest_ensure_response( $data );
+}
+
+/* ── 管理画面「プレビュー」ボタンをフロント側に向ける ── */
+/* コラム詳細ページは BizManga 側にしかない（contentsx.jp には column-detail.html が無い）ので常に BM ドメインへ */
+add_filter( 'preview_post_link', function( $link, $post ) {
+    if ( ! $post || $post->post_type !== 'cx_column' ) return $link;
+    $base = 'https://bizmanga.contentsx.jp/column-detail';
+    $nonce = wp_create_nonce( 'cxcms_preview_column_' . $post->ID );
+    return add_query_arg( [
+        'id'      => $post->ID,
+        'preview' => '1',
+        '_wpnonce'=> $nonce,
+    ], $base );
+}, 10, 2 );
