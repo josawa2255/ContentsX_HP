@@ -2058,6 +2058,7 @@ function cxcms_api_library( $req ) {
             'cta_label_ja'   => $m('cx_cta_label_ja'),
             'cta_label_en'   => $m('cx_cta_label_en'),
             'cta_enabled'    => $m('cx_cta_enabled') === '1',
+            'view_type'      => $m('cx_vertical_read') === '1' ? 'vertical_only' : 'spread',
         ];
     }
     return new WP_REST_Response( $out, 200 );
