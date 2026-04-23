@@ -1747,6 +1747,7 @@ function cxcms_format_work( $p ) {
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
         'mode'      => $m('cx_vertical_read') === '1' ? 'vertical' : 'carousel',
+        'view_type' => $m('cx_vertical_read') === '1' ? 'vertical_only' : 'spread',
         'thumbnail' => $thumb_url,
         'gallery'   => $gallery_urls,
         'akapen_gallery' => $akapen_urls,
