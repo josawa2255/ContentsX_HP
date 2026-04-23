@@ -171,7 +171,16 @@ add_action( 'add_meta_boxes', 'cxcms_add_meta_boxes' );
 
 function cxcms_add_meta_boxes() {
     add_meta_box( 'manga_work_fields', '漫画事例 詳細', 'cxcms_manga_meta_html', 'manga_work', 'normal', 'high' );
-    add_meta_box( 'cx_news_fields', 'ニュース詳細', 'cxcms_news_meta_html', 'cx_news', 'normal', 'high' );
+    /* Gutenberg がサイドバー化するのを防ぎ、下部メタボックス領域に固定 */
+    add_meta_box(
+        'cx_news_fields',
+        'ニュース詳細',
+        'cxcms_news_meta_html',
+        'cx_news',
+        'normal',
+        'high',
+        [ '__back_compat_meta_box' => false ]
+    );
     add_meta_box( 'cx_testimonial_fields', 'お客様の声 詳細', 'cxcms_testimonial_meta_html', 'cx_testimonial', 'normal', 'high' );
     add_meta_box( 'cx_preproduction_fields', '赤ペン・ネーム 詳細', 'cxcms_preproduction_meta_html', 'cx_preproduction', 'normal', 'high' );
     /* 漫画事例 → ニュース作成 ボタン（右サイドバー） */
