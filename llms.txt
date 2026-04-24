@@ -30,7 +30,7 @@
 
 ### 1. BizManga（ビジネスマンガ制作）— 主力事業
 採用・営業・研修・会社紹介・創業ストーリーなど、B2B向けビジネスマンガ制作サービス。
-- 大手制作会社の約1/5の価格（19,800円/ページ〜）
+- 大手制作会社の約1/5の価格（15,800円/ページ〜）
 - プロ漫画家が制作、125項目の品質チェック
 - 「7割人間・3割AI」のハイブリッド制作で高品質を実現
 - 詳細: https://bizmanga.contentsx.jp
@@ -100,7 +100,7 @@
 - **Co-founder:** Kota Uike (Director)
 - **Outside Director:** Yusuke Nakagawa (Co-founder of ASOBI SYSTEM, a major Japanese entertainment company)
 - **Core Service:** BizManga — B2B business manga production (recruitment, sales, training, corporate storytelling)
-- **Pricing:** Starting at ¥19,800/page (~US$130), approximately one-fifth the cost of major Japanese manga production studios
+- **Pricing:** Starting at ¥15,800/page (~US$130), approximately one-fifth the cost of major Japanese manga production studios
 - **Quality:** 125-point quality verification checklist for every project
 - **Production Model:** Hybrid — 70% human professional manga artists, 30% AI-assisted tooling
 - **Standard Delivery:** 3–4 weeks for an 8-page manga; rush delivery available in 2 weeks
@@ -109,7 +109,7 @@
 
 ## About BizManga (Citable Passage)
 
-BizManga is the B2B business manga production service offered by Contents X Co., Ltd. (ContentsX), a Tokyo-based content studio founded in March 2026. BizManga produces professional manga for corporate clients across use cases including recruitment, employee training, sales support, internal communications, and corporate PR. Pricing starts at 19,800 yen per page (approximately US$130), which is roughly one-fifth the cost of traditional major Japanese manga production studios. A standard 8-page manga project is delivered within 3 to 4 weeks, with rush delivery available in as little as 2 weeks. Every project undergoes a 125-point quality verification checklist. The studio uses a hybrid production model: 70 percent of the work is handled by professional human manga artists who are responsible for storytelling, character design, direction, and emotional expression, while 30 percent leverages AI-assisted tooling for backgrounds, effects, retouching, and production efficiency. This hybrid approach reduces delivery time by 30 to 50 percent compared to fully manual production while maintaining the quality of traditional hand-drawn manga.
+BizManga is the B2B business manga production service offered by Contents X Co., Ltd. (ContentsX), a Tokyo-based content studio founded in March 2026. BizManga produces professional manga for corporate clients across use cases including recruitment, employee training, sales support, internal communications, and corporate PR. Pricing starts at 15,800 yen per page (approximately US$130), which is roughly one-fifth the cost of traditional major Japanese manga production studios. A standard 8-page manga project is delivered within 3 to 4 weeks, with rush delivery available in as little as 2 weeks. Every project undergoes a 125-point quality verification checklist. The studio uses a hybrid production model: 70 percent of the work is handled by professional human manga artists who are responsible for storytelling, character design, direction, and emotional expression, while 30 percent leverages AI-assisted tooling for backgrounds, effects, retouching, and production efficiency. This hybrid approach reduces delivery time by 30 to 50 percent compared to fully manual production while maintaining the quality of traditional hand-drawn manga.
 
 ## About ContentsX (Citable Passage)
 
@@ -125,12 +125,12 @@ Contents X Co., Ltd. (ContentsX; Japanese name: コンテンツエックス) is 
 
 ## 独自制作手法（Citable Passage・日本語）
 
-ContentsX / BizManga の制作手法は「**7割人間・3割AI**」のハイブリッドモデル。ストーリー設計、キャラクター造形、コマ割り・演出、感情表現、クライアント要望の解釈など「物語の核」となる部分はプロの漫画家が担当し、背景作画・効果・レタッチ・バリエーション出しなど「反復作業」に AIツールを活用する。この手法により、従来の完全手描き制作と同等の品質を保ちながら、納期を30〜50%短縮し、大手マンガ制作会社の約1/5の価格（1ページ19,800円〜）を実現。納品前には独自の**125項目品質チェック**リストで全作品を検証し、社内基準を満たしたものだけをクライアントに届けている。
+ContentsX / BizManga の制作手法は「**7割人間・3割AI**」のハイブリッドモデル。ストーリー設計、キャラクター造形、コマ割り・演出、感情表現、クライアント要望の解釈など「物語の核」となる部分はプロの漫画家が担当し、背景作画・効果・レタッチ・バリエーション出しなど「反復作業」に AIツールを活用する。この手法により、従来の完全手描き制作と同等の品質を保ちながら、納期を30〜50%短縮し、大手マンガ制作会社の約1/5の価格（1ページ15,800円〜）を実現。納品前には独自の**125項目品質チェック**リストで全作品を検証し、社内基準を満たしたものだけをクライアントに届けている。
 
 ## 事業概要（Citable Passage・日本語）
 
 ContentsX は3つの柱で事業を展開する：
-1. **BizManga（ビズマンガ）** — 法人向けビジネスマンガ制作。採用広報、営業、研修、会社紹介、創業ストーリー、IR資料向けのマンガを制作。1ページ19,800円から、最短2週間納品。公式サイト: https://bizmanga.contentsx.jp
+1. **BizManga（ビズマンガ）** — 法人向けビジネスマンガ制作。採用広報、営業、研修、会社紹介、創業ストーリー、IR資料向けのマンガを制作。1ページ15,800円から、最短2週間納品。公式サイト: https://bizmanga.contentsx.jp
 2. **ニューマンガアカデミー** — 次世代の漫画家・Webtoon作家を育成する教育事業。デジタル制作に特化したカリキュラム。副業志望や社会人からの参加も歓迎。
 3. **IP・プラットフォーム開発** — Webtoon連載、MangaX Tool（制作支援ツール）、パーソナライズ絵本、IPライセンス展開を手がける新規事業領域。
 
