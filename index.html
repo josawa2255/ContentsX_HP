@@ -21,6 +21,7 @@
   <link rel="canonical" href="https://contentsx.jp/">
   
   <link rel="alternate" hreflang="ja" href="https://contentsx.jp/">
+  <link rel="alternate" hreflang="en" href="https://contentsx.jp/?lang=en">
   <link rel="alternate" hreflang="x-default" href="https://contentsx.jp/">
   <!-- OG tags -->
   <meta property="og:title" content="「伝える」を再発明するコンテンツ制作会社｜ContentsX">
@@ -56,7 +57,7 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "ProfessionalService"],
     "@id": "https://contentsx.jp/#organization",
     "name": "Contents X 株式会社",
     "legalName": "Contents X 株式会社",
@@ -68,10 +69,18 @@
       "width": 180,
       "height": 36
     },
-    "description": "「伝える」を、再発明する。ビジネス漫画・Webtoon・IP開発の総合コンテンツカンパニー。",
+    "image": "https://contentsx.jp/material/images/og/og-index.webp",
+    "description": "「伝える」を、再発明する。ビジネス漫画・Webtoon・動画・IP開発の総合コンテンツカンパニー。",
+    "priceRange": "¥¥",
+    "serviceType": ["ビジネス漫画制作", "Webtoon制作", "動画制作", "IP開発"],
+    "areaServed": {
+      "@type": "Country",
+      "name": "Japan"
+    },
     "foundingDate": "2026-03-03",
     "founder": {
       "@type": "Person",
+      "@id": "https://contentsx.jp/leadership#kuromiya",
       "name": "黒宮 大貴",
       "alternateName": "Daiki Kuromiya",
       "jobTitle": "代表取締役"
@@ -83,6 +92,17 @@
       "addressLocality": "目黒区",
       "streetAddress": "中目黒1-8-8 目黒F2ビル1F",
       "postalCode": "153-0061"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 35.6445,
+      "longitude": 139.6988
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "10:00",
+      "closes": "19:00"
     },
     "contactPoint": {
       "@type": "ContactPoint",
@@ -96,9 +116,62 @@
     ],
     "subOrganization": {
       "@type": "Organization",
-      "name": "ビズマンガ（BizManga）",
+      "@id": "https://bizmanga.contentsx.jp/#organization",
+      "name": "ビズマンガ",
       "url": "https://bizmanga.contentsx.jp/"
     }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": "https://contentsx.jp/#service-bizmanga",
+    "name": "ビジネス漫画制作（BizManga）",
+    "serviceType": "ビジネス漫画制作",
+    "description": "採用・営業・研修・会社紹介・創業ストーリー向けのB2B漫画制作サービス。大手の約1/5の価格で、最短2週間納品、プロ漫画家125項目品質チェックの高品質を実現。",
+    "provider": { "@id": "https://contentsx.jp/#organization" },
+    "areaServed": { "@type": "Country", "name": "Japan" },
+    "url": "https://bizmanga.contentsx.jp/",
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "JPY",
+      "price": "15800",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "15800",
+        "priceCurrency": "JPY",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": "1",
+          "unitText": "page"
+        }
+      }
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": "https://contentsx.jp/#service-academy",
+    "name": "ニューマンガアカデミー",
+    "serviceType": "クリエイター育成教育",
+    "description": "次世代の漫画家・Webtoon作家を育成する教育事業。デジタル制作に特化したカリキュラムでプロデビューを支援。",
+    "provider": { "@id": "https://contentsx.jp/#organization" },
+    "areaServed": { "@type": "Country", "name": "Japan" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": "https://contentsx.jp/#service-ip",
+    "name": "IP・プラットフォーム開発",
+    "serviceType": "IP開発・コンテンツプラットフォーム",
+    "description": "Webtoon連載、MangaX Tool（制作支援ツール）、パーソナライズ絵本、IPライセンス展開など、次世代コンテンツIPのプロデュースと運営。",
+    "provider": { "@id": "https://contentsx.jp/#organization" },
+    "areaServed": { "@type": "Country", "name": "Japan" }
   }
   </script>
   <script type="application/ld+json">
