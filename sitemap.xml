@@ -78,22 +78,6 @@
   </url>
 
   <!-- ===== ニュース個別記事（WP API から自動生成） ===== -->
-  <url>
-    <loc>https://contentsx.jp/news-detail?id=76</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://contentsx.jp/news-detail?id=73</loc>
-    <lastmod>2026-03-31</lastmod>
-  </url>
-  <url>
-    <loc>https://contentsx.jp/news-detail?id=69</loc>
-    <lastmod>2026-03-27</lastmod>
-  </url>
-  <url>
-    <loc>https://contentsx.jp/news-detail?id=15</loc>
-    <lastmod>2026-03-21</lastmod>
-  </url>
 
 
   <!-- ===== コラム記事（静的）===== -->
