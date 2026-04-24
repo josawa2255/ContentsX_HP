@@ -1,0 +1,44 @@
+{
+  "name": "ContentsX — 「伝える」を再発明するコンテンツ制作会社",
+  "short_name": "ContentsX",
+  "description": "マンガ・Webtoon・動画・IP開発を通じて、企業の「伝える」を再発明するコンテンツ制作会社。採用広報・企業PR・ブランド物語の企画から制作・展開まで一気通貫サポート。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#b85a2b",
+  "lang": "ja",
+  "categories": ["business", "productivity", "entertainment"],
+  "icons": [
+    {
+      "src": "material/images/logo/contentsx-icon.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "material/images/logo/contentsx-icon.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "会社概要",
+      "short_name": "会社",
+      "url": "/company"
+    },
+    {
+      "name": "代表メッセージ",
+      "short_name": "代表",
+      "url": "/message"
+    },
+    {
+      "name": "お問い合わせ",
+      "short_name": "相談",
+      "url": "/contact"
+    }
+  ]
+}

@@ -204,11 +204,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <!-- LCP優先: 初期表示のビズちゃん画像をpreload（モバイル/デスクトップ別） -->
-  <link rel="preload" href="material/images/characters/hero_biz_rooftop_sp.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
-  <link rel="preload" href="material/images/characters/hero_biz_rooftop.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
+  <!-- LCP優先: 初期表示のビズちゃん画像をpreload（モバイル/デスクトップ別）
+       注: data-step="line1" の hero_biz_ocean がactive状態で最初に表示されるため、
+       これを正しくpreload。以前は hero_biz_rooftop を指していて空振りしていた。 -->
+  <link rel="preload" href="material/images/characters/hero_biz_ocean_sp.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
+  <link rel="preload" href="material/images/characters/hero_biz_ocean.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
   <link rel="stylesheet" href="css/hero-new.css">
   <link rel="stylesheet" href="css/dl-modal.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#b85a2b">
 </head>
 <body data-theme="magenta-hot">
 
@@ -254,9 +258,9 @@
     <!-- 埋もれていた物語に = 海 -->
     <img loading="eager" fetchpriority="high" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img active" data-step="line1" alt="">
     <!-- 光を当てる = スタジオ -->
-    <img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" data-step="line2" alt="">
+    <picture><source type="image/avif" srcset="material/images/characters/hero_biz_manga_studio.avif"><img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" data-step="line2" alt=""></picture>
     <!-- ContentsX ロゴ = 屋上 -->
-    <img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img" data-step="logo" alt="">
+    <picture><source type="image/avif" srcset="material/images/characters/hero_biz_rooftop.avif"><img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img" data-step="logo" alt=""></picture>
   </div>
 
   <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->
