@@ -1,6 +1,6 @@
 # Contents X 株式会社（ContentsX）
-# Last updated: 2026-04-21
-# Version: 1.5
+# Last updated: 2026-04-24
+# Version: 1.6
 
 > 埋もれていた物語に、光を当てる。マンガ・Webtoon・動画・IP開発を通じて、企業や地域の価値を可視化し、世界に届けるコンテンツ制作スタジオ。
 
