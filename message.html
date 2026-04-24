@@ -42,12 +42,24 @@
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
+    "@id": "https://contentsx.jp/message#webpage",
     "name": "代表メッセージ｜黒宮大貴が語る創業の想い｜ContentsX",
     "description": "ContentsX代表取締役 黒宮大貴からのメッセージ。「届かない想い」と「埋もれる才能」という二つの課題に、なぜ私たちが向き合うのか。創業の背景と「伝える」を再発明する未来像をお伝えします。",
     "url": "https://contentsx.jp/message",
     "inLanguage": "ja-JP",
-    "isPartOf": { "@type": "WebSite", "name": "Contents X", "url": "https://contentsx.jp/" },
-    "publisher": { "@type": "Organization", "name": "Contents X 株式会社", "url": "https://contentsx.jp/" },
+    "isPartOf": { "@id": "https://contentsx.jp/#website" },
+    "publisher": { "@id": "https://contentsx.jp/#organization" },
+    "author": { "@id": "https://contentsx.jp/leadership#kuromiya" },
+    "about": { "@id": "https://contentsx.jp/leadership#kuromiya" },
+    "mainEntity": {
+      "@type": "Person",
+      "@id": "https://contentsx.jp/leadership#kuromiya",
+      "name": "黒宮 大貴",
+      "alternateName": "Daiki Kuromiya",
+      "jobTitle": "代表取締役 / ファウンダー",
+      "worksFor": { "@id": "https://contentsx.jp/#organization" },
+      "url": "https://contentsx.jp/leadership#kuromiya"
+    },
     "breadcrumb": {
       "@type": "BreadcrumbList",
       "itemListElement": [
