@@ -1914,6 +1914,15 @@ function cxcms_format_work( $p ) {
         }
     }
 
+    /* manga_category の全term（複数カテゴリ対応） */
+    $cat_names = [];
+    $cat_terms = get_the_terms( $p->ID, 'manga_category' );
+    if ( $cat_terms && ! is_wp_error($cat_terms) ) {
+        foreach ( $cat_terms as $t ) {
+            $cat_names[] = $t->name;
+        }
+    }
+
     return [
         'id'          => $m('cx_work_id') ?: sanitize_title($p->post_title),
         'title_ja'    => $p->post_title,
@@ -1921,7 +1930,8 @@ function cxcms_format_work( $p ) {
         'subtitle_ja' => $m('cx_subtitle_ja') ?: $p->post_title,
         'subtitle_en' => $m('cx_subtitle_en') ?: ( $m('cx_title_en') ?: $p->post_title ),
         'pages'       => (int) $m('cx_pages'),
-        'category'  => cxcms_get_first_term( $p->ID, 'manga_category' ),
+        'category'  => ! empty($cat_names) ? $cat_names[0] : '',
+        'categories' => $cat_names,
         'client'    => $m('cx_client'),
         'client_url'    => $m('cx_client_url'),
         'cta_label_ja'  => $m('cx_cta_label_ja'),
