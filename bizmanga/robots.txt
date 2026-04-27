@@ -1,4 +1,3 @@
+# このサブパスは bizmanga.contentsx.jp に移行済み（2026-04-27）
 User-agent: *
-Allow: /
-
-Sitemap: https://contentsx.jp/bizmanga/sitemap.xml
+Disallow: /
