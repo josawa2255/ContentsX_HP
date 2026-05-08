@@ -29,14 +29,34 @@ def fetch_json(url, timeout=30):
         return json.loads(resp.read().decode("utf-8"))
 
 
+def decode_slug(s):
+    """WP API はWP管理画面でスラッグ未設定の記事に対しURLエンコード済み日本語を返す。
+    GitHub Pages はファイル名のリテラル % を期待しないので、デコードして日本語のまま使う。"""
+    if not s:
+        return ""
+    try:
+        return urllib.parse.unquote(s)
+    except Exception:
+        return s
+
+
 def fetch_columns_list():
     """ContentsX 表示対象のコラム一覧を取得 (show_site=contentx または both)"""
-    return fetch_json(f"{API_BASE}/columns?site=contentx&per_page=100")
+    cols = fetch_json(f"{API_BASE}/columns?site=contentx&per_page=100")
+    # スラッグを必ずデコード形式に揃える
+    if isinstance(cols, list):
+        for c in cols:
+            if isinstance(c, dict) and c.get("slug"):
+                c["slug"] = decode_slug(c["slug"])
+    return cols
 
 
 def fetch_column_full(col_id):
     """単一コラムの本文付きデータを取得"""
-    return fetch_json(f"{API_BASE}/columns/{col_id}")
+    full = fetch_json(f"{API_BASE}/columns/{col_id}")
+    if isinstance(full, dict) and full.get("slug"):
+        full["slug"] = decode_slug(full["slug"])
+    return full
 
 
 def truncate_desc(text, length=120):
