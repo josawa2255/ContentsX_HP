@@ -23,6 +23,8 @@
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
 | ニュース詳細 | `news-detail.html` | wp-config.js + インラインJS | |
+| コラム一覧 | `column.html` | i18n.js, nav.js, column.js | Featured + カテゴリチップフィルタ + カードグリッド。`tools/build-c-columns.py` が WP API (`?site=contentx`) からカード・カテゴリ・ItemList JSON-LD・Featured を自動注入（`<!-- BUILD:COLUMN_GRID -->` マーカー間） |
+| コラム個別 | `column/{slug}.html` | (静的) | `tools/build-c-columns.py` で生成。`/column/` は `column/index.html` の meta refresh で `/column` へリダイレクト |
 
 ## 2. URL パラメータ
 
@@ -95,6 +97,7 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 | `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（6ページで共有） |
 | `js/nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 | 全ページ（defer） |
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
+| `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
 | `js/dl-modal.js` | 資料DLモーダル | contact送信済みか localStorage で判定 |
 | `js/wp-api.js` | WP API クライアント | `WORKS_DETAIL_DATA` / `NEW_WORKS_DATA` 上書き |
 | `js/wp-config.js` | WP設定 | API baseURL / cache TTL |
@@ -183,9 +186,17 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 
 ### 7.3 現在のメニュー構成
 ```
-ホーム | 企業案内 ▾ (Contents Xについて / トップメッセージ / 会社概要 / 役員紹介 / 主要関連会社) | 採用情報 | お問い合わせ
+ホーム | 企業案内 ▾ (Contents Xについて / トップメッセージ / 会社概要 / 役員紹介 / 主要関連会社) | コラム | 採用情報 | お問い合わせ
 ```
 - ⚠️ 「強み」は一時削除中（BizManga特化のため）→ 他事業展開後に全面刷新してメニュー復帰予定
+
+## 7.4 コラム機能（2026-05-08 新設）
+- 個別記事は WP CMS → `tools/build-c-columns.py` → `column/{slug}.html` で静的生成（既存）
+- WP API は `?site=contentx` フィルタで取得（`show_site` が `contentx` または `both` の記事のみ）
+- 一覧ページ `column.html` も build-c-columns.py が自動更新（Featured 1本 + カードグリッド + カテゴリチップ + ItemList JSON-LD）
+- マーカー: `<!-- BUILD:COLUMN_GRID -->` ... `<!-- /BUILD:COLUMN_GRID -->`
+- `/column/` アクセス時は `column/index.html` の meta refresh で `/column` (= column.html) へ転送
+- `--skip-listing` で個別ページのみ生成可能
 
 ## 8. 制作事例モーダル（トップページ）
 

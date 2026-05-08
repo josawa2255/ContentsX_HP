@@ -22,6 +22,7 @@
         { label: '主要関連会社',       labelEn: 'Partners',         href: 'partners' }
       ]
     },
+    { label: 'コラム',     labelEn: 'Column',       href: 'column',         indexHref: 'column' },
     { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit',        indexHref: 'recruit' },
     { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact',        indexHref: 'contact', cta: true }
   ];

@@ -1,0 +1,252 @@
+/* ===== ContentsX コラム一覧 ===== */
+
+.cx-col-page {
+  padding-top: 96px;
+  padding-bottom: 120px;
+  background: var(--bg-white);
+}
+
+.cx-col-hero {
+  padding: 64px 0 40px;
+  border-bottom: 1px solid #ececec;
+}
+.cx-col-hero-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+.cx-col-hero-title {
+  font-size: clamp(28px, 4.4vw, 44px);
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+.cx-col-hero-lead {
+  max-width: 720px;
+  font-size: clamp(14px, 1.4vw, 16px);
+  line-height: 1.85;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ===== Featured ===== */
+.cx-col-featured {
+  padding: 56px 0 24px;
+}
+.cx-col-featured-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-light);
+  padding: 32px;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cx-col-featured-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+.cx-col-featured-img {
+  overflow: hidden;
+  border-radius: 8px;
+  aspect-ratio: 16 / 9;
+  background: #ddd;
+}
+.cx-col-featured-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cx-col-featured-label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cx-col-featured-date {
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.cx-col-featured-cat {
+  display: inline-block;
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+  border-radius: 100px;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+.cx-col-featured-title {
+  font-size: clamp(20px, 2.6vw, 28px);
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+.cx-col-featured-excerpt {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+}
+.cx-col-featured-read {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+/* ===== カテゴリフィルター ===== */
+.cx-col-filter {
+  padding: 20px 0 28px;
+  border-bottom: 1px solid #ececec;
+  margin-bottom: 40px;
+}
+.cx-col-filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cx-col-filter-chip {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 16px;
+  border: 1px solid #d8d8d8;
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.cx-col-filter-chip:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+.cx-col-filter-chip.is-active {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--bg-white);
+}
+
+/* ===== グリッド ===== */
+.cx-col-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+}
+.cx-col-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-white);
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cx-col-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+.cx-col-card-img {
+  aspect-ratio: 16 / 9;
+  background: #ddd;
+  overflow: hidden;
+}
+.cx-col-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.cx-col-card:hover .cx-col-card-img img {
+  transform: scale(1.05);
+}
+.cx-col-card-body {
+  padding: 18px 20px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.cx-col-card-cat {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.cx-col-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+  flex: 1;
+}
+.cx-col-card-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* ===== カードフィルタ非表示 ===== */
+.cx-col-card[data-hidden="true"] {
+  display: none;
+}
+
+/* ===== 空状態 ===== */
+.cx-col-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  display: none;
+}
+.cx-col-empty.is-active {
+  display: block;
+}
+
+/* ===== モバイル ===== */
+@media (max-width: 768px) {
+  .cx-col-page {
+    padding-top: 76px;
+  }
+  .cx-col-hero {
+    padding: 36px 0 24px;
+  }
+  .cx-col-featured {
+    padding: 32px 0 16px;
+  }
+  .cx-col-featured-card {
+    grid-template-columns: 1fr;
+    padding: 18px;
+    gap: 18px;
+  }
+  .cx-col-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

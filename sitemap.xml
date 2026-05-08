@@ -80,6 +80,14 @@
   <!-- ===== ニュース個別記事（WP API から自動生成） ===== -->
 
 
+  <!-- ===== コラム一覧 ===== -->
+  <url>
+    <loc>https://contentsx.jp/column</loc>
+    <lastmod>2026-05-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- ===== コラム記事（静的）===== -->
   <url>
     <loc>https://contentsx.jp/column/manga-marketing-btob-guide</loc>
