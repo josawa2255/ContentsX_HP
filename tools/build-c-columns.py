@@ -53,6 +53,68 @@ def escape_meta(s):
     return html.escape(s, quote=True)
 
 
+H2_PATTERN = re.compile(r"<h2(\s[^>]*)?>(.*?)</h2>", re.DOTALL | re.IGNORECASE)
+H2_ID_ATTR = re.compile(r'\bid\s*=\s*"([^"]+)"', re.IGNORECASE)
+
+
+def build_toc_and_inject_ids(content_html):
+    """本文HTMLの <h2> を走査し id を付与し、目次HTMLを返す。
+
+    h2 が 2 つ未満なら目次は出さない（空文字を返す）。
+    Returns: (toc_html, content_with_ids)
+    """
+    if not content_html:
+        return "", content_html or ""
+
+    matches = list(H2_PATTERN.finditer(content_html))
+    if len(matches) < 2:
+        return "", content_html
+
+    items = []
+    pieces = []
+    last_end = 0
+
+    for i, m in enumerate(matches, start=1):
+        attrs = m.group(1) or ""
+        inner = m.group(2) or ""
+        existing = H2_ID_ATTR.search(attrs)
+        if existing:
+            sec_id = existing.group(1)
+            new_h2 = m.group(0)
+        else:
+            sec_id = f"sec-{i}"
+            new_h2 = f'<h2{attrs} id="{sec_id}">{inner}</h2>'
+
+        toc_text = re.sub(r"<[^>]+>", "", inner).strip()
+        if not toc_text:
+            continue
+
+        items.append((sec_id, toc_text))
+        pieces.append(content_html[last_end:m.start()])
+        pieces.append(new_h2)
+        last_end = m.end()
+
+    pieces.append(content_html[last_end:])
+    content_with_ids = "".join(pieces)
+
+    if len(items) < 2:
+        return "", content_html
+
+    li_html = "".join(
+        f'        <li><a href="#{escape_meta(sid)}">{escape_meta(text)}</a></li>\n'
+        for sid, text in items
+    )
+    toc_html = (
+        '    <nav class="cx-col-toc" aria-label="この記事の目次">\n'
+        '      <p class="cx-col-toc-label">この記事の目次</p>\n'
+        '      <ol class="cx-col-toc-list">\n'
+        f'{li_html}'
+        '      </ol>\n'
+        '    </nav>\n'
+    )
+    return toc_html, content_with_ids
+
+
 def build_related_cards(current_id, all_cols, category):
     """同一カテゴリから最大3本の関連記事カードHTMLを生成"""
     related = [c for c in all_cols if c["id"] != current_id and c.get("category") == category]
@@ -109,8 +171,8 @@ def build_one(col, all_cols, template):
     date_iso = f"{date_ymd}T09:00:00+09:00"
     modified_iso = f"{modified_ymd}T09:00:00+09:00"
 
-    # Content: WP側のHTMLをそのまま注入（既にsanitize済み前提）
-    content = content_html
+    # 目次生成 + h2 に id を付与
+    toc_html, content_with_ids = build_toc_and_inject_ids(content_html)
 
     # 関連記事カード
     related_cards = build_related_cards(col_id, all_cols, category)
@@ -126,7 +188,8 @@ def build_one(col, all_cols, template):
         "{{DATE_PUBLISHED}}": date_iso,
         "{{DATE_MODIFIED}}": modified_iso,
         "{{DATE_DISPLAY}}": date_display,
-        "{{CONTENT}}": content,
+        "{{TOC}}": toc_html,
+        "{{CONTENT}}": content_with_ids,
         "{{RELATED_CARDS}}": related_cards,
     }
 

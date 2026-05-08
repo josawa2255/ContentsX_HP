@@ -102,7 +102,14 @@
     .cx-col-hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(22px, 4vw, 36px); font-weight: 900; line-height: 1.5; margin-bottom: 24px; color: #fff; }
     .cx-col-hero-meta { font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 0.05em; }
     .cx-col-body { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; font-size: 16px; line-height: 1.95; color: #2a2520; }
-    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; }
+    .cx-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf7f2; border-left: 3px solid #b85a2b; border-radius: 4px; }
+    .cx-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #b85a2b; margin: 0 0 14px; }
+    .cx-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .cx-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .cx-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: #b85a2b; font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .cx-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .cx-col-toc-list a:hover { color: #b85a2b; border-bottom-color: #b85a2b; }
+    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; scroll-margin-top: 80px; }
     .cx-col-body h3 { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 32px 0 14px; padding-left: 14px; border-left: 4px solid #b85a2b; }
     .cx-col-body p { margin-bottom: 20px; }
     .cx-col-body img { max-width: 100%; height: auto; display: block; margin: 32px auto; border-radius: 8px; }
@@ -128,7 +135,7 @@
     .cx-col-related-card-body { padding: 16px 18px 18px; }
     .cx-col-related-card-cat { font-size: 11px; color: #b85a2b; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
     .cx-col-related-card-title { font-size: 14px; font-weight: 700; line-height: 1.5; color: #1a1a1a; }
-    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } }
+    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } .cx-col-toc { padding: 18px 20px; margin-bottom: 32px; } .cx-col-toc-list a { font-size: 13.5px; } }
   </style>
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
 </head>
@@ -160,8 +167,19 @@
 
   <!-- ===== Article Body ===== -->
   <article class="cx-col-body">
+    <nav class="cx-col-toc" aria-label="この記事の目次">
+      <p class="cx-col-toc-label">この記事の目次</p>
+      <ol class="cx-col-toc-list">
+        <li><a href="#sec-1">なぜ今、4コマ漫画が求められているのか？</a></li>
+        <li><a href="#sec-2">読者の心を動かす「起承転結」の基本</a></li>
+        <li><a href="#sec-3">「読まれる」ための画面構成と引き算の技術</a></li>
+        <li><a href="#sec-4">デジタル制作で効率よく、継続的に発信するコツ</a></li>
+        <li><a href="#sec-5">まとめ：4コマ漫画は最強のコミュニケーションツール</a></li>
+      </ol>
+    </nav>
+
     
-<h2>なぜ今、4コマ漫画が求められているのか？</h2>
+<h2 id="sec-1">なぜ今、4コマ漫画が求められているのか？</h2>
 <p>現代はデジタルデバイスの普及により、私たちが1日に接する情報量は、20年前と比較して数百倍にまで増えたと言われています。こうした情報過多の時代、一説には「現代人の深い集中力はわずか8秒しか持続しない」という研究結果もあるほどです。</p>
 <p>こうした背景から、多くの企業や個人が「情報をいかに短時間で、正確に伝えるか」という課題に直面しています。そこで選ばれているのが「4コマ漫画」です。</p>
 
@@ -175,7 +193,7 @@
 <p>人は文字だけで理解しようとするよりも、視覚情報を組み合わせることで、<strong>記憶の定着率が約6.5倍にアップ</strong>します。これは脳が「文字」と「画像」を別々のルートで処理し、より強固に記憶する「二重符号化理論」に基づいています。</p>
 <p>さらに、スタンフォード大学の研究などでは、単なる事実の羅列よりも「物語（ストーリー）」として伝える方が、<strong>最大で22倍も記憶に残りやすくなる</strong>というデータも示されています。</p>
 
-<h2>読者の心を動かす「起承転結」の基本</h2>
+<h2 id="sec-2">読者の心を動かす「起承転結」の基本</h2>
 <p>4コマ漫画の根幹を支えるのは、やはり「起承転結」のフレームワークです。これは単に話を4つに割るのではなく、読者の心理プロセスを段階的に構築するための、いわばコンテンツの設計図といえます。</p>
 <ul>
 <li><strong>起（導入）：</strong> 5W1H（だれが・どこで・何を）を明確にし、読者を物語の世界へ引き込みます。</li>
@@ -185,7 +203,7 @@
 </ul>
 <p>特にビジネスシーンでは、難しい専門用語を並べるよりも、身近な失敗談や成功体験をこのリズムに乗せて伝えることで、読者の深い共感を生み出しやすくなります。</p>
 
-<h2>「読まれる」ための画面構成と引き算の技術</h2>
+<h2 id="sec-3">「読まれる」ための画面構成と引き算の技術</h2>
 <h3>セリフは短く、視線はスムーズに</h3>
 <p>スマートフォンの小さな画面で読まれることを想定すると、セリフは1つの吹き出しにつき<strong>2〜3行以内</strong>に抑えるのがベストです。文字密度が高すぎると、読者は瞬時に「読む負担」を感じて離脱してしまいます。</p>
 <p>また、縦スクロールが主流の現代では、読者の視線は基本的に<strong>「上から下へ」</strong>と流れます。この流れを遮らないよう、セリフや重要なアイテムを配置することが、ストレスなく読了してもらうための鍵となります。</p>
@@ -196,7 +214,7 @@
 
 
 
-<h2>デジタル制作で効率よく、継続的に発信するコツ</h2>
+<h2 id="sec-4">デジタル制作で効率よく、継続的に発信するコツ</h2>
 <p>SNSで認知を広げるためには、定期的な投稿が欠かせません。そこで活用したいのが、デジタルツールの「テンプレート化」です。</p>
 <ul>
 <li><strong>枠組みの固定：</strong> あらかじめコマ枠やレイヤー構成を決めておき、迷う時間を最小化します。</li>
@@ -205,7 +223,7 @@
 </ul>
 <p>「CLIP STUDIO PAINT」などの専門ツールを活用すれば、SNS投稿からWeb連載まで、プロクオリティの発信を効率的に行うことが可能です。</p>
 
-<h2>まとめ：4コマ漫画は最強のコミュニケーションツール</h2>
+<h2 id="sec-5">まとめ：4コマ漫画は最強のコミュニケーションツール</h2>
 <p>4コマ漫画は、単なる娯楽ではありません。複雑なビジネスモデルを瞬時に理解させたり、企業の想いを深い共感とともに届けたりすることができる、極めて強力なソリューションです。</p>
 <p>最新の市場調査でも、日本のデジタルコンテンツ市場は右肩上がりの成長を続けており、ビジネスにおける漫画活用のニーズはかつてないほど高まっています。</p>
 <p>「伝えたいことはあるけれど、文章ではなかなか伝わらない……」<br>そんな悩みをお持ちの方は、ぜひ4コマ漫画という選択肢を検討してみてください。4つの枠の中にある無限の可能性が、あなたのビジネスを新しいステージへと導いてくれるはずです。</p>
@@ -233,11 +251,11 @@
       <h2>関連記事</h2>
     </div>
     <div class="cx-col-related-grid">
-            <a href="/column/652" class="cx-col-related-card">
-        <div class="cx-col-related-card-img"><img src="" alt="" loading="lazy" width="400" height="225"></div>
+            <a href="/column/%e3%83%81%e3%83%a9%e3%82%b7%e6%bc%ab%e7%94%bb%e3%81%a7%e8%aa%ad%e3%81%be%e3%82%8c%e3%81%aa%e3%81%84%e6%82%a9%e3%81%bf%e3%82%92%e8%a7%a3%e6%b1%ba%ef%bd%9c%e9%85%8d%e5%b8%83%e3%83%81%e3%83%a3%e3%83%8d" class="cx-col-related-card">
+        <div class="cx-col-related-card-img"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/05/ヘッダー-1-1024x576.webp" alt="チラシ漫画で読まれない悩みを解決｜配布チャネル別の事例構造分解" loading="lazy" width="400" height="225"></div>
         <div class="cx-col-related-card-body">
-          <div class="cx-col-related-card-cat"></div>
-          <div class="cx-col-related-card-title"></div>
+          <div class="cx-col-related-card-cat">BtoB戦略</div>
+          <div class="cx-col-related-card-title">チラシ漫画で読まれない悩みを解決｜配布チャネル別の事例構造分解</div>
         </div>
       </a>
       <a href="/column/%e3%83%9e%e3%83%b3%e3%82%ac%e5%ba%83%e5%91%8a%e5%88%b6%e4%bd%9c%e3%81%ae%e9%81%b8%e3%81%b3%e6%96%b97%e3%81%a4%e3%81%ae%e8%bb%b8%ef%bd%9c%e8%b2%bb%e7%94%a8%e3%83%bb%e5%8a%b9%e6%9e%9c%e3%83%bb%e7%99%ba" class="cx-col-related-card">

@@ -102,7 +102,14 @@
     .cx-col-hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(22px, 4vw, 36px); font-weight: 900; line-height: 1.5; margin-bottom: 24px; color: #fff; }
     .cx-col-hero-meta { font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 0.05em; }
     .cx-col-body { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; font-size: 16px; line-height: 1.95; color: #2a2520; }
-    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; }
+    .cx-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf7f2; border-left: 3px solid #b85a2b; border-radius: 4px; }
+    .cx-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #b85a2b; margin: 0 0 14px; }
+    .cx-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .cx-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .cx-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: #b85a2b; font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .cx-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .cx-col-toc-list a:hover { color: #b85a2b; border-bottom-color: #b85a2b; }
+    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; scroll-margin-top: 80px; }
     .cx-col-body h3 { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 32px 0 14px; padding-left: 14px; border-left: 4px solid #b85a2b; }
     .cx-col-body p { margin-bottom: 20px; }
     .cx-col-body img { max-width: 100%; height: auto; display: block; margin: 32px auto; border-radius: 8px; }
@@ -128,7 +135,7 @@
     .cx-col-related-card-body { padding: 16px 18px 18px; }
     .cx-col-related-card-cat { font-size: 11px; color: #b85a2b; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
     .cx-col-related-card-title { font-size: 14px; font-weight: 700; line-height: 1.5; color: #1a1a1a; }
-    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } }
+    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } .cx-col-toc { padding: 18px 20px; margin-bottom: 32px; } .cx-col-toc-list a { font-size: 13.5px; } }
   </style>
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
 </head>
@@ -160,8 +167,19 @@
 
   <!-- ===== Article Body ===== -->
   <article class="cx-col-body">
+    <nav class="cx-col-toc" aria-label="この記事の目次">
+      <p class="cx-col-toc-label">この記事の目次</p>
+      <ol class="cx-col-toc-list">
+        <li><a href="#sec-1">なぜ今、ビジネスに「1コマ漫画」が必要なのか？</a></li>
+        <li><a href="#sec-2">科学と歴史が証明する「漫画」の圧倒的な記憶定着率</a></li>
+        <li><a href="#sec-3">低コスト・高品質を実現するビジネス漫画戦略</a></li>
+        <li><a href="#sec-4">採用から販促まで — 明日から使える活用シーン</a></li>
+        <li><a href="#sec-5">まとめ：1コマビジネス漫画が選ばれる理由</a></li>
+      </ol>
+    </nav>
+
     
-<h2>なぜ今、ビジネスに「1コマ漫画」が必要なのか？</h2>
+<h2 id="sec-1">なぜ今、ビジネスに「1コマ漫画」が必要なのか？</h2>
 <p>現代社会では、SNSの普及により1日に接する情報量は20年前の約500倍にまで膨れ上がっています。一方で、Microsoft社の調査によると私たちの平均的な集中時間は<strong>わずか8秒</strong>。せっかく時間をかけて作ったビジネス資料も「読まれない」「伝わらない」という深刻な課題に直面しています。</p>
 <p>特にBtoBビジネスにおいては、複雑な事業内容や専門的なサービスをいかに「一瞬で」理解してもらうかが勝負の分かれ目です。そこで注目されているのが、情報を極限まで凝縮した<strong>「1コマ漫画」</strong>をはじめとするビジネス漫画の活用です。</p>
 
@@ -179,7 +197,7 @@
 
 
 
-<h2>科学と歴史が証明する「漫画」の圧倒的な記憶定着率</h2>
+<h2 id="sec-2">科学と歴史が証明する「漫画」の圧倒的な記憶定着率</h2>
 <p>漫画が選ばれる理由は、単に「親しみやすいから」だけではありません。人間の脳の仕組みに基づいた明確なエビデンスがあります。</p>
 
 <h3>記憶定着率6.5倍、ストーリー効果で最大22倍</h3>
@@ -196,7 +214,7 @@
 
 
 
-<h2>低コスト・高品質を実現するビジネス漫画戦略</h2>
+<h2 id="sec-3">低コスト・高品質を実現するビジネス漫画戦略</h2>
 <p>「漫画制作は高い」「納期がかかる」と思い込んでいませんか？ ビジネス特化型漫画制作サービス『ビズマンガ』は、従来の業界常識を覆す圧倒的なコストパフォーマンスを提供します。</p>
 <table>
 <thead>
@@ -210,7 +228,7 @@
 </table>
 <p>低価格を実現できる理由は、単に質を下げているからではありません。「ビジネス利用に特化」し、プロの漫画家監修のもとで制作工程を最適化しているからです。ページ単価を抑えることで、浮いた予算をストーリーの充実に充て、より「伝わる」コンテンツを制作できます。</p>
 
-<h2>採用から販促まで — 明日から使える活用シーン</h2>
+<h2 id="sec-4">採用から販促まで — 明日から使える活用シーン</h2>
 <p>ビジネス漫画は、あらゆるビジネスシーンで「課題解決のソリューション」として機能します。</p>
 
 <h3>採用広報</h3>
@@ -232,7 +250,7 @@
 
 
 
-<h2>まとめ：1コマビジネス漫画が選ばれる理由</h2>
+<h2 id="sec-5">まとめ：1コマビジネス漫画が選ばれる理由</h2>
 <ul>
 <li><strong>科学的根拠：</strong>二重符号化理論＋ストーリー効果で、文字だけの資料より最大22倍記憶に残る</li>
 <li><strong>文化的強み：</strong>明治時代から続く「一瞬で本質を突く」日本の伝統手法</li>

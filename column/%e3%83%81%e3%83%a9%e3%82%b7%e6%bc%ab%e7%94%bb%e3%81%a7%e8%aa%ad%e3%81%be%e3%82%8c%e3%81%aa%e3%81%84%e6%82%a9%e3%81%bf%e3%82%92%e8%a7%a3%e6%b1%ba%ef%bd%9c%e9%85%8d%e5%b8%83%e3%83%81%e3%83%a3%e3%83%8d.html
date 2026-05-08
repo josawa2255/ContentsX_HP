@@ -102,7 +102,14 @@
     .cx-col-hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(22px, 4vw, 36px); font-weight: 900; line-height: 1.5; margin-bottom: 24px; color: #fff; }
     .cx-col-hero-meta { font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 0.05em; }
     .cx-col-body { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; font-size: 16px; line-height: 1.95; color: #2a2520; }
-    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; }
+    .cx-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf7f2; border-left: 3px solid #b85a2b; border-radius: 4px; }
+    .cx-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #b85a2b; margin: 0 0 14px; }
+    .cx-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .cx-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .cx-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: #b85a2b; font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .cx-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .cx-col-toc-list a:hover { color: #b85a2b; border-bottom-color: #b85a2b; }
+    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; scroll-margin-top: 80px; }
     .cx-col-body h3 { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 32px 0 14px; padding-left: 14px; border-left: 4px solid #b85a2b; }
     .cx-col-body p { margin-bottom: 20px; }
     .cx-col-body img { max-width: 100%; height: auto; display: block; margin: 32px auto; border-radius: 8px; }
@@ -128,7 +135,7 @@
     .cx-col-related-card-body { padding: 16px 18px 18px; }
     .cx-col-related-card-cat { font-size: 11px; color: #b85a2b; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
     .cx-col-related-card-title { font-size: 14px; font-weight: 700; line-height: 1.5; color: #1a1a1a; }
-    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } }
+    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } .cx-col-toc { padding: 18px 20px; margin-bottom: 32px; } .cx-col-toc-list a { font-size: 13.5px; } }
   </style>
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
 </head>
@@ -160,6 +167,20 @@
 
   <!-- ===== Article Body ===== -->
   <article class="cx-col-body">
+    <nav class="cx-col-toc" aria-label="この記事の目次">
+      <p class="cx-col-toc-label">この記事の目次</p>
+      <ol class="cx-col-toc-list">
+        <li><a href="#sec-1">チラシに漫画を入れると本当に読まれるのか｜BtoB配布現場で検証された3つの効果から逆算する</a></li>
+        <li><a href="#sec-2">配布チャネルが変われば、漫画チラシの効きどころも変わる｜展示会・DM・ポスティングの違いを分解する</a></li>
+        <li><a href="#sec-3">チャネル別に見るBtoB漫画チラシの事例｜現場で何が起きていたのかを構造で分解する</a></li>
+        <li><a href="#sec-4">漫画チラシで失敗する3つのパターン｜稟議書で必ず問われる回避策まで</a></li>
+        <li><a href="#sec-5">1ページ単価とABテスト前提で考える、漫画チラシの費用対効果</a></li>
+        <li><a href="#sec-6">営業チラシを採用チラシに転用する｜原稿資産として二刀流で使い倒す方法</a></li>
+        <li><a href="#sec-7">漫画チラシ制作会社を選ぶときに営業企画が確認すべき5つのポイント</a></li>
+        <li><a href="#sec-8">まとめ｜「チラシ 漫画」は配布チャネル設計で稟議の通りやすさが決まる</a></li>
+      </ol>
+    </nav>
+
     
 <p></p>
 
@@ -177,7 +198,7 @@
 
 
 
-<h2 class="wp-block-heading">チラシに漫画を入れると本当に読まれるのか｜BtoB配布現場で検証された3つの効果から逆算する</h2>
+<h2 class="wp-block-heading" id="sec-1">チラシに漫画を入れると本当に読まれるのか｜BtoB配布現場で検証された3つの効果から逆算する</h2>
 
 
 
@@ -197,7 +218,7 @@
 
 
 
-<h2 class="wp-block-heading">配布チャネルが変われば、漫画チラシの効きどころも変わる｜展示会・DM・ポスティングの違いを分解する</h2>
+<h2 class="wp-block-heading" id="sec-2">配布チャネルが変われば、漫画チラシの効きどころも変わる｜展示会・DM・ポスティングの違いを分解する</h2>
 
 
 
@@ -233,7 +254,7 @@
 
 
 
-<h2 class="wp-block-heading">チャネル別に見るBtoB漫画チラシの事例｜現場で何が起きていたのかを構造で分解する</h2>
+<h2 class="wp-block-heading" id="sec-3">チャネル別に見るBtoB漫画チラシの事例｜現場で何が起きていたのかを構造で分解する</h2>
 
 
 
@@ -293,7 +314,7 @@
 
 
 
-<h2 class="wp-block-heading">漫画チラシで失敗する3つのパターン｜稟議書で必ず問われる回避策まで</h2>
+<h2 class="wp-block-heading" id="sec-4">漫画チラシで失敗する3つのパターン｜稟議書で必ず問われる回避策まで</h2>
 
 
 
@@ -339,7 +360,7 @@
 
 
 
-<h2 class="wp-block-heading">1ページ単価とABテスト前提で考える、漫画チラシの費用対効果</h2>
+<h2 class="wp-block-heading" id="sec-5">1ページ単価とABテスト前提で考える、漫画チラシの費用対効果</h2>
 
 
 
@@ -375,7 +396,7 @@
 
 
 
-<h2 class="wp-block-heading">営業チラシを採用チラシに転用する｜原稿資産として二刀流で使い倒す方法</h2>
+<h2 class="wp-block-heading" id="sec-6">営業チラシを採用チラシに転用する｜原稿資産として二刀流で使い倒す方法</h2>
 
 
 
@@ -407,7 +428,7 @@
 
 
 
-<h2 class="wp-block-heading">漫画チラシ制作会社を選ぶときに営業企画が確認すべき5つのポイント</h2>
+<h2 class="wp-block-heading" id="sec-7">漫画チラシ制作会社を選ぶときに営業企画が確認すべき5つのポイント</h2>
 
 
 
@@ -473,7 +494,7 @@
 
 
 
-<h2 class="wp-block-heading">まとめ｜「チラシ 漫画」は配布チャネル設計で稟議の通りやすさが決まる</h2>
+<h2 class="wp-block-heading" id="sec-8">まとめ｜「チラシ 漫画」は配布チャネル設計で稟議の通りやすさが決まる</h2>
 
 
 

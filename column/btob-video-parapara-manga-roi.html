@@ -102,7 +102,14 @@
     .cx-col-hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(22px, 4vw, 36px); font-weight: 900; line-height: 1.5; margin-bottom: 24px; color: #fff; }
     .cx-col-hero-meta { font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 0.05em; }
     .cx-col-body { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; font-size: 16px; line-height: 1.95; color: #2a2520; }
-    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; }
+    .cx-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf7f2; border-left: 3px solid #b85a2b; border-radius: 4px; }
+    .cx-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #b85a2b; margin: 0 0 14px; }
+    .cx-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .cx-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .cx-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: #b85a2b; font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .cx-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .cx-col-toc-list a:hover { color: #b85a2b; border-bottom-color: #b85a2b; }
+    .cx-col-body h2 { font-family: 'Noto Serif JP', serif; font-size: 24px; font-weight: 900; color: #1a1a1a; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 3px solid #b85a2b; scroll-margin-top: 80px; }
     .cx-col-body h3 { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 32px 0 14px; padding-left: 14px; border-left: 4px solid #b85a2b; }
     .cx-col-body p { margin-bottom: 20px; }
     .cx-col-body img { max-width: 100%; height: auto; display: block; margin: 32px auto; border-radius: 8px; }
@@ -128,7 +135,7 @@
     .cx-col-related-card-body { padding: 16px 18px 18px; }
     .cx-col-related-card-cat { font-size: 11px; color: #b85a2b; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
     .cx-col-related-card-title { font-size: 14px; font-weight: 700; line-height: 1.5; color: #1a1a1a; }
-    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } }
+    @media (max-width: 640px) { .cx-col-hero { min-height: 320px; padding: 60px 20px 40px; } .cx-col-body { padding: 40px 20px 60px; font-size: 15px; } .cx-col-body h2 { font-size: 20px; } .cx-col-toc { padding: 18px 20px; margin-bottom: 32px; } .cx-col-toc-list a { font-size: 13.5px; } }
   </style>
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
 </head>
@@ -160,8 +167,19 @@
 
   <!-- ===== Article Body ===== -->
   <article class="cx-col-body">
+    <nav class="cx-col-toc" aria-label="この記事の目次">
+      <p class="cx-col-toc-label">この記事の目次</p>
+      <ol class="cx-col-toc-list">
+        <li><a href="#sec-1">AI飽和時代に実写やCGが「素通り」される理由</a></li>
+        <li><a href="#sec-2">「右脳（共感）」と「左脳（理解）」へのダブルアプローチ</a></li>
+        <li><a href="#sec-3">自作 vs プロへの依頼 — 「担当者の時給」で算出する真のコスト</a></li>
+        <li><a href="#sec-4">上司を納得させる！ROI説明ロジック</a></li>
+        <li><a href="#sec-5">まとめ：AI時代にパラパラ漫画が選ばれる理由</a></li>
+      </ol>
+    </nav>
+
     
-<h2 class="wp-block-heading">AI飽和時代に実写やCGが「素通り」される理由</h2>
+<h2 class="wp-block-heading" id="sec-1">AI飽和時代に実写やCGが「素通り」される理由</h2>
 
 
 
@@ -181,7 +199,7 @@
 
 
 
-<h2 class="wp-block-heading">「右脳（共感）」と「左脳（理解）」へのダブルアプローチ</h2>
+<h2 class="wp-block-heading" id="sec-2">「右脳（共感）」と「左脳（理解）」へのダブルアプローチ</h2>
 
 
 
@@ -213,7 +231,7 @@
 
 
 
-<h2 class="wp-block-heading">自作 vs プロへの依頼 — 「担当者の時給」で算出する真のコスト</h2>
+<h2 class="wp-block-heading" id="sec-3">自作 vs プロへの依頼 — 「担当者の時給」で算出する真のコスト</h2>
 
 
 
@@ -251,7 +269,7 @@
 
 
 
-<h2 class="wp-block-heading">上司を納得させる！ROI説明ロジック</h2>
+<h2 class="wp-block-heading" id="sec-4">上司を納得させる！ROI説明ロジック</h2>
 
 
 
@@ -285,7 +303,7 @@
 
 
 
-<h2 class="wp-block-heading">まとめ：AI時代にパラパラ漫画が選ばれる理由</h2>
+<h2 class="wp-block-heading" id="sec-5">まとめ：AI時代にパラパラ漫画が選ばれる理由</h2>
 
 
 
@@ -324,7 +342,14 @@
       <h2>関連記事</h2>
     </div>
     <div class="cx-col-related-grid">
-            <a href="/column/%e3%83%9e%e3%83%b3%e3%82%ac%e3%81%ae%e7%89%b9%e5%be%b4%e3%82%92%e6%a7%8b%e9%80%a0%e3%81%8b%e3%82%89%e8%a7%a3%e5%89%96%ef%bd%9cbtob%e6%b4%bb%e7%94%a8%e3%81%a7%e5%8a%b9%e3%81%8f3%e3%81%a4%e3%81%ae" class="cx-col-related-card">
+            <a href="/column/%e3%83%81%e3%83%a9%e3%82%b7%e6%bc%ab%e7%94%bb%e3%81%a7%e8%aa%ad%e3%81%be%e3%82%8c%e3%81%aa%e3%81%84%e6%82%a9%e3%81%bf%e3%82%92%e8%a7%a3%e6%b1%ba%ef%bd%9c%e9%85%8d%e5%b8%83%e3%83%81%e3%83%a3%e3%83%8d" class="cx-col-related-card">
+        <div class="cx-col-related-card-img"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/05/ヘッダー-1-1024x576.webp" alt="チラシ漫画で読まれない悩みを解決｜配布チャネル別の事例構造分解" loading="lazy" width="400" height="225"></div>
+        <div class="cx-col-related-card-body">
+          <div class="cx-col-related-card-cat">BtoB戦略</div>
+          <div class="cx-col-related-card-title">チラシ漫画で読まれない悩みを解決｜配布チャネル別の事例構造分解</div>
+        </div>
+      </a>
+      <a href="/column/%e3%83%9e%e3%83%b3%e3%82%ac%e3%81%ae%e7%89%b9%e5%be%b4%e3%82%92%e6%a7%8b%e9%80%a0%e3%81%8b%e3%82%89%e8%a7%a3%e5%89%96%ef%bd%9cbtob%e6%b4%bb%e7%94%a8%e3%81%a7%e5%8a%b9%e3%81%8f3%e3%81%a4%e3%81%ae" class="cx-col-related-card">
         <div class="cx-col-related-card-img"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/05/マンガ-特徴-ヘッダーイラスト-1024x576.webp" alt="マンガの特徴を構造から解剖｜BtoB活用で効く3つの強みとは" loading="lazy" width="400" height="225"></div>
         <div class="cx-col-related-card-body">
           <div class="cx-col-related-card-cat">BtoB戦略</div>
@@ -336,13 +361,6 @@
         <div class="cx-col-related-card-body">
           <div class="cx-col-related-card-cat">BtoB戦略</div>
           <div class="cx-col-related-card-title">マンガマーケティングとは</div>
-        </div>
-      </a>
-      <a href="/column/btob-4koma-lead-generation" class="cx-col-related-card">
-        <div class="cx-col-related-card-img"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/04/スクリーンショット-2026-04-17-9.59.01-1024x575.webp" alt="BtoB向け四コマ漫画のメリットとは？リード獲得を劇的改善する手法" loading="lazy" width="400" height="225"></div>
-        <div class="cx-col-related-card-body">
-          <div class="cx-col-related-card-cat">BtoB戦略</div>
-          <div class="cx-col-related-card-title">BtoB向け四コマ漫画のメリットとは？リード獲得を劇的改善する手法</div>
         </div>
       </a>
     </div>
