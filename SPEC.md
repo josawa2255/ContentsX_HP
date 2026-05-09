@@ -130,6 +130,7 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 |---|---|---|
 | HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-B000C4JCCX`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
+| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。CV計測イベントは未設定（必要時に thanks ページで `gtag('event','conversion',{send_to:'AW-18108125426/<label>'})` 発火） |
 | WordPress REST API | 漫画事例 / ニュース | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | GitHub Pages | ホスティング | `contentsx.jp` (CNAME) |
 
