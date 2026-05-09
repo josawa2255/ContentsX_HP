@@ -76,6 +76,10 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     });
   })
   .then(function() {
+    // Google広告コンバージョン: お問合せフォーム送信完了サンクス
+    if (typeof gtag === 'function') {
+      gtag('event', 'conversion', {'send_to': 'AW-18108125426/F13ECl3R3qgcEPKh0LpD'});
+    }
     // 送信成功 — 資料DL許可フラグを保存
     try { localStorage.setItem('cx_form_submitted', '1'); } catch(e) {}
     var form = document.getElementById('contactForm');
