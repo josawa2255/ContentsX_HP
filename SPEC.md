@@ -40,55 +40,31 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ## 3. Hero セクション（トップページ）
 
-### 3.1 フェーズ構成（⭐ 変更禁止・OP保護対象）
+### 3.1 フェーズ構成
+
+**2026-05-10 OP撤去**: 全端末で読み込み直後に Phase 2（カルーセル）が即座に開始する。
+
 | フェーズ | 時間 | 内容 |
 |---|---|---|
-| イントロオーバーレイ | 0〜3.6s | 「埋もれていた物語に、光を当てる。」を1文字ずつ波打ちで表示（SKIP可） |
-| Phase 1 | 3.6〜9.1s | OP前絵3枚（`cx_hero_01`/`cx_hero_02`/`cx2_hero`）が1.2秒ごとにクロスフェード + Ken Burns zoom 5s + 白ロゴ `ContentsX_hero.webp` がbounce登場＋マゼンタglow |
-| Phase 2 | 9.1s〜 | カルーセル背景（5行マーキー）+ タグラインが波・点滅で登場 |
+| Phase 2 | 0s〜 | カルーセル背景（5行マーキー）+ タグラインが波・点滅で登場 |
 
-**⚠️ 変更時は必ず** [tools/test_hero_op.py](tools/test_hero_op.py) **で回帰テストを通すこと**（OP保護のため）。
+旧仕様（撤去済み・参考）: 0〜3.6s でイントロオーバーレイ「埋もれていた物語に、光を当てる。」表示 → 3.6〜9.1s で OP前絵3枚クロスフェード + ロゴbounce → 9.1s〜 Phase 2。`heroIntroOverlay` / `splitIntroLine` / `startIntro` / `finishIntro` 系は全て削除。`tools/test_hero_op.py` も廃止。
 
 ### 3.2 主要要素
 | 要素 | 詳細 |
 |---|---|
 | 背景画像 | `hp-material-1.webp` 固定 (`background-attachment: fixed`)、BizMangaと共通 |
-| Intro overlay | SKIPボタン付き。クリックで `finishIntro()` → `hero-intro-done` イベント発火 |
-| OP前絵 3枚 | `material/images/hero/cx_hero_01.webp` / `cx_hero_02.webp` / `cx2_hero.webp` の `.hero-bizchar-img`。`.active` 付与中に `heroBizcharKenBurns` 5s ease-out で scale 1.0→1.08 |
-| 白ロゴ画像 | `.hero-logo-wrap > img.hero-logo-img` (`ContentsX_hero.webp`, 520×104)。`.hero-logo-wrap--play` 付与で `heroLogoBounce` 1.2s + `heroLogoGlow` 3s infinite alternate |
-| タグライン | 「埋もれていた物語に光を当てる」— `visibility: hidden` でスタート、`hero-phase2-start` イベントで発動 |
+| 白ロゴ画像 | `.hero-logo-wrap > img.hero-logo-img` (`ContentsX_hero.webp`, 520×104)。読み込み直後に `.hero-logo-wrap--play` 付与で `heroLogoBounce` 1.2s + `heroLogoGlow` 3s infinite alternate |
+| タグライン | 「埋もれていた物語に光を当てる」— `hero-phase2-start` イベントで発動 |
 | タグライン点滅 | 8秒周期で 白 ⇔ マゼンタ |
 | タグライン波 | 6秒周期で文字ごとに0.15sずつ時差の `cxCharRipple`（scale+translateY+グロウ） |
 | カルーセル | 5行マーキー、`WORKS_DETAIL_DATA` から `show_hero_site` が `both` or `contentsx` のものを表示 |
 
 ### 3.3 重要イベント
 ```javascript
-window.dispatchEvent(new CustomEvent('hero-intro-done'));    // introフェードアウト時
-window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル切替時
+window.dispatchEvent(new CustomEvent('hero-intro-done'));    // 互換イベント（読み込み直後に即発火）
+window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル切替時（読み込み直後）
 ```
-
-### 3.4 OP保護ルール（⭐必須）
-
-**触ってはいけないもの**（変更するとOP演出が崩れる）:
-- HTML id: `#heroIntroOverlay` / `#heroIntroLine1` / `#heroIntroLine2` / `#heroIntroSkip`
-- CSS class: `.hero-intro-overlay` / `.hero-intro-line` / `.hii-char` / `@keyframes heroIntroCharWave` / `@keyframes heroIntroCharFloat`
-- JS 関数: `splitIntroLine()` / `startIntro()` / `finishIntro()` / `startHeroAnimation()` のタイミング（0.3s/0.9s/2.8s/3.6s/5.5s）
-
-**触ってよいもの**（hero 中央ロゴや装飾の差し替え）:
-- `.hero-logo-wrap` / `.hero-logo-img` / `#heroLogoWrap`（ロゴ画像そのもの）
-- `.hero-tagline`（タグライン）
-- `.hero-scroll-hint`（SCROLLインジケータ）
-- `.hero-bizchar-img` の src（前絵画像差し替え）
-
-**変更後の検証**:
-```bash
-cd ContentX && source ../.venv/bin/activate && \
-  PYTHONUNBUFFERED=1 python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
-    --server "python3 -m http.server 8765" --port 8765 \
-    -- python3 tools/test_hero_op.py
-```
-
-OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを画像化した際、OPのクライマックス感が減退してユーザーからrevert指示。以降、回帰テストで固定保護。
 
 ## 4. 共通 JS コンポーネント
 
@@ -176,8 +152,7 @@ OP演出は企業ブランド体験の核。2026-04-19 に hero中央ロゴを�
 4. `.header-inner` の padding は 16px 以下
 5. `touchend` イベントも `click` と一緒に登録（iOS Safari対策）
 6. **`.header` に `isolation: isolate`** + `.header-right` に `position: relative; z-index: 10`
-7. `hero-intro-overlay` は `pointer-events: none`（SKIPボタンのみ auto）— ヘッダータップを邪魔しない
-8. **320px (iPhone SE) まで想定**
+7. **320px (iPhone SE) まで想定**
 
 ### 7.2 ドロップダウン仕様
 - PC: hover で展開

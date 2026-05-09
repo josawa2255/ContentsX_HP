@@ -2450,9 +2450,6 @@ a.news-thumb:hover img { transform: scale(1.05); }
     touch-action: manipulation;
     cursor: pointer;
   }
-  /* ヒーローイントロが被らないように — intro overlay を header 下に */
-  .hero-intro-overlay { pointer-events: none !important; }
-  .hero-intro-skip { pointer-events: auto !important; }
   .header-lang-switch {
     order: 5;
     flex-shrink: 0;

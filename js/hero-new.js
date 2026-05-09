@@ -1,96 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ===== イントロオーバーレイアニメーション =====
+  // ===== OP（イントロオーバーレイ）廃止: 全端末で即 Phase2 カルーセルへ =====
+  // 旧仕様: 0.3s line1 / 1.5s line2 / 2.8s fade-out / 3.6s finishIntro / 5.5s phase2
+  // 2026-05-10 ユーザー判断によりOP撤去。HTML overlay と test_hero_op.py も削除済み。
   const introOverlay = document.getElementById('heroIntroOverlay');
-  const introLine1 = document.getElementById('heroIntroLine1');
-  const introLine2 = document.getElementById('heroIntroLine2');
+  if (introOverlay) introOverlay.style.display = 'none';
 
-  // 2026-04-19: 1文字ずつ波打ちは廃止。行単位で fade-in（.visible class が制御）。
-  // splitIntroLine は未使用。
-
-  // 画像ロゴは .hero-logo-wrap--play で派手にbounce登場（2026-04-19 画像ロゴ化）
   const heroLogoWrap = document.getElementById('heroLogoWrap');
+  if (heroLogoWrap) heroLogoWrap.classList.add('hero-logo-wrap--play');
 
-  var introTimers = [];
-  var introFinished = false;
+  // intro 完了通知だけは互換のため発火（タグライン等が listen している）
+  window.dispatchEvent(new CustomEvent('hero-intro-done'));
 
-  function finishIntro() {
-    if (introFinished) return;
-    introFinished = true;
-    introTimers.forEach(clearTimeout);
-    introTimers = [];
-    if (introOverlay) {
-      introOverlay.classList.add('fade-out');
-      setTimeout(function() {
-        introOverlay.style.display = 'none';
-      }, 600);
-    }
-    startHeroAnimation();
-    // タグライン等に通知
-    window.dispatchEvent(new CustomEvent('hero-intro-done'));
-  }
-
-  function startIntro() {
-    // 0.3s → 1行目「埋もれていた物語に」表示
-    introTimers.push(setTimeout(function() {
-      if (introLine1) introLine1.classList.add('visible');
-    }, 300));
-
-    // 1.5s → 2行目「光を当てる」表示（line1 を 1.2秒読ませてから／OP尺は維持）
-    introTimers.push(setTimeout(function() {
-      if (introLine2) introLine2.classList.add('visible');
-    }, 1500));
-
-    // 2.8s → フェードアウト開始（OP尺維持）
-    introTimers.push(setTimeout(function() {
-      if (introOverlay) introOverlay.classList.add('fade-out');
-    }, 2800));
-
-    // 3.6s → オーバーレイ完全除去 & ヒーローアニメーション開始（OP尺維持）
-    introTimers.push(setTimeout(function() {
-      finishIntro();
-    }, 3600));
-  }
-
-  // SKIPボタン: イントロ→Phase1→Phase2全てスキップして即カルーセル表示
-  var introSkipBtn = document.getElementById('heroIntroSkip');
-  if (introSkipBtn) {
-    introSkipBtn.addEventListener('click', function() {
-      finishIntro();
-      var heroSec = document.getElementById('hero');
-      if (heroSec && !heroSec.classList.contains('hero--phase2')) {
-        heroSec.classList.add('hero--phase2');
-        window.dispatchEvent(new CustomEvent('hero-phase2-start'));
-      }
-    });
-  }
-
-  function startHeroAnimation() {
-    // 画像ロゴの bounce + glow 発動
-    if (heroLogoWrap) {
-      heroLogoWrap.classList.add('hero-logo-wrap--play');
-    }
-
-    // Phase 2: 5.5秒後にカルーセルへトランジション
-    setTimeout(function() {
-      if (heroSection) heroSection.classList.add('hero--phase2');
-      window.dispatchEvent(new CustomEvent('hero-phase2-start'));
-    }, 5500);
-  }
-
-  // モバイル(≤768px)はOPをスキップして即Phase2(カルーセル)へ
-  var isMobile = window.innerWidth <= 768;
-  if (isMobile) {
-    if (introOverlay) introOverlay.style.display = 'none';
-    finishIntro();
-    // Phase1もスキップして即Phase2へ
-    var heroSecEarly = document.getElementById('hero');
-    if (heroSecEarly) {
-      heroSecEarly.classList.add('hero--phase2');
-      window.dispatchEvent(new CustomEvent('hero-phase2-start'));
-    }
-  } else {
-    startIntro();
+  var heroSecEarly = document.getElementById('hero');
+  if (heroSecEarly) {
+    heroSecEarly.classList.add('hero--phase2');
+    window.dispatchEvent(new CustomEvent('hero-phase2-start'));
   }
 
   // ===== ヒーロー: ビズちゃんアニメーション + 作品カルーセル =====
@@ -99,20 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const heroWorksBg = document.getElementById('heroWorksBg');
   const bizcharImgs = heroBizchar ? heroBizchar.querySelectorAll('.hero-bizchar-img') : [];
 
-  // --- Phase 1: ビズちゃん画像切替（intro text と同期）---
-  // data-step="line1" は初期active（埋もれていた物語に=海）
-  // line2 表示時(0.9s) → data-step="line2" (光を当てる=スタジオ)
-  // logo 表示時(3.6s) → data-step="logo" (ContentsX=屋上)
-  function activateBizcharStep(step) {
-    if (!bizcharImgs.length) return;
-    bizcharImgs.forEach(function(img) {
-      img.classList.toggle('active', img.dataset.step === step);
-    });
-  }
-  // line2 切替 (1.5s に合わせて)
-  setTimeout(function() { activateBizcharStep('line2'); }, 1500);
-  // logo 切替 (finishIntro 直前 = 3.6s)
-  setTimeout(function() { activateBizcharStep('logo'); }, 3600);
+  // --- Phase 1 ビズちゃん画像切替は OP 廃止に伴い削除（2026-05-10） ---
+  // 旧: line1=海/line2=スタジオ/logo=屋上 を 1.5s/3.6s で切り替えていた
 
   // --- 鎖アニメーション (requestAnimationFrame で60fps滑らか制御) ---
 
