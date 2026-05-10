@@ -331,7 +331,7 @@
   color: rgba(255, 255, 255, 0.85);
 }
 .hv2-strap-deco {
-  color: var(--hv2-magenta);
+  color: #fff;
   font-size: 1.2em;
   line-height: 0.9;
   font-weight: 700;
