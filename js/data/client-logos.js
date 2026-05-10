@@ -1,23 +1,22 @@
 /**
- * 主要関連会社（Partners）— トップページカルーセル用
+ * クライアント企業ロゴ — トップページカルーセル用
  *
- * ロゴ実ファイル: material/images/partners/*.webp（partners.html と共有）
- * 社数が少ないため、レンダラー側で多重コピーしてループを滑らかにする
+ * ロゴ実ファイル:
+ * - material/images/clients/*.png (LINEシートから分割した12社)
+ * - material/images/partners/*.webp (旧パートナーロゴ)
  */
 const CLIENT_LOGOS = [
-  {
-    name: 'ASOBI SYSTEM',
-    url: 'https://asobisystem.com/',
-    logo: 'material/images/partners/asobi-system.webp'
-  },
-  {
-    name: 'DM Solutions',
-    url: 'https://www.dm-s.co.jp/',
-    logo: 'material/images/partners/dm-solutions.webp'
-  },
-  {
-    name: 'KIRINZ',
-    url: 'https://kirinz.tokyo/',
-    logo: 'material/images/partners/kirinz.webp'
-  }
+  { name: 'MACNICA',            logo: 'material/images/clients/macnica.png' },
+  { name: '日能研',              logo: 'material/images/clients/nichinoken.png' },
+  { name: 'Birdman',            logo: 'material/images/clients/birdman.png' },
+  { name: 'ガウディア',           logo: 'material/images/clients/gaudia.png' },
+  { name: 'LIFE Entertainment', logo: 'material/images/clients/life-entertainment.png' },
+  { name: 'ICHINOHE HOME',      logo: 'material/images/clients/ichinohe-home.png' },
+  { name: 'StockSun',           logo: 'material/images/clients/stocksun.png' },
+  { name: 'Japanese Dream',     logo: 'material/images/clients/japanese-dream.png' },
+  { name: 'FRESH CAREER',       logo: 'material/images/clients/fresh-career.png' },
+  { name: 'HRM',                logo: 'material/images/clients/hrm.png' },
+  { name: 'ASOBI SYSTEM',       logo: 'material/images/partners/asobi-system.webp', url: 'https://asobisystem.com/' },
+  { name: 'DM Solutions',       logo: 'material/images/partners/dm-solutions.webp', url: 'https://www.dm-s.co.jp/' },
+  { name: 'KIRINZ',             logo: 'material/images/partners/kirinz.webp',       url: 'https://kirinz.tokyo/' }
 ];

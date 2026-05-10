@@ -805,14 +805,17 @@ section { padding: 100px 0; }
    ============================================ */
 .client-logos {
   background: var(--bg-white);
-  padding: 56px 0 48px;
+  padding: 0 0 28px;
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
 .client-logos-heading {
   text-align: center;
-  margin: 0 0 32px;
+  margin: 0 0 4px;
+  padding: 0;
 }
+.client-logos > .container { padding-top: 0; }
+.client-logos { margin-top: -28px; position: relative; z-index: 5; }
 .client-logos-title {
   font-size: clamp(28px, 4vw, 40px);
   font-weight: 900;
@@ -822,12 +825,27 @@ section { padding: 100px 0; }
   margin: 0;
 }
 .client-logos-subtitle {
-  margin: 6px 0 0;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  font-weight: 600;
+  margin: 0 auto;
+  font-size: clamp(20px, 1.9vw, 28px);
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 1.6vw, 24px);
+  width: auto;
 }
+.client-logos-subtitle > span {
+  flex: 0 0 auto;
+  text-align: center;
+}
+.client-laurel {
+  width: clamp(28px, 2.6vw, 40px);
+  height: clamp(50px, 4.6vw, 72px);
+  flex-shrink: 0;
+}
+.client-laurel--right { transform: scaleX(-1); }
 .client-logos-track-wrapper {
   overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
@@ -836,9 +854,9 @@ section { padding: 100px 0; }
 .client-logos-track {
   display: flex;
   align-items: center;
-  gap: 56px;
+  gap: 24px;
   width: max-content;
-  animation: clientLogosMarquee 20s linear infinite;
+  animation: clientLogosMarquee 60s linear infinite;
 }
 .client-logo-item {
   flex-shrink: 0;
@@ -874,10 +892,24 @@ section { padding: 100px 0; }
   .client-logos-track { animation: none; }
 }
 @media (max-width: 768px) {
-  .client-logos { padding: 40px 0 32px; }
-  .client-logos-track { gap: 36px; animation-duration: 14s; }
+  .client-logos {
+    padding: 24px 0 28px;
+    margin-top: 0; /* SP は hero に被せず適度な余白 */
+  }
+  .client-logos-track { gap: 36px; animation-duration: 36s; }
   .client-logo-item { width: 140px; height: 52px; }
   .client-logo-text { font-size: 15px; }
+  /* サブタイトル「大手企業からスタートアップまで幅広くご支援」を画面内に収める */
+  .client-logos-subtitle {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    gap: 6px;
+    padding: 0 8px;
+  }
+  .client-laurel {
+    width: 18px;
+    height: 32px;
+  }
 }
 
 /* ============================================

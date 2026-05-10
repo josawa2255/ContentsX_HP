@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero (イントロ + テキストロゴ + タグライン) + 新作情報 + About + CTA |
+| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + 中央キャラ + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
@@ -38,33 +38,42 @@
 `?utm_source=` `?utm_medium=` `?utm_campaign=` `?source=`
 contact フォーム送信時にメッセージ末尾にトラッキング情報を自動付加
 
-## 3. Hero セクション（トップページ）
+## 3. Hero セクション v2（トップページ）⭐
 
-### 3.1 フェーズ構成
+**2026-05-10 v2 採用**: 旧 hero (テキストロゴ+タグライン+カルーセル) を撤去し、左コピー+中央キャラ+右5サービスカード+下USPマーキー帯の構成に刷新。CSS: `css/hero-v2.css`（hero-new.css は旧UIのみ使用、v2 では `display:none` で除外）。
 
-**2026-05-10 OP撤去**: 全端末で読み込み直後に Phase 2（カルーセル）が即座に開始する。
-
-| フェーズ | 時間 | 内容 |
-|---|---|---|
-| Phase 2 | 0s〜 | カルーセル背景（5行マーキー）+ タグラインが波・点滅で登場 |
-
-旧仕様（撤去済み・参考）: 0〜3.6s でイントロオーバーレイ「埋もれていた物語に、光を当てる。」表示 → 3.6〜9.1s で OP前絵3枚クロスフェード + ロゴbounce → 9.1s〜 Phase 2。`heroIntroOverlay` / `splitIntroLine` / `startIntro` / `finishIntro` 系は全て削除。`tools/test_hero_op.py` も廃止。
-
-### 3.2 主要要素
-| 要素 | 詳細 |
+### 3.1 PC レイアウト
+| エリア | 内容 |
 |---|---|
-| 背景画像 | `hp-material-1.webp` 固定 (`background-attachment: fixed`)、BizMangaと共通 |
-| 白ロゴ画像 | `.hero-logo-wrap > img.hero-logo-img` (`ContentsX_hero.webp`, 520×104)。読み込み直後に `.hero-logo-wrap--play` 付与で `heroLogoBounce` 1.2s + `heroLogoGlow` 3s infinite alternate |
-| タグライン | 「埋もれていた物語に光を当てる」— `hero-phase2-start` イベントで発動 |
-| タグライン点滅 | 8秒周期で 白 ⇔ マゼンタ |
-| タグライン波 | 6秒周期で文字ごとに0.15sずつ時差の `cxCharRipple`（scale+translateY+グロウ） |
-| カルーセル | 5行マーキー、`WORKS_DETAIL_DATA` から `show_hero_site` が `both` or `contentsx` のものを表示 |
+| 背景 | `material/hero/hero_bg.{avif,webp,png}` (1672×941) のマゼンタ飛沫を全幅描画 |
+| 左コピー | `<h1 class="hv2-headline">` 「ストーリーで／成果を／生み出す」(成果 em 巨大化、回転+skew+SVGグランジフィルタ) + サブコピー「漫画・動画・Web・IPを横断し、企業の成長を加速する。」 |
+| 中央キャラ | `material/hero/hero_chars.{avif,webp,png}` (2048×1152) 2人の女性キャラ |
+| 右カード | `.hv2-services` の5サービス: ビズマンガ / スクール / コンテンツセールス / IP事業 / コンテンツ採用(下フル幅)。スキューシャドウ枠 |
+| CTA | primary「お問い合わせ」(マゼンタ pill) + ghost「資料ダウンロード」(白枠 pill)、hover で alt テキストへスライド |
+| 下帯 | `.hv2-strap` USPマーキー (業界最安値クラス／対応領域 国内外20+言語／最短2週間納品／企画から運用まで一気通貫) |
 
-### 3.3 重要イベント
-```javascript
-window.dispatchEvent(new CustomEvent('hero-intro-done'));    // 互換イベント（読み込み直後に即発火）
-window.dispatchEvent(new CustomEvent('hero-phase2-start'));  // カルーセル切替時（読み込み直後）
+### 3.2 SP レイアウト (max-width: 768px)
+| 不変条件 | 詳細 |
+|---|---|
+| **bg/chars 下端一致** | `--hv2-visual-h: 460px` / `--hv2-chars-h: 270px` の2変数で制御。`chars.top = visual_h - chars_h` でオフセット禁止。検証: `bg.bottom === chars.bottom === 520` |
+| 共通フェード | bg/chars 両方に `mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 69px), transparent 100%)` で同じ y で透明化、さらに ::after 70px 白オーバーレイで CTA エリアへ自然繋ぎ |
+| 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
+| キャラ位置 | `right: -100px`（画面右に水平はみ出し） |
+| ghost CTA 中央 | y=520 (bg/chars 下端ライン) と一致するよう `.hv2-ctas { margin-top: 166px }` |
+| sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
+| client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
+
+### 3.3 CSS変数（SP）
+```css
+.hv2-hero {
+  --hv2-visual-h: 460px;  /* bg と chars の共通ビジュアルゾーン高さ */
+  --hv2-chars-h: 270px;   /* chars 自体の高さ。下端揃えは visual_h - chars_h で算出 */
+}
 ```
+**絶対ルール**: `chars.top` の calc に追加項を入れない。キャラ位置を上にずらしたい場合は `--hv2-chars-h` を縮める方向で対応。詳細は `css/hero-v2.css` の SP セクションヘッダーコメント参照。
+
+### 3.4 旧仕様（撤去済み・参考）
+旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示。`hero-new.js` / `hero-fx.js` は読み込まれているが、関連 DOM が無いため発火しない。次回整理時に script タグ削除候補。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。
 
 ## 4. 共通 JS コンポーネント
 

@@ -205,13 +205,12 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <!-- LCP優先: 初期表示のビズちゃん画像をpreload（モバイル/デスクトップ別）
-       注: data-step="line1" の hero_biz_ocean がactive状態で最初に表示されるため、
-       これを正しくpreload。以前は hero_biz_rooftop を指していて空振りしていた。 -->
-  <link rel="preload" href="material/images/characters/hero_biz_ocean_sp.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
-  <link rel="preload" href="material/images/characters/hero_biz_ocean.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@700;900&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap" rel="stylesheet" media="all">
+  <!-- LCP優先: 新ヒーローの bg + キャラを preload -->
+  <link rel="preload" href="material/hero/hero_bg.avif" as="image" type="image/avif" fetchpriority="high">
+  <link rel="preload" href="material/hero/hero_chars.avif" as="image" type="image/avif" fetchpriority="high">
   <link rel="stylesheet" href="css/hero-new.css">
+  <link rel="stylesheet" href="css/hero-v2.css">
   <link rel="stylesheet" href="css/dl-modal.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#b85a2b">
@@ -238,52 +237,280 @@
   <main id="main">
 
 
-  <!-- ===== ヒーロー ===== -->
-  <!-- ===== HERO: ZOON + 集英社 スタイル ===== -->
-<section class="hero" id="hero">
-  <!-- OP（イントロオーバーレイ）は 2026-05-10 撤去済み -->
+  <!-- ===== ヒーロー v2 (2026-05-10 新設) ===== -->
+  <section class="hv2-hero" id="hero">
+    <!-- 背景: マゼンタ飛沫 (PC / SP 別画像) -->
+    <div class="hv2-bg" aria-hidden="true">
+      <picture>
+        <source media="(max-width: 768px)" type="image/avif" srcset="material/hero/hero_bg_sp.avif">
+        <source media="(max-width: 768px)" type="image/webp" srcset="material/hero/hero_bg_sp.webp">
+        <source media="(max-width: 768px)" srcset="material/hero/hero_bg_sp.png">
+        <source type="image/avif" srcset="material/hero/hero_bg.avif">
+        <source type="image/webp" srcset="material/hero/hero_bg.webp">
+        <img src="material/hero/hero_bg.png" alt="" loading="eager" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
 
-
-  <!-- Phase 1: OP前絵（intro text と同期して3枚切替）
-       data-step で finishIntro/intro line と同期、JS が active を付け替える
-       Three.js 風揺れシェーダの canvas が overlay する -->
-  <div class="hero-bizchar" id="heroBizchar">
-    <!-- 埋もれていた物語に = 海 -->
-    <img loading="eager" fetchpriority="high" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_ocean.webp" class="hero-bizchar-img active" data-step="line1" alt="">
-    <!-- 光を当てる = スタジオ -->
-    <picture><source type="image/avif" srcset="material/images/characters/hero_biz_manga_studio.avif"><img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_manga_studio.webp" class="hero-bizchar-img" data-step="line2" alt=""></picture>
-    <!-- ContentsX ロゴ = 屋上 -->
-    <picture><source type="image/avif" srcset="material/images/characters/hero_biz_rooftop.avif"><img loading="lazy" decoding="async" width="1200" height="800" src="material/images/characters/hero_biz_rooftop.webp" class="hero-bizchar-img" data-step="logo" alt=""></picture>
-  </div>
-
-  <!-- Phase 2: 作品カルーセル背景 (集英社スタイル) -->
-  <div class="hero-works-bg" id="heroWorksBg">
-    <div class="hero-works-row hero-works-row--1" id="heroWorksRow1"></div>
-    <div class="hero-works-row hero-works-row--2" id="heroWorksRow2"></div>
-    <div class="hero-works-row hero-works-row--3" id="heroWorksRow3"></div>
-    <div class="hero-works-row hero-works-row--4" id="heroWorksRow4"></div>
-    <div class="hero-works-row hero-works-row--5" id="heroWorksRow5"></div>
-  </div>
-
-  <!-- オーバーレイ（ロゴ可読性） -->
-  <div class="hero-overlay"></div>
-
-  <!-- 中央ロゴ（白ロゴ画像 + 派手な登場アニメ） -->
-  <div class="hero-center" id="heroCenter">
-    <h1 class="hero-logo-wrap" id="heroLogoWrap" aria-label="ContentsX（コンテンツエックス） | 埋もれていた物語に光を当てる">
-      <img loading="eager" fetchpriority="high" class="hero-logo-img" src="material/images/hero/ContentsX_hero.webp" alt="ContentsX" width="520" height="104">
-    </h1>
-    <p class="hero-tagline" id="heroTagline" data-ja="埋もれていた物語に光を当てる" data-en="Shine light on stories that have been buried">埋もれていた物語に光を当てる</p>
-  </div>
-
-  <!-- SCROLL indicator -->
-  <div class="hero-scroll-hint" id="heroScrollHint">
-    <span>SCROLL</span>
-    <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-      <path d="M7.3 18.3L1.7 12.7 0.3 14.1 8 21.8l7.7-7.7-1.4-1.4L8.7 18.3V0H7.3v18.3z" fill="currentColor"/>
+    <!-- グランジ用 SVG フィルタ (見出しのかすれ表現) -->
+    <svg class="hv2-svg-defs" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="hv2-grunge">
+          <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <filter id="hv2-grunge-rough">
+          <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" seed="5" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
     </svg>
-  </div>
-</section>
+
+    <!-- メインフレーム: 左コピー + 中央キャラ + 右サービスカード -->
+    <div class="hv2-frame">
+      <!-- 左: コピー + CTA -->
+      <div class="hv2-copy">
+        <h1 class="hv2-headline">
+          <span class="hv2-line"><span data-ja="ストーリーで" data-en="Drive results">ストーリーで</span></span>
+          <span class="hv2-line"><em data-ja="成果" data-en="with stories">成果</em><em class="hv2-only-pc" data-i18n-skip aria-hidden="true">を</em></span>
+          <span class="hv2-line"><span class="hv2-only-sp" data-i18n-skip aria-hidden="true">を</span><span data-ja="生み出す" data-en="that move people">生み出す</span></span>
+        </h1>
+        <p class="hv2-sub">
+          <span data-ja="漫画・動画・Web・IPを横断し、" data-en="Across manga, video, web, and IP—">漫画・動画・Web・IPを横断し、</span><br>
+          <span data-ja="企業の" data-en="we accelerate ">企業の</span><em data-ja="成長を加速" data-en="business growth">成長を加速</em><span data-ja="する。" data-en=".">する。</span>
+        </p>
+        <div class="hv2-ctas">
+          <a href="/contact" class="hv2-cta hv2-cta--primary">
+            <span class="hv2-btn-wrap">
+              <span class="hv2-btn-text">
+                <svg class="hv2-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                </svg>
+                <span data-ja="お問い合わせ" data-en="Contact">お問い合わせ</span>
+                <span class="hv2-btn-arrow" data-i18n-skip aria-hidden="true">→</span>
+              </span>
+              <span class="hv2-btn-alt" data-i18n-skip>Contact →</span>
+            </span>
+          </a>
+          <a href="#" class="hv2-cta hv2-cta--ghost" data-todo="サービス資料DLのURL未確定">
+            <span class="hv2-btn-wrap">
+              <span class="hv2-btn-text">
+                <svg class="hv2-cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span data-ja="資料ダウンロード" data-en="Download">資料ダウンロード</span>
+                <span class="hv2-btn-arrow" data-i18n-skip aria-hidden="true">→</span>
+              </span>
+              <span class="hv2-btn-alt" data-i18n-skip>Download →</span>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 中央: キャラ2人 -->
+      <div class="hv2-chars" aria-hidden="true">
+        <picture>
+          <source type="image/avif" srcset="material/hero/hero_chars.avif">
+          <source type="image/webp" srcset="material/hero/hero_chars.webp">
+          <img src="material/hero/hero_chars.png" alt="" loading="eager" fetchpriority="high" decoding="async">
+        </picture>
+      </div>
+
+      <!-- 右: 5サービスカード -->
+      <ul class="hv2-services" aria-label="サービス一覧">
+        <li><a class="hv2-service" href="/bizmanga/" data-todo="ビズマンガ遷移先確認">
+          <span class="hv2-service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 4h9v16H2zM13 4h9v16h-9z"/>
+              <path d="M2 9h9M2 14h9M13 9h9M13 14h9"/>
+            </svg>
+          </span>
+          <span class="hv2-service-text">
+            <span class="hv2-service-name" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</span>
+            <span class="hv2-service-catch" data-ja="BtoBの漫画制作。" data-en="B2B manga production.">BtoBの漫画制作。</span>
+          </span>
+        </a></li>
+        <li><a class="hv2-service" href="#" data-todo="スクール遷移先未確定">
+          <span class="hv2-service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 9l10-5 10 5-10 5L2 9z"/>
+              <path d="M6 11v5a6 6 0 0 0 12 0v-5"/>
+              <path d="M22 9v5"/>
+            </svg>
+          </span>
+          <span class="hv2-service-text">
+            <span class="hv2-service-name" data-ja="スクール" data-en="School">スクール</span>
+            <span class="hv2-service-catch" data-ja="学びを支えるコンテンツ。" data-en="Content that supports learning.">学びを支えるコンテンツ。</span>
+          </span>
+        </a></li>
+        <li><a class="hv2-service" href="#" data-todo="コンテンツセールス遷移先未確定">
+          <span class="hv2-service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18M5 21V11M10 21V7M15 21V13M20 21V4"/>
+              <path d="M5 11l5-4 5 6 5-9"/>
+            </svg>
+          </span>
+          <span class="hv2-service-text">
+            <span class="hv2-service-name" data-ja="コンテンツセールス" data-en="Content Sales">コンテンツセールス</span>
+            <span class="hv2-service-catch" data-ja="売上を伸ばす設計。" data-en="Designed to grow sales.">売上を伸ばす設計。</span>
+          </span>
+        </a></li>
+        <li><a class="hv2-service" href="#" data-todo="IP事業遷移先未確定">
+          <span class="hv2-service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18h6M10 21h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/>
+            </svg>
+          </span>
+          <span class="hv2-service-text">
+            <span class="hv2-service-name" data-ja="IP事業" data-en="IP Business">IP事業</span>
+            <span class="hv2-service-catch" data-ja="価値を生み、育てる。" data-en="Create and grow value.">価値を生み、育てる。</span>
+          </span>
+        </a></li>
+        <li class="hv2-service-wide"><a class="hv2-service" href="#" data-todo="コンテンツ採用遷移先未確定">
+          <span class="hv2-service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="8" r="3.5"/>
+              <path d="M3 20v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1"/>
+              <circle cx="17" cy="9" r="2.5"/>
+              <path d="M16 14h2a3 3 0 0 1 3 3v1"/>
+            </svg>
+          </span>
+          <span class="hv2-service-text">
+            <span class="hv2-service-name" data-ja="コンテンツ採用" data-en="Content Recruitment">コンテンツ採用</span>
+            <span class="hv2-service-catch" data-ja="人を惹きつけるブランディング。" data-en="Branding that attracts talent.">人を惹きつけるブランディング。</span>
+          </span>
+        </a></li>
+      </ul>
+    </div>
+
+    <!-- 下部: 50/50 strap (左: USP マーキー / 右: 取引実績ロゴカルーセル) -->
+    <div class="hv2-strap" aria-label="ContentsX の強みと取引実績">
+      <!-- 左: USP マーキー -->
+      <div class="hv2-strap-half hv2-strap-usp">
+        <p class="hv2-strap-heading">
+          <span class="hv2-strap-deco" aria-hidden="true">&#10100;</span>
+          <span data-ja="ContentsX が選ばれる理由" data-en="Why ContentsX">ContentsX が選ばれる理由</span>
+          <span class="hv2-strap-deco" aria-hidden="true">&#10101;</span>
+        </p>
+        <div class="hv2-marquee">
+          <div class="hv2-marquee-track hv2-marquee-track--usp">
+            <span class="hv2-marquee-item">
+              <span class="hv2-marquee-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 6v12M15 8.5c-.6-.9-1.7-1.5-3-1.5-1.7 0-3 1-3 2.3s1.3 1.7 3 2.2 3 .9 3 2.2-1.3 2.3-3 2.3c-1.3 0-2.4-.6-3-1.5"/>
+                </svg>
+              </span>
+              <span data-ja="業界最安値クラス（大手の約1/5の価格）" data-en="Industry-leading low price (about 1/5 of major firms)">業界最安値クラス（大手の約1/5の価格）</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <span class="hv2-marquee-item">
+              <span class="hv2-marquee-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>
+                </svg>
+              </span>
+              <span data-ja="対応領域 国内外 20+ 言語" data-en="Coverage in 20+ languages worldwide">対応領域 国内外 20+ 言語</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <span class="hv2-marquee-item">
+              <span class="hv2-marquee-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="13" r="8"/>
+                  <path d="M12 9v4l3 2M9 2h6"/>
+                </svg>
+              </span>
+              <span data-ja="最短 2 週間納品" data-en="Delivery in as little as 2 weeks">最短 2 週間納品</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <span class="hv2-marquee-item">
+              <span class="hv2-marquee-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 7h13l-3-3M21 17H8l3 3"/>
+                  <circle cx="6" cy="17" r="2"/>
+                  <circle cx="18" cy="7" r="2"/>
+                </svg>
+              </span>
+              <span data-ja="企画から運用まで一気通貫" data-en="End-to-end from planning to operation">企画から運用まで一気通貫</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <!-- 複製 (シームレスループ) -->
+            <span class="hv2-marquee-item" aria-hidden="true">
+              <span class="hv2-marquee-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 8.5c-.6-.9-1.7-1.5-3-1.5-1.7 0-3 1-3 2.3s1.3 1.7 3 2.2 3 .9 3 2.2-1.3 2.3-3 2.3c-1.3 0-2.4-.6-3-1.5"/></svg></span>
+              <span>業界最安値クラス（大手の約1/5の価格）</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <span class="hv2-marquee-item" aria-hidden="true">
+              <span class="hv2-marquee-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+              <span>対応領域 国内外 20+ 言語</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <span class="hv2-marquee-item" aria-hidden="true">
+              <span class="hv2-marquee-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span>
+              <span>最短 2 週間納品</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+            <span class="hv2-marquee-item" aria-hidden="true">
+              <span class="hv2-marquee-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13l-3-3M21 17H8l3 3"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="7" r="2"/></svg></span>
+              <span>企画から運用まで一気通貫</span>
+            </span>
+            <span class="hv2-marquee-sep" aria-hidden="true">&#10022;</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== クライアント企業ロゴ (無限カルーセル) ===== -->
+  <section class="client-logos" id="clientLogos">
+    <div class="container">
+      <div class="client-logos-heading">
+        <p class="client-logos-subtitle">
+          <svg class="client-laurel client-laurel--left" viewBox="0 0 28 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="#c9a227">
+              <path d="M19 3 Q11 28 15 57" fill="none" stroke="#c9a227" stroke-width="1.4" stroke-linecap="round"/>
+              <ellipse cx="13" cy="11" rx="5" ry="2.4" transform="rotate(-40 13 11)"/>
+              <ellipse cx="10" cy="19" rx="5.5" ry="2.5" transform="rotate(-32 10 19)"/>
+              <ellipse cx="8"  cy="28" rx="5.8" ry="2.6" transform="rotate(-24 8 28)"/>
+              <ellipse cx="8"  cy="37" rx="5.8" ry="2.6" transform="rotate(-16 8 37)"/>
+              <ellipse cx="10" cy="46" rx="5.4" ry="2.5" transform="rotate(-10 10 46)"/>
+              <ellipse cx="13" cy="54" rx="4.8" ry="2.3" transform="rotate(-4 13 54)"/>
+              <ellipse cx="22" cy="15" rx="4"   ry="2"   transform="rotate(35 22 15)"/>
+              <ellipse cx="21" cy="24" rx="4.4" ry="2.2" transform="rotate(28 21 24)"/>
+              <ellipse cx="20" cy="33" rx="4.4" ry="2.2" transform="rotate(20 20 33)"/>
+              <ellipse cx="20" cy="42" rx="4.2" ry="2.1" transform="rotate(12 20 42)"/>
+              <ellipse cx="22" cy="50" rx="3.8" ry="1.9" transform="rotate(6  22 50)"/>
+            </g>
+          </svg>
+          <span data-ja="大手企業からスタートアップまで幅広くご支援" data-en="From enterprises to startups">大手企業からスタートアップまで幅広くご支援</span>
+          <svg class="client-laurel client-laurel--right" viewBox="0 0 28 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="#c9a227">
+              <path d="M19 3 Q11 28 15 57" fill="none" stroke="#c9a227" stroke-width="1.4" stroke-linecap="round"/>
+              <ellipse cx="13" cy="11" rx="5" ry="2.4" transform="rotate(-40 13 11)"/>
+              <ellipse cx="10" cy="19" rx="5.5" ry="2.5" transform="rotate(-32 10 19)"/>
+              <ellipse cx="8"  cy="28" rx="5.8" ry="2.6" transform="rotate(-24 8 28)"/>
+              <ellipse cx="8"  cy="37" rx="5.8" ry="2.6" transform="rotate(-16 8 37)"/>
+              <ellipse cx="10" cy="46" rx="5.4" ry="2.5" transform="rotate(-10 10 46)"/>
+              <ellipse cx="13" cy="54" rx="4.8" ry="2.3" transform="rotate(-4 13 54)"/>
+              <ellipse cx="22" cy="15" rx="4"   ry="2"   transform="rotate(35 22 15)"/>
+              <ellipse cx="21" cy="24" rx="4.4" ry="2.2" transform="rotate(28 21 24)"/>
+              <ellipse cx="20" cy="33" rx="4.4" ry="2.2" transform="rotate(20 20 33)"/>
+              <ellipse cx="20" cy="42" rx="4.2" ry="2.1" transform="rotate(12 20 42)"/>
+              <ellipse cx="22" cy="50" rx="3.8" ry="1.9" transform="rotate(6  22 50)"/>
+            </g>
+          </svg>
+        </p>
+      </div>
+      <div class="client-logos-track-wrapper">
+        <div class="client-logos-track" id="clientLogosTrack">
+          <!-- JSが動的生成 -->
+        </div>
+      </div>
+    </div>
+  </section>
 
 <!-- ===== 制作事例モーダル (BizMangaスタイル) ===== -->
 <div class="work-detail-overlay" id="workDetailOverlay">
@@ -327,22 +554,7 @@
 
 
 
-  <!-- ===== クライアント企業ロゴ (無限カルーセル) ===== -->
-  <section class="client-logos" id="clientLogos">
-    <div class="container">
-      <div class="client-logos-heading">
-        <h2 class="client-logos-title">Clients</h2>
-        <p class="client-logos-subtitle" data-ja="取引実績" data-en="Our Clients">取引実績</p>
-      </div>
-      <div class="client-logos-track-wrapper">
-        <div class="client-logos-track" id="clientLogosTrack">
-          <!-- JSが動的生成 -->
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== ニュース ===== -->
+<!-- ===== ニュース ===== -->
   <section class="news-section" id="news">
     <div class="container">
       <div class="news-header">

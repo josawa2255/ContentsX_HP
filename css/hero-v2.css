@@ -1,0 +1,730 @@
+/* =====================================================
+   Hero v2 (2026-05-10 新設)
+   左コピー + 中央キャラ + 右5サービスカード + 下KPI黒帯
+   静的レイアウト、アニメーションなし
+   ===================================================== */
+
+:root {
+  --hv2-magenta: #E91E8C;
+  --hv2-magenta-rgb: 233, 30, 140;
+  --hv2-magenta-dark: #c01876;
+  --hv2-crimson: #C40D2A;       /* 参考画像の暗赤 */
+  --hv2-crimson-rgb: 196, 13, 42;
+  --hv2-crimson-dark: #9a0a20;
+  --hv2-ink-black: #0a0a0a;
+  --hv2-text: #1a1a1a;
+  --hv2-text-soft: #4a4a4a;
+  --hv2-border: #e6e6e6;
+  --hv2-card-shadow: 0 4px 14px rgba(20, 0, 10, 0.06);
+  --hv2-card-shadow-hover: 0 12px 30px rgba(20, 0, 10, 0.14);
+  --hv2-strap-h: 104px;
+  --hv2-header-h: 64px;
+}
+
+/* SVG defs ホルダーは表示しない */
+.hv2-svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* === Hero ルート === */
+.hv2-hero {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  margin: 0;
+  padding-top: 64px; /* ヘッダー分 */
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* === 背景: 飛沫画像 === */
+.hv2-bg {
+  position: absolute;
+  inset: var(--hv2-header-h) 0 var(--hv2-strap-h) 0; /* フル幅。strap 高さに合わせて下端調整 */
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.hv2-bg picture,
+.hv2-bg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* === メインフレーム === */
+.hv2-frame {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(620px, 1fr) minmax(0, 1fr) 280px;
+  gap: 20px;
+  max-width: 1700px;
+  margin: 0 auto;
+  padding: 24px clamp(20px, 3vw, 48px) 0;
+  min-height: calc(100vh - var(--hv2-header-h) - var(--hv2-strap-h));
+  align-items: center;
+}
+
+/* === 左: コピー === */
+.hv2-copy {
+  position: relative;
+  z-index: 3;
+  align-self: center;
+  max-width: 700px;
+}
+.hv2-headline {
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-weight: 900;
+  font-size: clamp(52px, 7.2vw, 106px);
+  line-height: 1;
+  letter-spacing: -0.07em;
+  color: var(--hv2-ink-black);
+  margin: 0 0 28px;
+  /* 斜体スキュー + 右上がり回転 + グランジ微歪み */
+  transform: rotate(-5deg) skewX(-7deg);
+  transform-origin: left bottom;
+  filter: url(#hv2-grunge);
+  text-shadow: 0 1px 0 #fff;
+}
+.hv2-line {
+  display: block;
+  white-space: nowrap;
+}
+.hv2-headline em {
+  font-style: normal;
+  color: var(--hv2-magenta);
+  display: inline-block;
+  font-size: 1.7em; /* 「成果を」を他の行より大きく */
+  line-height: 0.92;
+}
+/* PC では「を」を成果と一緒にマゼンタ表示、SP では非表示 */
+.hv2-only-pc { display: inline-block; }
+.hv2-only-sp { display: none; }
+.hv2-sub {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: clamp(20px, 2vw, 32px);
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--hv2-text);
+  margin: 0 0 36px;
+  letter-spacing: 0.02em;
+  /* 見出しと同じ右上がり傾斜 */
+  transform: rotate(-5deg) skewX(-7deg);
+  transform-origin: left bottom;
+}
+.hv2-sub em {
+  font-style: normal;
+  color: var(--hv2-magenta);
+  font-weight: 900;
+}
+
+/* === CTA ボタン === */
+.hv2-ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.hv2-cta {
+  --hv2-btn-h: 48px;
+  --hv2-btn-w: 220px;
+  width: var(--hv2-btn-w);
+  height: var(--hv2-btn-h);
+  display: inline-block;
+  position: relative;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: clamp(13px, 0.95vw, 15px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+}
+.hv2-btn-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.hv2-btn-text,
+.hv2-btn-alt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: inherit;
+  font-weight: inherit;
+  transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hv2-btn-text { top: 0; }
+.hv2-btn-alt  { top: 100%; }
+.hv2-cta:hover .hv2-btn-text { top: -100%; }
+.hv2-cta:hover .hv2-btn-alt  { top: 0; }
+
+.hv2-cta-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.hv2-cta--primary {
+  background: linear-gradient(135deg, var(--hv2-magenta) 0%, #d8167d 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(var(--hv2-magenta-rgb), 0.32), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.hv2-cta--primary:hover {
+  background: linear-gradient(135deg, var(--hv2-magenta-dark) 0%, #a8135f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(var(--hv2-magenta-rgb), 0.45);
+}
+
+.hv2-cta--ghost {
+  background: #fff;
+  color: var(--hv2-ink-black);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid var(--hv2-ink-black);
+}
+.hv2-cta--ghost:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+/* === 中央: キャラクター === */
+.hv2-chars {
+  position: relative;
+  z-index: 5; /* サービスカードより前面に */
+  align-self: end;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end; /* 画像を右寄せ */
+  pointer-events: none;
+  min-width: 0;
+  /* キャラを右へ大きくシフト。指がカードに重なるくらい。画面幅に比例 */
+  --hv2-shift: clamp(240px, 20vw, 360px);
+  margin: 0 calc(var(--hv2-shift) * -1) 0 0;
+  width: calc(100% + var(--hv2-shift));
+}
+.hv2-chars picture,
+.hv2-chars img {
+  display: block;
+  width: auto;
+  height: clamp(580px, 74vh, 860px); /* 固定サイズ */
+  max-width: none;
+  object-fit: contain;
+  object-position: bottom right;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.22));
+}
+
+/* === 右: 5サービスカード === */
+.hv2-services {
+  position: relative;
+  z-index: 3;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: center;
+}
+.hv2-service {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 24px;
+  background: #fbfaf6;
+  border-radius: 0;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 6px 6px 0 0 #1a1a1a;
+  border: 1.5px solid #1a1a1a;
+  transform: skewX(-9deg);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.hv2-service > * {
+  transform: skewX(9deg); /* 内部は逆スキューで文字を真っ直ぐに */
+}
+.hv2-service:hover {
+  transform: skewX(-9deg) translate(-3px, -3px);
+  box-shadow: 9px 9px 0 0 var(--hv2-magenta);
+}
+.hv2-service-name,
+.hv2-service-catch,
+.hv2-service-icon {
+  transition: color 0.22s ease;
+}
+.hv2-service:hover .hv2-service-name,
+.hv2-service:hover .hv2-service-catch,
+.hv2-service:hover .hv2-service-icon {
+  color: var(--hv2-magenta);
+}
+.hv2-service-icon {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  color: var(--hv2-ink-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hv2-service-icon svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 1.8;
+}
+.hv2-service-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.hv2-service-name {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--hv2-ink-black);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+.hv2-service-catch {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hv2-text-soft);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+/* === 下: 50/50 strap (左 USP マーキー / 右 取引実績ロゴカルーセル) === */
+.hv2-strap {
+  position: relative;
+  z-index: 4;
+  background: #0a0a0a;
+  color: #fff;
+  display: block;
+}
+.hv2-strap-half {
+  padding: 18px clamp(20px, 3vw, 56px) 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.hv2-strap-heading {
+  margin: 0;
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.85);
+}
+.hv2-strap-deco {
+  color: var(--hv2-magenta);
+  font-size: 1.2em;
+  line-height: 0.9;
+  font-weight: 700;
+}
+
+/* マーキー共通 */
+.hv2-marquee {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+.hv2-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  white-space: nowrap;
+  width: max-content;
+  animation: hv2MarqueeScroll 40s linear infinite;
+}
+.hv2-strap-clients .hv2-marquee-track {
+  animation-duration: 30s;
+  gap: 36px;
+}
+.hv2-strap:hover .hv2-marquee-track {
+  animation-play-state: paused;
+}
+
+/* USP テキスト項目 (icon + text) */
+.hv2-marquee-item {
+  font-size: clamp(13px, 1vw, 16px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.hv2-marquee-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(var(--hv2-magenta-rgb), 0.16);
+  color: var(--hv2-magenta);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hv2-marquee-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.hv2-marquee-sep {
+  color: var(--hv2-magenta);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* 取引実績ロゴ (client-logos.js 出力) */
+.hv2-strap-clients .client-logo-item {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  text-decoration: none;
+}
+.hv2-strap-clients .client-logo-item img {
+  max-height: 30px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.78;
+  transition: opacity 0.2s ease;
+}
+.hv2-strap-clients .client-logo-item:hover img { opacity: 1; }
+.hv2-strap-clients .client-logo-text {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+@keyframes hv2MarqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv2-marquee-track { animation: none; }
+}
+
+/* === 既存ヘッダーとの整合 === */
+.hv2-hero ~ .hero-overlay,
+.hv2-hero ~ .hero-bizchar,
+.hv2-hero ~ .hero-works-bg,
+.hv2-hero ~ .hero-center,
+.hv2-hero ~ .hero-scroll-hint { display: none !important; }
+
+/* ヘッダー文字色を黒に（白背景上で見えるように） */
+body[data-theme="magenta-hot"] .header,
+body[data-theme="magenta-hot"] .header .nav a,
+body[data-theme="magenta-hot"] .logo {
+  color: #1a1a1a;
+}
+
+/* =====================================================
+   レスポンシブ
+   ===================================================== */
+
+/* タブレット (1180-1023px): カードを画面下に折り返し */
+@media (max-width: 1180px) {
+  .hv2-frame {
+    grid-template-columns: 1fr 0.9fr;
+    grid-template-areas:
+      "copy chars"
+      "services services";
+    padding: 48px clamp(20px, 4vw, 40px) 56px;
+    gap: 20px;
+  }
+  .hv2-copy { grid-area: copy; }
+  .hv2-chars { grid-area: chars; }
+  .hv2-services {
+    grid-area: services;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .hv2-service {
+    flex: 1 1 200px;
+    max-width: 240px;
+  }
+}
+
+/* スマホ (768px以下): 添付レイアウト */
+@media (max-width: 768px) {
+  /* ════════════════════════════════════════════════════════════════
+     【絶対ルール】 SP ヒーローでは bg と chars の bottom を常に一致させる
+     ════════════════════════════════════════════════════════════════
+     - 入力変数は --hv2-visual-h と --hv2-chars-h の 2 つのみ
+     - .hv2-bg.height = --hv2-visual-h
+     - .hv2-chars.top = --hv2-visual-h - --hv2-chars-h  (オフセット項禁止)
+     - .hv2-chars.height = --hv2-chars-h
+     → top + height = visual_h なので chars.bottom は常に bg.bottom と一致
+
+     キャラを「上にずらしたい」場合でも calc に - XXpx を足してはいけない。
+     必要なら --hv2-chars-h を縮めて、chars 自身を小さく。
+     キャラを「右に動かしたい」場合は right: のみ調整(縦の不変条件は保つ)。
+
+     検証: 390px viewport で document.querySelector('.hv2-bg').bottom
+            === document.querySelector('.hv2-chars').bottom (現状 520)
+     ════════════════════════════════════════════════════════════════ */
+  .hv2-hero {
+    padding-top: 60px;
+    padding-bottom: 0; /* style.css の section{padding:100px 0} を解除 */
+    --hv2-visual-h: 460px;
+    --hv2-chars-h: 270px;
+  }
+  /* bg をビジュアルゾーン内に閉じ込める */
+  .hv2-bg {
+    inset: 60px 0 auto 0;
+    height: var(--hv2-visual-h);
+    bottom: auto;
+    opacity: 1;
+  }
+  .hv2-bg img {
+    object-fit: cover;
+    object-position: right bottom;
+    transform: none;
+    height: 100%;
+    width: 100%;
+    /* splash 下端を徐々に透明化 (画像自体がフェード) */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
+  }
+  /* 補助フェード: CTA エリアへの繋がりをさらに馴染ませる */
+  .hv2-bg::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 70px;
+    background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 70%, #fff 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* テキスト左 + キャラ右の横並び維持 */
+  .hv2-frame {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "headline"
+      "ctas"
+      "services";
+    padding: 18px 16px 0;
+    gap: 8px;
+    min-height: auto;
+  }
+  .hv2-copy {
+    grid-area: headline;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 20;
+  }
+  .hv2-ctas { grid-area: ctas; }
+  .hv2-services { grid-area: services; }
+
+  /* キャラ: bg と同じビジュアルゾーンの下端に揃える
+     ※ relative parent は .hv2-frame (hero の padding 内側)
+     ※ top = visual_h - chars_h は絶対ルール (上記コメント参照、オフセット禁止) */
+  .hv2-chars {
+    position: absolute;
+    top: calc(var(--hv2-visual-h) - var(--hv2-chars-h)); /* DO NOT add offset */
+    right: -100px;
+    bottom: auto;
+    width: auto;
+    height: var(--hv2-chars-h);
+    margin: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .hv2-chars picture { display: block; height: 100%; }
+  .hv2-chars img {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom right;
+    display: block;
+    /* bg と同じ y 位置でフェード (bg は visual_h*0.15 ≒ 69px を下端からフェード)
+       chars も下端 69px をフェードさせ、両画像が同じ高さで透明化する */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 69px), transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 69px), transparent 100%);
+  }
+  /* chars 補助フェード: bg::after と同じ高さ・同じ y 位置で重ねる */
+  .hv2-chars::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 70px;
+    background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 70%, #fff 100%);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* 見出し: 左半分の正方形スペースに収める。
+     SP は小さい字でグランジが強すぎるので filter 解除、傾斜はサブと揃える */
+  .hv2-headline {
+    font-size: clamp(52px, 16vw, 100px);
+    margin: 16px 0 20px;
+    text-align: left;
+    transform: rotate(-6deg) skewX(-9deg);
+    transform-origin: left bottom;
+    filter: none;
+    max-width: 70%;
+  }
+  .hv2-line { white-space: nowrap; }
+  .hv2-headline em { font-size: 1.7em; }
+  /* ストーリーで / を生み出す を小さく、成果 (em) のみ大きく */
+  .hv2-line > span { font-size: 0.86em; }
+  /* SP では「成果」のみマゼンタ、「を」は次行に黒で */
+  .hv2-only-pc { display: none; }
+  .hv2-only-sp { display: inline-block; }
+
+  .hv2-sub {
+    font-size: clamp(13px, 3.6vw, 16px);
+    line-height: 1.6;
+    margin: 0;
+    transform: rotate(-6deg) skewX(-9deg);
+    transform-origin: left bottom;
+    max-width: 55%;
+  }
+
+  /* CTA 縦積み・細め・下寄り・キャラより前面
+     ※ ghost ボタンの中央を bg/chars 下端 (y=520) に重ねる margin */
+  .hv2-ctas {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 166px;
+    position: relative;
+    z-index: 20;
+  }
+  .hv2-cta {
+    flex: none;
+    width: 86%;
+    max-width: 320px;
+    height: 44px;
+    --hv2-btn-w: 86%;
+    --hv2-btn-h: 44px;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 0;
+  }
+  .hv2-btn-text {
+    padding: 0 18px;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+  .hv2-btn-arrow {
+    margin-left: auto;
+    font-size: 16px;
+  }
+
+  /* サービスカード 2 列グリッド — 白丸みパネル (添付準拠) */
+  .hv2-services {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 10px;
+    flex-direction: row;
+    background: #fff;
+    margin: 30px -16px 0;
+    padding: 14px 16px 18px;
+    position: relative;
+    z-index: 3;
+  }
+  /* splash → 白の境界をふわっとぼかす (狭め) */
+  .hv2-services::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -40px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 1) 100%);
+    pointer-events: none;
+    z-index: 2;
+  }
+  /* 台形 + ハードシャドウ維持 (PC と同じ) */
+  .hv2-service {
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+    max-width: none;
+    flex: none;
+    box-shadow: 4px 4px 0 0 #1a1a1a;
+    min-height: 60px;
+    align-items: center;
+  }
+  .hv2-service:hover {
+    box-shadow: 6px 6px 0 0 var(--hv2-magenta);
+  }
+  .hv2-service-icon { width: 30px; height: 30px; }
+  .hv2-service-icon svg { width: 22px; height: 22px; }
+  .hv2-service-text {
+    min-width: 0;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-break: strict;
+  }
+  /* コンテンツ採用 (最終行) は 2 列フル幅 */
+  .hv2-service-wide {
+    grid-column: 1 / -1;
+  }
+  .hv2-service-wide .hv2-service {
+    grid-template-columns: 40px 1fr;
+    padding: 14px 18px;
+    min-height: 76px;
+  }
+  .hv2-service-wide .hv2-service-icon { width: 40px; height: 40px; }
+  .hv2-service-wide .hv2-service-icon svg { width: 26px; height: 26px; }
+  .hv2-service-wide .hv2-service-name { font-size: 15px; }
+  .hv2-service-wide .hv2-service-catch { font-size: 12px; }
+  .hv2-service-name {
+    font-size: 13px;
+    line-height: 1.25;
+    word-break: keep-all;
+    color: var(--hv2-ink-black);
+  }
+  .hv2-service-catch {
+    font-size: 11px;
+    line-height: 1.3;
+    word-break: keep-all;
+    margin-top: 3px;
+    color: var(--hv2-text-soft);
+  }
+
+  /* USP strap: アイコン+テキストはそのまま、密度調整 */
+  .hv2-strap-half { padding: 14px 16px 16px; }
+  .hv2-strap-heading { font-size: 11px; }
+  .hv2-marquee-item { font-size: 12px; gap: 8px; }
+  .hv2-marquee-icon { width: 26px; height: 26px; }
+  .hv2-marquee-icon svg { width: 16px; height: 16px; }
+}
+
+/* 極小 (480px以下): キャラ少し小さく */
+@media (max-width: 480px) {
+  .hv2-headline { font-size: clamp(32px, 9vw, 60px); }
+  .hv2-sub { max-width: 65%; font-size: 12px; }
+}
+
+/* 極小 (380px以下) */
+@media (max-width: 380px) {
+  .hv2-services { grid-template-columns: 1fr; }
+  .hv2-chars { width: 44%; }
+}
