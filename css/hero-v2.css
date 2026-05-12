@@ -717,14 +717,27 @@ body[data-theme="magenta-hot"] .logo {
   .hv2-marquee-icon svg { width: 16px; height: 16px; }
 }
 
-/* 極小 (480px以下): キャラ少し小さく */
+/* 極小 (480px以下): GALAXY S10 (360px) 等で見切れないようキャラ縮小 */
 @media (max-width: 480px) {
-  .hv2-headline { font-size: clamp(32px, 9vw, 60px); }
-  .hv2-sub { max-width: 65%; font-size: 12px; }
+  .hv2-hero {
+    /* visual_h は固定。chars-h を縮めて画面内に収める
+       (絶対ルール: chars.top = visual_h - chars_h は維持。下端は揃ったまま) */
+    --hv2-chars-h: 220px;
+  }
+  .hv2-chars { right: -50px; }
+  .hv2-headline {
+    font-size: clamp(38px, 14vw, 80px);
+    max-width: 65%;
+  }
+  .hv2-sub { max-width: 62%; font-size: 12px; }
 }
 
-/* 極小 (380px以下) */
+/* さらに狭い (360px以下): キャラもう一段縮小、見出しもさらに */
 @media (max-width: 380px) {
+  .hv2-hero {
+    --hv2-chars-h: 200px;
+  }
+  .hv2-chars { right: -30px; }
+  .hv2-headline { font-size: clamp(34px, 13vw, 60px); }
   .hv2-services { grid-template-columns: 1fr; }
-  .hv2-chars { width: 44%; }
 }
