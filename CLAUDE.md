@@ -52,17 +52,16 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 | ニュース詳細 | news-detail.html | wp-config.js + インラインJS |
 
 ## bizmangaサブページ（contentsx.jp/bizmanga/）
-ContentsXのnav.js/i18n.jsは使わない。BizManga独自の`bm-nav.js`を使用。
-bm-i18n.jsは未追加（独立BizMangaサイトには追加済み）。
+**現在は301リダイレクトのみ**。2026-04-27にBizMangaサイトが独立ドメイン `bizmanga.contentsx.jp` へ完全移行。
+旧URLのブックマーク・外部リンクを拾うため、最小限のリダイレクトHTMLだけを残してある。
 
-| ページ | ファイル |
-|--------|---------|
-| トップ | bizmanga/index.html |
-| 制作事例 | bizmanga/works.html |
-| ビズ書庫 | bizmanga/biz-library.html |
-| 料金 | bizmanga/pricing.html |
-| FAQ | bizmanga/faq.html |
-| お問い合わせ | bizmanga/contact.html |
+- HTML 6本 + robots.txt + sitemap.xml （計8ファイル、各約1KB）
+- `<meta http-equiv="refresh">` + `window.location.replace()` で即時転送
+- `noindex, follow` + canonical で SEO処理済み
+- robots.txt で `Disallow: /` (検索エンジンはクロール不要)
+- **CSS/JS は不要** (インラインスタイルで完結)、削除済み (2026-05-12)
+
+⛔ このフォルダを削除すると、旧URL `contentsx.jp/bizmanga/*` を踏んだ訪問者が404に飛ぶ。**削除厳禁。**
 
 ## 制作事例モーダル（index.html）
 - データ: `js/data/works-detail.js`（22+作品、WORKS_DETAIL_DATA配列）
@@ -75,10 +74,8 @@ bm-i18n.jsは未追加（独立BizMangaサイトには追加済み）。
 - 「詳細を見る」→ 独立セクション `rc-detail-section` に分離済み（背景画像が透けない）
 - 「応募する」→ contact.htmlへ遷移（position パラメータ付き）
 
-## 漫画ビューア（bizmanga/js/works.js）
-- 見開き(spread)/縦スクロール(vertical)/強制縦(vertical_only) の3モード
-- PCデフォルト: spread、SPデフォルト: vertical
-- ページ送り: `waitForImage()` で画像読み込み完了を待ってからフラグ解除
+<!-- 漫画ビューアは独立BizMangaサイト (bizmanga.contentsx.jp) に移行済み。
+     旧 bizmanga/js/works.js は 2026-05-12 に削除。 -->
 
 ## 外部サービス
 - HubSpot: Portal 48367061, Form b6da14d0-d60d-4357-89fc-0015ed32b704
@@ -87,9 +84,6 @@ bm-i18n.jsは未追加（独立BizMangaサイトには追加済み）。
 
 ## CSS設計
 - メインサイト: `css/style.css`（共通）+ ページ別CSS（`hero-new.css`, `recruit.css` 等）
-- bizmangaサブ: `bizmanga/css/bizmanga.css` + `bizmanga/css/works.css`
 
 ## 未完了タスク
 - CORS修正: WPプラグインをcms.contentsx.jpサーバーにファイルマネージャーでアップロード必要
-- bizmangaサブページへのbm-i18n.js追加（6ページ）
-- git push 未実施（i18n全体、制作事例タグ横並び、採用ページ詳細セクション分離）
