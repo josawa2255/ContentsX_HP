@@ -717,7 +717,7 @@ body[data-theme="magenta-hot"] .logo {
   .hv2-marquee-icon svg { width: 16px; height: 16px; }
 }
 
-/* 極小 (480px以下): GALAXY S10 (360px) 等で見切れないようキャラ縮小 */
+/* 極小 (480px以下): GALAXY S10 (360px) 等で見切れないようキャラと見出し縮小 */
 @media (max-width: 480px) {
   .hv2-hero {
     /* visual_h は固定。chars-h を縮めて画面内に収める
@@ -725,19 +725,26 @@ body[data-theme="magenta-hot"] .logo {
     --hv2-chars-h: 220px;
   }
   .hv2-chars { right: -50px; }
+  /* 見出しはキャラと被らないよう左半分に圧縮 */
   .hv2-headline {
-    font-size: clamp(38px, 14vw, 80px);
-    max-width: 65%;
+    font-size: clamp(30px, 10vw, 60px);
+    max-width: 55%;
   }
-  .hv2-sub { max-width: 62%; font-size: 12px; }
+  .hv2-headline em { font-size: 1.55em; }
+  .hv2-line > span { font-size: 0.82em; }
+  .hv2-sub { max-width: 55%; font-size: 11px; }
 }
 
-/* さらに狭い (360px以下): キャラもう一段縮小、見出しもさらに */
+/* さらに狭い (380px以下): キャラもう一段縮小、見出しもさらに */
 @media (max-width: 380px) {
   .hv2-hero {
     --hv2-chars-h: 200px;
   }
   .hv2-chars { right: -30px; }
-  .hv2-headline { font-size: clamp(34px, 13vw, 60px); }
+  .hv2-headline {
+    font-size: clamp(28px, 9vw, 50px);
+    max-width: 52%;
+  }
+  .hv2-headline em { font-size: 1.5em; }
   .hv2-services { grid-template-columns: 1fr; }
 }
