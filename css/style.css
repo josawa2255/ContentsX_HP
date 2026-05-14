@@ -848,8 +848,9 @@ section { padding: 100px 0; }
 .client-laurel--right { transform: scaleX(-1); }
 .client-logos-track-wrapper {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  width: 90vw;
+  margin-left: calc(50% - 45vw);
+  margin-right: calc(50% - 45vw);
 }
 .client-logos-track {
   display: flex;
