@@ -2014,12 +2014,12 @@ function cxcms_api_works_new( $req ) {
         ];
     }
 
+    /* 表示順: cx_sort_order 昇順 → 同順位は cx_added_date 降順（新しい順） */
     $posts = get_posts([
         'post_type'      => 'manga_work',
         'posts_per_page' => 20,
-        'meta_key'       => 'cx_added_date',
-        'orderby'        => 'meta_value',
-        'order'          => 'DESC',
+        'orderby'        => [ 'meta_value_num' => 'ASC', 'date' => 'DESC' ],
+        'meta_key'       => 'cx_sort_order',
         'post_status'    => 'publish',
         'meta_query'     => $meta_query,
     ]);
@@ -2052,6 +2052,7 @@ function cxcms_api_works_new( $req ) {
             'subtitle_en' => $m('cx_subtitle_en') ?: ( $m('cx_title_en') ?: $p->post_title ),
             'pages'       => (int) $m('cx_pages'),
             'added'       => $m('cx_added_date'),
+            'sort_order'  => (int) ( $m('cx_sort_order') ?: 0 ),
             'show_site'   => $m('cx_show_site') ?: 'both',
             'thumbnail'   => $thumb_url,
             'view_type'   => $m('cx_vertical_read') === '1' ? 'vertical_only' : 'spread',
