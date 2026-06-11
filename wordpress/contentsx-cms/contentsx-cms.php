@@ -89,6 +89,7 @@ function cxcms_register_post_types() {
         ],
         'public'       => false,
         'show_ui'      => true,
+        'show_in_menu' => 'cxcms-bizmanga',   // B専用 → ビズマンガ親メニュー配下
         'show_in_rest' => true,
         'rest_base'    => 'cx-testimonials',
         'menu_icon'    => 'dashicons-format-quote',
@@ -125,6 +126,7 @@ function cxcms_register_post_types() {
         ],
         'public'       => false,
         'show_ui'      => true,
+        'show_in_menu' => 'cxcms-bizmanga',   // B専用 → ビズマンガ親メニュー配下
         'show_in_rest' => true,
         'rest_base'    => 'cx-preproduction',
         'menu_icon'    => 'dashicons-edit',
@@ -160,6 +162,55 @@ function cxcms_register_post_types() {
         'show_ui'       => true,
         'show_admin_column' => true,
     ]);
+}
+
+
+/* ==========================================================
+   1b. サービス別親メニュー (2026-06-12 メニュー再編)
+   ルール: B/C共通コンテンツ(漫画事例・ニュース・コラム)は最上階層、
+          サービス専用コンテンツはサービス名親メニューの配下に置く。
+   新サービス追加時は add_menu_page を増やし、専用CPTに
+   'show_in_menu' => 'cxcms-<サービス>' を指定する。
+   ========================================================== */
+
+add_action( 'admin_menu', 'cxcms_register_service_parent_menus' );
+
+function cxcms_register_service_parent_menus() {
+
+    /* ── ビズマンガ ── */
+    add_menu_page(
+        'ビズマンガ',
+        'ビズマンガ',
+        'edit_posts',
+        'cxcms-bizmanga',
+        'cxcms_bizmanga_landing_page',
+        'dashicons-portfolio',
+        30
+    );
+
+    /* お客様の声のタグ管理（CPTを親メニュー配下に移すと
+       タクソノミーのサブメニューが自動では出なくなるため明示追加） */
+    add_submenu_page(
+        'cxcms-bizmanga',
+        'お客様の声 タグ',
+        'お客様の声 タグ',
+        'manage_categories',
+        'edit-tags.php?taxonomy=testimonial_tag&post_type=cx_testimonial'
+    );
+}
+
+function cxcms_bizmanga_landing_page() {
+    ?>
+    <div class="wrap">
+        <h1>ビズマンガ</h1>
+        <p>BizManga（bizmanga.contentsx.jp）専用のコンテンツ管理メニューです。</p>
+        <p>複数サイト共通のコンテンツ（漫画事例・ニュース・コラム）は左メニューの最上階層にあります。</p>
+        <ul style="list-style:disc;padding-left:20px;">
+            <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=cx_testimonial' ) ); ?>">お客様の声</a></li>
+            <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=cx_preproduction' ) ); ?>">赤ペン・ネーム</a></li>
+        </ul>
+    </div>
+    <?php
 }
 
 
@@ -1735,6 +1786,7 @@ function cxcms_allowed_origins() {
         'https://contentsx.jp',
         'https://www.contentsx.jp',
         'https://bizmanga.contentsx.jp',
+        'https://recruitx.contentsx.jp',   // リクルートX (2026-06-12 追加)
         'http://localhost:3000',
         'http://127.0.0.1:5500',       // VS Code Live Server
     ];
@@ -2365,6 +2417,7 @@ add_filter( 'manage_manga_work_posts_columns', function($cols) {
         }
         $new[$k] = $v;
         if ( $k === 'title' ) {
+            $new['cx_subtitle'] = 'サブタイトル';
             $new['cx_work_id'] = 'ID';
             $new['cx_client']  = 'クライアント';
             $new['cx_pages']   = 'ページ';
@@ -2401,6 +2454,15 @@ add_action( 'manage_manga_work_posts_custom_column', function($col, $id) {
         } else {
             echo '—';
         }
+        return;
+    }
+    if ( $col === 'cx_subtitle' ) {
+        $ja = get_post_meta( $id, 'cx_subtitle_ja', true );
+        $en = get_post_meta( $id, 'cx_subtitle_en', true );
+        // クイック編集JSが読み取る隠しデータ
+        echo '<span class="cx-qe-subtitle-ja-data" style="display:none">' . esc_html($ja) . '</span>';
+        echo '<span class="cx-qe-subtitle-en-data" style="display:none">' . esc_html($en) . '</span>';
+        echo $ja !== '' ? esc_html($ja) : '<span style="color:#bbb">—</span>';
         return;
     }
     $v = get_post_meta( $id, $col, true );
@@ -2595,6 +2657,68 @@ add_action( 'wp_ajax_cxcms_check_dup_title', function() {
     }
 
     wp_send_json_success(['found' => $found, 'existing_title' => $existing_title, 'existing_id' => $existing_id]);
+});
+
+/* ── 漫画事例 クイック編集: サブタイトル ── */
+
+// クイック編集フォームに入力欄を出力（cx_subtitle 列に紐付く）
+add_action( 'quick_edit_custom_box', function( $column_name, $post_type ) {
+    if ( $post_type !== 'manga_work' || $column_name !== 'cx_subtitle' ) return;
+    ?>
+    <fieldset class="inline-edit-col-right">
+        <div class="inline-edit-col">
+            <label class="inline-edit-group">
+                <span class="title">サブタイトル(日)</span>
+                <span class="input-text-wrap">
+                    <input type="text" name="cx_qe_subtitle_ja" class="cx-qe-subtitle-ja" value="" placeholder="空欄ならタイトルを使用">
+                </span>
+            </label>
+            <label class="inline-edit-group">
+                <span class="title">サブタイトル(英)</span>
+                <span class="input-text-wrap">
+                    <input type="text" name="cx_qe_subtitle_en" class="cx-qe-subtitle-en" value="" placeholder="Leave blank to use title">
+                </span>
+            </label>
+        </div>
+    </fieldset>
+    <?php
+}, 10, 2 );
+
+// クイック編集を開いた時に既存値を流し込むJS
+add_action( 'admin_footer-edit.php', function() {
+    global $post_type;
+    if ( $post_type !== 'manga_work' ) return;
+    ?>
+    <script>
+    (function($){
+        if ( typeof inlineEditPost === 'undefined' ) return;
+        var _edit = inlineEditPost.edit;
+        inlineEditPost.edit = function( id ) {
+            _edit.apply( this, arguments );
+            var postId = 0;
+            if ( typeof( id ) === 'object' ) postId = parseInt( this.getId( id ), 10 );
+            if ( ! postId ) return;
+            var $row  = $( '#post-' + postId );
+            var $edit = $( '#edit-' + postId );
+            $edit.find( 'input.cx-qe-subtitle-ja' ).val( $row.find( '.cx-qe-subtitle-ja-data' ).text() );
+            $edit.find( 'input.cx-qe-subtitle-en' ).val( $row.find( '.cx-qe-subtitle-en-data' ).text() );
+        };
+    })(jQuery);
+    </script>
+    <?php
+});
+
+// クイック編集（inline-save）からの保存。通常の編集画面保存とは別経路。
+add_action( 'save_post_manga_work', function( $post_id ) {
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+    // cx_qe_* はクイック編集フォームにしか存在しないので、これがある時のみ処理
+    if ( isset($_POST['cx_qe_subtitle_ja']) ) {
+        update_post_meta( $post_id, 'cx_subtitle_ja', sanitize_text_field( $_POST['cx_qe_subtitle_ja'] ) );
+    }
+    if ( isset($_POST['cx_qe_subtitle_en']) ) {
+        update_post_meta( $post_id, 'cx_subtitle_en', sanitize_text_field( $_POST['cx_qe_subtitle_en'] ) );
+    }
 });
 
 /* ニュースの一覧カラム */

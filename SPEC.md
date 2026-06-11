@@ -124,12 +124,18 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - `/works-new?site=contentsx` — 新作情報
 - `/news?site=contentsx&per_page=50` — ニュース
 
+### WP 管理画面メニュー・CORS（2026-06-12 再編）
+- 左メニュー階層ルール: **複数サービス共通**（漫画事例・ニュース・コラム）= 最上階層 / **サービス専用** = サービス名親メニュー配下（ビズマンガ > お客様の声・赤ペン・ネーム）。親メニューは `add_menu_page('cxcms-bizmanga')` ＋ CPT側 `show_in_menu` で実現
+- CORS許可オリジン: `contentsx.jp` / `www.contentsx.jp` / `bizmanga.contentsx.jp` / `recruitx.contentsx.jp`（リクルートX、2026-06-12追加）
+- 新サービスのWP取り込み手順はルートの **wp-service-onboard スキル**（`.claude/skills/wp-service-onboard/`）参照
+
 ### WP 編集可能フィールド
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
 - `cx_show_hero_site` — Heroカルーセル表示先（both/bizmanga/contentsx/none）
 - `cx_show_new_contentsx` — 新作情報表示フラグ
+- **クイック編集対応**: 漫画事例一覧で「サブタイトル」列＋クイック編集から `cx_subtitle_ja` / `cx_subtitle_en` を直接編集可（contentsx-cms.php `quick_edit_custom_box` + `cx_qe_subtitle_*` を inline-save で保存。通常編集画面の保存とは別経路）
 
 ### ニュース（cx_news）の編集可能フィールド
 - `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
@@ -177,7 +183,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ## 7.4 コラム機能（2026-05-08 新設）
 - 個別記事は WP CMS → `tools/build-c-columns.py` → `column/{slug}.html` で静的生成（既存）
-- WP API は `?site=contentx` フィルタで取得（`show_site` が `contentx` または `both` の記事のみ）
+- WP API は `?site=contentsx` フィルタで取得（`show_site` が `contentsx` または `both` の記事のみ）。⚠️ 過去に `contentx`（sなし）と誤記しC向けコラムが0件になっていた（BUGS.md #041、2026-06-12修正）
 - 一覧ページ `column.html` も build-c-columns.py が自動更新（Featured 1本 + カードグリッド + カテゴリチップ + ItemList JSON-LD）
 - マーカー: `<!-- BUILD:COLUMN_GRID -->` ... `<!-- /BUILD:COLUMN_GRID -->`
 - `/column/` アクセス時は `column/index.html` の meta refresh で `/column` (= column.html) へ転送
