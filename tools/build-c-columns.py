@@ -41,8 +41,8 @@ def decode_slug(s):
 
 
 def fetch_columns_list():
-    """ContentsX 表示対象のコラム一覧を取得 (show_site=contentx または both)"""
-    cols = fetch_json(f"{API_BASE}/columns?site=contentx&per_page=100")
+    """ContentsX 表示対象のコラム一覧を取得 (show_site=contentsx または both)"""
+    cols = fetch_json(f"{API_BASE}/columns?site=contentsx&per_page=100")
     # スラッグを必ずデコード形式に揃える
     if isinstance(cols, list):
         for c in cols:
