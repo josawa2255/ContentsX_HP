@@ -1093,12 +1093,8 @@ function cxcms_news_meta_html( $post ) {
     </div>
     <div class="cx-field">
         <label>表示先サイト</label>
-        <select name="cx_news_show_site">
-            <option value="both" <?php selected($m('cx_news_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
-            <option value="bizmanga" <?php selected($m('cx_news_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
-            <option value="contentsx" <?php selected($m('cx_news_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
-        </select>
-        <div class="cx-hint">このニュースをどちらのサイトに表示するか選べます</div>
+        <?php cxcms_show_site_checkboxes_html( 'cx_news_show_site', $m('cx_news_show_site') ); ?>
+        <div class="cx-hint">このニュースを表示するサイトにチェック（複数可）。チェックなし＝どこにも表示しない</div>
     </div>
     <?php
     /* アイキャッチURL */
@@ -1694,8 +1690,11 @@ add_action( 'save_post_cx_news', 'cxcms_save_news_meta' );
 function cxcms_save_news_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_news_nonce']) || ! wp_verify_nonce($_POST['cxcms_news_nonce'], 'cxcms_news_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    /* 掲載先（チェックボックス複数）。nonce検証済みの本編集画面のみ到達するので、
+       未チェック＝意図的な「どこにも表示しない」として保存する */
+    update_post_meta( $post_id, 'cx_news_show_site', cxcms_sanitize_show_site_post( $_POST['cx_news_show_site'] ?? [] ) );
     $fields = [
-        'cx_news_title_en','cx_news_url','cx_news_show_site',
+        'cx_news_title_en','cx_news_url',
         // 旧フィールド（後方互換のため残置）
         'cx_news_image_position','cx_news_image_fit',
         'cx_news_image_mode','cx_news_image_crop_x','cx_news_image_crop_y','cx_news_image_crop_w','cx_news_image_crop_h',
@@ -2012,14 +2011,54 @@ function cxcms_format_work( $p ) {
     ];
 }
 
-/* ── ヘルパー: サイトフィルター ── */
+/* ── ヘルパー: サイトフィルター (2026-06-12 リクルートX対応で多サイト化) ──
+   掲載先メタの値:
+     旧形式 'both' / 'bizmanga' / 'contentsx'  (2サイト時代の単一値)
+     新形式 CSV   'bizmanga,contentsx' / 'recruitx' など複数可、'none'=非表示
+   ⚠ 'both' は「BizManga+ContentsX」の意味で固定。recruitx等の新サイトに漏らさないこと */
+function cxcms_show_site_list( $value ) {
+    $value = trim( (string) $value );
+    if ( $value === '' || $value === 'both' ) return [ 'bizmanga', 'contentsx' ];
+    if ( $value === 'none' ) return [];
+    return array_values( array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
+}
+
 function cxcms_filter_by_site( $items, $site_param, $site_key = 'show_site' ) {
     if ( empty( $site_param ) ) return $items;
     $site = sanitize_text_field( $site_param );
     return array_values( array_filter( $items, function( $item ) use ( $site, $site_key ) {
-        $show = $item[ $site_key ] ?? 'both';
-        return $show === 'both' || $show === $site;
+        return in_array( $site, cxcms_show_site_list( $item[ $site_key ] ?? 'both' ), true );
     }));
+}
+
+/* 掲載先チェックボックスUI（ニュース・コラム共通）。旧値('both'等)も正しくチェック表示する */
+function cxcms_show_site_checkboxes_html( $field_name, $current_value ) {
+    $checked = cxcms_show_site_list( $current_value ?: 'both' );
+    $sites = [ 'bizmanga' => 'BizManga', 'contentsx' => 'ContentsX', 'recruitx' => 'リクルートX' ];
+    foreach ( $sites as $key => $label ) {
+        printf(
+            '<label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;font-weight:400"><input type="checkbox" name="%1$s[]" value="%2$s" %3$s> %4$s</label>',
+            esc_attr( $field_name ),
+            esc_attr( $key ),
+            checked( in_array( $key, $checked, true ), true, false ),
+            esc_html( $label )
+        );
+    }
+}
+
+/* 掲載先チェックボックスの保存値を正規化(CSV)。未チェック='none'(どこにも表示しない) */
+function cxcms_sanitize_show_site_post( $raw ) {
+    $allowed = [ 'bizmanga', 'contentsx', 'recruitx' ];
+    $vals = array_values( array_intersect( array_map( 'sanitize_text_field', (array) $raw ), $allowed ) );
+    return $vals ? implode( ',', $vals ) : 'none';
+}
+
+/* 掲載先の管理画面一覧用ラベル */
+function cxcms_show_site_label( $value ) {
+    $list = cxcms_show_site_list( $value ?: 'both' );
+    if ( ! $list ) return '非表示';
+    $map = [ 'bizmanga' => 'BM', 'contentsx' => 'CX', 'recruitx' => 'RX' ];
+    return implode( '+', array_map( fn($s) => $map[$s] ?? $s, $list ) );
 }
 
 /* ── 全漫画事例 ── */
@@ -3404,11 +3443,8 @@ function cxcms_column_meta_html( $post ) {
         </div>
         <div class="cx-field">
             <label>表示先サイト</label>
-            <select name="cx_column_show_site" style="width:100%;padding:6px 8px">
-                <option value="both" <?php selected($m('cx_column_show_site'), 'both'); ?>>両方（BizManga + ContentsX）</option>
-                <option value="bizmanga" <?php selected($m('cx_column_show_site'), 'bizmanga'); ?>>BizMangaのみ</option>
-                <option value="contentsx" <?php selected($m('cx_column_show_site'), 'contentsx'); ?>>ContentsXのみ</option>
-            </select>
+            <div style="padding:6px 0"><?php cxcms_show_site_checkboxes_html( 'cx_column_show_site', $m('cx_column_show_site') ); ?></div>
+            <div class="cx-hint">チェックなし＝どこにも表示しない</div>
         </div>
     </div>
     <div class="cx-field">
@@ -3434,7 +3470,9 @@ add_action( 'save_post_cx_column', 'cxcms_save_column_meta' );
 function cxcms_save_column_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_column_nonce']) || ! wp_verify_nonce($_POST['cxcms_column_nonce'], 'cxcms_column_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-    $fields = ['cx_column_title_en','cx_column_show_site'];
+    /* 掲載先（チェックボックス複数）。nonce検証済みのため未チェック＝意図的な非表示 */
+    update_post_meta( $post_id, 'cx_column_show_site', cxcms_sanitize_show_site_post( $_POST['cx_column_show_site'] ?? [] ) );
+    $fields = ['cx_column_title_en'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
@@ -3474,9 +3512,7 @@ add_action( 'manage_cx_column_posts_custom_column', function( $col, $post_id ) {
         echo ($t && $c) ? '<span style="color:#2ecc71;font-size:16px">✓</span>' : '<span style="color:#bbb">—</span>';
     }
     if ( $col === 'cx_col_site' ) {
-        $s = get_post_meta( $post_id, 'cx_column_show_site', true ) ?: 'both';
-        $labels = ['both' => '両方', 'bizmanga' => 'BM', 'contentsx' => 'CX'];
-        echo esc_html( $labels[$s] ?? '両方' );
+        echo esc_html( cxcms_show_site_label( get_post_meta( $post_id, 'cx_column_show_site', true ) ) );
     }
 }, 10, 2 );
 

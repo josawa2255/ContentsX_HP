@@ -127,6 +127,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### WP 管理画面メニュー・CORS（2026-06-12 再編）
 - 左メニュー階層ルール: **複数サービス共通**（漫画事例・ニュース・コラム）= 最上階層 / **サービス専用** = サービス名親メニュー配下（ビズマンガ > お客様の声・赤ペン・ネーム）。親メニューは `add_menu_page('cxcms-bizmanga')` ＋ CPT側 `show_in_menu` で実現
 - CORS許可オリジン: `contentsx.jp` / `www.contentsx.jp` / `bizmanga.contentsx.jp` / `recruitx.contentsx.jp`（リクルートX、2026-06-12追加）
+- **掲載先の多サイト化（2026-06-12）**: ニュース・コラムの掲載先がチェックボックス複数選択（BizManga/ContentsX/リクルートX）に。保存値はCSV、旧値 `both`=B+C固定で後方互換（`cxcms_show_site_list()`）。`/columns?site=recruitx` `/news?site=recruitx` が利用可能。移行時にライブ全64件で新旧フィルタ結果の完全一致を検証済み
 - 新サービスのWP取り込み手順はルートの **wp-service-onboard スキル**（`.claude/skills/wp-service-onboard/`）参照
 
 ### WP 編集可能フィールド
@@ -139,7 +140,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ### ニュース（cx_news）の編集可能フィールド
 - `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
-- `cx_news_show_site` — 表示先サイト（both/bizmanga/contentsx）
+- `cx_news_show_site` — 表示先サイト。**2026-06-12 チェックボックス複数選択化**: 新形式はCSV（`bizmanga,contentsx,recruitx` 等）、未チェック=`none`。旧値 `both` は「BizManga+ContentsX」の意味で固定（recruitxには出ない）。コラム `cx_column_show_site` も同形式
 **画像表示設定（top/detail 別々に保存）**
 - `cx_news_image_mode_top` / `_mode_detail` — `contain`（全体表示）か `crop`（トリミング）
 - `cx_news_image_crop_x_top` / `_y_top` / `_w_top` / `_h_top` — ホーム/一覧用のトリミング範囲（全て0-100%）
