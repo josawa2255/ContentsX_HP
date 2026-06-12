@@ -197,6 +197,26 @@ function cxcms_register_service_parent_menus() {
         'manage_categories',
         'edit-tags.php?taxonomy=testimonial_tag&post_type=cx_testimonial'
     );
+
+    /* ── リクルートX (2026-06-12 追加) ── */
+    add_menu_page(
+        'リクルートX',
+        'リクルートX',
+        'edit_posts',
+        'cxcms-recruitx',
+        'cxcms_recruitx_landing_page',
+        'dashicons-businessperson',
+        31
+    );
+
+    /* 事例タグの管理画面（タクソノミーのサブメニュー明示追加） */
+    add_submenu_page(
+        'cxcms-recruitx',
+        '事例タグ',
+        '事例タグ',
+        'manage_categories',
+        'edit-tags.php?taxonomy=rx_case_tag&post_type=rx_case'
+    );
 }
 
 function cxcms_bizmanga_landing_page() {
@@ -208,6 +228,20 @@ function cxcms_bizmanga_landing_page() {
         <ul style="list-style:disc;padding-left:20px;">
             <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=cx_testimonial' ) ); ?>">お客様の声</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=cx_preproduction' ) ); ?>">赤ペン・ネーム</a></li>
+        </ul>
+    </div>
+    <?php
+}
+
+function cxcms_recruitx_landing_page() {
+    ?>
+    <div class="wrap">
+        <h1>リクルートX</h1>
+        <p>リクルートX（recruitx.contentsx.jp）専用のコンテンツ管理メニューです。</p>
+        <p>複数サイト共通のコンテンツ（ニュース・コラム）は左メニューの最上階層にあります。</p>
+        <ul style="list-style:disc;padding-left:20px;">
+            <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=rx_case' ) ); ?>">採用事例</a></li>
+            <li><a href="<?php echo esc_url( admin_url( 'edit-tags.php?taxonomy=rx_case_tag&post_type=rx_case' ) ); ?>">事例タグ</a></li>
         </ul>
     </div>
     <?php
@@ -3713,3 +3747,396 @@ add_filter( 'preview_post_link', function( $link, $post ) {
         '_wpnonce'=> $nonce,
     ], $base );
 }, 10, 2 );
+
+
+/* ============================================================
+   リクルートX 採用事例 (rx_case) — 2026-06-12 追加
+   recruitx.contentsx.jp 専用CPT。親メニュー: cxcms-recruitx (§1b)
+   メイン画像 = アイキャッチ + フォーカルポイント(object-position %)
+   実績数値 = 最大3ブロック可変(項目名/数値/単位/矢印) JSON保存
+   詳細ページ本文 = 標準エディタ（コラムと同じ操作感）
+   ============================================================ */
+
+/* ── カスタム投稿タイプ・タクソノミー登録 ── */
+add_action( 'init', 'cxcms_register_rx_case_cpt' );
+function cxcms_register_rx_case_cpt() {
+    register_post_type( 'rx_case', [
+        'labels' => [
+            'name'               => '採用事例',
+            'singular_name'      => '採用事例',
+            'add_new'            => '新規追加',
+            'add_new_item'       => '採用事例を追加',
+            'edit_item'          => '採用事例を編集',
+            'all_items'          => 'すべての採用事例',
+            'search_items'       => '採用事例を検索',
+            'not_found'          => '採用事例が見つかりません',
+            'featured_image'        => 'メイン画像（カード左側）',
+            'set_featured_image'    => 'メイン画像を設定',
+            'remove_featured_image' => 'メイン画像を削除',
+            'use_featured_image'    => 'メイン画像として使用',
+        ],
+        'public'             => true,    // BUGS #004: スラッグ欄表示に必須
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => 'cxcms-recruitx',   // R専用 → リクルートX親メニュー配下
+        'show_in_rest'       => true,
+        'rest_base'          => 'rx-cases',
+        'menu_icon'          => 'dashicons-businessperson',
+        'supports'           => [ 'title', 'editor', 'thumbnail', 'slug' ],
+        'has_archive'        => false,
+        'rewrite'            => false,
+    ]);
+
+    /* ── 事例タグ（選択肢マスター。事例編集画面ではチェックボックスで選ぶ） ── */
+    register_taxonomy( 'rx_case_tag', 'rx_case', [
+        'labels' => [
+            'name'          => '事例タグ',
+            'singular_name' => '事例タグ',
+            'add_new_item'  => '事例タグを追加',
+        ],
+        'show_in_rest'      => true,
+        'rest_base'         => 'rx-case-tags',
+        'hierarchical'      => true,   // チェックボックスUIにするため
+        'show_ui'           => true,
+        'show_admin_column' => true,
+    ]);
+}
+
+/* ── タイトル欄プレースホルダーを会社名仕様に ── */
+add_filter( 'enter_title_here', function( $text, $post ) {
+    return $post->post_type === 'rx_case' ? '会社名（例: 株式会社トラム様）' : $text;
+}, 10, 2 );
+
+/* ── 採用事例 メタボックス ── */
+add_action( 'add_meta_boxes', function() {
+    add_meta_box( 'rx_case_fields', '採用事例 詳細', 'cxcms_rx_case_meta_html', 'rx_case', 'normal', 'high' );
+});
+
+function cxcms_rx_case_meta_html( $post ) {
+    wp_nonce_field( 'cxcms_rx_case_save', 'cxcms_rx_case_nonce' );
+    $m = fn($k) => get_post_meta( $post->ID, $k, true );
+
+    $focal_x = $m('rx_case_focal_x');
+    $focal_x = ( $focal_x === '' ) ? 50 : (float) $focal_x;
+    $focal_y = $m('rx_case_focal_y');
+    $focal_y = ( $focal_y === '' ) ? 50 : (float) $focal_y;
+
+    $stats = json_decode( $m('rx_case_stats') ?: '[]', true );
+    if ( ! is_array( $stats ) ) $stats = [];
+
+    $thumb_url = get_the_post_thumbnail_url( $post, 'large' ) ?: '';
+    $arrow_options = [
+        'none' => '表示しない',
+        'up'   => '↗ 上向き（数値が上がった）',
+        'down' => '↘ 下向き（単価などが下がった）',
+    ];
+    $stat_placeholders = [
+        [ '応募数', '52', '倍' ],
+        [ '採用数', '14', '名/月' ],
+        [ '採用単価', '92', '%減' ],
+    ];
+    ?>
+    <style>
+        .rx-field{margin:14px 0}
+        .rx-field>label{display:block;font-weight:700;margin-bottom:4px}
+        .rx-field textarea{width:100%;min-height:80px;padding:6px 8px;box-sizing:border-box;font-family:inherit}
+        .rx-hint{color:#666;font-size:12px;margin-top:4px}
+        #rxFocalFrame{position:relative;width:280px;aspect-ratio:3/4;overflow:hidden;border:1px solid #ccd0d4;border-radius:6px;background:#f0f0f1;cursor:grab;touch-action:none;user-select:none;max-width:100%}
+        #rxFocalFrame.is-sp{width:480px;aspect-ratio:16/7}
+        #rxFocalFrame.is-dragging{cursor:grabbing}
+        #rxFocalImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+        #rxFocalEmpty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#777;font-size:12px;padding:12px;text-align:center}
+        #rxFocalCtrl{margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        #rxFocalReadout{color:#666;font-size:12px}
+        .rx-stat-head,.rx-stat-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.6fr;gap:8px;margin-bottom:6px;align-items:center}
+        .rx-stat-head{color:#666;font-size:12px;margin-bottom:2px}
+        .rx-stat-row input,.rx-stat-row select{width:100%;padding:5px 8px;box-sizing:border-box}
+    </style>
+
+    <div class="rx-field">
+        <label>成果の概要</label>
+        <textarea name="rx_case_summary" placeholder="例: 6か月で2名だった採用が1か月で14名に。採用単価は150万円から12万円へ。"><?php echo esc_textarea( $m('rx_case_summary') ); ?></textarea>
+        <div class="rx-hint">カードの会社名の下に表示される、成果のあらましを伝える説明文です。</div>
+    </div>
+
+    <div class="rx-field">
+        <label>メイン画像の表示位置</label>
+        <div id="rxFocalFrame">
+            <img id="rxFocalImg" <?php if ( $thumb_url ) echo 'src="' . esc_url( $thumb_url ) . '"'; else echo 'style="display:none"'; ?> alt="">
+            <div id="rxFocalEmpty" <?php if ( $thumb_url ) echo 'style="display:none"'; ?>>右側の「メイン画像（カード左側）」を設定するとプレビューが表示されます</div>
+        </div>
+        <div id="rxFocalCtrl">
+            <button type="button" class="button" id="rxFocalRatio">スマホ比率で確認</button>
+            <button type="button" class="button" id="rxFocalReset">中央に戻す</button>
+            <span id="rxFocalReadout"></span>
+        </div>
+        <input type="hidden" name="rx_case_focal_x" id="rxFocalX" value="<?php echo esc_attr( $focal_x ); ?>">
+        <input type="hidden" name="rx_case_focal_y" id="rxFocalY" value="<?php echo esc_attr( $focal_y ); ?>">
+        <div class="rx-hint">プレビュー内の画像をドラッグして「どこを見せるか」を調整します。横長の画像は左右、縦長の画像は上下に動かせます。位置はPC・スマホ両方の表示に適用されます。</div>
+    </div>
+
+    <div class="rx-field">
+        <label>実績の数値ブロック（最大3個）</label>
+        <div class="rx-stat-head"><span>項目名</span><span>数値</span><span>単位</span><span>矢印アイコン</span></div>
+        <?php for ( $i = 0; $i < 3; $i++ ) :
+            $s = $stats[ $i ] ?? [ 'label' => '', 'value' => '', 'unit' => '', 'arrow' => 'none' ];
+            $ph = $stat_placeholders[ $i ];
+        ?>
+        <div class="rx-stat-row">
+            <input name="rx_case_stat_label[]" value="<?php echo esc_attr( $s['label'] ?? '' ); ?>" placeholder="例: <?php echo esc_attr( $ph[0] ); ?>">
+            <input name="rx_case_stat_value[]" value="<?php echo esc_attr( $s['value'] ?? '' ); ?>" placeholder="例: <?php echo esc_attr( $ph[1] ); ?>">
+            <input name="rx_case_stat_unit[]" value="<?php echo esc_attr( $s['unit'] ?? '' ); ?>" placeholder="例: <?php echo esc_attr( $ph[2] ); ?>">
+            <select name="rx_case_stat_arrow[]">
+                <?php foreach ( $arrow_options as $val => $label ) : ?>
+                <option value="<?php echo esc_attr( $val ); ?>" <?php selected( $s['arrow'] ?? 'none', $val ); ?>><?php echo esc_html( $label ); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <?php endfor; ?>
+        <div class="rx-hint">項目名と数値の両方を入力したブロックだけがカードに表示されます（1〜3個可変）。項目名は「期間」「費用」など自由に変えられます。</div>
+    </div>
+
+    <p class="rx-hint">※ 「詳しく見る」で開く詳細ページの中身は、上の本文エディタで編集します（コラムと同じ操作感）。詳細ページのURLは /case/スラッグ になるため、画面右の「スラッグ」欄に英数字を入力してください（例: tram）。</p>
+
+    <script>
+    (function(){
+        var frame   = document.getElementById('rxFocalFrame'),
+            img     = document.getElementById('rxFocalImg'),
+            empty   = document.getElementById('rxFocalEmpty'),
+            inX     = document.getElementById('rxFocalX'),
+            inY     = document.getElementById('rxFocalY'),
+            readout = document.getElementById('rxFocalReadout'),
+            ratioBtn= document.getElementById('rxFocalRatio'),
+            resetBtn= document.getElementById('rxFocalReset');
+        if ( ! frame ) return;
+
+        var fx = parseFloat(inX.value), fy = parseFloat(inY.value);
+        if ( isNaN(fx) ) fx = 50;
+        if ( isNaN(fy) ) fy = 50;
+
+        function apply() {
+            img.style.objectPosition = fx + '% ' + fy + '%';
+            inX.value = fx.toFixed(1);
+            inY.value = fy.toFixed(1);
+            readout.textContent = '横 ' + Math.round(fx) + '% / 縦 ' + Math.round(fy) + '%';
+        }
+        function setImage( url ) {
+            if ( url ) {
+                img.src = url;
+                img.style.display = '';
+                empty.style.display = 'none';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+                empty.style.display = '';
+            }
+        }
+
+        /* ドラッグで object-position をパン（cover時のあふれ量に比例） */
+        var dragging = false, sx = 0, sy = 0, sfx = 50, sfy = 50;
+        frame.addEventListener('pointerdown', function(e){
+            if ( ! img.getAttribute('src') ) return;
+            dragging = true; sx = e.clientX; sy = e.clientY; sfx = fx; sfy = fy;
+            frame.classList.add('is-dragging');
+            frame.setPointerCapture(e.pointerId);
+            e.preventDefault();
+        });
+        frame.addEventListener('pointermove', function(e){
+            if ( ! dragging ) return;
+            var fw = frame.clientWidth, fh = frame.clientHeight;
+            var nw = img.naturalWidth, nh = img.naturalHeight;
+            if ( ! nw || ! nh ) return;
+            var scale = Math.max( fw / nw, fh / nh );
+            var ox = nw * scale - fw, oy = nh * scale - fh;
+            if ( ox > 1 ) fx = Math.min(100, Math.max(0, sfx - (e.clientX - sx) / ox * 100));
+            if ( oy > 1 ) fy = Math.min(100, Math.max(0, sfy - (e.clientY - sy) / oy * 100));
+            apply();
+        });
+        ['pointerup','pointercancel'].forEach(function(ev){
+            frame.addEventListener(ev, function(){
+                dragging = false;
+                frame.classList.remove('is-dragging');
+            });
+        });
+
+        resetBtn.addEventListener('click', function(){ fx = 50; fy = 50; apply(); });
+        ratioBtn.addEventListener('click', function(){
+            var sp = frame.classList.toggle('is-sp');
+            ratioBtn.textContent = sp ? 'PC比率で確認' : 'スマホ比率で確認';
+        });
+
+        /* Gutenberg のアイキャッチ変更にプレビューを追従させる */
+        var lastUrl = img.getAttribute('src') || '';
+        if ( window.wp && wp.data && wp.data.subscribe ) {
+            wp.data.subscribe(function(){
+                var sel = wp.data.select('core/editor');
+                if ( ! sel || ! sel.getEditedPostAttribute ) return;
+                var id = sel.getEditedPostAttribute('featured_media');
+                if ( ! id ) {
+                    if ( lastUrl ) { lastUrl = ''; setImage(''); }
+                    return;
+                }
+                var media = wp.data.select('core').getMedia( id );
+                if ( ! media ) return;
+                var url = ( media.media_details && media.media_details.sizes && media.media_details.sizes.large )
+                    ? media.media_details.sizes.large.source_url
+                    : media.source_url;
+                if ( url && url !== lastUrl ) { lastUrl = url; setImage(url); }
+            });
+        }
+
+        apply();
+    })();
+    </script>
+    <?php
+}
+
+/* ── 採用事例 保存 ── */
+add_action( 'save_post_rx_case', 'cxcms_save_rx_case_meta' );
+function cxcms_save_rx_case_meta( $post_id ) {
+    if ( ! isset($_POST['cxcms_rx_case_nonce']) || ! wp_verify_nonce($_POST['cxcms_rx_case_nonce'], 'cxcms_rx_case_save') ) return;
+    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+
+    if ( isset($_POST['rx_case_summary']) ) {
+        update_post_meta( $post_id, 'rx_case_summary', sanitize_textarea_field( $_POST['rx_case_summary'] ) );
+    }
+
+    /* フォーカルポイント（0〜100%にクランプ） */
+    foreach ( [ 'rx_case_focal_x', 'rx_case_focal_y' ] as $k ) {
+        if ( isset($_POST[$k]) && is_numeric($_POST[$k]) ) {
+            update_post_meta( $post_id, $k, max( 0, min( 100, round( (float) $_POST[$k], 1 ) ) ) );
+        }
+    }
+
+    /* 実績数値ブロック（最大3・項目名+数値が揃った行のみ保存） */
+    if ( isset($_POST['rx_case_stat_label']) && is_array($_POST['rx_case_stat_label']) ) {
+        $labels = $_POST['rx_case_stat_label'];
+        $values = (array) ( $_POST['rx_case_stat_value'] ?? [] );
+        $units  = (array) ( $_POST['rx_case_stat_unit'] ?? [] );
+        $arrows = (array) ( $_POST['rx_case_stat_arrow'] ?? [] );
+        $stats  = [];
+        for ( $i = 0; $i < 3; $i++ ) {
+            $label = sanitize_text_field( $labels[$i] ?? '' );
+            $value = sanitize_text_field( $values[$i] ?? '' );
+            if ( $label === '' || $value === '' ) continue;
+            $arrow = $arrows[$i] ?? 'none';
+            $stats[] = [
+                'label' => $label,
+                'value' => $value,
+                'unit'  => sanitize_text_field( $units[$i] ?? '' ),
+                'arrow' => in_array( $arrow, [ 'none', 'up', 'down' ], true ) ? $arrow : 'none',
+            ];
+        }
+        update_post_meta( $post_id, 'rx_case_stats', wp_json_encode( $stats, JSON_UNESCAPED_UNICODE ) );
+    }
+}
+
+/* ── 採用事例 管理画面カスタム列 ── */
+add_filter( 'manage_rx_case_posts_columns', function( $cols ) {
+    $new = [];
+    foreach ( $cols as $k => $v ) {
+        $new[$k] = $v;
+        if ( $k === 'title' ) $new['rx_case_thumb'] = 'メイン画像';
+    }
+    return $new;
+});
+add_action( 'manage_rx_case_posts_custom_column', function( $col, $post_id ) {
+    if ( $col !== 'rx_case_thumb' ) return;
+    $thumb_id = get_post_thumbnail_id( $post_id );
+    if ( $thumb_id ) {
+        $img = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
+        $fx = get_post_meta( $post_id, 'rx_case_focal_x', true );
+        $fy = get_post_meta( $post_id, 'rx_case_focal_y', true );
+        $fx = ( $fx === '' ) ? 50 : (float) $fx;
+        $fy = ( $fy === '' ) ? 50 : (float) $fy;
+        if ( $img ) echo '<img src="' . esc_url( $img[0] ) . '" style="width:48px;height:60px;object-fit:cover;object-position:' . esc_attr( $fx ) . '% ' . esc_attr( $fy ) . '%;border-radius:3px">';
+    } else {
+        echo '<span style="color:#bbb">—</span>';
+    }
+}, 10, 2 );
+
+/* ── REST ルート ── */
+add_action( 'rest_api_init', function() {
+    register_rest_route( 'contentsx/v1', '/cases', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_rx_cases',
+        'permission_callback' => '__return_true',
+    ]);
+    register_rest_route( 'contentsx/v1', '/cases/(?P<id>\d+)', [
+        'methods'  => 'GET',
+        'callback' => 'cxcms_api_rx_case_single',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'id' => [ 'validate_callback' => function($v){ return is_numeric($v); } ],
+        ],
+    ]);
+});
+
+/* ── 採用事例 整形ヘルパー ── */
+function cxcms_format_rx_case( $p ) {
+    $m = fn($k) => get_post_meta( $p->ID, $k, true );
+
+    $tags = []; $tag_slugs = [];
+    $terms = get_the_terms( $p->ID, 'rx_case_tag' );
+    if ( $terms && ! is_wp_error( $terms ) ) {
+        foreach ( $terms as $t ) { $tags[] = $t->name; $tag_slugs[] = $t->slug; }
+    }
+
+    $thumb_url = '';
+    $thumb_id = get_post_thumbnail_id( $p->ID );
+    if ( $thumb_id ) {
+        $img = wp_get_attachment_image_src( $thumb_id, 'large' );
+        if ( $img ) $thumb_url = $img[0];
+    }
+
+    $stats = json_decode( $m('rx_case_stats') ?: '[]', true );
+    if ( ! is_array( $stats ) ) $stats = [];
+
+    $fx = $m('rx_case_focal_x');
+    $fy = $m('rx_case_focal_y');
+
+    return [
+        'id'           => $p->ID,
+        'slug'         => $p->post_name,
+        'date_ymd'     => get_the_date( 'Y-m-d', $p ),
+        'modified_ymd' => get_the_modified_date( 'Y-m-d', $p ),
+        'company'      => $p->post_title,
+        'tags'         => $tags,
+        'tag_slugs'    => $tag_slugs,
+        'summary'      => $m('rx_case_summary') ?: '',
+        'image'        => $thumb_url,
+        'focal'        => [
+            'x' => ( $fx === '' ) ? 50 : (float) $fx,
+            'y' => ( $fy === '' ) ? 50 : (float) $fy,
+        ],
+        'stats'        => $stats,
+    ];
+}
+
+/* ── 採用事例一覧 API ── */
+function cxcms_api_rx_cases( $req ) {
+    $limit = (int) ( $req->get_param('per_page') ?: 50 );
+    $posts = get_posts([
+        'post_type'      => 'rx_case',
+        'posts_per_page' => min( $limit, 100 ),
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'post_status'    => 'publish',
+    ]);
+    $out = [];
+    foreach ( $posts as $p ) {
+        $out[] = cxcms_format_rx_case( $p );
+    }
+    return rest_ensure_response( $out );
+}
+
+/* ── 採用事例個別 API（詳細ページ本文つき） ── */
+function cxcms_api_rx_case_single( $req ) {
+    $p = get_post( (int) $req['id'] );
+    if ( ! $p || $p->post_type !== 'rx_case' || $p->post_status !== 'publish' ) {
+        return new WP_Error( 'not_found', '採用事例が見つかりません', [ 'status' => 404 ] );
+    }
+    $data = cxcms_format_rx_case( $p );
+    $data['content'] = apply_filters( 'the_content', $p->post_content );
+    return rest_ensure_response( $data );
+}
