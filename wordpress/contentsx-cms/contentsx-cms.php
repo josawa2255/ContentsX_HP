@@ -3861,6 +3861,7 @@ function cxcms_rx_case_meta_html( $post ) {
         .rx-stat-row input,.rx-stat-row select{width:100%;padding:5px 8px;box-sizing:border-box}
         .rx-tag-list{display:flex;flex-wrap:wrap;gap:6px 18px;padding:4px 0}
         .rx-tag-list label{display:inline-flex;align-items:center;gap:5px;font-weight:400;white-space:nowrap}
+        .rx-wide{width:100%;padding:6px 8px;box-sizing:border-box}
     </style>
 
     <div class="rx-field">
@@ -3929,6 +3930,18 @@ function cxcms_rx_case_meta_html( $post ) {
         </div>
         <?php endfor; ?>
         <div class="rx-hint">項目名と数値の両方を入力したブロックだけがカードに表示されます（1〜3個可変）。項目名は「期間」「費用」など自由に変えられます。</div>
+    </div>
+
+    <div class="rx-field">
+        <label>SEOタイトル（検索結果に出るタイトル）</label>
+        <input class="rx-wide" name="rx_case_seo_title" value="<?php echo esc_attr( $m('rx_case_seo_title') ); ?>" placeholder="例: 飲食店の採用成功事例｜応募が月数名→ひと月82名に。原稿改善だけで達成">
+        <div class="rx-hint">30字前後推奨。空欄の場合は「会社名の採用成功事例｜リクルートX」が自動で使われます。</div>
+    </div>
+
+    <div class="rx-field">
+        <label>メタディスクリプション（検索結果の説明文）</label>
+        <textarea name="rx_case_seo_description" placeholder="検索結果やSNSシェアで表示される説明文（120字前後推奨）"><?php echo esc_textarea( $m('rx_case_seo_description') ); ?></textarea>
+        <div class="rx-hint">空欄の場合は「成果の概要」がそのまま使われます。</div>
     </div>
 
     <p class="rx-hint">※ 「詳しく見る」で開く詳細ページの中身は、上の本文エディタで編集します（コラムと同じ操作感）。詳細ページのURLは /case/スラッグ になるため、画面右の「スラッグ」欄に英数字を入力してください（例: tram）。</p>
@@ -4035,6 +4048,14 @@ function cxcms_save_rx_case_meta( $post_id ) {
 
     if ( isset($_POST['rx_case_summary']) ) {
         update_post_meta( $post_id, 'rx_case_summary', sanitize_textarea_field( $_POST['rx_case_summary'] ) );
+    }
+
+    /* SEO設定 */
+    if ( isset($_POST['rx_case_seo_title']) ) {
+        update_post_meta( $post_id, 'rx_case_seo_title', sanitize_text_field( $_POST['rx_case_seo_title'] ) );
+    }
+    if ( isset($_POST['rx_case_seo_description']) ) {
+        update_post_meta( $post_id, 'rx_case_seo_description', sanitize_textarea_field( $_POST['rx_case_seo_description'] ) );
     }
 
     /* タグ（メタボックス内チェックボックスが唯一の編集UI。全解除も保存できるようマーカーで判定） */
@@ -4152,6 +4173,9 @@ function cxcms_format_rx_case( $p ) {
             'y' => ( $fy === '' ) ? 50 : (float) $fy,
         ],
         'stats'        => $stats,
+        /* SEO（空欄時はフォールバック適用済みの最終値を返し、ビルド側はそのまま使う） */
+        'seo_title'       => $m('rx_case_seo_title') ?: ( $p->post_title . 'の採用成功事例｜リクルートX' ),
+        'seo_description' => $m('rx_case_seo_description') ?: ( $m('rx_case_summary') ?: '' ),
     ];
 }
 
