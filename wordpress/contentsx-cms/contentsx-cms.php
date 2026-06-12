@@ -2002,6 +2002,7 @@ function cxcms_format_work( $p ) {
         /* hero_row_bm/hero_col_bm: 廃止（順番ベース自動振り分けに移行） */
         'show_library' => $m('cx_show_library') !== '0',
         'show_site'    => $m('cx_show_site') ?: 'both',
+        'modified_ymd' => get_the_modified_date( 'Y-m-d', $p ),   // sitemap lastmod用の実更新日 (2026-06-12)
         'mode'      => $m('cx_vertical_read') === '1' ? 'vertical' : 'carousel',
         'view_type' => $m('cx_vertical_read') === '1' ? 'vertical_only' : 'spread',
         'thumbnail' => $thumb_url,
