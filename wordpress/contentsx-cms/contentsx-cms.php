@@ -3996,6 +3996,7 @@ add_action( 'save_post_rx_case', 'cxcms_save_rx_case_meta' );
 function cxcms_save_rx_case_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_rx_case_nonce']) || ! wp_verify_nonce($_POST['cxcms_rx_case_nonce'], 'cxcms_rx_case_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
     if ( isset($_POST['rx_case_summary']) ) {
         update_post_meta( $post_id, 'rx_case_summary', sanitize_textarea_field( $_POST['rx_case_summary'] ) );
@@ -4116,6 +4117,7 @@ function cxcms_format_rx_case( $p ) {
 /* ── 採用事例一覧 API ── */
 function cxcms_api_rx_cases( $req ) {
     $limit = (int) ( $req->get_param('per_page') ?: 50 );
+    if ( $limit <= 0 ) $limit = 50;   // 非数値・負数で全件/0件になるのを防ぐ
     $posts = get_posts([
         'post_type'      => 'rx_case',
         'posts_per_page' => min( $limit, 100 ),
