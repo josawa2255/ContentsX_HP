@@ -3787,17 +3787,17 @@ function cxcms_register_rx_case_cpt() {
         'rewrite'            => false,
     ]);
 
-    /* ── 事例タグ（選択肢マスター。事例編集画面ではチェックボックスで選ぶ） ── */
+    /* ── 事例タグ（選択肢マスター。事例編集画面ではメタボックス内のチェックボックスで選ぶ） ── */
     register_taxonomy( 'rx_case_tag', 'rx_case', [
         'labels' => [
             'name'          => '事例タグ',
             'singular_name' => '事例タグ',
             'add_new_item'  => '事例タグを追加',
         ],
-        'show_in_rest'      => true,
-        'rest_base'         => 'rx-case-tags',
-        'hierarchical'      => true,   // チェックボックスUIにするため
+        'show_in_rest'      => false,  // タグ編集はメタボックス内に一本化（サイドバーパネルとの二重管理事故防止）
+        'hierarchical'      => true,
         'show_ui'           => true,
+        'meta_box_cb'       => false,  // クラシックエディタ時の標準メタボックスも出さない
         'show_admin_column' => true,
     ]);
 }
@@ -3823,6 +3823,14 @@ function cxcms_rx_case_meta_html( $post ) {
 
     $stats = json_decode( $m('rx_case_stats') ?: '[]', true );
     if ( ! is_array( $stats ) ) $stats = [];
+    /* 新規作成画面では定番の項目名・単位・矢印を自動充填（数値だけ入力すれば済むように） */
+    if ( ! $stats && $post->post_status === 'auto-draft' ) {
+        $stats = [
+            [ 'label' => '応募数',   'value' => '', 'unit' => '名/月', 'arrow' => 'up'   ],
+            [ 'label' => '応募単価', 'value' => '', 'unit' => '円',    'arrow' => 'down' ],
+            [ 'label' => '採用単価', 'value' => '', 'unit' => '万円',  'arrow' => 'down' ],
+        ];
+    }
 
     $thumb_url = get_the_post_thumbnail_url( $post, 'large' ) ?: '';
     $arrow_options = [
@@ -3851,7 +3859,34 @@ function cxcms_rx_case_meta_html( $post ) {
         .rx-stat-head,.rx-stat-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.6fr;gap:8px;margin-bottom:6px;align-items:center}
         .rx-stat-head{color:#666;font-size:12px;margin-bottom:2px}
         .rx-stat-row input,.rx-stat-row select{width:100%;padding:5px 8px;box-sizing:border-box}
+        .rx-tag-list{display:flex;flex-wrap:wrap;gap:6px 18px;padding:4px 0}
+        .rx-tag-list label{display:inline-flex;align-items:center;gap:5px;font-weight:400;white-space:nowrap}
     </style>
+
+    <div class="rx-field">
+        <label>タグ（画像上のハッシュタグ）</label>
+        <input type="hidden" name="rx_case_tags_present" value="1">
+        <?php
+        $all_tags = get_terms( [ 'taxonomy' => 'rx_case_tag', 'hide_empty' => false ] );
+        $current_tag_ids = wp_get_object_terms( $post->ID, 'rx_case_tag', [ 'fields' => 'ids' ] );
+        if ( is_wp_error( $current_tag_ids ) ) $current_tag_ids = [];
+        if ( ! $all_tags || is_wp_error( $all_tags ) ) {
+            echo '<div class="rx-hint">タグがまだ登録されていません。「リクルートX &gt; 事例タグ」で選択肢を登録すると、ここにチェックボックスで並びます。</div>';
+        } else {
+            echo '<div class="rx-tag-list">';
+            foreach ( $all_tags as $t ) {
+                printf(
+                    '<label><input type="checkbox" name="rx_case_tags[]" value="%d" %s> %s</label>',
+                    (int) $t->term_id,
+                    checked( in_array( (int) $t->term_id, $current_tag_ids, true ), true, false ),
+                    esc_html( $t->name )
+                );
+            }
+            echo '</div>';
+            echo '<div class="rx-hint">選択肢の追加・名前変更は「リクルートX &gt; 事例タグ」から。</div>';
+        }
+        ?>
+    </div>
 
     <div class="rx-field">
         <label>成果の概要</label>
@@ -4000,6 +4035,12 @@ function cxcms_save_rx_case_meta( $post_id ) {
 
     if ( isset($_POST['rx_case_summary']) ) {
         update_post_meta( $post_id, 'rx_case_summary', sanitize_textarea_field( $_POST['rx_case_summary'] ) );
+    }
+
+    /* タグ（メタボックス内チェックボックスが唯一の編集UI。全解除も保存できるようマーカーで判定） */
+    if ( isset($_POST['rx_case_tags_present']) ) {
+        $tag_ids = array_map( 'intval', (array) ( $_POST['rx_case_tags'] ?? [] ) );
+        wp_set_object_terms( $post_id, $tag_ids, 'rx_case_tag' );
     }
 
     /* フォーカルポイント（0〜100%にクランプ） */
