@@ -4133,7 +4133,116 @@ add_action( 'rest_api_init', function() {
             'id' => [ 'validate_callback' => function($v){ return is_numeric($v); } ],
         ],
     ]);
+    /* ── 認証付きインポート（Application Password等でログインしたユーザーのみ） ── */
+    register_rest_route( 'contentsx/v1', '/cases-import', [
+        'methods'  => 'POST',
+        'callback' => 'cxcms_api_rx_case_import',
+        'permission_callback' => function() { return current_user_can( 'edit_posts' ); },
+    ]);
 });
+
+/* ── 採用事例インポート（全フィールド一括・slug一致で更新／無ければ新規・既定は下書き） ── */
+function cxcms_api_rx_case_import( $req ) {
+    $b = $req->get_json_params();
+    if ( ! is_array( $b ) ) {
+        return new WP_Error( 'bad_body', 'JSON本文が必要です', [ 'status' => 400 ] );
+    }
+    $title = sanitize_text_field( $b['title'] ?? '' );
+    $slug  = sanitize_title( $b['slug'] ?? '' );
+    if ( $title === '' || $slug === '' ) {
+        return new WP_Error( 'missing', 'title と slug は必須です', [ 'status' => 400 ] );
+    }
+    $status = ( ( $b['status'] ?? 'draft' ) === 'publish' ) ? 'publish' : 'draft';
+
+    /* slug一致の既存 rx_case を探す（再実行時は更新・重複を作らない） */
+    $existing = get_posts([
+        'post_type'   => 'rx_case',
+        'name'        => $slug,
+        'post_status' => [ 'publish', 'draft', 'pending', 'future', 'private' ],
+        'numberposts' => 1,
+    ]);
+    $postarr = [
+        'post_type'    => 'rx_case',
+        'post_title'   => $title,
+        'post_name'    => $slug,
+        'post_status'  => $status,
+        'post_content' => wp_kses_post( $b['content'] ?? '' ),
+    ];
+    if ( $existing ) {
+        $postarr['ID'] = $existing[0]->ID;
+        $post_id = wp_update_post( $postarr, true );
+        $action = 'updated';
+    } else {
+        $post_id = wp_insert_post( $postarr, true );
+        $action = 'created';
+    }
+    if ( is_wp_error( $post_id ) ) {
+        return new WP_Error( 'save_failed', $post_id->get_error_message(), [ 'status' => 500 ] );
+    }
+
+    /* 概要・SEO */
+    if ( isset( $b['summary'] ) ) {
+        update_post_meta( $post_id, 'rx_case_summary', sanitize_textarea_field( $b['summary'] ) );
+    }
+    if ( isset( $b['seo_title'] ) ) {
+        update_post_meta( $post_id, 'rx_case_seo_title', sanitize_text_field( $b['seo_title'] ) );
+    }
+    if ( isset( $b['seo_description'] ) ) {
+        update_post_meta( $post_id, 'rx_case_seo_description', sanitize_textarea_field( $b['seo_description'] ) );
+    }
+
+    /* 実績数値（最大3・項目名+数値が揃った行のみ。保存処理と同形式） */
+    if ( isset( $b['stats'] ) && is_array( $b['stats'] ) ) {
+        $stats = [];
+        foreach ( array_slice( $b['stats'], 0, 3 ) as $s ) {
+            if ( ! is_array( $s ) ) continue;
+            $label = sanitize_text_field( $s['label'] ?? '' );
+            $value = sanitize_text_field( $s['value'] ?? '' );
+            if ( $label === '' || $value === '' ) continue;
+            $arrow = $s['arrow'] ?? 'none';
+            $stats[] = [
+                'label' => $label,
+                'value' => $value,
+                'unit'  => sanitize_text_field( $s['unit'] ?? '' ),
+                'arrow' => in_array( $arrow, [ 'none', 'up', 'down' ], true ) ? $arrow : 'none',
+            ];
+        }
+        update_post_meta( $post_id, 'rx_case_stats', wp_json_encode( $stats, JSON_UNESCAPED_UNICODE ) );
+    }
+
+    /* タグ（名前で受け取り、無ければ作成してID紐付け。rx_case_tagは階層型のためID指定） */
+    if ( isset( $b['tags'] ) && is_array( $b['tags'] ) ) {
+        $tag_ids = [];
+        foreach ( $b['tags'] as $name ) {
+            $name = sanitize_text_field( $name );
+            if ( $name === '' ) continue;
+            $term = term_exists( $name, 'rx_case_tag' );
+            if ( ! $term ) {
+                $term = wp_insert_term( $name, 'rx_case_tag' );
+            }
+            if ( ! is_wp_error( $term ) && isset( $term['term_id'] ) ) {
+                $tag_ids[] = (int) $term['term_id'];
+            }
+        }
+        wp_set_object_terms( $post_id, $tag_ids, 'rx_case_tag' );
+    }
+
+    /* フォーカルポイント（任意・既定50/50） */
+    foreach ( [ 'focal_x' => 'rx_case_focal_x', 'focal_y' => 'rx_case_focal_y' ] as $in => $meta ) {
+        if ( isset( $b[$in] ) && is_numeric( $b[$in] ) ) {
+            update_post_meta( $post_id, $meta, max( 0, min( 100, round( (float) $b[$in], 1 ) ) ) );
+        }
+    }
+
+    return rest_ensure_response([
+        'ok'     => true,
+        'action' => $action,
+        'id'     => $post_id,
+        'slug'   => get_post_field( 'post_name', $post_id ),
+        'status' => get_post_status( $post_id ),
+        'edit'   => admin_url( 'post.php?post=' . $post_id . '&action=edit' ),
+    ]);
+}
 
 /* ── 採用事例 整形ヘルパー ── */
 function cxcms_format_rx_case( $p ) {
