@@ -238,10 +238,11 @@ function cxcms_recruitx_landing_page() {
     <div class="wrap">
         <h1>リクルートX</h1>
         <p>リクルートX（recruitx.contentsx.jp）専用のコンテンツ管理メニューです。</p>
-        <p>複数サイト共通のコンテンツ（ニュース・コラム）は左メニューの最上階層にあります。</p>
+        <p>複数サイト共通のコンテンツ（ニュース・コラム）は左メニューの最上階層にあります。コラムは「コラム」メニューで掲載先「リクルートX」にチェックして管理します。</p>
         <ul style="list-style:disc;padding-left:20px;">
             <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=rx_case' ) ); ?>">採用事例</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'edit-tags.php?taxonomy=rx_case_tag&post_type=rx_case' ) ); ?>">事例タグ</a></li>
+            <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=cx_column' ) ); ?>">コラム（共有・掲載先で振り分け）</a></li>
         </ul>
     </div>
     <?php
@@ -3496,7 +3497,24 @@ function cxcms_column_meta_html( $post ) {
         <textarea name="cx_column_content_en" style="min-height:240px" placeholder="Leave blank to show Japanese content even in English mode."><?php echo esc_textarea($m('cx_column_content_en')); ?></textarea>
         <div class="cx-hint">HTMLタグ使用可。空欄なら英語表示時も日本語本文が表示されます。</div>
     </div>
-    <p class="cx-hint">※ サムネイル画像は右サイドバーの「アイキャッチ画像」から設定してください（推奨 1200×630）。</p>
+    <div class="cx-field">
+        <label style="display:inline-flex;align-items:center;gap:8px">
+            <input type="hidden" name="cx_column_pickup_present" value="1">
+            <input type="checkbox" name="cx_column_pickup" value="1" <?php checked( $m('cx_column_pickup') === '1' ); ?> style="width:auto;margin:0"> 注目記事（一覧のPICK UP枠に表示）
+        </label>
+        <div class="cx-hint">コラム一覧トップに大きく掲載（複数チェック時は最新）。リクルートXのコラム面で使用。</div>
+    </div>
+    <div class="cx-field">
+        <label>SEOタイトル</label>
+        <input name="cx_column_seo_title" value="<?php echo esc_attr($m('cx_column_seo_title')); ?>" placeholder="空欄＝記事タイトルを使用">
+        <div class="cx-hint">検索結果に出るタイトル（30〜35字目安）。空欄なら記事タイトルを使用。</div>
+    </div>
+    <div class="cx-field">
+        <label>SEO説明文</label>
+        <textarea name="cx_column_seo_description" style="min-height:60px" placeholder="空欄＝抜粋を使用"><?php echo esc_textarea($m('cx_column_seo_description')); ?></textarea>
+        <div class="cx-hint">検索結果の説明文（120字目安）。空欄なら抜粋を使用。</div>
+    </div>
+    <p class="cx-hint">※ サムネイル画像は右サイドバーの「アイキャッチ画像」から設定してください（推奨 1200×630）。カテゴリは右サイドバーの「カテゴリ」から選択。</p>
     <?php
 }
 
@@ -3505,13 +3523,18 @@ add_action( 'save_post_cx_column', 'cxcms_save_column_meta' );
 function cxcms_save_column_meta( $post_id ) {
     if ( ! isset($_POST['cxcms_column_nonce']) || ! wp_verify_nonce($_POST['cxcms_column_nonce'], 'cxcms_column_save') ) return;
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
     /* 掲載先（チェックボックス複数）。nonce検証済みのため未チェック＝意図的な非表示 */
     update_post_meta( $post_id, 'cx_column_show_site', cxcms_sanitize_show_site_post( $_POST['cx_column_show_site'] ?? [] ) );
-    $fields = ['cx_column_title_en'];
+    /* 注目（PICK UP）チェック。present hidden があるときだけ未チェック=0 と判定 */
+    if ( isset($_POST['cx_column_pickup_present']) ) {
+        update_post_meta( $post_id, 'cx_column_pickup', isset($_POST['cx_column_pickup']) ? '1' : '0' );
+    }
+    $fields = ['cx_column_title_en','cx_column_seo_title'];
     foreach ( $fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_text_field($_POST[$f]) );
     }
-    $text_fields = ['cx_column_excerpt_ja','cx_column_excerpt_en'];
+    $text_fields = ['cx_column_excerpt_ja','cx_column_excerpt_en','cx_column_seo_description'];
     foreach ( $text_fields as $f ) {
         if ( isset($_POST[$f]) ) update_post_meta( $post_id, $f, sanitize_textarea_field($_POST[$f]) );
     }
@@ -3653,6 +3676,10 @@ function cxcms_format_column( $p ) {
         'excerpt_en' => $m('cx_column_excerpt_en') ?: '',
         'thumbnail'  => $thumb_url,
         'show_site'  => $m('cx_column_show_site') ?: 'both',
+        /* ↓ 2026-06-15 追加（既存キーは不変・後方互換維持）。PICK UP / SEO は空ならフロント側でフォールバック */
+        'pickup'         => $m('cx_column_pickup') === '1',
+        'seo_title'      => $m('cx_column_seo_title') ?: '',
+        'seo_description'=> $m('cx_column_seo_description') ?: '',
     ];
 }
 
@@ -3736,10 +3763,17 @@ function cxcms_api_column_preview( $req ) {
 }
 
 /* ── 管理画面「プレビュー」ボタンをフロント側に向ける ── */
-/* コラム詳細ページは BizManga 側にしかない（contentsx.jp には column-detail.html が無い）ので常に BM ドメインへ */
+/* コラム詳細ページは BizManga 側にある。掲載先が「リクルートX」のみのコラムは
+   recruitx.contentsx.jp 側へ振り分ける（2026-06-15）。混在/B/C は従来通り BM へ。 */
 add_filter( 'preview_post_link', function( $link, $post ) {
     if ( ! $post || $post->post_type !== 'cx_column' ) return $link;
-    $base = 'https://bizmanga.contentsx.jp/column-detail';
+    $sites = cxcms_show_site_list( get_post_meta( $post->ID, 'cx_column_show_site', true ) );
+    $recruitx_only = in_array( 'recruitx', $sites, true )
+        && ! in_array( 'bizmanga', $sites, true )
+        && ! in_array( 'contentsx', $sites, true );
+    $base = $recruitx_only
+        ? 'https://recruitx.contentsx.jp/column-detail'
+        : 'https://bizmanga.contentsx.jp/column-detail';
     $nonce = wp_create_nonce( 'cxcms_preview_column_' . $post->ID );
     return add_query_arg( [
         'id'      => $post->ID,
