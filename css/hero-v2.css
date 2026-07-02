@@ -41,7 +41,7 @@
   inset: var(--hv2-header-h) 0 var(--hv2-strap-h) 0; /* フル幅。strap 高さに合わせて下端調整 */
   z-index: 0;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 1; /* 背景にキャラを一体化したため主役として不透明に (2026-07-02) */
 }
 .hv2-bg picture,
 .hv2-bg img {
@@ -57,7 +57,8 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(620px, 1fr) minmax(0, 1fr) 280px;
+  /* キャラ列は背景画像に一体化したため撤去し、コピー + サービスカードの2列に (2026-07-02) */
+  grid-template-columns: minmax(620px, 1fr) 280px;
   gap: 20px;
   max-width: 1700px;
   margin: 0 auto;

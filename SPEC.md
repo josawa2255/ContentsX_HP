@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + 中央キャラ + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
+| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + キャラ一体背景 + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
@@ -42,12 +42,13 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 **2026-05-10 v2 採用**: 旧 hero (テキストロゴ+タグライン+カルーセル) を撤去し、左コピー+中央キャラ+右5サービスカード+下USPマーキー帯の構成に刷新。CSS: `css/hero-v2.css`（hero-new.css は旧UIのみ使用、v2 では `display:none` で除外）。
 
+**2026-07-02 キャラ一体化**: 従来「背景飛沫(`hero_bg`) + 透過キャラ(`hero_chars`)」の2層構成だったが、飛沫と女性キャラ2人を1枚に焼き込んだ画像へ差し替え。専用キャラレイヤー(`.hv2-chars`)と `hero_chars.*` は廃止。女性キャラは背景イラストの一部として描画され、PC では右サービスカードが手前に重なる。PC グリッドは `minmax(620px,1fr) 280px` の2列に変更、`.hv2-bg` の opacity は 1。
+
 ### 3.1 PC レイアウト
 | エリア | 内容 |
 |---|---|
-| 背景 | `material/hero/hero_bg.{avif,webp,png}` (1672×941) のマゼンタ飛沫を全幅描画 |
+| 背景(キャラ一体) | `material/hero/hero_bg.{avif,webp,png}` (1672×941) マゼンタ飛沫+女性キャラ2人の一枚絵を全幅描画 (object-fit:cover, opacity:1) |
 | 左コピー | `<h1 class="hv2-headline">` 「ストーリーで／成果を／生み出す」(成果 em 巨大化、回転+skew+SVGグランジフィルタ) + サブコピー「漫画・動画・Web・IPを横断し、企業の成長を加速する。」 |
-| 中央キャラ | `material/hero/hero_chars.{avif,webp,png}` (2048×1152) 2人の女性キャラ |
 | 右カード | `.hv2-services` の5サービス: ビズマンガ / スクール / コンテンツセールス / IP事業 / コンテンツ採用(下フル幅)。スキューシャドウ枠 |
 | CTA | primary「お問い合わせ」(マゼンタ pill) + ghost「資料ダウンロード」(白枠 pill)、hover で alt テキストへスライド |
 | 下帯 | `.hv2-strap` USPマーキー (業界最安値クラス／対応領域 国内外20+言語／最短2週間納品／企画から運用まで一気通貫) |
@@ -55,22 +56,21 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 3.2 SP レイアウト (max-width: 768px)
 | 不変条件 | 詳細 |
 |---|---|
-| **bg/chars 下端一致** | `--hv2-visual-h: 460px` / `--hv2-chars-h: 270px` の2変数で制御。`chars.top = visual_h - chars_h` でオフセット禁止。検証: `bg.bottom === chars.bottom === 520` |
-| 共通フェード | bg/chars 両方に `mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 69px), transparent 100%)` で同じ y で透明化、さらに ::after 70px 白オーバーレイで CTA エリアへ自然繋ぎ |
+| ビジュアルゾーン | `.hv2-bg` を `inset: 60px 0 auto 0 / height: var(--hv2-visual-h)` (460px) に閉じ込め、キャラ一体の一枚絵 (`hero_bg_sp.{avif,webp,png}` 1375×1144) を `object-fit:cover; object-position:right bottom` で描画。下端は `mask-image` + `::after` 70px 白オーバーレイでフェードし CTA エリアへ自然繋ぎ |
 | 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
-| キャラ位置 | `right: -100px`（画面右に水平はみ出し） |
-| ghost CTA 中央 | y=520 (bg/chars 下端ライン) と一致するよう `.hv2-ctas { margin-top: 166px }` |
+| ghost CTA 位置 | ビジュアルゾーン下端付近に来るよう `.hv2-ctas { margin-top: 166px }` |
 | sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
 | client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
+
+> 2026-07-02 のキャラ一体化により、旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）と透過キャラの `right:-100px` は廃止。キャラは背景一枚絵に含まれるため、位置調整は `.hv2-bg` の `object-position` と `--hv2-visual-h` で行う。
 
 ### 3.3 CSS変数（SP）
 ```css
 .hv2-hero {
-  --hv2-visual-h: 460px;  /* bg と chars の共通ビジュアルゾーン高さ */
-  --hv2-chars-h: 270px;   /* chars 自体の高さ。下端揃えは visual_h - chars_h で算出 */
+  --hv2-visual-h: 460px;  /* SP ビジュアルゾーン(背景一枚絵)の高さ */
 }
 ```
-**絶対ルール**: `chars.top` の calc に追加項を入れない。キャラ位置を上にずらしたい場合は `--hv2-chars-h` を縮める方向で対応。詳細は `css/hero-v2.css` の SP セクションヘッダーコメント参照。
+キャラ位置は `.hv2-bg { object-position }` で調整。`--hv2-chars-h` は廃止済み。
 
 ### 3.4 旧仕様（撤去済み・参考）
 旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示。`hero-new.js` / `hero-fx.js` は読み込まれているが、関連 DOM が無いため発火しない。次回整理時に script タグ削除候補。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。

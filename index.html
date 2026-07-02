@@ -208,7 +208,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@700;900&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap" rel="stylesheet" media="all">
   <!-- LCP優先: 新ヒーローの bg + キャラを preload -->
   <link rel="preload" href="material/hero/hero_bg.avif" as="image" type="image/avif" fetchpriority="high">
-  <link rel="preload" href="material/hero/hero_chars.avif" as="image" type="image/avif" fetchpriority="high">
   <link rel="stylesheet" href="css/hero-new.css">
   <link rel="stylesheet" href="css/hero-v2.css">
   <link rel="stylesheet" href="css/dl-modal.css">
@@ -308,14 +307,7 @@
         </div>
       </div>
 
-      <!-- 中央: キャラ2人 -->
-      <div class="hv2-chars" aria-hidden="true">
-        <picture>
-          <source type="image/avif" srcset="material/hero/hero_chars.avif">
-          <source type="image/webp" srcset="material/hero/hero_chars.webp">
-          <img src="material/hero/hero_chars.png" alt="" loading="eager" fetchpriority="high" decoding="async">
-        </picture>
-      </div>
+      <!-- 中央キャラは背景画像(hero_bg)に一体化。専用キャラレイヤーは廃止 (2026-07-02) -->
 
       <!-- 右: 5サービスカード -->
       <ul class="hv2-services" aria-label="サービス一覧">
