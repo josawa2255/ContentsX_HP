@@ -86,7 +86,12 @@
   transform: rotate(-5deg) skewX(-7deg);
   transform-origin: left bottom;
   filter: url(#hv2-grunge);
-  text-shadow: 0 1px 0 #fff;
+  /* 背景画像から浮き立たせる白の縁取り(アウトライン): 8方向の実線 + ソフトなハロー */
+  text-shadow:
+    0 0 6px #fff,
+    -2px -2px 0 #fff,  0 -2px 0 #fff,  2px -2px 0 #fff,
+    -2px  0   0 #fff,                  2px  0   0 #fff,
+    -2px  2px 0 #fff,  0  2px 0 #fff,  2px  2px 0 #fff;
 }
 .hv2-line {
   display: block;
@@ -113,6 +118,12 @@
   /* 見出しと同じ右上がり傾斜 */
   transform: rotate(-5deg) skewX(-7deg);
   transform-origin: left bottom;
+  /* 背景画像から浮き立たせる白の縁取り */
+  text-shadow:
+    0 0 4px #fff,
+    -1px -1px 0 #fff,  0 -1px 0 #fff,  1px -1px 0 #fff,
+    -1px  0   0 #fff,                  1px  0   0 #fff,
+    -1px  1px 0 #fff,  0  1px 0 #fff,  1px  1px 0 #fff;
 }
 .hv2-sub em {
   font-style: normal;
