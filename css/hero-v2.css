@@ -86,12 +86,12 @@
   transform: rotate(-5deg) skewX(-7deg);
   transform-origin: left bottom;
   filter: url(#hv2-grunge);
-  /* 背景画像から浮き立たせる白の縁取り(アウトライン): 8方向の実線 + ソフトなハロー */
+  /* 背景画像から浮き立たせる白の縁取り(アウトライン): 8方向の実線 + ソフトなハロー(細め) */
   text-shadow:
-    0 0 6px #fff,
-    -2px -2px 0 #fff,  0 -2px 0 #fff,  2px -2px 0 #fff,
-    -2px  0   0 #fff,                  2px  0   0 #fff,
-    -2px  2px 0 #fff,  0  2px 0 #fff,  2px  2px 0 #fff;
+    0 0 3px #fff,
+    -1px -1px 0 #fff,  0 -1px 0 #fff,  1px -1px 0 #fff,
+    -1px  0   0 #fff,                  1px  0   0 #fff,
+    -1px  1px 0 #fff,  0  1px 0 #fff,  1px  1px 0 #fff;
 }
 .hv2-line {
   display: block;
@@ -118,12 +118,12 @@
   /* 見出しと同じ右上がり傾斜 */
   transform: rotate(-5deg) skewX(-7deg);
   transform-origin: left bottom;
-  /* 背景画像から浮き立たせる白の縁取り */
+  /* 背景画像から浮き立たせる白の縁取り(細め) */
   text-shadow:
-    0 0 4px #fff,
-    -1px -1px 0 #fff,  0 -1px 0 #fff,  1px -1px 0 #fff,
-    -1px  0   0 #fff,                  1px  0   0 #fff,
-    -1px  1px 0 #fff,  0  1px 0 #fff,  1px  1px 0 #fff;
+    0 0 2px #fff,
+    -0.5px -0.5px 0 #fff,  0 -0.5px 0 #fff,  0.5px -0.5px 0 #fff,
+    -0.5px  0     0 #fff,                     0.5px  0     0 #fff,
+    -0.5px  0.5px 0 #fff,  0  0.5px 0 #fff,  0.5px  0.5px 0 #fff;
 }
 .hv2-sub em {
   font-style: normal;
