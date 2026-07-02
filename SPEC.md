@@ -56,21 +56,22 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 3.2 SP レイアウト (max-width: 768px)
 | 不変条件 | 詳細 |
 |---|---|
-| ビジュアルゾーン | `.hv2-bg` を `inset: 60px 0 auto 0 / height: var(--hv2-visual-h)` (460px) に閉じ込め、キャラ一体の一枚絵 (`hero_bg_sp.{avif,webp,png}` 1375×1144) を `object-fit:cover; object-position:right bottom` で描画。下端は `mask-image` + `::after` 70px 白オーバーレイでフェードし CTA エリアへ自然繋ぎ |
+| ビジュアルゾーン(比率固定) | `.hv2-bg` を `inset: 60px 0 auto 0 / height: var(--hv2-visual-h)` に閉じ込め、キャラ一体の一枚絵 (`hero_bg_sp.{avif,webp,png}` 1375×1144) を全幅描画。**`--hv2-visual-h = calc(100vw * 1144 / 1375)`** とし box の縦横比を画像と一致させることで `object-fit:cover` でもクロップせず画像全体を表示（トリミングで縦長化するのを防止）。下端は `mask-image` + `::after` 70px 白オーバーレイでフェード |
+| CTA を画像の下へ(絶対条件) | `.hv2-ctas` は `.hv2-copy`(flex縦)の**子**なので `grid-area` は効かない。`.hv2-copy { min-height: calc(var(--hv2-visual-h) + 96px) }` で画像高+余白を確保し、`.hv2-ctas { margin-top: auto }` で下端へ落とす。→ 画面幅で画像高が変わっても CTA は常に画像の直下(≒下端+16px)に並ぶ。検証: 360/390/430/768 で `ctas.top >= bg.bottom` |
 | 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
-| ghost CTA 位置 | ビジュアルゾーン下端付近に来るよう `.hv2-ctas { margin-top: 166px }` |
 | sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
 | client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
 
-> 2026-07-02 のキャラ一体化により、旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）と透過キャラの `right:-100px` は廃止。キャラは背景一枚絵に含まれるため、位置調整は `.hv2-bg` の `object-position` と `--hv2-visual-h` で行う。
+> 2026-07-02: キャラ一体化＋SP一枚絵の比率固定表示に刷新。旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）・透過キャラ `right:-100px`・固定 `margin-top:166px` は全廃止。
 
 ### 3.3 CSS変数（SP）
 ```css
 .hv2-hero {
-  --hv2-visual-h: 460px;  /* SP ビジュアルゾーン(背景一枚絵)の高さ */
+  /* 一枚絵をトリミングせず全幅表示するため画像比率(1375:1144)で高さを算出 */
+  --hv2-visual-h: calc(100vw * 1144 / 1375);
 }
 ```
-キャラ位置は `.hv2-bg { object-position }` で調整。`--hv2-chars-h` は廃止済み。
+画像は比率固定で全体表示。CTA は `.hv2-copy` の min-height + `.hv2-ctas { margin-top:auto }` で画像直下へ。`--hv2-chars-h` は廃止済み。
 
 ### 3.4 旧仕様（撤去済み・参考）
 旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示。`hero-new.js` / `hero-fx.js` は読み込まれているが、関連 DOM が無いため発火しない。次回整理時に script タグ削除候補。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。

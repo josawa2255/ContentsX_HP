@@ -471,28 +471,23 @@ body[data-theme="magenta-hot"] .logo {
 /* スマホ (768px以下): 添付レイアウト */
 @media (max-width: 768px) {
   /* ════════════════════════════════════════════════════════════════
-     【絶対ルール】 SP ヒーローでは bg と chars の bottom を常に一致させる
+     【SP ヒーロー画像】 一枚絵(飛沫+キャラ)を比率どおり全幅で表示 (2026-07-02)
      ════════════════════════════════════════════════════════════════
-     - 入力変数は --hv2-visual-h と --hv2-chars-h の 2 つのみ
-     - .hv2-bg.height = --hv2-visual-h
-     - .hv2-chars.top = --hv2-visual-h - --hv2-chars-h  (オフセット項禁止)
-     - .hv2-chars.height = --hv2-chars-h
-     → top + height = visual_h なので chars.bottom は常に bg.bottom と一致
-
-     キャラを「上にずらしたい」場合でも calc に - XXpx を足してはいけない。
-     必要なら --hv2-chars-h を縮めて、chars 自身を小さく。
-     キャラを「右に動かしたい」場合は right: のみ調整(縦の不変条件は保つ)。
-
-     検証: 390px viewport で document.querySelector('.hv2-bg').bottom
-            === document.querySelector('.hv2-chars').bottom (現状 520)
+     - 画像 hero_bg_sp.* は 1375×1144。固定高で cover するとクロップされ縦長に
+       見えるため、ビジュアルゾーン高を画像比率で算出し全幅にフィットさせる。
+     - --hv2-visual-h = 画面幅 × (1144/1375)。box が画像と同比率になるので
+       object-fit:cover でもクロップされず画像全体が表示される。
+     - CTA は .hv2-copy 内(flex縦)にあるため、copy に (visual_h + 余白) の
+       min-height を持たせ、.hv2-ctas を margin-top:auto で画像の下へ落とす。
+       これで画像高が画面幅で変動しても CTA は常に画像の直下に並ぶ。
      ════════════════════════════════════════════════════════════════ */
   .hv2-hero {
     padding-top: 60px;
     padding-bottom: 0; /* style.css の section{padding:100px 0} を解除 */
-    --hv2-visual-h: 460px;
-    --hv2-chars-h: 270px;
+    /* 画像比率(1375:1144)で高さを算出 → 全幅表示でクロップなし */
+    --hv2-visual-h: calc(100vw * 1144 / 1375);
   }
-  /* bg をビジュアルゾーン内に閉じ込める */
+  /* bg をビジュアルゾーン内に閉じ込める(高さ=画像比率なのでクロップなし) */
   .hv2-bg {
     inset: 60px 0 auto 0;
     height: var(--hv2-visual-h);
@@ -500,14 +495,14 @@ body[data-theme="magenta-hot"] .logo {
     opacity: 1;
   }
   .hv2-bg img {
-    object-fit: cover;
-    object-position: right bottom;
+    object-fit: cover; /* box が画像と同比率のため実質クロップなし */
+    object-position: center bottom;
     transform: none;
     height: 100%;
     width: 100%;
-    /* splash 下端を徐々に透明化 (画像自体がフェード) */
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
-            mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
+    /* 下端を徐々に透明化して CTA エリアへ馴染ませる */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%);
   }
   /* 補助フェード: CTA エリアへの繋がりをさらに馴染ませる */
   .hv2-bg::after {
@@ -537,46 +532,13 @@ body[data-theme="magenta-hot"] .logo {
     flex-direction: column;
     position: relative;
     z-index: 20;
+    /* ビジュアルゾーン(画像高) + CTA分の余白 を確保。見出し/サブは上に、
+       CTA は margin-top:auto で下端(=画像の下)へ落とす */
+    min-height: calc(var(--hv2-visual-h) + 96px);
   }
-  .hv2-ctas { grid-area: ctas; }
   .hv2-services { grid-area: services; }
 
-  /* キャラ: bg と同じビジュアルゾーンの下端に揃える
-     ※ relative parent は .hv2-frame (hero の padding 内側)
-     ※ top = visual_h - chars_h は絶対ルール (上記コメント参照、オフセット禁止) */
-  .hv2-chars {
-    position: absolute;
-    top: calc(var(--hv2-visual-h) - var(--hv2-chars-h)); /* DO NOT add offset */
-    right: -100px;
-    bottom: auto;
-    width: auto;
-    height: var(--hv2-chars-h);
-    margin: 0;
-    z-index: 4;
-    pointer-events: none;
-  }
-  .hv2-chars picture { display: block; height: 100%; }
-  .hv2-chars img {
-    width: auto;
-    height: 100%;
-    object-fit: contain;
-    object-position: bottom right;
-    display: block;
-    /* bg と同じ y 位置でフェード (bg は visual_h*0.15 ≒ 69px を下端からフェード)
-       chars も下端 69px をフェードさせ、両画像が同じ高さで透明化する */
-    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 69px), transparent 100%);
-            mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 69px), transparent 100%);
-  }
-  /* chars 補助フェード: bg::after と同じ高さ・同じ y 位置で重ねる */
-  .hv2-chars::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 70px;
-    background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 70%, #fff 100%);
-    pointer-events: none;
-    z-index: 5;
-  }
+  /* ※ キャラは背景一枚絵(hero_bg_sp)に一体化済み。専用キャラレイヤーは廃止 (2026-07-02) */
 
   /* 見出し: 左半分の正方形スペースに収める。
      SP は小さい字でグランジが強すぎるので filter 解除、傾斜はサブと揃える */
@@ -606,13 +568,12 @@ body[data-theme="magenta-hot"] .logo {
     max-width: 55%;
   }
 
-  /* CTA 縦積み・細め・下寄り・キャラより前面
-     ※ ghost ボタンの中央を bg/chars 下端 (y=520) に重ねる margin */
+  /* CTA 縦積み。copy の余白を margin-top:auto で吸収し、常に画像の直下へ配置 */
   .hv2-ctas {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    margin-top: 166px;
+    margin-top: auto;
     position: relative;
     z-index: 20;
   }
@@ -718,15 +679,9 @@ body[data-theme="magenta-hot"] .logo {
   .hv2-marquee-icon svg { width: 16px; height: 16px; }
 }
 
-/* 極小 (480px以下): GALAXY S10 (360px) 等で見切れないようキャラと見出し縮小 */
+/* 極小 (480px以下): 見出しが画像内のキャラに被りすぎないよう左半分に圧縮
+   (ビジュアルゾーン高は --hv2-visual-h が画面幅比例で自動追従するため個別調整不要) */
 @media (max-width: 480px) {
-  .hv2-hero {
-    /* visual_h は固定。chars-h を縮めて画面内に収める
-       (絶対ルール: chars.top = visual_h - chars_h は維持。下端は揃ったまま) */
-    --hv2-chars-h: 220px;
-  }
-  .hv2-chars { right: -50px; }
-  /* 見出しはキャラと被らないよう左半分に圧縮 */
   .hv2-headline {
     font-size: clamp(30px, 10vw, 60px);
     max-width: 55%;
@@ -736,12 +691,8 @@ body[data-theme="magenta-hot"] .logo {
   .hv2-sub { max-width: 55%; font-size: 11px; }
 }
 
-/* さらに狭い (380px以下): キャラもう一段縮小、見出しもさらに */
+/* さらに狭い (380px以下): 見出しもう一段縮小、カードは1列 */
 @media (max-width: 380px) {
-  .hv2-hero {
-    --hv2-chars-h: 200px;
-  }
-  .hv2-chars { right: -30px; }
   .hv2-headline {
     font-size: clamp(28px, 9vw, 50px);
     max-width: 52%;
