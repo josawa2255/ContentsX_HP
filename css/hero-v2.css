@@ -82,6 +82,10 @@
   letter-spacing: -0.07em;
   color: var(--hv2-ink-black);
   margin: 0 0 28px;
+  /* Android の文字拡大設定でヒーロー演出文字が inflate されると
+     nowrap 行がキャラ絵に被るため、装飾見出しだけ拡大対象から外す */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   /* 斜体スキュー + 右上がり回転 + グランジ微歪み */
   transform: rotate(-5deg) skewX(-7deg);
   transform-origin: left bottom;
@@ -104,12 +108,16 @@
   font-size: 1.7em; /* 「成果を」を他の行より大きく */
   line-height: 0.92;
 }
-/* PC では「を」を成果と一緒にマゼンタ表示、SP では非表示 */
-.hv2-only-pc { display: inline-block; }
-.hv2-only-sp { display: none; }
+/* PC では「を」を成果と一緒にマゼンタ表示、SP では非表示。
+   ※ .hv2-headline em { display:inline-block } より詳細度を上げないと
+     SP 側の display:none が負けて「を」が二重表示になる */
+.hv2-headline em.hv2-only-pc { display: inline-block; }
+.hv2-headline .hv2-only-sp { display: none; }
 .hv2-sub {
   font-family: 'Noto Sans JP', sans-serif;
   font-size: clamp(20px, 2vw, 32px);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   font-weight: 700;
   line-height: 1.55;
   color: var(--hv2-text);
@@ -552,9 +560,11 @@ body[data-theme="magenta-hot"] .logo {
   /* ※ キャラは背景一枚絵(hero_bg_sp)に一体化済み。専用キャラレイヤーは廃止 (2026-07-02) */
 
   /* 見出し: 左半分の正方形スペースに収める。
-     SP は小さい字でグランジが強すぎるので filter 解除、傾斜はサブと揃える */
+     SP は小さい字でグランジが強すぎるので filter 解除、傾斜はサブと揃える。
+     ※ サイズは 9.5vw 一本で 380〜768px を連続スケール（480/768 の境界で
+       段差を作ると 481〜768px 帯 (フォルダブル・表示サイズ縮小設定) で巨大化する） */
   .hv2-headline {
-    font-size: clamp(52px, 16vw, 100px);
+    font-size: clamp(28px, 9.5vw, 74px);
     margin: 16px 0 20px;
     text-align: left;
     transform: rotate(-6deg) skewX(-9deg);
@@ -563,12 +573,13 @@ body[data-theme="magenta-hot"] .logo {
     max-width: 70%;
   }
   .hv2-line { white-space: nowrap; }
-  .hv2-headline em { font-size: 1.7em; }
+  .hv2-headline em { font-size: 1.5em; }
   /* ストーリーで / を生み出す を小さく、成果 (em) のみ大きく */
-  .hv2-line > span { font-size: 0.86em; }
-  /* SP では「成果」のみマゼンタ、「を」は次行に黒で */
-  .hv2-only-pc { display: none; }
-  .hv2-only-sp { display: inline-block; }
+  .hv2-line > span { font-size: 0.82em; }
+  /* SP では「成果」のみマゼンタ、「を」は次行に黒で
+     (PC 用の「を」は em.hv2-only-pc の詳細度で確実に消す) */
+  .hv2-headline em.hv2-only-pc { display: none; }
+  .hv2-headline .hv2-only-sp { display: inline-block; }
 
   .hv2-sub {
     font-size: clamp(13px, 3.6vw, 16px);
@@ -691,14 +702,9 @@ body[data-theme="magenta-hot"] .logo {
 }
 
 /* 極小 (480px以下): 見出しが画像内のキャラに被りすぎないよう左半分に圧縮
-   (ビジュアルゾーン高は --hv2-visual-h が画面幅比例で自動追従するため個別調整不要) */
+   (文字サイズは 768px 以下共通の 9.5vw がそのまま連続スケールする) */
 @media (max-width: 480px) {
-  .hv2-headline {
-    font-size: clamp(30px, 10vw, 60px);
-    max-width: 55%;
-  }
-  .hv2-headline em { font-size: 1.55em; }
-  .hv2-line > span { font-size: 0.82em; }
+  .hv2-headline { max-width: 55%; }
   .hv2-sub { max-width: 55%; font-size: 11px; }
 }
 
@@ -708,6 +714,5 @@ body[data-theme="magenta-hot"] .logo {
     font-size: clamp(28px, 9vw, 50px);
     max-width: 52%;
   }
-  .hv2-headline em { font-size: 1.5em; }
   .hv2-services { grid-template-columns: 1fr; }
 }
