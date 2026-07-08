@@ -18,7 +18,7 @@
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
 | トップメッセージ | `message.html` | cta.js, dl-modal.js | 旧 our-thoughts を代表 黒宮 一人称メッセージにリニューアル。CSSは `our-thoughts.css` 流用（ot-* クラス）。旧 `our-thoughts.html` は `/message` への JS+meta リダイレクト |
-| 主要関連会社 | `partners.html` | script.js, dl-modal.js | 提携3社（ASOBISYSTEM / DM Solutions / KIRINZ） |
+| 主要関連会社 | `partners.html` | script.js, dl-modal.js | 提携2社表示中（DM Solutions / KIRINZ）。ASOBISYSTEMは2026-07-08非表示 |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
@@ -219,8 +219,9 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ## 11. パートナー企業ロゴ
 
-[partners.html](partners.html) で3社掲載:
-- ASOBISYSTEM / DM Solutions / KIRINZ
+[partners.html](partners.html) で掲載:
+- 表示中: DM Solutions / KIRINZ
+- **ASOBISYSTEMは2026-07-08にコメントアウトで非表示化**（`TEMP-HIDDEN-ASOBI-SYSTEM`マーカー、HTML内に残置。復活は該当ブロックのコメント解除のみ）
 - ロゴ画像: `material/images/partners/*.webp`
 - **背景透過済み**（PIL で RGB>=240を透明化）
 - `max-width: 320px` でカラム幅に収める
