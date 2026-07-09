@@ -198,20 +198,20 @@ function cxcms_register_service_parent_menus() {
         'edit-tags.php?taxonomy=testimonial_tag&post_type=cx_testimonial'
     );
 
-    /* ── リクルートX (2026-06-12 追加) ── */
+    /* ── イチオシ採用 (2026-06-12 追加、2026-07-09 リクルートXから改名) ── */
     add_menu_page(
-        'リクルートX',
-        'リクルートX',
+        'イチオシ採用',
+        'イチオシ採用',
         'edit_posts',
-        'cxcms-recruitx',
-        'cxcms_recruitx_landing_page',
+        'cxcms-ichioshi',
+        'cxcms_ichioshi_landing_page',
         'dashicons-businessperson',
         31
     );
 
     /* 事例タグの管理画面（タクソノミーのサブメニュー明示追加） */
     add_submenu_page(
-        'cxcms-recruitx',
+        'cxcms-ichioshi',
         '事例タグ',
         '事例タグ',
         'manage_categories',
@@ -233,12 +233,12 @@ function cxcms_bizmanga_landing_page() {
     <?php
 }
 
-function cxcms_recruitx_landing_page() {
+function cxcms_ichioshi_landing_page() {
     ?>
     <div class="wrap">
-        <h1>リクルートX</h1>
-        <p>リクルートX（recruitx.contentsx.jp）専用のコンテンツ管理メニューです。</p>
-        <p>複数サイト共通のコンテンツ（ニュース・コラム）は左メニューの最上階層にあります。コラムは「コラム」メニューで掲載先「リクルートX」にチェックして管理します。</p>
+        <h1>イチオシ採用</h1>
+        <p>イチオシ採用（ichioshi.contentsx.jp）専用のコンテンツ管理メニューです。</p>
+        <p>複数サイト共通のコンテンツ（ニュース・コラム）は左メニューの最上階層にあります。コラムは「コラム」メニューで掲載先「イチオシ採用」にチェックして管理します。</p>
         <ul style="list-style:disc;padding-left:20px;">
             <li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=rx_case' ) ); ?>">採用事例</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'edit-tags.php?taxonomy=rx_case_tag&post_type=rx_case' ) ); ?>">事例タグ</a></li>
@@ -1820,7 +1820,8 @@ function cxcms_allowed_origins() {
         'https://contentsx.jp',
         'https://www.contentsx.jp',
         'https://bizmanga.contentsx.jp',
-        'https://recruitx.contentsx.jp',   // リクルートX (2026-06-12 追加)
+        'https://ichioshi.contentsx.jp',   // イチオシ採用 (2026-07-09 ドメイン改名)
+        'https://recruitx.contentsx.jp',   // イチオシ採用の旧ドメイン (移行期間中残置、安定後に削除可)
         'http://localhost:3000',
         'http://127.0.0.1:5500',       // VS Code Live Server
     ];
@@ -2047,21 +2048,28 @@ function cxcms_format_work( $p ) {
     ];
 }
 
-/* ── ヘルパー: サイトフィルター (2026-06-12 リクルートX対応で多サイト化) ──
+/* ── ヘルパー: サイトフィルター (2026-06-12 多サイト化 / 2026-07-09 recruitx→ichioshi 改名) ──
    掲載先メタの値:
      旧形式 'both' / 'bizmanga' / 'contentsx'  (2サイト時代の単一値)
-     新形式 CSV   'bizmanga,contentsx' / 'recruitx' など複数可、'none'=非表示
-   ⚠ 'both' は「BizManga+ContentsX」の意味で固定。recruitx等の新サイトに漏らさないこと */
+     新形式 CSV   'bizmanga,contentsx' / 'ichioshi' など複数可、'none'=非表示
+   ⚠ 'both' は「BizManga+ContentsX」の意味で固定。ichioshi等の新サイトに漏らさないこと
+   ⚠ 旧キー 'recruitx' はDB保存値・APIパラメータとも読み込み時に 'ichioshi' へ正規化
+     （DB移行不要で過去データ互換。新規保存は常に 'ichioshi'） */
+function cxcms_normalize_site_key( $key ) {
+    return $key === 'recruitx' ? 'ichioshi' : $key;
+}
+
 function cxcms_show_site_list( $value ) {
     $value = trim( (string) $value );
     if ( $value === '' || $value === 'both' ) return [ 'bizmanga', 'contentsx' ];
     if ( $value === 'none' ) return [];
-    return array_values( array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
+    $list = array_values( array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
+    return array_values( array_unique( array_map( 'cxcms_normalize_site_key', $list ) ) );
 }
 
 function cxcms_filter_by_site( $items, $site_param, $site_key = 'show_site' ) {
     if ( empty( $site_param ) ) return $items;
-    $site = sanitize_text_field( $site_param );
+    $site = cxcms_normalize_site_key( sanitize_text_field( $site_param ) );
     return array_values( array_filter( $items, function( $item ) use ( $site, $site_key ) {
         return in_array( $site, cxcms_show_site_list( $item[ $site_key ] ?? 'both' ), true );
     }));
@@ -2070,7 +2078,7 @@ function cxcms_filter_by_site( $items, $site_param, $site_key = 'show_site' ) {
 /* 掲載先チェックボックスUI（ニュース・コラム共通）。旧値('both'等)も正しくチェック表示する */
 function cxcms_show_site_checkboxes_html( $field_name, $current_value ) {
     $checked = cxcms_show_site_list( $current_value ?: 'both' );
-    $sites = [ 'bizmanga' => 'BizManga', 'contentsx' => 'ContentsX', 'recruitx' => 'リクルートX' ];
+    $sites = [ 'bizmanga' => 'BizManga', 'contentsx' => 'ContentsX', 'ichioshi' => 'イチオシ採用' ];
     foreach ( $sites as $key => $label ) {
         printf(
             '<label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;font-weight:400"><input type="checkbox" name="%1$s[]" value="%2$s" %3$s> %4$s</label>',
@@ -2084,8 +2092,9 @@ function cxcms_show_site_checkboxes_html( $field_name, $current_value ) {
 
 /* 掲載先チェックボックスの保存値を正規化(CSV)。未チェック='none'(どこにも表示しない) */
 function cxcms_sanitize_show_site_post( $raw ) {
-    $allowed = [ 'bizmanga', 'contentsx', 'recruitx' ];
-    $vals = array_values( array_intersect( array_map( 'sanitize_text_field', (array) $raw ), $allowed ) );
+    $allowed = [ 'bizmanga', 'contentsx', 'ichioshi' ];
+    $vals = array_map( 'cxcms_normalize_site_key', array_map( 'sanitize_text_field', (array) $raw ) );
+    $vals = array_values( array_intersect( $vals, $allowed ) );
     return $vals ? implode( ',', $vals ) : 'none';
 }
 
@@ -2093,7 +2102,7 @@ function cxcms_sanitize_show_site_post( $raw ) {
 function cxcms_show_site_label( $value ) {
     $list = cxcms_show_site_list( $value ?: 'both' );
     if ( ! $list ) return '非表示';
-    $map = [ 'bizmanga' => 'BM', 'contentsx' => 'CX', 'recruitx' => 'RX' ];
+    $map = [ 'bizmanga' => 'BM', 'contentsx' => 'CX', 'ichioshi' => 'イチオシ' ];
     return implode( '+', array_map( fn($s) => $map[$s] ?? $s, $list ) );
 }
 
@@ -3502,7 +3511,7 @@ function cxcms_column_meta_html( $post ) {
             <input type="hidden" name="cx_column_pickup_present" value="1">
             <input type="checkbox" name="cx_column_pickup" value="1" <?php checked( $m('cx_column_pickup') === '1' ); ?> style="width:auto;margin:0"> 注目記事（一覧のPICK UP枠に表示）
         </label>
-        <div class="cx-hint">コラム一覧トップに大きく掲載（複数チェック時は最新）。リクルートXのコラム面で使用。</div>
+        <div class="cx-hint">コラム一覧トップに大きく掲載（複数チェック時は最新）。イチオシ採用のコラム面で使用。</div>
     </div>
     <div class="cx-field">
         <label>SEOタイトル</label>
@@ -3763,16 +3772,16 @@ function cxcms_api_column_preview( $req ) {
 }
 
 /* ── 管理画面「プレビュー」ボタンをフロント側に向ける ── */
-/* コラム詳細ページは BizManga 側にある。掲載先が「リクルートX」のみのコラムは
-   recruitx.contentsx.jp 側へ振り分ける（2026-06-15）。混在/B/C は従来通り BM へ。 */
+/* コラム詳細ページは BizManga 側にある。掲載先が「イチオシ採用」のみのコラムは
+   ichioshi.contentsx.jp 側へ振り分ける（2026-06-15、2026-07-09ドメイン改名反映）。混在/B/C は従来通り BM へ。 */
 add_filter( 'preview_post_link', function( $link, $post ) {
     if ( ! $post || $post->post_type !== 'cx_column' ) return $link;
     $sites = cxcms_show_site_list( get_post_meta( $post->ID, 'cx_column_show_site', true ) );
-    $recruitx_only = in_array( 'recruitx', $sites, true )
+    $ichioshi_only = in_array( 'ichioshi', $sites, true )
         && ! in_array( 'bizmanga', $sites, true )
         && ! in_array( 'contentsx', $sites, true );
-    $base = $recruitx_only
-        ? 'https://recruitx.contentsx.jp/column-detail'
+    $base = $ichioshi_only
+        ? 'https://ichioshi.contentsx.jp/column-detail'
         : 'https://bizmanga.contentsx.jp/column-detail';
     $nonce = wp_create_nonce( 'cxcms_preview_column_' . $post->ID );
     return add_query_arg( [
@@ -3784,8 +3793,10 @@ add_filter( 'preview_post_link', function( $link, $post ) {
 
 
 /* ============================================================
-   リクルートX 採用事例 (rx_case) — 2026-06-12 追加
-   recruitx.contentsx.jp 専用CPT。親メニュー: cxcms-recruitx (§1b)
+   イチオシ採用 採用事例 (rx_case) — 2026-06-12 追加、2026-07-09 リクルートXから改名
+   ichioshi.contentsx.jp 専用CPT。親メニュー: cxcms-ichioshi (§1b)
+   ※ CPT名 rx_case / タクソノミー rx_case_tag / メタキー rx_case_* は
+     DB保存値と結合しているため旧名のまま維持（改名にはDB移行が必要）
    メイン画像 = アイキャッチ + フォーカルポイント(object-position %)
    実績数値 = 最大3ブロック可変(項目名/数値/単位/矢印) JSON保存
    詳細ページ本文 = 標準エディタ（コラムと同じ操作感）
@@ -3812,7 +3823,7 @@ function cxcms_register_rx_case_cpt() {
         'public'             => true,    // BUGS #004: スラッグ欄表示に必須
         'publicly_queryable' => true,
         'show_ui'            => true,
-        'show_in_menu'       => 'cxcms-recruitx',   // R専用 → リクルートX親メニュー配下
+        'show_in_menu'       => 'cxcms-ichioshi',   // イチオシ採用専用 → 親メニュー配下
         'show_in_rest'       => true,
         'rest_base'          => 'rx-cases',
         'menu_icon'          => 'dashicons-businessperson',
@@ -3906,7 +3917,7 @@ function cxcms_rx_case_meta_html( $post ) {
         $current_tag_ids = wp_get_object_terms( $post->ID, 'rx_case_tag', [ 'fields' => 'ids' ] );
         if ( is_wp_error( $current_tag_ids ) ) $current_tag_ids = [];
         if ( ! $all_tags || is_wp_error( $all_tags ) ) {
-            echo '<div class="rx-hint">タグがまだ登録されていません。「リクルートX &gt; 事例タグ」で選択肢を登録すると、ここにチェックボックスで並びます。</div>';
+            echo '<div class="rx-hint">タグがまだ登録されていません。「イチオシ採用 &gt; 事例タグ」で選択肢を登録すると、ここにチェックボックスで並びます。</div>';
         } else {
             echo '<div class="rx-tag-list">';
             foreach ( $all_tags as $t ) {
@@ -3918,7 +3929,7 @@ function cxcms_rx_case_meta_html( $post ) {
                 );
             }
             echo '</div>';
-            echo '<div class="rx-hint">選択肢の追加・名前変更は「リクルートX &gt; 事例タグ」から。</div>';
+            echo '<div class="rx-hint">選択肢の追加・名前変更は「イチオシ採用 &gt; 事例タグ」から。</div>';
         }
         ?>
     </div>
@@ -3969,7 +3980,7 @@ function cxcms_rx_case_meta_html( $post ) {
     <div class="rx-field">
         <label>SEOタイトル（検索結果に出るタイトル）</label>
         <input class="rx-wide" name="rx_case_seo_title" value="<?php echo esc_attr( $m('rx_case_seo_title') ); ?>" placeholder="例: 飲食店の採用成功事例｜応募が月数名→ひと月82名に。原稿改善だけで達成">
-        <div class="rx-hint">30字前後推奨。空欄の場合は「会社名の採用成功事例｜リクルートX」が自動で使われます。</div>
+        <div class="rx-hint">30字前後推奨。空欄の場合は「会社名の採用成功事例｜イチオシ採用」が自動で使われます。</div>
     </div>
 
     <div class="rx-field">
@@ -4317,7 +4328,7 @@ function cxcms_format_rx_case( $p ) {
         ],
         'stats'        => $stats,
         /* SEO（空欄時はフォールバック適用済みの最終値を返し、ビルド側はそのまま使う） */
-        'seo_title'       => $m('rx_case_seo_title') ?: ( $p->post_title . 'の採用成功事例｜リクルートX' ),
+        'seo_title'       => $m('rx_case_seo_title') ?: ( $p->post_title . 'の採用成功事例｜イチオシ採用' ),
         'seo_description' => $m('rx_case_seo_description') ?: ( $m('rx_case_summary') ?: '' ),
     ];
 }
