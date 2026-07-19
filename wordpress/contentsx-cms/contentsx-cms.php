@@ -2895,8 +2895,11 @@ add_action( 'init', function() {
 /*
  * 8-5. XML-RPC 無効化
  * ─ ヘッドレス運用では不要。ブルートフォース攻撃の入口になるため遮断
+ * ─ xmlrpc_enabled は認証系メソッドしか止めない（pingback/multicall が残る）ため、
+ *   xmlrpc_methods で全メソッドを空にして完全遮断する
  */
 add_filter( 'xmlrpc_enabled', '__return_false' );
+add_filter( 'xmlrpc_methods', '__return_empty_array' );
 add_filter( 'wp_headers', function( $headers ) {
     unset( $headers['X-Pingback'] );
     return $headers;

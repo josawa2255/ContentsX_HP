@@ -86,4 +86,4 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 - メインサイト: `css/style.css`（共通）+ ページ別CSS（`hero-new.css`, `recruit.css` 等）
 
 ## 未完了タスク
-- CORS修正: WPプラグインをcms.contentsx.jpサーバーにファイルマネージャーでアップロード必要
+- WPプラグイン(contentsx-cms.php)のサーバーアップロード: CORS修正＋XML-RPC完全遮断（§8-5強化、Issue #2）をお名前.comファイルマネージャーで反映必要。アップロード後 `curl -X POST https://cms.contentsx.jp/xmlrpc.php` にsystem.listMethodsを投げてfault応答になることを確認
