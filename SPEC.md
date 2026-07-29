@@ -117,6 +117,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
+| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `js/contact.js` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数、`site: "contentsx"`）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信・サンクス表示・資料DLリンクは従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。⚠️ **採用応募（`recruit.html` から `?position=` 付きで遷移）はCRMに送らない**（営業リードのみをCRMに入れる方針。HubSpotには従来どおり全件届く）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#cxWebsite`**（画面外・aria-hidden・`data-i18n-skip`）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は、CRM側 Vercel の `INBOUND_SECRET`・BizManga の `contact.html`・本ファイルの3箇所を同時に更新する**（片方だけだとCRM送信が全件401で落ちるが、HubSpot受付は正常に動き続けるため気づきにくい） |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-B000C4JCCX`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = `js/contact.js` の HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正、B/C共通） |
 | WordPress REST API | 漫画事例 / ニュース | `https://cms.contentsx.jp/wp-json/contentsx/v1` |

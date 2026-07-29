@@ -146,6 +146,15 @@
           <textarea class="form-textarea" id="message" name="message" placeholder="ご質問やご要望をご記入ください" data-ph-ja="ご質問やご要望をご記入ください" data-ph-en="Please describe your inquiry" required></textarea>
         </div>
 
+        <!-- ハニーポット: 人には見えない入力欄。ボットだけが埋めるので、
+             値が入っていた送信はCRM側で黙って破棄する。
+             display:none ではなく画面外に飛ばす（display:none を無視するボット対策）。
+             tabindex=-1 と autocomplete=off でキーボード操作・自動補完からも外す。 -->
+        <div aria-hidden="true" data-i18n-skip style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+          <label for="cxWebsite">Website (do not fill)</label>
+          <input type="text" id="cxWebsite" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
         <button type="submit" class="cb-submit form-submit" aria-label="送信する">
           <span class="cb-label" data-ja="送信する" data-en="Send Message">送信する</span>
           <span class="cb-icon" aria-hidden="true">
