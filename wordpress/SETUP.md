@@ -1,5 +1,19 @@
 # ContentsX WordPress CMS セットアップ手順
 
+> ## ⚠️ プラグイン本体（PHP）はこのリポジトリにありません（2026-08-04 分離）
+>
+> `contentsx-cms.php` のマスターソースは **別のPRIVATEリポジトリ**へ移設しました。
+>
+> **https://github.com/josawa2255/contentsx-wp-plugin**（`contentsx-cms/contentsx-cms.php`）
+>
+> - **理由**: このリポジトリ（ContentsX_HP）は**PUBLIC**。サイト本体は静的HTMLなので公開して問題ないが、
+>   サーバー側で実行されるコードを公開する必然性がないため
+> - **ローカルの場所**: `~/Documents/contentX/web/contentsx-wp-plugin/`
+> - **デプロイは従来どおり**: どちらのリポジトリでも git push では本番反映されない。
+>   お名前.comのファイルマネージャーで手動アップロードが必要（BUGS #002）
+>
+> このファイル（WP側の初期セットアップ手順）はサイト運用にも必要なため、こちらに残しています。
+
 ## 全体構成
 
 ```
