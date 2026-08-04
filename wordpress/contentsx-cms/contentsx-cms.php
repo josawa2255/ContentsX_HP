@@ -20,6 +20,132 @@ add_filter( 'image_editor_output_format', function( $formats ) {
 });
 
 /* ==========================================================
+   0-2. 漫画PDFの一括分割（全ページ→WebP→ギャラリー）
+   ----------------------------------------------------------
+   漫画家の納品が「複数ページを1本にまとめたPDF」のため、
+   管理画面から1発で全ページをWebP化してギャラリーに入れる。
+
+   - サーバーの Imagick + Ghostscript でラスタライズする
+     （2026-08-04 本番実測: Imagick 3.8.1 / Ghostscript 9.54.0 で動作確認済み）
+   - 解像度は CXCMS_PDF_DPI。元PDFの埋め込み画像が概ね 100〜160ppi のため
+     150 で十分（150/200/300dpi を実測比較し、150超は容量が増えるだけで画質は変わらなかった）
+   - 1リクエスト1ページ。タイムアウトとメモリ枯渇を避けるため一括処理はしない
+   ========================================================== */
+
+if ( ! defined( 'CXCMS_PDF_DPI' ) )     define( 'CXCMS_PDF_DPI', 150 );
+if ( ! defined( 'CXCMS_PDF_QUALITY' ) ) define( 'CXCMS_PDF_QUALITY', 85 );
+if ( ! defined( 'CXCMS_PDF_MAX_PAGES' ) ) define( 'CXCMS_PDF_MAX_PAGES', 200 );
+
+/**
+ * PDF分割の共通ガード。問題があれば WP_Error を返す。
+ */
+function cxcms_pdf_guard( $pdf_id ) {
+    if ( ! current_user_can( 'upload_files' ) ) {
+        return new WP_Error( 'forbidden', '権限がありません' );
+    }
+    if ( ! class_exists( 'Imagick' ) ) {
+        return new WP_Error( 'no_imagick', 'サーバーに Imagick がありません' );
+    }
+    $file = get_attached_file( $pdf_id );
+    if ( ! $file || ! file_exists( $file ) ) {
+        return new WP_Error( 'no_file', 'PDFの実体が見つかりません' );
+    }
+    if ( 'application/pdf' !== get_post_mime_type( $pdf_id ) ) {
+        return new WP_Error( 'not_pdf', '選択されたファイルはPDFではありません' );
+    }
+    return $file;
+}
+
+/** ページ数を返す */
+add_action( 'wp_ajax_cxcms_pdf_info', 'cxcms_ajax_pdf_info' );
+function cxcms_ajax_pdf_info() {
+    check_ajax_referer( 'cxcms_pdf_split', 'nonce' );
+    $pdf_id = isset( $_POST['pdf_id'] ) ? (int) $_POST['pdf_id'] : 0;
+    $file   = cxcms_pdf_guard( $pdf_id );
+    if ( is_wp_error( $file ) ) {
+        wp_send_json_error( [ 'message' => $file->get_error_message() ] );
+    }
+    try {
+        $im = new Imagick();
+        $im->pingImage( $file );          // ページ数だけ見る（実体は読まない＝軽い）
+        $pages = $im->getNumberImages();
+        $im->clear();
+        $im->destroy();
+    } catch ( Exception $e ) {
+        // Imagick の policy.xml で PDF が禁止されているとここに来る
+        wp_send_json_error( [ 'message' => 'PDFを読み取れません（サーバー側でPDF処理が許可されていない可能性）: ' . $e->getMessage() ] );
+    }
+    if ( $pages > CXCMS_PDF_MAX_PAGES ) {
+        wp_send_json_error( [ 'message' => 'ページ数が多すぎます（' . $pages . 'ページ / 上限' . CXCMS_PDF_MAX_PAGES . '）' ] );
+    }
+    wp_send_json_success( [ 'pages' => $pages ] );
+}
+
+/** 指定1ページをWebP化してメディア登録し、添付IDを返す */
+add_action( 'wp_ajax_cxcms_pdf_split_page', 'cxcms_ajax_pdf_split_page' );
+function cxcms_ajax_pdf_split_page() {
+    check_ajax_referer( 'cxcms_pdf_split', 'nonce' );
+
+    $pdf_id  = isset( $_POST['pdf_id'] ) ? (int) $_POST['pdf_id'] : 0;
+    $page    = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
+    $post_id = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
+
+    $file = cxcms_pdf_guard( $pdf_id );
+    if ( is_wp_error( $file ) ) {
+        wp_send_json_error( [ 'message' => $file->get_error_message() ] );
+    }
+
+    // 元PDFのファイル名を引き継ぎ、ページ番号でゼロ埋め連番にする
+    // （既存ギャラリーの「ファイル名の数字で並べ替え」ロジックに乗せるため）
+    $base = sanitize_title( pathinfo( basename( $file ), PATHINFO_FILENAME ) );
+    if ( '' === $base ) { $base = 'manga'; }
+    $filename = sprintf( '%s-p%02d.webp', $base, $page );
+
+    try {
+        $im = new Imagick();
+        $im->setResolution( CXCMS_PDF_DPI, CXCMS_PDF_DPI );  // ← 読み込み前に指定しないと効かない
+        $im->readImage( $file . '[' . ( $page - 1 ) . ']' );  // 0始まり
+        $im->setImageBackgroundColor( 'white' );              // 透過PDF対策（黒背景化を防ぐ）
+        $im = $im->flattenImages();
+        $im->setImageFormat( 'webp' );
+        $im->setImageCompressionQuality( CXCMS_PDF_QUALITY );
+        $im->stripImage();                                    // Exif等を落として軽量化
+        $blob = $im->getImageBlob();
+        $im->clear();
+        $im->destroy();
+    } catch ( Exception $e ) {
+        wp_send_json_error( [ 'message' => $page . 'ページ目の変換に失敗: ' . $e->getMessage() ] );
+    }
+
+    // uploads へ書き出し（同名があれば WP が自動で -1 を付ける＝既存を壊さない）
+    $up = wp_upload_bits( $filename, null, $blob );
+    if ( ! empty( $up['error'] ) ) {
+        wp_send_json_error( [ 'message' => '保存に失敗: ' . $up['error'] ] );
+    }
+
+    $att_id = wp_insert_attachment( [
+        'post_mime_type' => 'image/webp',
+        'post_title'     => sprintf( '%s %d ページ', $base, $page ),
+        'post_content'   => '',
+        'post_status'    => 'inherit',
+    ], $up['file'], $post_id );
+
+    if ( is_wp_error( $att_id ) || ! $att_id ) {
+        wp_send_json_error( [ 'message' => 'メディア登録に失敗しました' ] );
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    wp_update_attachment_metadata( $att_id, wp_generate_attachment_metadata( $att_id, $up['file'] ) );
+
+    $thumb = wp_get_attachment_image_src( $att_id, 'thumbnail' );
+    wp_send_json_success( [
+        'id'       => $att_id,
+        'thumb'    => $thumb ? $thumb[0] : $up['url'],
+        'filename' => basename( $up['file'] ),
+    ] );
+}
+
+/* ==========================================================
    1. カスタム投稿タイプ登録
    ========================================================== */
 
@@ -834,7 +960,10 @@ function cxcms_manga_meta_html( $post ) {
         ?>
         </div>
         <button type="button" id="cx_gallery_btn" class="button">画像を追加</button>
+        <button type="button" id="cx_pdf_split_btn" class="button button-primary" style="margin-left:6px;">PDFから一括取り込み</button>
+        <span id="cx_pdf_split_status" style="margin-left:10px;font-size:12px;color:#555;"></span>
         <div class="cx-hint">漫画の各ページ画像をアップロード（表紙は右サイドバーの「表紙の画像」で設定）。ドラッグで順番変更可。ファイル名の番号順で自動ソートされます。</div>
+        <div class="cx-hint">「PDFから一括取り込み」＝漫画1本のPDFを選ぶと、全ページを1枚ずつWebPに変換してこのギャラリーへページ順に追加します（既存の画像は残ります）。処理中はページを閉じないでください。</div>
     </div>
     <div class="cx-field">
         <label>赤ペン画像 — ドラッグで並べ替え可能</label>
@@ -965,6 +1094,109 @@ function cxcms_manga_meta_html( $post ) {
             });
             frame.open();
         });
+        // ===== PDFから一括取り込み（全ページをWebP分割してギャラリーへ） =====
+        $('#cx_pdf_split_btn').on('click', function(e){
+            e.preventDefault();
+            var $btn = $(this), $st = $('#cx_pdf_split_status');
+            var frame = wp.media({
+                title: '分割する漫画PDFを選択',
+                multiple: false,
+                library: { type: 'application/pdf' },
+                button: { text: 'このPDFを取り込む' }
+            });
+            frame.on('select', function(){
+                var att = frame.state().get('selection').first();
+                if (!att) return;
+                var pdfId = att.id;
+
+                $btn.prop('disabled', true);
+                $('#cx_gallery_btn').prop('disabled', true);
+                $st.css('color', '#555').text('PDFを解析しています…');
+
+                // 1) ページ数を取得
+                $.post(ajaxurl, {
+                    action: 'cxcms_pdf_info',
+                    nonce: '<?php echo esc_js( wp_create_nonce('cxcms_pdf_split') ); ?>',
+                    pdf_id: pdfId
+                }).done(function(res){
+                    if (!res || !res.success) {
+                        finish(false, (res && res.data && res.data.message) || 'PDFを読み取れませんでした');
+                        return;
+                    }
+                    var total = parseInt(res.data.pages, 10) || 0;
+                    if (total < 1) { finish(false, 'ページ数を取得できませんでした'); return; }
+                    // 2) 1ページずつ変換（タイムアウト回避）
+                    var page = 1, added = 0;
+                    (function next(){
+                        if (page > total) {
+                            resort();
+                            finish(true, total + 'ページを取り込みました');
+                            return;
+                        }
+                        $st.text('変換中… ' + page + ' / ' + total + ' ページ');
+                        $.post(ajaxurl, {
+                            action: 'cxcms_pdf_split_page',
+                            nonce: '<?php echo esc_js( wp_create_nonce('cxcms_pdf_split') ); ?>',
+                            pdf_id: pdfId,
+                            page: page,
+                            post_id: <?php echo (int) $post->ID; ?>
+                        }).done(function(r){
+                            if (r && r.success && r.data && r.data.id) {
+                                appendItem(r.data.id, r.data.thumb, r.data.filename);
+                                added++;
+                                page++;
+                                next();
+                            } else {
+                                resort();
+                                finish(false, page + 'ページ目で失敗しました（' + added + '枚は取り込み済み）: '
+                                    + ((r && r.data && r.data.message) || '不明なエラー'));
+                            }
+                        }).fail(function(){
+                            resort();
+                            finish(false, page + 'ページ目で通信エラー（' + added + '枚は取り込み済み）');
+                        });
+                    })();
+                }).fail(function(){
+                    finish(false, '通信に失敗しました');
+                });
+
+                function appendItem(id, thumb, filename){
+                    var exist = $('#cx_gallery').val() ? $('#cx_gallery').val().split(',').filter(Boolean) : [];
+                    if (exist.indexOf(String(id)) !== -1) return;
+                    $('#cx_gallery_preview').append(
+                        '<div class="cx-gallery-item" data-id="'+id+'" data-filename="'+(filename||'')+'" draggable="true" '+
+                        'style="position:relative;cursor:grab;user-select:none;">'+
+                        '<div class="cx-gallery-num" style="position:absolute;top:-4px;left:-4px;background:#0073aa;color:#fff;'+
+                        'border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;line-height:20px;text-align:center;z-index:1;"></div>'+
+                        '<img src="'+thumb+'" style="width:60px;height:80px;object-fit:cover;border:2px solid #ddd;border-radius:4px;">'+
+                        '<span class="cx-gallery-remove" data-id="'+id+'" style="position:absolute;top:-6px;right:-6px;background:#e00;'+
+                        'color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;cursor:pointer;z-index:2;">×</span>'+
+                        '</div>'
+                    );
+                    syncIds();
+                }
+                // 既存の「画像を追加」と同じくファイル名の番号順で並べ直す
+                function resort(){
+                    var items = $('#cx_gallery_preview .cx-gallery-item').get();
+                    items.sort(function(a, b){
+                        var numA = parseInt((String($(a).data('filename')||'')).match(/(\d+)/)?.[1] || '9999', 10);
+                        var numB = parseInt((String($(b).data('filename')||'')).match(/(\d+)/)?.[1] || '9999', 10);
+                        return numA - numB;
+                    });
+                    $('#cx_gallery_preview').empty();
+                    $.each(items, function(i, el){ $('#cx_gallery_preview').append(el); });
+                    syncIds();
+                }
+                function finish(ok, msg){
+                    $btn.prop('disabled', false);
+                    $('#cx_gallery_btn').prop('disabled', false);
+                    $st.css('color', ok ? '#046b2f' : '#b32d2e')
+                       .text((ok ? '完了: ' : 'エラー: ') + msg + (ok ? '（保存するまで確定しません）' : ''));
+                }
+            });
+            frame.open();
+        });
+
         // ギャラリー画像削除
         $(document).on('click', '#cx_gallery_preview .cx-gallery-remove', function(e){
             e.stopPropagation();
