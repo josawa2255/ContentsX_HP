@@ -76,6 +76,13 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 画像は比率固定で全体表示。CTA は `.hv2-copy` の min-height + `.hv2-ctas { margin-top:auto }` で画像直下へ。`--hv2-chars-h` は廃止済み。
 
 ### 3.4 旧仕様（撤去済み・参考）
+
+> **2026-08-04 WP管理画面側も整理**: Hero v2 化でカルーセルのDOM（`heroWorksRow1〜5` / `heroBizchar` 等）が index.html から無くなっており、WP管理画面の「✨ ContentsX カルーセル順番」で並べ替えても表示に影響しない状態だった。そのため管理画面から下記UIを撤去した（プラグイン側の変更。デプロイはお名前.com手動アップロード）。
+> - ContentsXカルーセルのドラッグ並べ替えブロック / 「ContentsX 順番」入力欄 / 一覧の「CX順」列
+> - 「表示先」セレクトを「BizMangaトップに表示する（する/しない）」へ簡素化
+>
+> ⚠️ **データ `cx_hero_order_cx` とAPIの `hero_order_cx` / `show_hero_site` は残している**。`js/hero-new.js` が今も参照しているため、消すと参照が壊れる。**BizManga側のHeroカルーセルは現役**（`bm-hero.js` / `build-lp-cases.py` が使用）なので、共用プラグインのフィールド自体は削除不可。
+
 旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示。`hero-new.js` / `hero-fx.js` は読み込まれているが、関連 DOM が無いため発火しない。次回整理時に script タグ削除候補。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。
 
 ## 4. 共通 JS コンポーネント
