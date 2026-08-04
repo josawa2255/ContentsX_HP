@@ -117,7 +117,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
-| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `js/contact.js` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数、`site: "contentsx"`）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信・サンクス表示・資料DLリンクは従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。⚠️ **採用応募（`recruit.html` から `?position=` 付きで遷移）はCRMに送らない**（営業リードのみをCRMに入れる方針。HubSpotには従来どおり全件届く）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#cxWebsite`**（画面外・aria-hidden・`data-i18n-skip`）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は、CRM側 Vercel の `INBOUND_SECRET`・BizManga の `contact.html`・本ファイルの3箇所を同時に更新する**（片方だけだとCRM送信が全件401で落ちるが、HubSpot受付は正常に動き続けるため気づきにくい） |
+| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `js/contact.js` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数、`site: "contentsx"`）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信・サンクス表示・資料DLリンクは従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。⚠️ **採用応募（`recruit.html` から `?position=` 付きで遷移）はCRMに送らない**（営業リードのみをCRMに入れる方針。HubSpotには従来どおり全件届く）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#cxWebsite`**（画面外・aria-hidden・`data-i18n-skip`）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は、CRM側 Vercel の `INBOUND_SECRET`・BizManga の `contact.html`・本サイトの `js/contact.js`・イチオシ採用の `js/main.js` の4箇所を同時に更新する**（イチオシ採用は別リポジトリ josawa2255/recruitx＝`crm-token-sync` フックでは検知できない。2026-08-04 追加）。一部だけだとそのサイトのCRM送信が全件401で落ちるが、HubSpot受付は正常に動き続けるため気づきにくい |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-B000C4JCCX`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = `js/contact.js` の HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正、B/C共通） |
 | WordPress REST API | 漫画事例 / ニュース | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
@@ -142,6 +142,34 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - `cx_show_hero_site` — Heroカルーセル表示先（both/bizmanga/contentsx/none）
 - `cx_show_new_contentsx` — 新作情報表示フラグ
 - **クイック編集対応**: 漫画事例一覧で「サブタイトル」列＋クイック編集から `cx_subtitle_ja` / `cx_subtitle_en` を直接編集可（contentsx-cms.php `quick_edit_custom_box` + `cx_qe_subtitle_*` を inline-save で保存。通常編集画面の保存とは別経路）
+
+### 漫画PDFの一括分割（2026-08-04 新設）⭐
+
+漫画家の納品が「複数ページを1本にまとめたPDF」のため、**管理画面から全ページを一括でWebP化してギャラリーへ入れる**機能。漫画事例の編集画面、ギャラリー欄の「PDFから一括取り込み」ボタン。
+
+**処理の流れ**: PDFを選択 → `cxcms_pdf_info`（Imagick `pingImage` でページ数取得）→ `cxcms_pdf_split_page` を**1ページずつ**呼ぶ → 各ページをWebP化してメディア登録 → `cx_gallery` へページ順に追加。
+
+- **1リクエスト1ページ**。タイムアウトとメモリ枯渇を避けるため一括処理はしない。進捗は「変換中… 3 / 10 ページ」と表示
+- ファイル名は `{元PDF名}-p01.webp` のゼロ埋め連番。既存の「ファイル名の数字で並べ替え」ロジックにそのまま乗る
+- 既存のギャラリー画像は消さず**追加**される。取り込み後に**投稿を保存するまで確定しない**
+- 失敗時はそこで停止し、「何枚目で失敗したか・何枚は取り込み済みか」を表示（途中まで残る）
+
+**設定値**（`define` で上書き可）:
+
+| 定数 | 既定 | 根拠 |
+|---|---|---|
+| `CXCMS_PDF_DPI` | `150` | 元PDFの埋め込み画像が概ね100〜160ppi。150/200/300dpiを実測比較し、**150超は容量が増えるだけで画質は変わらなかった**（300dpi q92 は 6.13MB/10P、150dpi q85 は 2.02MB/10P） |
+| `CXCMS_PDF_QUALITY` | `85` | q75(1.44MB)でも十分だが、差0.6MBで安全マージンを取る |
+| `CXCMS_PDF_MAX_PAGES` | `200` | 暴走防止 |
+
+**サーバー要件**: Imagick + Ghostscript。2026-08-04 に本番実測（Imagick 3.8.1 / Ghostscript 9.54.0）で**実PDFのラスタライズ動作を確認済み**。
+⚠️ ただし**中身が空のダミーPDFではサムネイルが生成されなかった**（イチオシ採用側の検証）。「PDFサムネが出ない＝機能しない」と即断しないこと。実データで判定する。
+⚠️ Imagick の `policy.xml` でPDFが禁止されている環境では動かない。その場合 `cxcms_pdf_info` が「サーバー側でPDF処理が許可されていない可能性」を返す。
+
+**実装上の注意**:
+- `setResolution()` は **`readImage()` より前**に呼ぶ（後だと効かない）
+- 透過PDF対策に `setImageBackgroundColor('white')` + `flattenImages()`（省くと透過部分が黒くなる）
+- 生成WebPは既存の `image_editor_output_format` フィルタとは**別経路**（Imagickで直接WebP出力するため）
 
 ### ニュース（cx_news）の編集可能フィールド
 - `cx_news_title_en` / `cx_news_content_en` / `cx_news_url`
