@@ -27,8 +27,15 @@ var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 var CRM_ENDPOINT = 'https://contentsx-crm.vercel.app/api/inbound/web';
 var CRM_TOKEN    = 'ENoK7H4O60a8KdKlTal12exoV2rqSNlIb841sj3dSeo=';
 
+// 二重送信ガード: ボタンの disabled だけだと、Enter や requestSubmit() など
+// ボタンを経由しない送信経路をすり抜ける。フォーム単位のフラグで塞ぐ（BUGS #046）
+var cxIsSubmitting = false;
+
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
+
+  if (cxIsSubmitting) return;
+  cxIsSubmitting = true;
 
   var submitBtn = e.target.querySelector('.form-submit');
   submitBtn.disabled = true;
@@ -141,8 +148,11 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     form.style.display = 'none';
   })
   .catch(function(err) {
+    cxIsSubmitting = false;
     submitBtn.disabled = false;
     submitBtn.classList.remove('is-sending');
-    alert('送信に失敗しました。お手数ですが、もう一度お試しください。');
+    // 応答が取れなかっただけで送信自体は届いている場合がある（送信後の通信断など）。
+    // 「もう一度お試しください」と促すと、届いているのに再送されて重複する（BUGS #046）
+    alert('送信結果を確認できませんでした。\n通信状況によっては、すでに送信が完了している場合があります。\n重複を避けるため、しばらく経ってからもう一度お試しください。');
   });
 });
