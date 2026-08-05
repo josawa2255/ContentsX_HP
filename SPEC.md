@@ -113,6 +113,12 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
   <script src="js/i18n.js" defer></script>
   <script src="js/nav.js" defer></script>
   ```
+- **動的レンダリング後の翻訳** ⭐: `translateAll()` は「英語に翻訳する」関数。**無条件呼び出しは日本語ページを壊す**（BUGS #008）。必ず言語チェックを通す:
+  ```javascript
+  if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
+    window.i18n.translateAll();
+  }
+  ```
 - **placeholder翻訳**: `data-ph-ja` / `data-ph-en` （contact フォーム）
 - **MutationObserver**: 英語モード中の動的DOMを自動翻訳
 - **data-i18n-skip**: 翻訳対象外
