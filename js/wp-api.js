@@ -79,6 +79,11 @@
       window.NEW_WORKS_DATA = data;
     }
     console.log(`[WP-API] 新作情報: ${data.length}件 loaded`);
+    /* wp-data-ready（loadWorks完了時）は先に発火済みのため、
+       新作情報カードの再描画は専用イベントで通知する。
+       2026-08-31: このイベントが無かったため、WPで新作を追加しても
+       画面はフォールバック用 js/data/new-works.js のまま更新されないバグがあった。 */
+    window.dispatchEvent(new CustomEvent('wp-new-works-ready'));
   }
 
   /* ── ニュース DOM を動的に生成 ── */

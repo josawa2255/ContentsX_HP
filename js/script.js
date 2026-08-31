@@ -731,8 +731,17 @@ document.addEventListener('DOMContentLoaded', () => {
     buildNewWorksCards(NEW_WORKS_DATA);
   }
 
-  /* WordPress データ到着後に新作情報を再構築 */
+  /* WordPress データ到着後に新作情報を再構築
+     wp-data-ready は漫画事例(/works)取得完了時に発火するイベントで、
+     新作情報(/works-new)の取得完了とはタイミングが異なる。
+     新作情報自体の取得完了は wp-new-works-ready で個別に通知される
+     （wp-api.js loadNewWorks 参照。2026-08-31: これが無く再描画されないバグがあった）。 */
   window.addEventListener('wp-data-ready', function() {
+    if (typeof NEW_WORKS_DATA !== 'undefined' && NEW_WORKS_DATA.length > 0) {
+      buildNewWorksCards(NEW_WORKS_DATA);
+    }
+  });
+  window.addEventListener('wp-new-works-ready', function() {
     if (typeof NEW_WORKS_DATA !== 'undefined' && NEW_WORKS_DATA.length > 0) {
       buildNewWorksCards(NEW_WORKS_DATA);
     }
