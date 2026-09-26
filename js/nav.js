@@ -10,7 +10,7 @@
       children: [
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
         { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
-        { label: 'サービス',         labelEn: 'Services',      href: '#about' }
+        { label: 'サービス',         labelEn: 'Services',      href: '/services/' }
       ]
     },
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
@@ -30,7 +30,7 @@
   // 現在のファイル名を取得
   var path = location.pathname;
   var currentFile = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';
-  var isIndex = (currentFile === 'index' || currentFile === '' || currentFile === '/');
+  var isIndex = (path === '/' || path === '/index.html');
 
   // ===== 言語状態の管理 =====
   var currentLang = 'ja';
@@ -46,7 +46,7 @@
   // href解決ヘルパー
   function resolveHref(rawHref) {
     if (rawHref.startsWith('#')) {
-      return isIndex ? rawHref : './' + rawHref;
+      return isIndex ? rawHref : '/' + rawHref;
     }
     return rawHref;
   }
@@ -87,7 +87,10 @@
         var childHref = child.href;
         ca.href = resolveHref(childHref);
         ca.className = 'nav-dropdown-item';
-        if (!childHref.startsWith('#') && childHref === currentFile) { ca.className += ' active'; childActive = true; }
+        if ((!childHref.startsWith('#') && childHref === currentFile) ||
+            (childHref === '/services/' && path.startsWith('/services/'))) {
+          ca.className += ' active'; childActive = true;
+        }
         ca.setAttribute('data-ja', child.label);
         ca.setAttribute('data-en', child.labelEn);
         ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
@@ -101,7 +104,7 @@
       var a = document.createElement('a');
       var rawHref = item.href;
       if (rawHref.startsWith('#')) {
-        a.href = isIndex ? rawHref : './' + rawHref;
+        a.href = isIndex ? rawHref : '/' + rawHref;
       } else {
         a.href = rawHref;
       }

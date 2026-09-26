@@ -1,0 +1,31 @@
+/* Generated from data/design-tokens.json; do not edit directly. */
+:root {
+  --cxs-ink: #06143D;
+  --cxs-text: #14234A;
+  --cxs-muted: #6D7890;
+  --cxs-border: #DFE6F1;
+  --cxs-background: #FFFFFF;
+  --cxs-surface: #F8FBFF;
+  --cxs-sales: #1677FF;
+  --cxs-sales-soft: #EAF3FF;
+  --cxs-creative: #FF5A1F;
+  --cxs-creative-soft: #FFF1EA;
+  --cxs-container-max: 1280px;
+  --cxs-gutter-desktop: 40px;
+  --cxs-gutter-mobile: 20px;
+  --cxs-section-desktop: 112px;
+  --cxs-section-mobile: 72px;
+  --cxs-radius-sm: 8px;
+  --cxs-radius-md: 16px;
+  --cxs-radius-lg: 24px;
+  --cxs-radius-pill: 999px;
+  --cxs-shadow-card: 0 14px 40px rgba(6,20,61,.08);
+  --cxs-shadow-hover: 0 20px 50px rgba(6,20,61,.18);
+  --cxs-font-ja: 'Noto Sans JP', sans-serif;
+  --cxs-font-latin: Inter, sans-serif;
+  --cxs-font-h1: clamp(42px,5vw,72px);
+  --cxs-font-h2: clamp(32px,3.4vw,52px);
+  --cxs-font-h3: clamp(24px,2.4vw,34px);
+  --cxs-font-body: 16px;
+  --cxs-font-caption: 13px;
+}

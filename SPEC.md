@@ -13,7 +13,9 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Sales X / Creative X Hero (左コピー + 右2カード、PC/SP専用画像) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
+| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js, services-ui.js | Sales X / Creative X Hero (左コピー + 右2カード、PC/SP専用画像) + クライアントロゴカルーセル + データ駆動サービス欄 + News + 新作情報 + 3事業領域 + CTA |
+| サービス一覧 | `services/index.html` | i18n.js, nav.js, cta.js, services-ui.js | `data/services.json` と `data/service-groups.json` から生成。Sales X / Creative X ごとのカード一覧 |
+| サービス詳細 | `services/{slug}/index.html` | i18n.js, nav.js, cta.js, services-ui.js | 7サービスを共通テンプレートから生成。データにない任意セクションは非表示 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
@@ -76,6 +78,17 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 3.4 アクセシビリティ
 
 カード画像の左側に焼き込まれた文字はCSSの不透明パネルで覆い、Sales X / Creative Xの名称・見出し・本文を**画面に表示されるHTML**として重ねる。名称は`h2`、見出しは`h3`、本文は`p`で提供し、画像の文字だけに依存しない。背景とカード画像は重複読み上げを防ぐため `alt=""` + `aria-hidden="true"`。メインコピーとリードも画像化せずHTMLで提供する。
+
+### 3.5 データ駆動サービスシステム（Issue #20）
+
+- 正本は `data/services.json`（サービス情報）、`data/service-groups.json`（分類）、`data/design-tokens.json`（色・余白・文字等）。`data/service-data.schema.json` が項目定義。新サービスはデータに1件追加し、必要時のみ画像を `material/` に追加する。
+- `python3 tools/build-services.py` でTOPの `<!-- BUILD:SERVICES -->`、`services/index.html`、`services/{slug}/index.html`、`css/web-system-tokens.css`、sitemapのサービスURLを生成する。Pagesデプロイでも同コマンドを実行する。`--check` は生成物の鮮度確認。
+- テンプレートは `tools/templates/`、共通CSSは `css/web-system.css`。カードは `repeat(auto-fit,minmax(min(100%,240px),1fr))` で件数に依存しない。Sales/Creativeはグループ属性とtokenで切り替える。支給PNGは装飾、SVGは共通アイコンであり、主要文言はすべてHTMLテキスト。
+- PCカードはhover/focusで概要を表示。モバイルは `js/services-ui.js` による `aria-expanded` 付き展開、JavaScript無効時は概要を常時表示。詳細のタブはキーボードの左右矢印/Home/Endに対応し、JavaScript無効時は全パネルを表示。
+- 詳細ページは固有title/description/canonical/OGP、BreadcrumbList/Service JSON-LDを持つ。任意の課題・特徴・導入手順・活用シーン・FAQは該当データがある時だけ出力し、実在しない数値・価格・評価は加えない。
+- サイトマップはサービス欄をビルドで更新する。ニュース更新用 `tools/generate-sitemap.py` はNEWSマーカー内だけを置換し、サービス・コラム等のURLを保持する。
+- 既存ヘッダー・フッター・CTAを流用し、ヘッダーの「サービス」とTOPフッターのリンクを `/services/` に統一。既存のヒーローは前段のIssue #16の実装を維持する。
+
 ## 4. 共通 JS コンポーネント
 
 | ファイル | 役割 | 呼び出し方 |
@@ -87,6 +100,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | `js/dl-modal.js` | 資料DLモーダル | contact送信済みか localStorage で判定 |
 | `js/wp-api.js` | WP API クライアント | `WORKS_DETAIL_DATA` / `NEW_WORKS_DATA` 上書き |
 | `js/wp-config.js` | WP設定 | API baseURL / cache TTL |
+| `js/services-ui.js` | サービスカード展開と詳細タブ | TOP・サービス一覧・各詳細（defer） |
 
 ### 4.1 CTA セクション共有化 ⭐
 - 6ページで CTA を重複コピペしていた問題を解消

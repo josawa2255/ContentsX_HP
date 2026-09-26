@@ -77,8 +77,20 @@
     <lastmod>2026-04-17</lastmod>
   </url>
 
-  <!-- ===== ニュース個別記事（WP API から自動生成） ===== -->
+  <!-- BUILD:SERVICES -->
+  <url><loc>https://contentsx.jp/services/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizform/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizaio/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizkarte/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizrecruit/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizmanga/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizanime/</loc></url>
+  <url><loc>https://contentsx.jp/services/bizvideo/</loc></url>
+<!-- /BUILD:SERVICES -->
 
+  <!-- ===== ニュース個別記事（WP API から自動生成） ===== -->
+  <!-- BUILD:NEWS -->
+  <!-- /BUILD:NEWS -->
 
   <!-- ===== コラム一覧 ===== -->
   <url>
