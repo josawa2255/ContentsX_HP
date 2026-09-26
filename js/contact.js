@@ -16,17 +16,6 @@ var CX_PARAMS = new URLSearchParams(window.location.search);
 var HUBSPOT_PORTAL_ID = '48367061';
 var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
-// Contents X CRM の受信箱に問い合わせを流す（HubSpotへの送信とは独立）。
-// CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・活動が作られる。
-// ここのトークンは静的サイトに埋まる＝機密ではない。総当たり抑止用の門番で、
-// 実質のスパム対策はCRM側のレート制限とハニーポット。
-// ⚠️ ローテーション時は CRM側 Vercel の INBOUND_SECRET と必ず同時に更新する
-//    （片方だけだとCRM送信が全件401で落ちるが、HubSpot受付は正常に動き続ける）。
-// エンドポイントは Vercel の本番URL。独自ドメイン crm.contentsx.jp は
-// 割当が保留中（現在NXDOMAIN）のため、割当後にここを差し替える。
-var CRM_ENDPOINT = 'https://contentsx-crm.vercel.app/api/inbound/web';
-var CRM_TOKEN    = 'ENoK7H4O60a8KdKlTal12exoV2rqSNlIb841sj3dSeo=';
-
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -70,39 +59,12 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     }
   };
 
-  // CRM受信箱へも送る（HubSpotとは独立。失敗しても送信者には影響させない＝
-  // CRMが落ちていてもHubSpot側の受付とサンクス表示は従来どおり動く）。
+  // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
+  // 送信は contact.html で読み込む CRM の埋め込みスクリプト（inbound-v1.js）が行い、
+  // 項目は name 属性から自動判別される。ボット対策の隠し欄（#cxWebsite）も自動で認識する。
   // ただし採用応募（recruit.html から ?position= 付きで遷移）は営業リードではないため送らない。
   var isRecruitApplication = !!CX_PARAMS.get('position');
-  if (!isRecruitApplication) {
-    try {
-      fetch(CRM_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + CRM_TOKEN
-        },
-        body: JSON.stringify({
-          site: 'contentsx',
-          company_name: company,
-          department: department,
-          full_name: fullName,
-          email: email,
-          message: message,
-          page_url: window.location.href,
-          utm_source: utmSource,
-          utm_medium: utmMedium,
-          utm_campaign: utmCampaign,
-          referrer: document.referrer || null,
-          hp: document.getElementById('cxWebsite') ? document.getElementById('cxWebsite').value : ''
-        })
-      }).catch(function (err) {
-        console.warn('CRM inbound failed (ignored):', err);
-      });
-    } catch (err) {
-      console.warn('CRM inbound skipped:', err);
-    }
-  }
+  if (!isRecruitApplication && window.BizcarteInbound) window.BizcarteInbound.sendForm(e.target);
 
   var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
     + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
