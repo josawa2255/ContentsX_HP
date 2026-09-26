@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + キャラ一体背景 + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
+| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Sales X / Creative X Hero (左コピー + 右2カード、PC/SP専用画像) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
@@ -38,46 +38,44 @@
 `?utm_source=` `?utm_medium=` `?utm_campaign=` `?source=`
 contact フォーム送信時にメッセージ末尾にトラッキング情報を自動付加
 
-## 3. Hero セクション v2（トップページ）⭐
+## 3. TOP Hero — Sales X / Creative X（トップページ）⭐
 
-**2026-05-10 v2 採用**: 旧 hero (テキストロゴ+タグライン+カルーセル) を撤去し、左コピー+中央キャラ+右5サービスカード+下USPマーキー帯の構成に刷新。CSS: `css/hero-v2.css`（hero-new.css は旧UIのみ使用、v2 では `display:none` で除外）。
+**2026-09-26 Issue #16 採用**: 既存ヘッダー直下のヒーローを、左の企業コピーと右の Sales X / Creative X カードで構成する白〜薄青基調のデザインへ刷新。専用CSSは `css/hero-sales-creative.css`。既存ヘッダーのDOM/CSS/JSは変更しない。
 
-**2026-07-02 キャラ一体化**: 従来「背景飛沫(`hero_bg`) + 透過キャラ(`hero_chars`)」の2層構成だったが、飛沫と女性キャラ2人を1枚に焼き込んだ画像へ差し替え。専用キャラレイヤー(`.hv2-chars`)と `hero_chars.*` は廃止。女性キャラは背景イラストの一部として描画され、PC では右サービスカードが手前に重なる。PC グリッドは `minmax(620px,1fr) 280px` の2列に変更、`.hv2-bg` の opacity は 1。
+### 3.1 掲載コピー
 
-**2026-07-07 イラスト改訂版へ差し替え**: 同キャラ・同構図の改訂版イラスト（元データ anime_high_quality_3840px.png 3840×2166、飛沫がより濃いバージョン）から hero_bg 6ファイルを再生成して置換。寸法・ファイル名は従来と完全同一（PC 1672×941 / SP 1375×1144、各 avif/webp/png）のため HTML/CSS 変更なし。元画像は16:9より微妙に縦長のため PC は crop 3840×2160(+0,3) で正規化してから縮小、SP はキャラ中心が右寄り約66%になるよう crop 2596×2160(+344,3) してから縮小。変換は ffmpeg(lanczos, rgb24化) + cwebp(-q82) + avifenc(-q60)。
+- メインコピー: 「企業の価値を、売上に変える。」
+- リード: 法人の売上づくり、新規商談、検索・AI対策、顧客管理、マンガ・アニメ・映像による価値訴求を一連の流れとして支援する説明
+- 事業カード: Sales X「営業の仕組みをつくる」 / Creative X「価値を、伝わるカタチにする」
+- 装飾コピー: `BUSINESS × CREATIVE` / `CREATE A BRIGHTER TOMORROW`
 
-### 3.1 PC レイアウト
-| エリア | 内容 |
+文言は支給プロンプトを正本とし、要約・改変しない。
+
+### 3.2 画像アセット
+
+| 用途 | PC | SP |
+|---|---|---|
+| X型背景 | `material/contentsx-hero/desktop/bg-x.png` (1586×992) | `material/contentsx-hero/mobile/bg-x.png` (941×1672) |
+| Sales Xカード | `material/contentsx-hero/desktop/sales-card.png` (1448×1086) | `material/contentsx-hero/mobile/sales-card.png` (1122×1402) |
+| Creative Xカード | `material/contentsx-hero/desktop/creative-card.png` (1448×1086) | `material/contentsx-hero/mobile/creative-card.png` (1122×1402) |
+
+- 背景とカードは `<picture>` で768px以下をSP画像へ切り替える。
+- PNGのアルファは維持する。カード画像の大きな透明外周は、元ファイルを加工せず `.cxh-card` のCSSクリッピングで除く。
+- 背景とSalesカードはLCP候補のため eager / `fetchpriority="high"`。Creativeカードもファーストビュー内のため eager、画像寸法属性は実ファイル比と一致させる。
+
+### 3.3 レイアウト
+
+| 幅 | 仕様 |
 |---|---|
-| 背景(キャラ一体) | `material/hero/hero_bg.{avif,webp,png}` (1672×941) マゼンタ飛沫+女性キャラ2人の一枚絵を全幅描画 (object-fit:cover, opacity:1) |
-| 左コピー | `<h1 class="hv2-headline">` 「ストーリーで／成果を／生み出す」(成果 em 巨大化、回転+skew+SVGグランジフィルタ) + サブコピー「漫画・動画・Web・IPを横断し、企業の成長を加速する。」。**見出し・サブとも白の縁取り(8方向 text-shadow + ソフトハロー)で背景画像から可読性を確保 (2026-07-02)** |
-| 右カード | `.hv2-services` の5サービス(DOM順=表示順): ビズマンガ(→ bizmanga.contentsx.jp) / スクール(→ newmanga-academy.contentsx.jp = ニューマンガアカデミーLP、2026-08-22設定) / コンテンツ採用(フル幅、→ ichioshi.contentsx.jp 2026-07-07設定、2026-07-07にスクール直後へ移動) / コンテンツセールス / IP事業。未確定の2枚(コンテンツセールス・IP事業)は `href="#"` + `data-todo` 属性。スキューシャドウ枠 |
-| CTA | primary「お問い合わせ」(マゼンタ pill) + ghost「資料ダウンロード」(白枠 pill)、hover で alt テキストへスライド |
-| 下帯 | `.hv2-strap` USPマーキー (業界最安値クラス／対応領域 国内外20+言語／最短2週間納品／企画から運用まで一気通貫) |
+| 769px以上 | 左コピー / 右カードの2列。最大幅1586px、左右余白は `clamp()`、カード2枚を縦積み |
+| 768px以下 | コピー → Sales X → Creative X の1列。背景・カードともSP専用画像へ切替 |
+| 320〜340px | 見出しと本文を連続スケールのまま最小値へ調整し、横スクロールを禁止 |
 
-### 3.2 SP レイアウト (max-width: 768px)
-| 不変条件 | 詳細 |
-|---|---|
-| ビジュアルゾーン(比率固定) | `.hv2-bg` を `inset: 60px 0 auto 0 / height: var(--hv2-visual-h)` に閉じ込め、キャラ一体の一枚絵 (`hero_bg_sp.{avif,webp,png}` 1375×1144) を全幅描画。**`--hv2-visual-h = calc(100vw * 1144 / 1375)`** とし box の縦横比を画像と一致させることで `object-fit:cover` でもクロップせず画像全体を表示（トリミングで縦長化するのを防止）。下端は `mask-image` + `::after` 70px 白オーバーレイでフェード |
-| CTA を画像の下へ(絶対条件) | `.hv2-ctas` は `.hv2-copy`(flex縦)の**子**なので `grid-area` は効かない。`.hv2-copy { min-height: calc(var(--hv2-visual-h) + 96px) }` で画像高+余白を確保し、`.hv2-ctas { margin-top: auto }` で下端へ落とす。→ 画面幅で画像高が変わっても CTA は常に画像の直下(≒下端+16px)に並ぶ。検証: 360/390/430/768 で `ctas.top >= bg.bottom` |
-| 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
-| sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
-| client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
+見出しはモバイル帯を `clamp() + vw` で連続スケールさせる。grid/flex子には `min-width:0` を付け、320/390/412/448/640/768/1024/1440pxで横スクロールと境界崩れを検証する。
 
-> 2026-07-02: キャラ一体化＋SP一枚絵の比率固定表示に刷新。旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）・透過キャラ `right:-100px`・固定 `margin-top:166px` は全廃止。
+### 3.4 アクセシビリティ
 
-### 3.3 CSS変数（SP）
-```css
-.hv2-hero {
-  /* 一枚絵をトリミングせず全幅表示するため画像比率(1375:1144)で高さを算出 */
-  --hv2-visual-h: calc(100vw * 1144 / 1375);
-}
-```
-画像は比率固定で全体表示。CTA は `.hv2-copy` の min-height + `.hv2-ctas { margin-top:auto }` で画像直下へ。`--hv2-chars-h` は廃止済み。
-
-### 3.4 旧仕様（撤去済み・参考）
-旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示。`hero-new.js` / `hero-fx.js` は読み込まれているが、関連 DOM が無いため発火しない。次回整理時に script タグ削除候補。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。
-
+カード画像内の文字は見た目の再現用とし、同じSales X / Creative Xの見出し・本文を `.sr-only` のHTMLでも保持する。背景とカード画像は重複読み上げを防ぐため `alt=""` + `aria-hidden="true"`。メインコピーとリードは画像化せずHTMLで提供する。
 ## 4. 共通 JS コンポーネント
 
 | ファイル | 役割 | 呼び出し方 |
@@ -261,8 +259,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | 事項 | 詳細 |
 |---|---|
 | hreflang | **2026-04-14 全ページから削除済**（JS言語切替1URL構成のため誤実装だった。sitemap.xml からも削除） |
-| image alt | hero キャラ画像に alt が無い |
-| image width/height | 未指定 → CLS悪化要因 |
+| image alt | Heroの背景・文字入りカードは装飾画像として `alt=""`。同内容をHTML見出し・本文（カード内文言は `.sr-only`）で提供 |
+| image width/height | Hero背景・カードは実ファイル寸法を指定済み。その他の未指定画像は引き続きCLS改善対象 |
 | description | **2026-04-14 index/news/news-detail/our-thoughts/recruit の5ページを73〜90文字に拡充**（meta/og/twitter/JSON-LD の4箇所同期） |
 | Organization.sameAs | **2026-04-14 `https://x.com/Bizmanga_` 追加**。他SNSは未開設 |
 | Organization 詳細 | **2026-04-14 `foundingDate: 2026-03-03` / `address`（目黒区） / `subOrganization`（BizManga） / `alternateName` を追加** |

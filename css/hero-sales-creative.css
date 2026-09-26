@@ -1,0 +1,346 @@
+/* =====================================================
+   Contents X TOP hero — Sales X / Creative X
+   支給された PC / SP 完成見本を基準にした静的レイアウト。
+   既存ヘッダーはこのファイルの対象外。
+   ===================================================== */
+
+.cxh-hero {
+  --cxh-header-h: 64px;
+  --cxh-navy: #06113f;
+  --cxh-blue: #075bff;
+  --cxh-z-bg: 0;
+  --cxh-z-content: 1;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  margin: 0;
+  padding: var(--cxh-header-h) 0 0;
+  overflow: hidden;
+  background: #fff;
+  color: var(--cxh-navy);
+}
+
+.cxh-hero__bg {
+  position: absolute;
+  inset: var(--cxh-header-h) 0 0;
+  z-index: var(--cxh-z-bg);
+  display: block;
+  width: 100%;
+  height: calc(100% - var(--cxh-header-h));
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cxh-hero__inner {
+  position: relative;
+  z-index: var(--cxh-z-content);
+  display: flex;
+  width: 100%;
+  max-width: 1586px;
+  min-height: clamp(780px, 62.55vw, 992px);
+  margin: 0 auto;
+  padding: clamp(72px, 5.8vw, 92px) clamp(24px, 4vw, 64px) clamp(40px, 3.2vw, 52px);
+}
+
+.cxh-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.18fr);
+  gap: clamp(28px, 2.2vw, 36px);
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+.cxh-hero__copy,
+.cxh-hero__cards,
+.cxh-card {
+  min-width: 0;
+}
+
+.cxh-hero__copy {
+  margin-top: clamp(72px, 5.7vw, 90px);
+}
+
+.cxh-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+  color: #0d3fae;
+  font-size: clamp(10px, 0.78vw, 12px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.28em;
+  white-space: nowrap;
+}
+
+.cxh-hero__eyebrow::after {
+  content: '';
+  display: block;
+  width: clamp(72px, 6vw, 96px);
+  height: 1px;
+  flex-shrink: 0;
+  background: currentColor;
+}
+
+.cxh-hero__title {
+  margin: clamp(38px, 3.4vw, 54px) 0 0;
+  color: var(--cxh-navy);
+  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(44px, 5.05vw, 80px);
+  font-weight: 900;
+  line-height: 1.32;
+  letter-spacing: -0.065em;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.cxh-hero__title-line,
+.cxh-hero__lead-line,
+.cxh-hero__promise-line {
+  display: block;
+}
+
+.cxh-hero__title-line {
+  white-space: nowrap;
+}
+
+.cxh-hero__lead {
+  margin: clamp(22px, 1.8vw, 28px) 0 0;
+  color: #0b1847;
+  font-size: clamp(15px, 1.2vw, 19px);
+  font-weight: 500;
+  line-height: 1.82;
+  letter-spacing: 0.015em;
+}
+
+.cxh-hero__promise {
+  margin: clamp(76px, 8vw, 128px) 0 0;
+  padding-left: 20px;
+  border-left: 2px solid #0d3fae;
+  color: #0d327e;
+  font-size: clamp(10px, 0.8vw, 13px);
+  font-weight: 800;
+  line-height: 1.72;
+  letter-spacing: 0.2em;
+}
+
+.cxh-hero__cards {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 0.75vw, 12px);
+  align-self: start;
+}
+
+.cxh-card {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.cxh-card--sales {
+  aspect-ratio: 2.08;
+}
+
+.cxh-card--creative {
+  aspect-ratio: 2.24;
+}
+
+.cxh-card__picture,
+.cxh-card__image {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cxh-card__picture {
+  inset: 0;
+}
+
+.cxh-card__image {
+  object-fit: fill;
+}
+
+/* 元PNGの透明余白をCSS上で除き、カード本体だけをレイアウト寸法に使う。 */
+.cxh-card--sales .cxh-card__image {
+  top: -29.386%;
+  left: -4.192%;
+  width: 108.383%;
+  height: 158.772%;
+}
+
+.cxh-card--creative .cxh-card__image {
+  top: -25.240%;
+  left: -2.082%;
+  width: 103.948%;
+  height: 148.971%;
+}
+
+/* 既存ロゴセクションのPC用 -28px 重なりを、このヒーローでは解除する。 */
+.cxh-hero + .client-logos {
+  margin-top: 0;
+}
+
+@media (max-width: 1200px) and (min-width: 769px) {
+  .cxh-hero__inner {
+    padding-inline: clamp(22px, 3.2vw, 40px);
+  }
+
+  .cxh-hero__grid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 24px;
+  }
+
+  .cxh-hero__copy {
+    margin-top: clamp(44px, 6vw, 72px);
+  }
+
+  .cxh-hero__title {
+    font-size: clamp(36px, 5vw, 60px);
+  }
+
+  .cxh-hero__lead {
+    font-size: clamp(13px, 1.5vw, 17px);
+  }
+
+  .cxh-hero__promise {
+    margin-top: clamp(48px, 7vw, 84px);
+  }
+}
+
+@media (max-width: 900px) and (min-width: 769px) {
+  .cxh-hero__eyebrow {
+    gap: 14px;
+    letter-spacing: 0.2em;
+  }
+
+  .cxh-hero__eyebrow::after {
+    width: 48px;
+  }
+
+  .cxh-hero__title {
+    margin-top: 30px;
+  }
+
+  .cxh-hero__lead {
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .cxh-hero {
+    --cxh-header-h: 64px;
+    padding-bottom: 0;
+  }
+
+  .cxh-hero__bg {
+    object-position: center top;
+  }
+
+  .cxh-hero__inner {
+    display: block;
+    max-width: 700px;
+    min-height: calc(100vw * 1672 / 941);
+    padding: 22px 13px 18px;
+  }
+
+  .cxh-hero__grid {
+    display: block;
+  }
+
+  .cxh-hero__copy {
+    margin-top: 0;
+    padding-inline: 13px;
+  }
+
+  .cxh-hero__eyebrow {
+    gap: 14px;
+    font-size: clamp(9px, 2.8vw, 12px);
+    letter-spacing: 0.24em;
+  }
+
+  .cxh-hero__eyebrow::after {
+    width: clamp(46px, 12vw, 82px);
+  }
+
+  .cxh-hero__title {
+    margin-top: clamp(14px, 3.8vw, 26px);
+    font-size: clamp(34px, 10.2vw, 50px);
+    line-height: 1.16;
+    letter-spacing: -0.065em;
+  }
+
+  .cxh-hero__lead {
+    margin-top: clamp(8px, 2.5vw, 16px);
+    font-size: clamp(10px, 2.65vw, 14px);
+    line-height: 1.65;
+  }
+
+  .cxh-hero__promise {
+    margin-top: clamp(8px, 2.5vw, 16px);
+    padding-left: 10px;
+    font-size: clamp(6.5px, 1.8vw, 9px);
+    line-height: 1.5;
+  }
+
+  .cxh-hero__cards {
+    gap: 8px;
+    margin-top: clamp(10px, 3.2vw, 20px);
+  }
+
+  .cxh-card--sales {
+    aspect-ratio: 1.85;
+  }
+
+  .cxh-card--creative {
+    aspect-ratio: 1058 / 569;
+  }
+
+  .cxh-card--sales .cxh-card__image {
+    top: -63.000%;
+    left: -2.041%;
+    width: 104.082%;
+    height: 223.604%;
+  }
+
+  .cxh-card--creative .cxh-card__image {
+    top: -73.462%;
+    left: -3.025%;
+    width: 106.049%;
+    height: 246.397%;
+  }
+}
+
+@media (max-width: 480px) {
+  .cxh-hero {
+    --cxh-header-h: 56px;
+  }
+
+  .cxh-hero__title,
+  .cxh-hero__lead,
+  .cxh-hero__promise {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 340px) {
+  .cxh-hero__inner {
+    padding-inline: 11px;
+  }
+
+  .cxh-hero__copy {
+    padding-inline: 11px;
+  }
+
+  .cxh-hero__title {
+    font-size: clamp(32px, 10.2vw, 34px);
+  }
+
+  .cxh-hero__lead {
+    font-size: 10px;
+  }
+}
