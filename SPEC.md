@@ -84,7 +84,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 正本は `data/services.json`（サービス情報）、`data/service-groups.json`（分類）、`data/design-tokens.json`（色・余白・文字等）。`data/service-data.schema.json` が項目定義。新サービスはデータに1件追加し、必要時のみ画像を `material/` に追加する。
 - `python3 tools/build-services.py` でTOPの `<!-- BUILD:SERVICES -->`（一覧への短い導線のみ）、`services/index.html`（全サービスカードを集約）、`services/{slug}/index.html`、`css/web-system-tokens.css`、sitemapのサービスURLを生成する。Pagesデプロイでも同コマンドを実行する。`--check` は生成物の鮮度確認。
 - テンプレートは `tools/templates/`、共通CSSは `css/web-system.css`。カードは `repeat(auto-fit,minmax(min(100%,240px),1fr))` で件数に依存しない。Sales/Creativeはグループ属性とtokenで切り替える。支給PNGは装飾、SVGは共通アイコンであり、主要文言はすべてHTMLテキスト。
-- PCカードはhover/focusで概要とサービス別の写真を淡いオーバーレイ越しに表示。写真は `data/services.json` の任意 `hoverImage` を参照し、`material/web-system/service-hover/` の生成したイメージ写真（実際の社員・実績写真ではない）を使う。画像は装飾扱いで主要文言は常にHTMLテキスト。モバイルは `js/services-ui.js` による `aria-expanded` 付き展開、JavaScript無効時は概要を常時表示。詳細のタブはキーボードの左右矢印/Home/Endに対応し、JavaScript無効時は全パネルを表示。
+- PCカードはhover/focusで概要とサービス別の画像を淡いオーバーレイ越しに表示。画像は `data/services.json` の任意 `hoverImage` を参照し、`material/web-system/service-hover/` に置く。ビズフォームはサービスサイトの機能フロー図、ビズマンガは既存サイトのビジュアル、ビズアニメ・ビズビデオは提供動画から選んだ静止フレームを使用し、動画本体はカードで読み込まない。ビズAIO・ビズカルテ・ビズ採用は生成したイメージ写真であり、実際の社員・実績写真ではない。実写表現の画像はAIらしい人物・不自然な手などを避け、提供済みの実素材を優先する。画像は装飾扱いで主要文言は常にHTMLテキスト。モバイルは `js/services-ui.js` による `aria-expanded` 付き展開、JavaScript無効時は概要を常時表示。詳細のタブはキーボードの左右矢印/Home/Endに対応し、JavaScript無効時は全パネルを表示。
 - 詳細ページは固有title/description/canonical/OGP、BreadcrumbList/Service JSON-LDを持つ。任意の課題・特徴・導入手順・活用シーン・FAQは該当データがある時だけ出力し、実在しない数値・価格・評価は加えない。
 - サイトマップはサービス欄をビルドで更新する。ニュース更新用 `tools/generate-sitemap.py` はNEWSマーカー内だけを置換し、サービス・コラム等のURLを保持する。
 - 既存ヘッダー・フッター・CTAを流用し、ヘッダーの「サービス」は独立したトップ階層の項目として `/services/` に直結させる。TOPフッターも同URL。既存のヒーローは前段のIssue #16の実装を維持する。
