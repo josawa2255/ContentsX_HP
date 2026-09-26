@@ -36,8 +36,20 @@ class ServiceBuildTests(unittest.TestCase):
                 added = dict(services[0], id=f"extra-{number}", slug=f"extra-{number}", href=f"/services/extra-{number}/")
                 services.append(added)
             builder.validate(services, self.groups)
-            self.assertEqual(builder.render_home(services, self.groups).count('class="cxs-card"'), count)
+            self.assertEqual(builder.render_home().count('class="cxs-card"'), 0)
+            self.assertIn('href="/services/"', builder.render_home())
+            self.assertEqual(builder.render_list(services, self.groups).count('class="cxs-card"'), count)
             self.assertEqual(builder.render_group(sales, services, "test").count('class="cxs-card"'), count - 3)
+
+    def test_hover_photos_are_decorative_and_data_driven(self):
+        for service in self.services:
+            card = builder.render_card(service, "test")
+            self.assertIn('class="cxs-card__photo" aria-hidden="true"', card)
+            self.assertIn(service["hoverImage"], card)
+            self.assertIn(service["hoverSummary"], card)
+        detail = builder.render_detail(self.services[0], self.services)
+        self.assertIn('alt=""', detail)
+        self.assertIn(self.services[0]["hoverImage"], detail)
 
     def test_optional_sections_and_escaped_copy(self):
         service = dict(self.services[0], hoverSummary="安全な <文字> & 説明")
