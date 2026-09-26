@@ -38,8 +38,8 @@
   z-index: var(--cxh-z-content);
   display: flex;
   width: 100%;
-  max-width: 1586px;
-  min-height: clamp(780px, 62.55vw, 992px);
+  max-width: 1296px;
+  min-height: clamp(740px, 59vw, 880px);
   margin: 0 auto;
   padding: clamp(72px, 5.8vw, 92px) clamp(24px, 4vw, 64px) clamp(40px, 3.2vw, 52px);
 }
@@ -89,7 +89,7 @@
   margin: clamp(38px, 3.4vw, 54px) 0 0;
   color: var(--cxh-navy);
   font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(44px, 5.05vw, 80px);
+  font-size: clamp(44px, 4.35vw, 68px);
   font-weight: 900;
   line-height: 1.32;
   letter-spacing: -0.065em;
@@ -110,7 +110,7 @@
 .cxh-hero__lead {
   margin: clamp(22px, 1.8vw, 28px) 0 0;
   color: #0b1847;
-  font-size: clamp(15px, 1.2vw, 19px);
+  font-size: clamp(15px, 1.05vw, 18px);
   font-weight: 500;
   line-height: 1.82;
   letter-spacing: 0.015em;
@@ -135,17 +135,132 @@
 }
 
 .cxh-card {
+  --cxh-card-min-height: 48.077cqw;
   position: relative;
+  display: flex;
   width: 100%;
   overflow: hidden;
+  border-radius: clamp(14px, 1.5vw, 24px);
+  container-type: inline-size;
+}
+
+/* 元画像の左側に焼き込まれた文字を隠し、表示されるHTML文字に置き換える。 */
+.cxh-card::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  clip-path: polygon(0 0, 63% 0, 55% 100%, 0 100%);
+}
+
+.cxh-card--sales::before {
+  background: linear-gradient(115deg, #e6f3ff 0%, #fff 44%, #eef7ff 100%);
+}
+
+.cxh-card--creative::before {
+  background: linear-gradient(115deg, #fff0e6 0%, #fff 42%, #fff3ea 100%);
+}
+
+.cxh-card__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  flex: 0 0 53.7%;
+  box-sizing: border-box;
+  min-height: var(--cxh-card-min-height);
+  padding: 4.3cqw 0 3.3cqw 4.7%;
+  min-width: 0;
+  color: var(--cxh-navy);
+}
+
+.cxh-card__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  width: 100%;
+  margin: 0 0 1.3cqw;
+  font-size: clamp(8px, 1.5cqw, 12px);
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.cxh-card__eyebrow::after {
+  display: block;
+  flex: 1;
+  height: 1px;
+  content: '';
+  background: currentColor;
+}
+
+.cxh-card__name {
+  margin: 0;
+  font-family: Arial, 'Noto Sans JP', sans-serif;
+  font-size: clamp(27px, 8.7cqw, 70px);
+  font-weight: 900;
+  letter-spacing: -0.075em;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.cxh-card__tagline {
+  margin: 1.3cqw 0 0;
+  font-size: clamp(13px, 3.15cqw, 25px);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1.22;
+  white-space: nowrap;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.cxh-card__description {
+  max-width: 100%;
+  margin: 2.6cqw 0 0;
+  font-size: clamp(10px, 1.95cqw, 16px);
+  font-weight: 500;
+  line-height: 1.42;
+  overflow-wrap: anywhere;
+}
+
+.cxh-card__arrow {
+  display: grid;
+  place-items: center;
+  width: clamp(28px, 5.6cqw, 48px);
+  height: clamp(28px, 5.6cqw, 48px);
+  margin-top: auto;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: clamp(20px, 3.9cqw, 34px);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.cxh-card--sales .cxh-card__name,
+.cxh-card--sales .cxh-card__eyebrow,
+.cxh-card--sales .cxh-card__arrow {
+  color: #075bff;
+}
+
+.cxh-card--creative .cxh-card__name,
+.cxh-card--creative .cxh-card__eyebrow,
+.cxh-card--creative .cxh-card__arrow {
+  color: #f03a19;
 }
 
 .cxh-card--sales {
-  aspect-ratio: 2.08;
+  --cxh-card-min-height: 48.077cqw;
 }
 
 .cxh-card--creative {
-  aspect-ratio: 2.24;
+  --cxh-card-min-height: 44.643cqw;
 }
 
 .cxh-card__picture,
@@ -229,6 +344,11 @@
   .cxh-hero__lead {
     line-height: 1.7;
   }
+
+  /* 狭い2列帯では説明文を優先し、装飾矢印との接触を避ける。 */
+  .cxh-card__arrow {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -293,11 +413,11 @@
   }
 
   .cxh-card--sales {
-    aspect-ratio: 1.85;
+    --cxh-card-min-height: 54.054cqw;
   }
 
   .cxh-card--creative {
-    aspect-ratio: 1058 / 569;
+    --cxh-card-min-height: 53.781cqw;
   }
 
   .cxh-card--sales .cxh-card__image {
@@ -342,5 +462,31 @@
 
   .cxh-hero__lead {
     font-size: 10px;
+  }
+
+  .cxh-card__content {
+    flex-basis: 58.7%;
+    padding-block: 3.8cqw 2.7cqw;
+  }
+
+  .cxh-card__eyebrow {
+    margin-bottom: 0.8cqw;
+  }
+
+  .cxh-card__tagline {
+    margin-top: 0.6cqw;
+    font-size: 12px;
+  }
+
+  .cxh-card__description {
+    margin-top: 1.2cqw;
+    font-size: 9px;
+    line-height: 1.3;
+  }
+
+  .cxh-card__arrow {
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
   }
 }
