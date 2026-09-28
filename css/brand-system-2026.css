@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
+/* Contents X 2026 brand tokens. Load before page CSS or import from a page layer. */
+:root {
+  --cx-font-ja: 'Noto Sans JP', sans-serif;
+  --cx-font-latin: 'Inter', Arial, sans-serif;
+  --cx-color-ink: #07143b;
+  --cx-color-body: #172549;
+  --cx-color-muted: #52627e;
+  --cx-color-border: #d9e4f2;
+  --cx-color-surface: #f5f9ff;
+  --cx-color-white: #fff;
+  --cx-color-sales: #005bfa;
+  --cx-color-sales-soft: #eaf3ff;
+  --cx-color-creative: #fa4d12;
+  --cx-color-creative-text: #b83806;
+  --cx-color-creative-soft: #fff3ec;
+  --cx-type-display: clamp(2.625rem, 5.6vw, 5.875rem);
+  --cx-type-page: clamp(2.125rem, 4vw, 3.5rem);
+  --cx-type-section: clamp(1.75rem, 3.4vw, 3.25rem);
+  --cx-type-card: clamp(1.25rem, 2vw, 1.75rem);
+  --cx-type-lead: clamp(1.0625rem, 1.55vw, 1.3125rem);
+  --cx-type-body: 1rem;
+  --cx-type-small: .875rem;
+  --cx-type-label: .75rem;
+  --cx-weight-body: 400;
+  --cx-weight-lead: 500;
+  --cx-weight-strong: 700;
+  --cx-weight-heading: 900;
+}
+
+/* Use on copy placed directly over a photograph. The image itself also needs
+   a sufficiently dark or light overlay; a stroke alone cannot ensure contrast. */
+.cx-image-text--light {
+  color: var(--cx-color-white);
+  text-shadow: 0 2px 12px rgba(7, 20, 59, .8), 0 0 2px rgba(7, 20, 59, .9);
+}
+.cx-image-text--dark {
+  color: var(--cx-color-ink);
+  -webkit-text-stroke: .6px var(--cx-color-white);
+  paint-order: stroke fill;
+  text-shadow: 0 0 8px var(--cx-color-white), 0 1px 2px var(--cx-color-white);
+}

@@ -1,0 +1,62 @@
+# Contents X — 2026年デザインシステム
+
+**対象**: トップ、サービス、下層ページ。ページ固有の構図は維持し、文字・色・写真上の文字は以下の役割から選ぶ。CSSの正本は [`css/brand-system-2026.css`](css/brand-system-2026.css)。下層ページでは `css/sitewide-cohesion.css` が読み込む。トップとサービスの担当は、各ページのCSSより前に正本を読み込み、同じ変数を使う。
+
+## フォントと文字の強弱
+
+| 役割 | フォント | ウェイト | サイズCSS変数 | 行間の目安 |
+|---|---|---:|---|---:|
+| ヒーローの主役 | Noto Sans JP（英字だけなら Inter） | 900 | `--cx-type-display`（42–94px） | 1.1–1.3 |
+| ページ見出し | Noto Sans JP | 900 | `--cx-type-page`（34–56px） | 1.2–1.35 |
+| セクション見出し | Noto Sans JP | 900 | `--cx-type-section`（28–52px） | 1.25–1.4 |
+| カード見出し | Noto Sans JP | 700/900 | `--cx-type-card`（20–28px） | 1.35–1.5 |
+| リード文 | Noto Sans JP | 500 | `--cx-type-lead`（17–21px） | 1.65–1.85 |
+| 本文 | Noto Sans JP | 400 | `--cx-type-body`（16px） | 1.7–1.9 |
+| 補助文・ボタン | Noto Sans JP | 500/700 | `--cx-type-small`（14px） | 1.4–1.7 |
+| 欧文ラベル・日付 | Inter | 700 | `--cx-type-label`（12px） | 1.4–1.5 |
+
+日本語の本文・見出しは同じ書体とし、英字の短い表示にだけ Inter を使う。強調はまず太さ・余白・配置で作る。ウェイトは原則 `400 / 500 / 700 / 900`。文字をすべて太くしたり、ページごとに別の明朝体や欧文フォントを足したりしない。リード文と本文は閲覧端末に合わせて自然に折り返す。見出しの字間を詰める場合は見出し内だけに留め、本文の可読性を優先する。
+
+## 色の役割
+
+| 役割 | 変数 | 値 | 用途 |
+|---|---|---|---|
+| 基本の濃紺 | `--cx-color-ink` | `#07143b` | 大見出し、濃色ボタン、暗い面 |
+| 本文 | `--cx-color-body` | `#172549` | 本文・ナビゲーション |
+| 補助文字 | `--cx-color-muted` | `#52627e` | キャプション、補足 |
+| 境界線 / 淡い面 | `--cx-color-border` / `--cx-color-surface` | `#d9e4f2` / `#f5f9ff` | カード枠、交互の背景 |
+| Sales X | `--cx-color-sales` | `#005bfa` | Sales X と主要リンク |
+| Creative X のアクセント | `--cx-color-creative` | `#fa4d12` | 大きい見出し・線・図形 |
+| Creative X の小さい文字 | `--cx-color-creative-text` | `#b83806` | ラベル、リンク、本文内の強調 |
+| Sales / Creative X の淡い面 | `--cx-color-sales-soft` / `--cx-color-creative-soft` | `#eaf3ff` / `#fff3ec` | 対応するセクション・カード |
+| 白 | `--cx-color-white` | `#ffffff` | 基本背景、暗い面の文字 |
+
+濃紺が企業全体の基調。青とオレンジは事業の意味に結びつける。本文に濃いオレンジを追加したのは、鮮やかな `#fa4d12` は白背景とのコントラストが約 3.42:1 のため。`#b83806` は約 5.82:1、青は約 5.42:1、補助文字は約 6.16:1。通常の文字は 4.5:1 以上、大きい文字は 3:1 以上を目標とする（[WCAG 2.2](https://www.w3.org/TR/WCAG22/#contrast-minimum)）。白文字を鮮やかなオレンジ面に直接置かない。
+
+## 写真・画像の上の文字
+
+1. **先に画像側を整える**。白文字なら暗い半透明のオーバーレイ、濃紺文字なら明るいオーバーレイか白い面を置く。写真の明暗は画面幅やトリミングで変わるので、代表幅で読むことができるか確認する。
+2. **縁取りは補助**。白文字には `.cx-image-text--light` の濃紺シャドウ、濃紺文字には `.cx-image-text--dark` の細い白い縁取りを使う。白い縁取りをすべての文字へ一律にかけない。
+3. **長文は写真に直置きしない**。写真上は短い見出しと必要最小限の補足まで。ボタン・本文には不透明な面を使う。
+
+```html
+<div class="hero-copy cx-image-text--light">
+  <h1>事業を、前へ。</h1>
+</div>
+```
+
+`recruit.html` のヒーローに白文字の共通クラスを適用。暗いオーバーレイも合わせて設定した。白い縁取りが適切な写真では `cx-image-text--dark` を選ぶ。背景を差し替えたら 320 / 390 / 768 / 1440px で確認する。
+
+## 実装時の使い方
+
+```css
+.section-heading {
+  color: var(--cx-color-ink);
+  font-family: var(--cx-font-ja);
+  font-size: var(--cx-type-section);
+  font-weight: var(--cx-weight-heading);
+}
+.creative-link { color: var(--cx-color-creative-text); }
+```
+
+数値を各ページへコピーせず、役割の変数を参照する。追加が必要な役割はページ単位で似た値を作らず、この正本を先に更新する。モーション・操作反応は [MOTION-UI-2026.md](MOTION-UI-2026.md) を参照。

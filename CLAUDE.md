@@ -93,6 +93,7 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 - メインサイト: `css/style.css`（共通）+ ページ別CSS（`hero-new.css`, `recruit.css` 等）
 - トップ・サービス以外の下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
 - トップ・サービス・下層ページ共通のモーションとUIの判断基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページの登場演出は `js/sitewide-motion.js`。動きの軽減設定とJS無効時の表示を必ず確認する。
+- トップ・サービス・下層ページのフォント、色、文字階層、画像上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) が正本。再利用する変数・画像文字クラスは `css/brand-system-2026.css`。担当ごとに色・フォントの値を新設しない。
 
 ## 未完了タスク
 - なし（2026-07-19 contentsx-cms.php をお名前.comへアップロード完了。CORS修正・XML-RPC遮断とも本番検証済み — pingback/wp.*系メソッド消滅、両本番オリジンへのCORS応答確認。詳細はルート docs/operations/SECURITY.md）
