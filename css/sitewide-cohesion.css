@@ -15,10 +15,6 @@ body.cx-sitewide {
   --cx-orange: var(--cx-color-creative);
   --cx-orange-soft: var(--cx-color-creative-soft);
   --cx-shell: 1250px;
-  --cx-motion-fast: .18s;
-  --cx-motion-ui: .3s;
-  --cx-motion-reveal: .75s;
-  --cx-motion-ease: cubic-bezier(.16, 1, .3, 1);
   color: var(--text-secondary);
   background: var(--cx-color-white);
   font-family: var(--cx-font-ja);
@@ -59,10 +55,9 @@ body.cx-sitewide :is(.section-title, .news-page-heading, .partners-title, .leade
   line-height: 1.3;
   letter-spacing: -.04em;
 }
-body.cx-sitewide :is(.nav-cta, .btn-primary, .faq-cta-btn) { border-radius: 999px; }
+body.cx-sitewide :is(.nav-cta, .btn-primary) { border-radius: 999px; }
 body.cx-sitewide :is(.btn-primary, .faq-cta-btn):not(:hover) { background: var(--text-primary); border-color: var(--text-primary); color: var(--cx-color-white); }
 body.cx-sitewide :is(.btn-primary, .faq-cta-btn):hover { background: var(--accent); border-color: var(--accent); color: var(--cx-color-white); }
-body.cx-sitewide :is(.company-btn, .partners-recruit-btn, .rc-pill) { border-radius: 999px; }
 
 /* Company story pages retain their editorial layouts while sharing the palette. */
 body.cx-sitewide.ab-page {
@@ -106,7 +101,6 @@ body.cx-sitewide .ot-hero h1 { font-size: var(--cx-type-page); line-height: 1.35
 
 /* Listing, FAQ, contact and legal content. */
 body.cx-sitewide .cx-col-hero { background: linear-gradient(110deg, #f0f7ff, #fff 68%); border-color: var(--border); }
-body.cx-sitewide .cx-col-featured-card { background: var(--bg-light); border: 1px solid var(--border); }
 body.cx-sitewide .cx-col-filter-chip.is-active { background: var(--text-primary); border-color: var(--text-primary); }
 body.cx-sitewide .faq-hero { background: linear-gradient(110deg, #f0f7ff, #fff 68%); }
 body.cx-sitewide .faq-hero h1,
@@ -127,7 +121,6 @@ body.cx-sitewide .contact-form-section h1 {
   line-height: 1.35;
   letter-spacing: -.04em;
 }
-body.cx-sitewide .contact-card { background: var(--bg-light); border: 1px solid var(--border); }
 body.cx-sitewide .rc-section-title { color: var(--text-primary); }
 body.cx-sitewide .rc-hero-overlay { background: rgba(7, 20, 59, .58); }
 body.cx-sitewide .rc-hero-heading { font-size: var(--cx-type-display); }
@@ -157,22 +150,19 @@ body.cx-sitewide .num {
   -webkit-background-clip: text;
   background-clip: text;
 }
-body.cx-sitewide .suggest { background: var(--bg-light); border: 1px solid var(--border); }
 body.cx-sitewide .suggest-title { color: var(--accent); }
 body.cx-sitewide .suggest a { color: var(--text-primary); border: 1px solid var(--border); }
 body.cx-sitewide .suggest a:hover { background: var(--text-primary); color: var(--cx-color-white); }
 body.cx-sitewide .home { background: var(--text-primary); min-height: 48px; }
 body.cx-sitewide .home:hover { background: var(--accent); }
 
-/* Motion system: a small response to input, and a single quiet section reveal. */
-body.cx-sitewide :is(.ab-related-card, .partner-card, .leader-card,
-  .cx-col-featured-card, .cx-col-card, .rc-pos-card) {
+/* Generated column cards do not have the static cx-ui-card class. */
+body.cx-sitewide .cx-col-card {
   transition: transform var(--cx-motion-ui) var(--cx-motion-ease),
     box-shadow var(--cx-motion-ui) ease,
     border-color var(--cx-motion-ui) ease;
 }
-body.cx-sitewide :is(.nav-cta, .btn-primary, .company-btn, .faq-cta-btn,
-  .rc-pill, .home) {
+body.cx-sitewide :is(.nav-cta, .btn-primary) {
   transition: transform var(--cx-motion-ui) var(--cx-motion-ease),
     color var(--cx-motion-fast) ease,
     background-color var(--cx-motion-fast) ease,
@@ -185,13 +175,11 @@ body.cx-sitewide .cx-col-card img {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  body.cx-sitewide :is(.ab-related-card, .partner-card, .leader-card,
-    .cx-col-featured-card, .cx-col-card, .rc-pos-card):hover {
+  body.cx-sitewide .cx-col-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 34px rgba(7, 20, 59, .10);
   }
-  body.cx-sitewide :is(.nav-cta, .btn-primary, .company-btn, .faq-cta-btn,
-    .rc-pill, .home):hover { transform: translateY(-2px); }
+  body.cx-sitewide :is(.nav-cta, .btn-primary):hover { transform: translateY(-2px); }
   body.cx-sitewide .cx-col-featured-card:hover img,
   body.cx-sitewide .cx-col-card:hover img { transform: scale(1.035); }
 }
