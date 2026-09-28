@@ -58,5 +58,6 @@
 <script src="/js/cta.js" defer></script>
 <script src="/js/dl-modal.js" defer></script>
 <script src="/js/services-ui.js" defer></script>
+<script src="/js/service-media.js" defer></script>
 </body>
 </html>
