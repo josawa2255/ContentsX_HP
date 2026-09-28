@@ -231,14 +231,13 @@ def render_detail(service: dict, services: list[dict]) -> str:
 
 
 GROUP_IMAGES = {
-    "bizform": "/material/service-2026/sales-hero.jpg",
-    "bizrecruit": "/material/service-2026/contact.jpg",
     "bizmanga": "/material/service-2026/manga-sample.webp",
     "bizanime": "/material/service-2026/bizanime-player.webp",
     "bizvideo": "/material/service-2026/video-studio.webp",
 }
 GROUP_IMAGE_SIZES = {
-    "bizform": (2048, 768), "bizrecruit": (2039, 771),
+    "bizform": (960, 720), "bizaio": (960, 640),
+    "bizkarte": (960, 640), "bizrecruit": (960, 640),
     "bizmanga": (1067, 1667), "bizanime": (1366, 1009), "bizvideo": (2755, 1536),
 }
 GROUP_LINKS = {
@@ -249,7 +248,7 @@ GROUP_LINKS = {
 
 def render_landing_card(service: dict, index: int) -> str:
     service_id = service["id"]
-    image = GROUP_IMAGES.get(service_id, service.get("image"))
+    image = GROUP_IMAGES.get(service_id, service.get("hoverImage") or service.get("image"))
     href = GROUP_LINKS.get(service_id, service["href"])
     # Decorative card imagery comes from approved site assets, never the AI mockup screenshots.
     size = GROUP_IMAGE_SIZES.get(service_id)
@@ -265,7 +264,7 @@ def render_landing_card(service: dict, index: int) -> str:
 
 
 def render_landing_row(service: dict, index: int) -> str:
-    image = GROUP_IMAGES.get(service["id"], service.get("image"))
+    image = GROUP_IMAGES.get(service["id"], service.get("hoverImage") or service.get("image"))
     size = GROUP_IMAGE_SIZES.get(service["id"])
     dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
     visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else
@@ -279,7 +278,7 @@ def render_landing_row(service: dict, index: int) -> str:
 
 def render_creative_mini(service: dict) -> str:
     href = GROUP_LINKS.get(service["id"], service["href"])
-    image = GROUP_IMAGES.get(service["id"], service.get("image"))
+    image = GROUP_IMAGES.get(service["id"], service.get("hoverImage") or service.get("image"))
     size = GROUP_IMAGE_SIZES.get(service["id"])
     dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
     visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else

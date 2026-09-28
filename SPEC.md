@@ -89,7 +89,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 詳細ページは固有title/description/canonical/OGP、BreadcrumbList/Service JSON-LDを持つ。任意の課題・特徴・導入手順・活用シーン・FAQは該当データがある時だけ出力し、実在しない数値・価格・評価は加えない。
 - サイトマップはサービス欄をビルドで更新する。ニュース更新用 `tools/generate-sitemap.py` はNEWSマーカー内だけを置換し、サービス・コラム等のURLを保持する。
 - 既存ヘッダー・フッター・CTAを流用し、ヘッダーの「サービス」は独立したトップ階層の項目として `/services/` に直結させる。TOPフッターも同URL。既存のヒーローは前段のIssue #16の実装を維持する。
-- Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` で構成。色はSales Xが青、Creative Xが橙で、本文は画像に焼き込まずHTMLで保持する。参考画像はレイアウトの参照に使い、実画像は `material/service-2026/` に置く。トップページ担当が用意した営業・制作・相談の画像と、既存の漫画作品・ビズアニメ・スタジオ素材を選んだ。
+- Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` で構成。トップページ現行案の青 `#005bfa`・橙 `#fa4d12` に合わせ、本文は画像に焼き込まずHTMLで保持する。参考画像はレイアウトの参照に使う。Sales Xのカードは承認済み `data/services.json` の `hoverImage` を使用。ヒーロー・相談画像とCreative Xの実素材は `material/service-2026/` に置き、既存の漫画作品・ビズアニメ・スタジオ素材を選んだ。
 - Creative Xのビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime` へ直接誘導する。ビズビデオは内部詳細ページに誘導。資料ダウンロードは既存の `js/dl-modal.js` を使用する。Sales X・Creative Xページには独自の相談CTAがあるため、共通CTAは重複表示しない。
 
 ## 4. 共通 JS コンポーネント
