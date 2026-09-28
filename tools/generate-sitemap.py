@@ -32,10 +32,8 @@ OUT = pathlib.Path(__file__).resolve().parent.parent / "sitemap.xml"
 STATIC_PAGES = [
     ("/",              "weekly",  "1.0"),
     ("/company",       "monthly", "0.8"),
+    ("/about",         "monthly", "0.8"),
     ("/contact",       "monthly", "0.9"),
-    ("/leadership",    "monthly", "0.6"),
-    ("/our-thoughts",  "monthly", "0.7"),
-    ("/partners",      "monthly", "0.6"),
     ("/recruit",       "monthly", "0.7"),
     ("/news",          "weekly",  "0.6"),
 ]
