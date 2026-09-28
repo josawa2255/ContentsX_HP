@@ -91,6 +91,7 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 
 ## CSS設計
 - メインサイト: `css/style.css`（共通）+ ページ別CSS（`hero-new.css`, `recruit.css` 等）
+- トップ・サービス以外の下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
 
 ## 未完了タスク
 - なし（2026-07-19 contentsx-cms.php をお名前.comへアップロード完了。CORS修正・XML-RPC遮断とも本番検証済み — pingback/wp.*系メソッド消滅、両本番オリジンへのCORS応答確認。詳細はルート docs/operations/SECURITY.md）
