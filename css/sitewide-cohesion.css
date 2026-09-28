@@ -13,6 +13,10 @@ body.cx-sitewide {
   --cx-orange: #fa4d12;
   --cx-orange-soft: #fff3ec;
   --cx-shell: 1250px;
+  --cx-motion-fast: .18s;
+  --cx-motion-ui: .3s;
+  --cx-motion-reveal: .75s;
+  --cx-motion-ease: cubic-bezier(.16, 1, .3, 1);
   color: var(--text-secondary);
   background: #fff;
 }
@@ -136,6 +140,58 @@ body.cx-sitewide .suggest a:hover { background: var(--text-primary); color: #fff
 body.cx-sitewide .home { background: var(--text-primary); min-height: 48px; }
 body.cx-sitewide .home:hover { background: var(--accent); }
 
+/* Motion system: a small response to input, and a single quiet section reveal. */
+body.cx-sitewide :is(.ab-related-card, .partner-card, .leader-card,
+  .cx-col-featured-card, .cx-col-card, .rc-pos-card) {
+  transition: transform var(--cx-motion-ui) var(--cx-motion-ease),
+    box-shadow var(--cx-motion-ui) ease,
+    border-color var(--cx-motion-ui) ease;
+}
+body.cx-sitewide :is(.nav-cta, .btn-primary, .company-btn, .faq-cta-btn,
+  .rc-pill, .home) {
+  transition: transform var(--cx-motion-ui) var(--cx-motion-ease),
+    color var(--cx-motion-fast) ease,
+    background-color var(--cx-motion-fast) ease,
+    border-color var(--cx-motion-fast) ease,
+    box-shadow var(--cx-motion-ui) ease;
+}
+body.cx-sitewide .cx-col-featured-img img,
+body.cx-sitewide .cx-col-card img {
+  transition: transform .8s var(--cx-motion-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.cx-sitewide :is(.ab-related-card, .partner-card, .leader-card,
+    .cx-col-featured-card, .cx-col-card, .rc-pos-card):hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(7, 20, 59, .10);
+  }
+  body.cx-sitewide :is(.nav-cta, .btn-primary, .company-btn, .faq-cta-btn,
+    .rc-pill, .home):hover { transform: translateY(-2px); }
+  body.cx-sitewide .cx-col-featured-card:hover img,
+  body.cx-sitewide .cx-col-card:hover img { transform: scale(1.035); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.cx-sitewide .cx-motion-pending:not(.cx-motion-visible) {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  body.cx-sitewide .cx-motion-pending.cx-motion-visible {
+    opacity: 1;
+    transform: none;
+    transition: opacity var(--cx-motion-reveal) ease-out,
+      transform var(--cx-motion-reveal) var(--cx-motion-ease);
+  }
+  body.cx-sitewide .ab-hero-eyebrow,
+  body.cx-sitewide .ot-hero-label { animation-duration: .7s; animation-delay: .08s; animation-timing-function: var(--cx-motion-ease); }
+  body.cx-sitewide .ab-hero-title,
+  body.cx-sitewide .ot-hero h1 { animation-duration: .8s; animation-delay: .18s; animation-timing-function: var(--cx-motion-ease); }
+  body.cx-sitewide .ab-hero-sub,
+  body.cx-sitewide .ot-hero-sub { animation-duration: .8s; animation-delay: .3s; animation-timing-function: var(--cx-motion-ease); }
+  body.cx-sitewide .ot-hero-line { animation-duration: .8s; animation-delay: .45s; }
+}
+
 @media (max-width: 768px) {
   body.cx-sitewide .container { padding-inline: 20px; }
   body.cx-sitewide .ab-section { padding-inline: 20px; }
@@ -145,5 +201,12 @@ body.cx-sitewide .home:hover { background: var(--accent); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.cx-sitewide :is(a, button) { transition-duration: .01ms; }
+  html { scroll-behavior: auto; }
+  body.cx-sitewide *, body.cx-sitewide *::before, body.cx-sitewide *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  body.cx-sitewide .cx-motion-pending { opacity: 1 !important; transform: none !important; }
+  body.cx-sitewide :is(.ab-hero-eyebrow, .ab-hero-title, .ab-hero-sub,
+    .ot-hero-label, .ot-hero h1, .ot-hero-sub, .ot-hero-line) { opacity: 1 !important; }
 }
