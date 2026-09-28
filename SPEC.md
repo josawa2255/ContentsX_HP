@@ -15,6 +15,7 @@
 |---|---|---|---|
 | トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js, services-ui.js | Sales X / Creative X Hero (左コピー + 右2カード、PC/SP専用画像) + クライアントロゴカルーセル + サービス一覧への短い導線 + News + 新作情報 + 3事業領域 + CTA |
 | サービス一覧 | `services/index.html` | i18n.js, nav.js, cta.js, services-ui.js | `data/services.json` と `data/service-groups.json` から生成。Sales X / Creative X ごとのカード一覧 |
+| Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, dl-modal.js | 事業群ごとの紹介ページ。PC・スマホ参考画像の構成をHTML/CSSで実装。Creative Xのビズマンガ・ビズアニメから公式サイトへ遷移 |
 | サービス詳細 | `services/{slug}/index.html` | i18n.js, nav.js, cta.js, services-ui.js | 7サービスを共通テンプレートから生成。データにない任意セクションは非表示 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
@@ -82,12 +83,14 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 3.5 データ駆動サービスシステム（Issue #20）
 
 - 正本は `data/services.json`（サービス情報）、`data/service-groups.json`（分類）、`data/design-tokens.json`（色・余白・文字等）。`data/service-data.schema.json` が項目定義。新サービスはデータに1件追加し、必要時のみ画像を `material/` に追加する。
-- `python3 tools/build-services.py` でTOPの `<!-- BUILD:SERVICES -->`（一覧への短い導線のみ）、`services/index.html`（全サービスカードを集約）、`services/{slug}/index.html`、`css/web-system-tokens.css`、sitemapのサービスURLを生成する。Pagesデプロイでも同コマンドを実行する。`--check` は生成物の鮮度確認。
+- `python3 tools/build-services.py` でTOPの `<!-- BUILD:SERVICES -->`（一覧への短い導線のみ）、`services/index.html`（全サービスカードを集約）、`services/{sales,creative}-x/index.html`、`services/{slug}/index.html`、`css/web-system-tokens.css`、sitemapのサービスURLを生成する。Pagesデプロイでも同コマンドを実行する。`--check` は生成物の鮮度確認。
 - テンプレートは `tools/templates/`、共通CSSは `css/web-system.css`。カードは `repeat(auto-fit,minmax(min(100%,240px),1fr))` で件数に依存しない。Sales/Creativeはグループ属性とtokenで切り替える。支給PNGは装飾、SVGは共通アイコンであり、主要文言はすべてHTMLテキスト。
 - PCカードはhover/focusで概要とサービス別の画像を淡いオーバーレイ越しに表示。画像は `data/services.json` の任意 `hoverImage` を参照し、`material/web-system/service-hover/` に置く。ビズフォームはサービスサイトの機能フロー図、ビズマンガは既存サイトのビジュアル、ビズアニメ・ビズビデオは提供動画から選んだ静止フレームを使用し、動画本体はカードで読み込まない。ビズAIO・ビズカルテ・ビズ採用は生成したイメージ写真であり、実際の社員・実績写真ではない。実写表現の画像はAIらしい人物・不自然な手などを避け、提供済みの実素材を優先する。画像は装飾扱いで主要文言は常にHTMLテキスト。モバイルは `js/services-ui.js` による `aria-expanded` 付き展開、JavaScript無効時は概要を常時表示。詳細のタブはキーボードの左右矢印/Home/Endに対応し、JavaScript無効時は全パネルを表示。
 - 詳細ページは固有title/description/canonical/OGP、BreadcrumbList/Service JSON-LDを持つ。任意の課題・特徴・導入手順・活用シーン・FAQは該当データがある時だけ出力し、実在しない数値・価格・評価は加えない。
 - サイトマップはサービス欄をビルドで更新する。ニュース更新用 `tools/generate-sitemap.py` はNEWSマーカー内だけを置換し、サービス・コラム等のURLを保持する。
 - 既存ヘッダー・フッター・CTAを流用し、ヘッダーの「サービス」は独立したトップ階層の項目として `/services/` に直結させる。TOPフッターも同URL。既存のヒーローは前段のIssue #16の実装を維持する。
+- Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` で構成。色はSales Xが青、Creative Xが橙で、本文は画像に焼き込まずHTMLで保持する。参考画像はレイアウトの参照に使い、実画像は `material/service-2026/` に置く。トップページ担当が用意した営業・制作・相談の画像と、既存の漫画作品・ビズアニメ・スタジオ素材を選んだ。
+- Creative Xのビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime` へ直接誘導する。ビズビデオは内部詳細ページに誘導。資料ダウンロードは既存の `js/dl-modal.js` を使用する。Sales X・Creative Xページには独自の相談CTAがあるため、共通CTAは重複表示しない。
 
 ## 4. 共通 JS コンポーネント
 

@@ -140,10 +140,13 @@ def render_group(group: dict, services: list[dict], context: str) -> str:
     group_id = esc(group["id"])
     heading_id = f"cxs-{context}-{group_id}-title"
     cards = "\n".join(render_card(service, context) for service in members)
+    group_name = esc(group["name"])
+    group_heading = (f'<a href="/services/{group_id}-x/">{group_name}</a>'
+                     if context == "list" else group_name)
     return f'''<section class="cxs-section cxs-service-group" id="{context}-group-{group_id}" data-group="{group_id}" aria-labelledby="{heading_id}">
   <div class="cxs-container">
     <div class="cxs-section-header">
-      <div><p class="cxs-eyebrow">{esc(group.get('eyebrow', group['name']))}</p><h2 id="{heading_id}">{esc(group['name'])}</h2><p class="cxs-section-header__tagline">{esc(group['tagline'])}</p></div>
+      <div><p class="cxs-eyebrow">{esc(group.get('eyebrow', group['name']))}</p><h2 id="{heading_id}">{group_heading}</h2><p class="cxs-section-header__tagline">{esc(group['tagline'])}</p></div>
       <p class="cxs-section-header__summary">{esc(group['summary'])}</p>
     </div>
     <div class="cxs-service-grid">{cards}</div>
@@ -227,6 +230,77 @@ def render_detail(service: dict, services: list[dict]) -> str:
     return render_template("service-detail.html.tpl", values)
 
 
+GROUP_IMAGES = {
+    "bizform": "/material/service-2026/sales-hero.jpg",
+    "bizrecruit": "/material/service-2026/contact.jpg",
+    "bizmanga": "/material/service-2026/manga-sample.webp",
+    "bizanime": "/material/service-2026/bizanime-player.webp",
+    "bizvideo": "/material/service-2026/video-studio.webp",
+}
+GROUP_IMAGE_SIZES = {
+    "bizform": (2048, 768), "bizrecruit": (2039, 771),
+    "bizmanga": (1067, 1667), "bizanime": (1366, 1009), "bizvideo": (2755, 1536),
+}
+GROUP_LINKS = {
+    "bizmanga": "https://bizmanga.contentsx.jp/",
+    "bizanime": "https://bizmanga.contentsx.jp/bizanime",
+}
+
+
+def render_landing_card(service: dict, index: int) -> str:
+    service_id = service["id"]
+    image = GROUP_IMAGES.get(service_id, service.get("image"))
+    href = GROUP_LINKS.get(service_id, service["href"])
+    # Decorative card imagery comes from approved site assets, never the AI mockup screenshots.
+    size = GROUP_IMAGE_SIZES.get(service_id)
+    dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    image_markup = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">'
+                    if image else render_icon(service["icon"], "cxg-service-card__icon"))
+    visual_class = "" if image else " cxg-service-card__image--icon"
+    return f'''<article class="cxg-service-card">
+  <div class="cxg-service-card__image{visual_class}">{image_markup}</div>
+  <div class="cxg-service-card__body"><small>{index:02}</small><h3>{esc(service['name'])}</h3>
+    <p>{esc(service['hoverSummary'])}</p><a href="{esc(href)}">詳しく見る <span aria-hidden="true">→</span></a></div>
+</article>'''
+
+
+def render_landing_row(service: dict, index: int) -> str:
+    image = GROUP_IMAGES.get(service["id"], service.get("image"))
+    size = GROUP_IMAGE_SIZES.get(service["id"])
+    dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else
+              f'<div class="cxg-detail-row__visual cxg-detail-row__visual--icon">{render_icon(service["icon"], "cxg-service-card__icon")}</div>')
+    return f'''<article class="cxg-detail-row">
+  <div class="cxg-detail-row__copy"><span>{index:02} / {esc(service['name'])}</span><h3>{esc(service['shortCopy'])}</h3>
+    <p>{esc(service['hoverSummary'])}</p><a href="{esc(service['href'])}">詳しく見る →</a></div>
+  {visual}
+</article>'''
+
+
+def render_creative_mini(service: dict) -> str:
+    href = GROUP_LINKS.get(service["id"], service["href"])
+    image = GROUP_IMAGES.get(service["id"], service.get("image"))
+    size = GROUP_IMAGE_SIZES.get(service["id"])
+    dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else
+              render_icon(service["icon"], "cxg-service-card__icon"))
+    return f'<a href="{esc(href)}">{visual}<span>{esc(service["name"])}</span></a>'
+
+
+def render_group_landing(group_id: str, services: list[dict]) -> str:
+    sales = [item for item in services if item["group"] == "sales"]
+    creative = [item for item in services if item["group"] == "creative"]
+    if group_id == "sales":
+        return render_template("service-group-sales.html.tpl", {
+            "SALES_CARDS": "\n".join(render_landing_card(item, i) for i, item in enumerate(sales, 1)),
+            "SALES_ROWS": "\n".join(render_landing_row(item, i) for i, item in enumerate(sales, 1)),
+            "CREATIVE_MINI_CARDS": "\n".join(render_creative_mini(item) for item in creative),
+        })
+    return render_template("service-group-creative.html.tpl", {
+        "CREATIVE_CARDS": "\n".join(render_landing_card(item, i) for i, item in enumerate(creative, 1)),
+    })
+
+
 def script_json(data: dict) -> str:
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
     return f'<script type="application/ld+json">{payload}</script>'
@@ -249,13 +323,15 @@ def extract_block(source: str, tag: str) -> str:
     return source[opening.start(): closing + len(tag) + 3]
 
 
-def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str) -> str:
+def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str, cta_mount: bool = True) -> str:
     canonical = f"{SITE}{path}"
     page = render_template("service-page.html.tpl", {
         "TITLE": esc(title), "DESCRIPTION": esc(description), "CANONICAL": esc(canonical),
         "JSON_LD": "\n  ".join(script_json(item) for item in json_ld),
         "HEADER": header, "FOOTER": footer, "BODY": body,
     })
+    if not cta_mount:
+        page = page.replace('  <section id="cxCtaMount"></section>\n', '')
     return page.replace("<!DOCTYPE html>", f"<!DOCTYPE html>\n{SIGNATURE}", 1)
 
 
@@ -330,6 +406,14 @@ def build(check: bool = False) -> int:
         list_body, "サービス一覧｜Contents X", "Sales XとCreative Xのサービス一覧。新しい商談づくり、検索・AI対策、顧客管理、マンガ・アニメ・映像による価値訴求を支援します。",
         "/services/", [breadcrumbs_json([("ホーム", SITE + "/"), ("サービス", SITE + "/services/")]), list_schema], header, footer,
     )
+    for group in groups:
+        group_path = f"/services/{group['id']}-x/"
+        outputs[SERVICES_DIR / f"{group['id']}-x" / "index.html"] = render_page(
+            render_group_landing(group["id"], services),
+            f"{group['name']}｜Contents X", f"{group['name']}。{group['summary']}", group_path,
+            [breadcrumbs_json([("ホーム", SITE + "/"), ("サービス", SITE + "/services/"), (group["name"], SITE + group_path)])],
+            header, footer, cta_mount=False,
+        )
     for service in services:
         path = service["href"]
         service_schema = {"@context": "https://schema.org", "@type": "Service", "name": service["name"],
@@ -343,13 +427,13 @@ def build(check: bool = False) -> int:
         )
     sitemap_path = ROOT / "sitemap.xml"
     sitemap = sitemap_path.read_text(encoding="utf-8")
-    urls = ["/services/"] + [service["href"] for service in services]
+    urls = ["/services/"] + [f"/services/{group['id']}-x/" for group in groups] + [service["href"] for service in services]
     entries = "\n".join(f"  <url><loc>{SITE}{path}</loc></url>" for path in urls)
     outputs[sitemap_path] = replace_marked(sitemap, "SERVICES", entries)
     changed = sum(write_output(path, content, check) for path, content in outputs.items())
     stale_files = [
         page for page in SERVICES_DIR.glob("*/index.html")
-        if page.parent.name not in {service["slug"] for service in services}
+        if page.parent.name not in ({service["slug"] for service in services} | {f"{group['id']}-x" for group in groups})
         and SIGNATURE in page.read_text(encoding="utf-8")
     ]
     for page in stale_files:

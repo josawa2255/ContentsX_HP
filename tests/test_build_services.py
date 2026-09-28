@@ -59,6 +59,15 @@ class ServiceBuildTests(unittest.TestCase):
         self.assertNotIn("導入の流れ", rendered)
         self.assertIn("role=\"tabpanel\"", rendered)
 
+    def test_group_landings_use_official_creative_destinations(self):
+        sales = builder.render_group_landing("sales", self.services)
+        creative = builder.render_group_landing("creative", self.services)
+        self.assertEqual(sales.count('class="cxg-service-card"'), 4)
+        self.assertEqual(creative.count('class="cxg-service-card"'), 3)
+        self.assertIn('href="https://bizmanga.contentsx.jp/bizanime"', creative)
+        self.assertIn('class="cxg-button cxg-button--outline js-dl-trigger"', creative)
+        self.assertIn('/services/creative-x/', sales)
+
     def test_sitemap_update_preserves_other_sections(self):
         old = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
         new = sitemap.build_sitemap([{"id": 123, "date": "2026-09-26"}])
