@@ -3,7 +3,7 @@
 **ドメイン**: contentsx.jp
 **リポジトリ**: [josawa2255/ContentsX_HP](https://github.com/josawa2255/ContentsX_HP)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-20
+**最終更新**: 2026-09-29
 
 > このファイルは ContentsX 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約し、将来のメンテ時に参照します。
 
@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + キャラ一体背景 + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
+| トップ | `index.html` | i18n.js, nav.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css` |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
 | Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
@@ -38,9 +38,20 @@
 `?utm_source=` `?utm_medium=` `?utm_campaign=` `?source=`
 contact フォーム送信時にメッセージ末尾にトラッキング情報を自動付加
 
-## 3. Hero セクション v2（トップページ）⭐
+## 3. トップページ 2026年9月版 ⭐
 
-**2026-05-10 v2 採用**: 旧 hero (テキストロゴ+タグライン+カルーセル) を撤去し、左コピー+中央キャラ+右5サービスカード+下USPマーキー帯の構成に刷新。CSS: `css/hero-v2.css`（hero-new.css は旧UIのみ使用、v2 では `display:none` で除外）。
+- デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。ヘッダーは既存HTML/CSS/JSを流用し、お知らせセクションのマークアップと `wp-api.js` による更新も維持。
+- 構成: Hero → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。新作情報へのヘッダーメニューはビズマンガのビズ書庫へ移動する。
+- 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップで使わない（`body[data-theme="neutral"]`）。他ページのテーマは変更しない。
+- 素材: `material/home-2026/{hero,sales,creative,about,contact}.jpg`。ユーザー指定デザインを参照に生成した画像で、文字とロゴは画像へ焼き込まずHTMLで重ねる。生成したオフィスはイメージ画像として扱う。
+- モーション: `js/home-2026.js` と `css/home-2026.css`。ヒーロー文字の登場、スクロールでの段階的な表示、画像の左→右ワイプ、カード・ボタンのホバー移動。`prefers-reduced-motion: reduce` では瞬時表示。JS不在でも内容は表示する。ワイプ要素自身を幅0にクリップすると交差監視できないため、親コンテナを監視して子要素を表示する。
+- レスポンシブ: 768px以下でヒーローを縦構成、事業カードとサービス欄を1列にする。文字は `clamp()` で連続スケール。320/390/412/448/640/768/1024/1440pxの横溢れをブラウザ確認。
+- リンク: 総合ページは `/services/`（Issue #20の別制作）。ビズフォーム `https://bizform.contentsx.jp/`、ビズマンガ `https://bizmanga.contentsx.jp/`、ビズ採用 `https://ichioshi.contentsx.jp/` は公開先へ直リンク。外部URLが未確定のサービスはIssue #20で用意された `/services/{slug}/`、Sales X / Creative Xの紹介は `/services/#list-group-{sales|creative}` に向ける。制作スタジオ・IP開発は総合ページへ。Issue #20のページが本番公開されるまでこれらの内部リンクは到達先未実装。
+- 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。`i18n.js` → `nav.js` の読込順を維持。
+
+### 3.1 旧Hero v2（2026-09-29トップから撤去・履歴）
+
+**2026-05-10 v2 採用、2026-09-29撤去**: 旧 hero (テキストロゴ+タグライン+カルーセル) を撤去し、左コピー+中央キャラ+右5サービスカード+下USPマーキー帯の構成に刷新していた。CSS: `css/hero-v2.css`（現在のトップでは未使用）。以下は過去の実装記録。
 
 **2026-07-02 キャラ一体化**: 従来「背景飛沫(`hero_bg`) + 透過キャラ(`hero_chars`)」の2層構成だったが、飛沫と女性キャラ2人を1枚に焼き込んだ画像へ差し替え。専用キャラレイヤー(`.hv2-chars`)と `hero_chars.*` は廃止。女性キャラは背景イラストの一部として描画され、PC では右サービスカードが手前に重なる。PC グリッドは `minmax(620px,1fr) 280px` の2列に変更、`.hv2-bg` の opacity は 1。
 
@@ -76,7 +87,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 画像は比率固定で全体表示。CTA は `.hv2-copy` の min-height + `.hv2-ctas { margin-top:auto }` で画像直下へ。`--hv2-chars-h` は廃止済み。
 
 ### 3.4 旧仕様（撤去済み・参考）
-旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示。`hero-new.js` / `hero-fx.js` は読み込まれているが、関連 DOM が無いため発火しない。次回整理時に script タグ削除候補。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。
+旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示となった。`hero-new.js` / `hero-fx.js` のトップでの読込は2026-09-29に終了。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。
 
 ## 4. 共通 JS コンポーネント
 
@@ -223,7 +234,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - `/column/` アクセス時は `column/index.html` の meta refresh で `/column` (= column.html) へ転送
 - `--skip-listing` で個別ページのみ生成可能
 
-## 8. 制作事例モーダル（トップページ）
+## 8. 制作事例モーダル（2026-09-29トップから撤去）
 
 - `openWorkDetail(workId)` で起動（hero-new.js）
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替

@@ -48,7 +48,7 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
-| トップ | index.html | script.js, hero-new.js, wp-api.js, dl-modal.js |
+| トップ | index.html | i18n.js, nav.js, wp-api.js, home-2026.js（仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
 | 役員紹介 | leadership.html | script.js, dl-modal.js |
 | 私たちの思い | our-thoughts.html | dl-modal.js |
@@ -70,7 +70,7 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 
 ⛔ このフォルダを削除すると、旧URL `contentsx.jp/bizmanga/*` を踏んだ訪問者が404に飛ぶ。**削除厳禁。**
 
-## 制作事例モーダル（index.html）
+## 制作事例モーダル（旧トップの記録。2026-09-29撤去）
 - データ: `js/data/works-detail.js`（22+作品、WORKS_DETAIL_DATA配列）
 - 表示: `hero-new.js` の `openWorkDetail()` でモーダル表示
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替
@@ -90,7 +90,7 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 - DNS/ドメイン: お名前.com
 
 ## CSS設計
-- メインサイト: `css/style.css`（共通）+ ページ別CSS（`hero-new.css`, `recruit.css` 等）
+- メインサイト: `css/style.css`（共通）+ ページ別CSS。トップは `css/home-2026.css`、他ページは `recruit.css` 等を使用。
 
 ## 未完了タスク
 - なし（2026-07-19 contentsx-cms.php をお名前.comへアップロード完了。CORS修正・XML-RPC遮断とも本番検証済み — pingback/wp.*系メソッド消滅、両本番オリジンへのCORS応答確認。詳細はルート docs/operations/SECURITY.md）

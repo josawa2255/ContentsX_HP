@@ -9,7 +9,7 @@
     { label: 'ホーム', labelEn: 'Home', href: './', indexHref: '#hero',
       children: [
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
-        { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
+        { label: '新作情報',         labelEn: 'Latest Works',  href: 'https://bizmanga.contentsx.jp/biz-library' },
         { label: 'サービス',         labelEn: 'Services',      href: '#about' }
       ]
     },
