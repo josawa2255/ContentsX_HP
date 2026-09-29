@@ -2333,12 +2333,13 @@ a.news-thumb:hover img { transform: scale(1.05); }
   text-wrap: pretty;
 }
 
-.company-description p + p {
+.company-description > * + * {
   margin-top: 1.25em;
 }
 
 .company-description .company-description-lead {
-  font-size: 18px;
+  margin: 0;
+  font-size: clamp(17px, 0.9rem + 0.4vw, 20px);
   font-weight: 700;
   line-height: 1.6;
   color: var(--text-primary);
