@@ -35,8 +35,7 @@
 .ax-photo > img:first-child { display: block; width: 100%; height: 100%; object-fit: cover; }
 .ax-office { margin-top: 14px; }
 .ax-office::before { content: ''; position: absolute; z-index: 1; inset: 0 auto 0 0; width: 22%; background: linear-gradient(90deg,#fff,transparent); pointer-events: none; }
-.ax-office > img:first-child { object-position: 51% center; }
-.ax-office-logo { position: absolute; z-index: 2; left: 54%; top: 53%; width: 30%; height: auto; transform: translate(-50%,-50%) perspective(600px) rotateY(-8deg); filter: drop-shadow(2px 4px 3px rgba(0,0,0,.25)); }
+.ax-office > img:first-child { object-position: 52% center; }
 .ax-photo-diagonal { clip-path: polygon(21% 0,100% 0,100% 100%,0 100%); }
 .ax-sunset > img { object-position: 53% center; }
 .ax-photo-quote { position: absolute; right: 6%; bottom: 11%; color: #fff; font-size: clamp(18px,2.1vw,31px); font-weight: 700; line-height: 1.25; text-shadow: 0 2px 8px rgba(7,20,59,.75); }
@@ -75,9 +74,8 @@
 .ax-message-copy h2 { margin: 0 0 28px; font-size: clamp(30px,3.1vw,48px); line-height: 1.43; }
 .ax-message-copy p { margin: 0 0 18px; color: var(--cx-color-body); font-size: 15px; }
 .ax-signature { display: flex; align-items: center; justify-content: flex-end; gap: 20px; margin-top: 26px; font-size: 14px; line-height: 1.7; }
-.ax-portrait { min-height: 490px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; overflow: hidden; border-radius: 6px; background: linear-gradient(155deg,#f8fbff 10%,#dfeaff 76%,#c1d7ff); color: var(--cx-color-ink); }
-.ax-portrait-symbol { font: 900 clamp(250px,28vw,440px)/.9 var(--cx-font-latin); letter-spacing: -.13em; background: linear-gradient(125deg,var(--cx-color-sales) 5%,#193f93 52%,var(--cx-color-creative) 54%,#ff9b44); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.ax-portrait > span { margin: -4px 0 32px; font-weight: 900; letter-spacing: .12em; }
+.ax-portrait { position: relative; min-height: 490px; overflow: hidden; border-radius: 6px; background: #f7f7f8; }
+.ax-portrait img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
 
 .ax-future .ax-panel-grid { min-height: 385px; }
 .ax-future .ax-photo > img { object-position: 60% center; }
@@ -117,7 +115,6 @@
   .ax-photo { height: clamp(190px,56vw,350px); }
   .ax-office { margin: 0 0 18px; }
   .ax-office::before { display: none; }
-  .ax-office-logo { width: 31%; }
   .ax-photo-diagonal { clip-path: none; }
   .ax-photo-quote { font-size: clamp(16px,4.5vw,24px); }
   .ax-purpose { padding: 28px 0 31px; }
@@ -140,8 +137,7 @@
   .ax-message-copy h2 { font-size: clamp(27px,7vw,39px); margin-bottom: 17px; }
   .ax-message-copy p { font-size: 13px; }
   .ax-signature { font-size: 11px; justify-content: space-between; }
-  .ax-portrait { min-height: 290px; max-height: 430px; }
-  .ax-portrait-symbol { font-size: clamp(250px,55vw,380px); }
+  .ax-portrait { width: min(100%,460px); height: clamp(360px,105vw,550px); min-height: 0; justify-self: center; }
   .ax-contact { padding: 32px 0; }
   .ax-contact::after { font-size: 310px; top: -40px; right: -60px; }
   .ax-contact-inner, .ax-footer-main, .ax-footer-bottom { flex-direction: column; align-items: flex-start; }
@@ -156,12 +152,4 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ax-page *, .ax-page *::before, .ax-page *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
-}
-
-@media (min-width: 360px) and (max-width: 800px) {
-  .ax-message-grid { grid-template-columns: minmax(0,1.2fr) minmax(0,.8fr); gap: 12px; }
-  .ax-message-copy h2 { font-size: clamp(23px,5.7vw,36px); }
-  .ax-portrait { min-height: 340px; max-height: none; align-self: stretch; }
-  .ax-portrait-symbol { font-size: clamp(170px,32vw,310px); }
-  .ax-portrait > span { font-size: 11px; }
 }
