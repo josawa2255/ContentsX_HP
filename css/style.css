@@ -525,6 +525,29 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
 }
 .nav-cta:hover::before { width: 260%; }
 
+/* 共通ヘッダーの問い合わせ導線は通常時も読める無彩色のボタンにする。 */
+.header .nav .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background: #f2f4f7;
+  color: #132238 !important;
+  border-radius: 999px;
+  outline: 1px solid #cdd4df;
+  box-shadow: none;
+  transition: background-color .25s ease, color .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+.header .nav .nav-cta::before { content: none; }
+.header .nav .nav-cta:hover,
+.header .nav .nav-cta:focus-visible {
+  background: #182640;
+  color: #fff !important;
+  outline-color: #182640;
+  box-shadow: 0 5px 14px rgba(19, 34, 56, .15);
+  transform: translateY(-1px);
+}
+
 /* CTAセクション用の大きい版 */
 .nav-cta--lg {
   padding: 16px 44px;
@@ -555,7 +578,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   box-shadow: 8px 10px 28px -6px rgba(0, 0, 0, 0.5);
 }
 
-/* ヘッダー右側：言語切替 + ハンバーガー */
+/* ヘッダー右側：ハンバーガー（言語切替は一時非表示） */
 .header-right {
   display: flex;
   align-items: center;
@@ -563,9 +586,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   flex-shrink: 0;
 }
 
-/* ヘッダー内 JP / EN 切替ボタン */
+/* 言語切替機能は維持し、UIだけ一時的に隠す。 */
 .header-lang-switch {
-  display: flex;
+  display: none;
 }
 .header-lang-btn {
   width: 64px;
@@ -2554,10 +2577,13 @@ a.news-thumb:hover img { transform: scale(1.05); }
   .nav.open .nav-link:not(.nav-dropdown-toggle)::after {
     content: '';
     display: inline-block;
+    position: static;
+    flex: 0 0 auto;
     width: 10px;
     height: 10px;
     border-top: 2px solid var(--accent);
     border-right: 2px solid var(--accent);
+    background: transparent;
     transform: rotate(45deg);
     margin-left: 12px;
   }
@@ -3049,4 +3075,22 @@ html[lang="ja"] p {
   .header .hamburger.is-open span:nth-child(2) { opacity: 0; }
   .header .hamburger.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
   body.nav-locked { overflow: hidden; }
+}
+
+/* ドロワー内の問い合わせは他の項目と同じ行表示に戻す。 */
+@media (max-width: 1280px) {
+  .header .nav.open .nav-cta {
+    background: #fff;
+    border-radius: 0;
+    outline: 0;
+    box-shadow: none;
+    transform: none;
+  }
+  .header .nav.open .nav-cta:hover,
+  .header .nav.open .nav-cta:focus-visible {
+    background: #f2f4f7;
+    color: #132238 !important;
+    box-shadow: none;
+    transform: none;
+  }
 }
