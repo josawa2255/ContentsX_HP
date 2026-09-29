@@ -241,10 +241,11 @@
     .faq-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(229,0,90,0.3); }
   </style>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#b85a2b">
+  <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
 </head>
-<body data-theme="magenta-hot">
+<body data-theme="magenta-hot" class="cx-sitewide">
 
   <header class="header" id="header">
     <div class="header-inner">
@@ -292,7 +293,7 @@
       <div class="faq-cta">
         <h2>他にご質問がありますか？</h2>
         <p>ここに記載のない質問も、どうぞお気軽にお問い合わせください。</p>
-        <a href="contact" class="faq-cta-btn">お問い合わせはこちら</a>
+        <a href="contact" class="faq-cta-btn cx-ui-action cx-ui-pill">お問い合わせはこちら</a>
       </div>
     </section>
   </main>
@@ -335,5 +336,6 @@
   </script>
   <script src="js/i18n.js" defer></script>
   <script src="js/nav.js" defer></script>
+  <script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>

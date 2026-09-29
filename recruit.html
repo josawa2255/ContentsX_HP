@@ -194,10 +194,11 @@
 }
 </script>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#b85a2b">
+  <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
 </head>
-<body data-theme="magenta-hot">
+<body data-theme="magenta-hot" class="cx-sitewide">
   <header class="header" id="header">
     <div class="header-inner">
       <a href="./" class="logo"><img height="192" width="1022" src="material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img"></a>
@@ -210,7 +211,7 @@
   <section class="rc-hero" id="rc-hero">
     <div class="rc-hero-bg" style="background-image:url('material/images/recruit/hero.webp');"></div>
     <div class="rc-hero-overlay"></div>
-    <div class="rc-hero-center">
+    <div class="rc-hero-center cx-image-text--light">
       <h1 class="rc-hero-heading">Careers</h1>
       <p class="rc-hero-sub" data-ja="採用情報" data-en="Recruitment">採用情報</p>
     </div>
@@ -220,24 +221,24 @@
         <h2 class="rc-hero-nav-title" data-ja="募集職種" data-en="Open Positions">募集職種</h2>
         <div class="rc-hero-nav-line"></div>
         <div class="rc-hero-nav-btns">
-          <a href="#detail-manga" class="rc-pill" data-pos="manga" data-ja="漫画家" data-en="Manga Artist">漫画家</a>
-          <a href="#detail-production" class="rc-pill" data-pos="production" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</a>
-          <a href="#detail-sales" class="rc-pill" data-pos="sales" data-ja="営業" data-en="Sales">営業</a>
+          <a href="#detail-manga" class="rc-pill cx-ui-action cx-ui-pill" data-pos="manga" data-ja="漫画家" data-en="Manga Artist">漫画家</a>
+          <a href="#detail-production" class="rc-pill cx-ui-action cx-ui-pill" data-pos="production" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</a>
+          <a href="#detail-sales" class="rc-pill cx-ui-action cx-ui-pill" data-pos="sales" data-ja="営業" data-en="Sales">営業</a>
         </div>
       </div>
       <div class="rc-hero-nav-col">
         <h2 class="rc-hero-nav-title" data-ja="会社を知る" data-en="About Us">会社を知る</h2>
         <div class="rc-hero-nav-line"></div>
         <div class="rc-hero-nav-btns">
-          <a href="company" class="rc-pill" data-ja="会社概要" data-en="Company">会社概要</a>
-          <a href="our-thoughts" class="rc-pill" data-ja="私たちの思い" data-en="Our Thoughts">私たちの思い</a>
+          <a href="company" class="rc-pill cx-ui-action cx-ui-pill" data-ja="会社概要" data-en="Company">会社概要</a>
+          <a href="our-thoughts" class="rc-pill cx-ui-action cx-ui-pill" data-ja="私たちの思い" data-en="Our Thoughts">私たちの思い</a>
         </div>
       </div>
       <div class="rc-hero-nav-col">
         <h2 class="rc-hero-nav-title" data-ja="選考フロー" data-en="Selection Process">選考フロー</h2>
         <div class="rc-hero-nav-line"></div>
         <div class="rc-hero-nav-btns">
-          <a href="#flow" class="rc-pill" data-ja="応募の流れ" data-en="Application Flow">応募の流れ</a>
+          <a href="#flow" class="rc-pill cx-ui-action cx-ui-pill" data-ja="応募の流れ" data-en="Application Flow">応募の流れ</a>
         </div>
       </div>
     </div>
@@ -251,19 +252,19 @@
       <h2 class="rc-section-title" data-ja="募集職種" data-en="Open Positions">募集職種</h2>
       <p class="rc-positions-lead" data-ja="希望の職種をクリックしてください。" data-en="Please select your desired position.">希望の職種をクリックしてください。</p>
       <div class="rc-pos-cards">
-        <div class="rc-pos-card" data-pos="manga" id="detail-manga">
+        <div class="rc-pos-card cx-ui-card" data-pos="manga" id="detail-manga">
           <div class="rc-pos-card-num">01</div>
           <div class="rc-pos-card-title" data-ja="漫画家" data-en="Manga Artist">漫画家</div>
           <div class="rc-pos-card-desc" data-ja="シナリオチェック・ネーム制作・赤ペン" data-en="Script review, storyboard creation, and editing">シナリオチェック・ネーム制作・赤ペン</div>
           <div class="rc-pos-card-tags"><span data-ja="業務委託" data-en="Contract">業務委託</span><span data-ja="フルリモート" data-en="Fully Remote">フルリモート</span></div>
         </div>
-        <div class="rc-pos-card" data-pos="production" id="detail-production">
+        <div class="rc-pos-card cx-ui-card" data-pos="production" id="detail-production">
           <div class="rc-pos-card-num">02</div>
           <div class="rc-pos-card-title" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</div>
           <div class="rc-pos-card-desc" data-ja="ネームからの作画・品質管理" data-en="Artwork from storyboards and quality control">ネームからの作画・品質管理</div>
           <div class="rc-pos-card-tags"><span data-ja="リモート可" data-en="Remote OK">リモート可</span><span data-ja="未経験歓迎" data-en="No Experience Needed">未経験歓迎</span></div>
         </div>
-        <div class="rc-pos-card" data-pos="sales" id="detail-sales">
+        <div class="rc-pos-card cx-ui-card" data-pos="sales" id="detail-sales">
           <div class="rc-pos-card-num">03</div>
           <div class="rc-pos-card-title" data-ja="営業" data-en="Sales">営業</div>
           <div class="rc-pos-card-desc" data-ja="法人開拓・ソリューション提案" data-en="B2B development and solution proposals">法人開拓・ソリューション提案</div>
@@ -488,5 +489,6 @@
   })();
   </script>
 <!-- End of HubSpot Embed Code -->
+  <script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>

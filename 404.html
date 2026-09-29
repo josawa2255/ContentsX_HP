@@ -66,10 +66,11 @@
     }
   </style>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#b85a2b">
+  <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
 </head>
-<body>
+<body class="cx-sitewide">
   <div class="logo-link">
     <a href="/"><img src="material/images/logo/ContentsX.webp" alt="ContentsX" width="180" height="36" style="width: 160px; height: auto;"></a>
   </div>
@@ -80,7 +81,7 @@
       お探しのページはURL変更・削除・一時的にアクセスできない可能性があります。<br>
       URLをご確認いただくか、以下のおすすめページからご覧ください。
     </p>
-    <div class="suggest">
+    <div class="suggest cx-ui-surface">
       <div class="suggest-title">▼ おすすめページ</div>
       <ul>
         <li><a href="/">→ トップページ — 「伝える」を再発明するコンテンツ制作会社</a></li>
@@ -91,7 +92,8 @@
         <li><a href="/contact">→ お問い合わせ — 無料相談受付中</a></li>
       </ul>
     </div>
-    <a href="/" class="home">トップページへ戻る</a>
+    <a href="/" class="home cx-ui-action cx-ui-pill">トップページへ戻る</a>
   </div>
+  <script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>

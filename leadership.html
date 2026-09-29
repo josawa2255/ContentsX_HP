@@ -341,10 +341,11 @@
 }
 </script>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#b85a2b">
+  <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
 </head>
-<body data-theme="magenta-hot">
+<body data-theme="magenta-hot" class="cx-sitewide">
 
   <!-- ===== ヘッダー ===== -->
   <header class="header" id="header">
@@ -372,7 +373,7 @@
     <div class="leadership-list">
 
       <!-- 黒宮 大貴 -->
-      <div class="leader-card">
+      <div class="leader-card cx-ui-card">
         <div class="leader-photo">
           <div class="leader-photo-placeholder" data-ja="写真準備中" data-en="Photo coming soon">写真準備中</div>
           <!-- 写真が用意できたら以下に差し替え:
@@ -390,7 +391,7 @@
       </div>
 
       <!-- 鵜池 航太 -->
-      <div class="leader-card">
+      <div class="leader-card cx-ui-card">
         <div class="leader-photo">
           <div class="leader-photo-placeholder" data-ja="写真準備中" data-en="Photo coming soon">写真準備中</div>
           <!-- 写真が用意できたら以下に差し替え:
@@ -483,5 +484,6 @@
   })();
   </script>
 <!-- End of HubSpot Embed Code -->
+  <script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>
