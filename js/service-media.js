@@ -53,6 +53,7 @@ function startServiceVideo(poster) {
   shell.append(video, surface, controls);
   poster.replaceWith(shell);
   shell.closest('.cxg-service-card')?.classList.add('cxg-service-card--playing');
+  shell.closest('.cxsd-card')?.classList.add('cxsd-card--playing');
 
   function syncPlayState() {
     const playing = !video.paused && !video.ended;
