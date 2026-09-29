@@ -75,9 +75,7 @@
 /
 ├── / (ホーム)
 ├── /company (会社概要)
-├── /leadership (役員紹介) [既存]
-├── /our-thoughts (私たちの思い) [既存]
-├── /partners (主要関連会社) [既存]
+├── /about (ContentsXについて・代表メッセージ)
 ├── /recruit (採用情報) [既存]
 ├── /contact (お問い合わせ) [既存]
 ├── /privacy (プライバシーポリシー) ★新規

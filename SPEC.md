@@ -15,10 +15,10 @@
 |---|---|---|---|
 | トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + キャラ一体背景 + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
-| 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
-| Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
-| トップメッセージ | `message.html` | cta.js, dl-modal.js | 旧 our-thoughts を代表 黒宮 一人称メッセージにリニューアル。CSSは `our-thoughts.css` 流用（ot-* クラス）。旧 `our-thoughts.html` は `/message` への JS+meta リダイレクト |
-| 主要関連会社 | `partners.html` | script.js, dl-modal.js | 提携2社表示中（DM Solutions / KIRINZ）。ASOBISYSTEMは2026-07-08非表示 |
+| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表写真は素材待ちでブランド仮表示 |
+| トップメッセージ | `message.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
+| 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
+| 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
@@ -249,8 +249,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ## 11. パートナー企業ロゴ
 
-[partners.html](partners.html) で掲載:
-- 表示中: DM Solutions / KIRINZ
+[CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) に非表示箇所と復帰手順を記録。`partners.html` は現在転送のみで、以下は旧ページの素材に関する記録:
+- 旧掲載: DM Solutions / KIRINZ
 - **ASOBISYSTEMは2026-07-08にコメントアウトで非表示化**（`TEMP-HIDDEN-ASOBI-SYSTEM`マーカー、HTML内に残置。復活は該当ブロックのコメント解除のみ）
 - ロゴ画像: `material/images/partners/*.webp`
 - **背景透過済み**（PIL で RGB>=240を透明化）

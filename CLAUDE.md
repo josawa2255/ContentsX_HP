@@ -50,13 +50,17 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 |--------|---------|--------|
 | トップ | index.html | script.js, hero-new.js, wp-api.js, dl-modal.js |
 | 会社概要 | company.html | script.js, dl-modal.js |
-| 役員紹介 | leadership.html | script.js, dl-modal.js |
-| 私たちの思い | our-thoughts.html | dl-modal.js |
-| 主要関連会社 | partners.html | script.js, dl-modal.js |
+| ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |
+| トップメッセージ（非表示） | message.html | `/about#message` へ転送 |
+| 役員紹介（非表示） | leadership.html | `/about#message` へ転送 |
+| 関連会社（非表示） | partners.html | `/company` へ転送 |
+| 私たちの思い（旧URL） | our-thoughts.html | `/about#message` へ転送 |
 | 採用情報 | recruit.html | recruit.js, dl-modal.js |
 | お問い合わせ | contact.html | contact.js |
 | ニュース一覧 | news.html | wp-config.js, wp-api.js, script.js |
 | ニュース詳細 | news-detail.html | wp-config.js + インラインJS |
+
+企業案内で非表示にした導線、復帰手順、画像素材の扱いは [CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) を参照。
 
 ## bizmangaサブページ（contentsx.jp/bizmanga/）
 **現在は301リダイレクトのみ**。2026-04-27にBizMangaサイトが独立ドメイン `bizmanga.contentsx.jp` へ完全移行。
