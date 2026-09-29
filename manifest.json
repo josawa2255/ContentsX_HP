@@ -31,9 +31,9 @@
       "url": "/company"
     },
     {
-      "name": "代表メッセージ",
-      "short_name": "代表",
-      "url": "/message"
+      "name": "ContentsXについて",
+      "short_name": "私たち",
+      "url": "/about"
     },
     {
       "name": "お問い合わせ",

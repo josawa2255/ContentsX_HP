@@ -50,13 +50,17 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 |--------|---------|--------|
 | トップ | index.html | i18n.js, wp-api.js, home-2026.js（ヘッダー一時撤去・`nav.js` 非読込。仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
-| 役員紹介 | leadership.html | script.js, dl-modal.js |
-| 私たちの思い | our-thoughts.html | dl-modal.js |
-| 主要関連会社 | partners.html | script.js, dl-modal.js |
+| ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |
+| トップメッセージ（非表示） | message.html | `/about#message` へ転送 |
+| 役員紹介（非表示） | leadership.html | `/about#message` へ転送 |
+| 関連会社（非表示） | partners.html | `/company` へ転送 |
+| 私たちの思い（旧URL） | our-thoughts.html | `/about#message` へ転送 |
 | 採用情報 | recruit.html | recruit.js, dl-modal.js |
 | お問い合わせ | contact.html | contact.js |
 | ニュース一覧 | news.html | wp-config.js, wp-api.js, script.js |
 | ニュース詳細 | news-detail.html | wp-config.js + インラインJS |
+
+企業案内で非表示にした導線、復帰手順、画像素材の扱いは [CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) を参照。
 
 ## bizmangaサブページ（contentsx.jp/bizmanga/）
 **現在は301リダイレクトのみ**。2026-04-27にBizMangaサイトが独立ドメイン `bizmanga.contentsx.jp` へ完全移行。
@@ -91,6 +95,9 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 
 ## CSS設計
 - メインサイト: `css/style.css`（共通）+ ページ別CSS。トップは `css/home-2026.css`、他ページは `recruit.css` 等を使用。
+- トップ・サービス以外の下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
+- トップ・サービス・下層ページ共通のモーションとUIの判断基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページの登場演出は `js/sitewide-motion.js`。動きの軽減設定とJS無効時の表示を必ず確認する。
+- トップ・サービス・下層ページのフォント、色、文字階層、画像上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) が正本。再利用する変数・画像文字クラスは `css/brand-system-2026.css`。担当ごとに色・フォントの値を新設しない。
 
 ## 未完了タスク
 - なし（2026-07-19 contentsx-cms.php をお名前.comへアップロード完了。CORS修正・XML-RPC遮断とも本番検証済み — pingback/wp.*系メソッド消滅、両本番オリジンへのCORS応答確認。詳細はルート docs/operations/SECURITY.md）

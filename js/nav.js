@@ -16,10 +16,7 @@
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
       children: [
         { label: 'Contents Xについて', labelEn: 'About Contents X', href: 'about' },
-        { label: 'トップメッセージ',    labelEn: 'Top Message',      href: 'message' },
-        { label: '会社概要',          labelEn: 'Company',          href: 'company' },
-        { label: '役員紹介',          labelEn: 'Leadership',       href: 'leadership' },
-        { label: '主要関連会社',       labelEn: 'Partners',         href: 'partners' }
+        { label: '会社概要',          labelEn: 'Company',          href: 'company' }
       ]
     },
     { label: 'コラム',     labelEn: 'Column',       href: 'column',         indexHref: 'column' },
