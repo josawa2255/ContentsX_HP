@@ -16,16 +16,41 @@ var CX_PARAMS = new URLSearchParams(window.location.search);
 var HUBSPOT_PORTAL_ID = '48367061';
 var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
-// Contents X CRM の受信箱に問い合わせを流す（HubSpotへの送信とは独立）。
-// CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・活動が作られる。
-// ここのトークンは静的サイトに埋まる＝機密ではない。総当たり抑止用の門番で、
-// 実質のスパム対策はCRM側のレート制限とハニーポット。
-// ⚠️ ローテーション時は CRM側 Vercel の INBOUND_SECRET と必ず同時に更新する
-//    （片方だけだとCRM送信が全件401で落ちるが、HubSpot受付は正常に動き続ける）。
-// エンドポイントは Vercel の本番URL。独自ドメイン crm.contentsx.jp は
-// 割当が保留中（現在NXDOMAIN）のため、割当後にここを差し替える。
-var CRM_ENDPOINT = 'https://contentsx-crm.vercel.app/api/inbound/web';
-var CRM_TOKEN    = 'ENoK7H4O60a8KdKlTal12exoV2rqSNlIb841sj3dSeo=';
+// CRM（ビズカルテ）の受信箱へ写しを送る。送信は contact.html 末尾の貼り付けコード
+// （embed/inbound-v1.js）が行う。項目は各入力欄の data-crm-field で指定している。
+// 貼り付けコードは async なので、送信時にまだ読み込めていなければ読み込み完了を待って送る。
+// 例外は外へ出さない＝CRM 側が壊れていても HubSpot への送信とサンクス表示は止めない。
+// CRM に届かないことは画面に出ないため（BUGS #056）、届けられなかったときはコンソールに残す。
+function copyToCrm(form) {
+  try {
+    if (window.BizcarteInbound && typeof window.BizcarteInbound.sendForm === 'function') {
+      window.BizcarteInbound.sendForm(form);
+      return;
+    }
+    // ファイル名ではなく公開キーの属性で探す（貼り付けコードの版が変わってもここは直さなくてよい）
+    var s = document.querySelector('script[data-source-key]');
+    if (!s) {
+      console.warn('CRM inbound skipped: 貼り付けコードが見つかりません');
+      return;
+    }
+    var settled = false;
+    s.addEventListener('load', function () {
+      settled = true;
+      try {
+        if (window.BizcarteInbound) window.BizcarteInbound.sendForm(form);
+        else console.warn('CRM inbound skipped: 貼り付けコードは読み込めたが BizcarteInbound がありません');
+      } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
+    }, { once: true });
+    s.addEventListener('error', function () {
+      settled = true;
+      console.warn('CRM inbound skipped: 貼り付けコードを読み込めませんでした');
+    }, { once: true });
+    // 送信より前に読み込みが失敗・完了していると上のイベントは二度と来ないため、時間で見切って記録する
+    setTimeout(function () {
+      if (!settled && !window.BizcarteInbound) console.warn('CRM inbound skipped: 貼り付けコードが読み込めていません');
+    }, 8000);
+  } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
+}
 
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -70,39 +95,10 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     }
   };
 
-  // CRM受信箱へも送る（HubSpotとは独立。失敗しても送信者には影響させない＝
-  // CRMが落ちていてもHubSpot側の受付とサンクス表示は従来どおり動く）。
+  // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
   // ただし採用応募（recruit.html から ?position= 付きで遷移）は営業リードではないため送らない。
   var isRecruitApplication = !!CX_PARAMS.get('position');
-  if (!isRecruitApplication) {
-    try {
-      fetch(CRM_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + CRM_TOKEN
-        },
-        body: JSON.stringify({
-          site: 'contentsx',
-          company_name: company,
-          department: department,
-          full_name: fullName,
-          email: email,
-          message: message,
-          page_url: window.location.href,
-          utm_source: utmSource,
-          utm_medium: utmMedium,
-          utm_campaign: utmCampaign,
-          referrer: document.referrer || null,
-          hp: document.getElementById('cxWebsite') ? document.getElementById('cxWebsite').value : ''
-        })
-      }).catch(function (err) {
-        console.warn('CRM inbound failed (ignored):', err);
-      });
-    } catch (err) {
-      console.warn('CRM inbound skipped:', err);
-    }
-  }
+  if (!isRecruitApplication) copyToCrm(e.target);
 
   var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
     + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
