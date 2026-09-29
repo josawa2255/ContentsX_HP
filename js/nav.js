@@ -28,7 +28,9 @@
         { label: '会社概要',          labelEn: 'Company',          href: 'company' }
       ]
     },
-    { label: 'コラム',     labelEn: 'Column',       href: 'column',         indexHref: 'column' },
+    // コラム（/column）は 2026-09-29 から導線だけ一時非表示（一覧・記事ページと検索掲載はそのまま公開）。
+    // 戻すときは次の行のコメントを外す。経緯は CORPORATE-PAGE-VISIBILITY.md「コラムの導線」
+    // { label: 'コラム',     labelEn: 'Column',       href: 'column',         indexHref: 'column' },
     { label: '採用情報',   labelEn: 'Recruit',      href: 'recruit',        indexHref: 'recruit' },
     { label: 'お問い合わせ', labelEn: 'Contact',      href: 'contact',        indexHref: 'contact', cta: true }
   ];

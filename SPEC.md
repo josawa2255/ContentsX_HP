@@ -250,6 +250,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 一覧ページ `column.html` も build-c-columns.py が自動更新（Featured 1本 + カードグリッド + カテゴリチップ + ItemList JSON-LD）
 - マーカー: `<!-- BUILD:COLUMN_GRID -->` ... `<!-- /BUILD:COLUMN_GRID -->`
 - `/column/` アクセス時は `column/index.html` の meta refresh で `/column` (= column.html) へ転送
+- ⚠️ **2026-09-29 から導線だけ一時非表示**: 共通ナビ（`js/nav.js`）の「コラム」をコメントアウトした。一覧 `/column`・記事 `/column/{slug}`・sitemap・llms.txt・feed・WP からの自動ビルドは**そのまま公開**（URL を直接開ける・検索にも残る）。他ページからコラムへのリンクはナビの1か所だけだった。戻し方と経緯は [CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md)「コラムの導線」
 - `--skip-listing` で個別ページのみ生成可能
 
 ## 8. 制作事例モーダル（2026-09-29トップから撤去）
