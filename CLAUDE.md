@@ -33,7 +33,7 @@
 <script src="js/i18n.js" defer></script>
 <script src="js/nav.js" defer></script>
 ```
-i18n.js → nav.js の順序が必須。全10ページに適用済み。
+i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトップを除くページに適用済み。
 
 ### 特殊対応
 - `data-ph-ja` / `data-ph-en`: input placeholder の翻訳（contact.html）
@@ -48,7 +48,7 @@ i18n.js → nav.js の順序が必須。全10ページに適用済み。
 
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
-| トップ | index.html | i18n.js, nav.js, wp-api.js, home-2026.js（仕様は SPEC.md §3） |
+| トップ | index.html | i18n.js, wp-api.js, home-2026.js（ヘッダー一時撤去・`nav.js` 非読込。仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
 | 役員紹介 | leadership.html | script.js, dl-modal.js |
 | 私たちの思い | our-thoughts.html | dl-modal.js |
