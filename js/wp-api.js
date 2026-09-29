@@ -91,7 +91,10 @@
 
   async function loadNews() {
     const data = await apiFetch('/news?site=contentsx&per_page=50');
-    if (!data || !Array.isArray(data)) return;
+    if (!data || !Array.isArray(data)) {
+      window.dispatchEvent(new CustomEvent('wp-news-ready', { detail: { status: 'error' } }));
+      return;
+    }
 
     window.CX_NEWS_DATA = data;
 
@@ -200,6 +203,9 @@
     }
 
     console.log(`[WP-API] ニュース: ${displayData.length}/${data.length}件 rendered`);
+    window.dispatchEvent(new CustomEvent('wp-news-ready', {
+      detail: { status: displayData.length ? 'ready' : 'empty' }
+    }));
   }
 
   /* ── 初期化 ── */
