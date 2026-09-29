@@ -9,7 +9,7 @@
           <p>新規開拓、検索対策、顧客管理、採用支援。<br>見つけてもらうところから、売上につながる関係づくりまで。<br>4つのサービスで、営業と成長を支えます。</p>
           <a class="cxg-button" href="/contact">まずは相談する <span aria-hidden="true">→</span></a>
         </div>
-        <div class="cxg-hero__image"><img src="/material/service-2026/sales-hero.jpg" alt="データを確認しながら事業の成長を考えるビジネスパーソン" width="2048" height="768" fetchpriority="high"></div>
+        <div class="cxg-hero__image"><img src="/material/service-2026/sales-hero-v2.webp" alt="データを見ながら事業の成長を話し合うビジネスチーム" width="1672" height="941" fetchpriority="high"></div>
       </div>
     </div>
   </section>

@@ -256,16 +256,16 @@ GROUP_LINKS = {
 }
 COMING_SOON = {"bizaio", "bizkarte"}
 GROUP_VIDEOS = {
-    "bizanime": ("CduBxsawUkQ", "ビズアニメ制作事例「I eye」"),
-    "bizvideo": ("27xVmx23fpE", "ビズビデオ制作事例「私を置いて、記憶だけ残った街」"),
+    "bizanime": ("/material/service-2026/bizanime-ieye.mp4", "/material/service-2026/bizanime-ieye.ja.vtt", "ビズアニメ制作事例「I eye」"),
+    "bizvideo": ("/material/service-2026/bizvideo-memory-town.mp4", "/material/service-2026/bizvideo-memory-town.ja.vtt", "ビズビデオ制作事例「私を置いて、記憶だけ残った街」"),
 }
 
 
 def render_landing_visual(service: dict, image: str | None, dimensions: str) -> str:
     video = GROUP_VIDEOS.get(service["id"])
     if video:
-        video_id, title = video
-        return (f'<button class="cxg-video-play" type="button" data-youtube-id="{video_id}" '
+        video_src, caption_src, title = video
+        return (f'<button class="cxg-video-play" type="button" data-video-src="{video_src}" data-caption-src="{caption_src}" '
                 f'aria-label="{esc(title)}を音声付きで再生">'
                 f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">'
                 '<span class="cxg-video-play__icon" aria-hidden="true">▶</span>'
