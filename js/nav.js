@@ -7,7 +7,21 @@
   // ===== メニュー定義（ここだけ変えれば全ページ反映） =====
   var NAV_ITEMS = [
     { label: 'ホーム', labelEn: 'Home', href: '/', indexHref: '#hero' },
-    { label: 'サービス', labelEn: 'Services', href: '/services/', indexHref: '/services/' },
+    { label: 'サービス', labelEn: 'Services', href: '/services/', indexHref: '/services/',
+      children: [
+        { label: 'Sales X', labelEn: 'Sales X', href: '/services/sales-x/', children: [
+          { label: 'ビズフォーム', labelEn: 'BizForm', href: '/services/bizform/' },
+          { label: 'ビズAIO', labelEn: 'BizAIO', href: '/services/bizaio/' },
+          { label: 'ビズカルテ', labelEn: 'BizKarte', href: '/services/bizkarte/' },
+          { label: 'ビズ採用', labelEn: 'BizRecruit', href: '/services/bizrecruit/' }
+        ] },
+        { label: 'Creative X', labelEn: 'Creative X', href: '/services/creative-x/', children: [
+          { label: 'ビズマンガ', labelEn: 'BizManga', href: '/services/bizmanga/' },
+          { label: 'ビズアニメ', labelEn: 'BizAnime', href: '/services/bizanime/' },
+          { label: 'ビズビデオ', labelEn: 'BizVideo', href: '/services/bizvideo/' }
+        ] }
+      ]
+    },
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
       children: [
         { label: 'Contents Xについて', labelEn: 'About Contents X', href: 'about' },
@@ -49,6 +63,7 @@
     if (item.children && item.children.length > 0) {
       var wrapper = document.createElement('div');
       wrapper.className = 'nav-dropdown';
+      if (item.href === '/services/') wrapper.className += ' nav-dropdown--services';
 
       // 親リンク
       var a = document.createElement('a');
@@ -56,7 +71,8 @@
       a.href = resolveHref(rawHref);
       a.className = 'nav-link nav-dropdown-toggle';
       if ((isIndex && rawHref === '#hero') ||
-          (!rawHref.startsWith('#') && rawHref === currentFile)) {
+          (!rawHref.startsWith('#') && rawHref === currentFile) ||
+          (rawHref === '/services/' && path.startsWith('/services/'))) {
         a.className += ' active';
       }
       a.setAttribute('data-ja', item.label);
@@ -76,17 +92,43 @@
       sub.className = 'nav-dropdown-menu';
       var childActive = false;
       item.children.forEach(function(child) {
+        var group = child.children ? document.createElement('div') : null;
+        if (group) group.className = 'nav-submenu-group';
         var ca = document.createElement('a');
         var childHref = child.href;
         ca.href = resolveHref(childHref);
         ca.className = 'nav-dropdown-item';
-        if (!childHref.startsWith('#') && childHref === currentFile) {
+        if (group) ca.className += ' nav-submenu-parent';
+        if ((!childHref.startsWith('#') && childHref === currentFile) ||
+            path === childHref || path.startsWith(childHref)) {
           ca.className += ' active'; childActive = true;
         }
         ca.setAttribute('data-ja', child.label);
         ca.setAttribute('data-en', child.labelEn);
         ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
-        sub.appendChild(ca);
+        if (group) {
+          group.appendChild(ca);
+          var nested = document.createElement('div');
+          nested.className = 'nav-submenu';
+          child.children.forEach(function(grandchild) {
+            var ga = document.createElement('a');
+            ga.href = resolveHref(grandchild.href);
+            ga.className = 'nav-submenu-item';
+            if (path === grandchild.href || path.startsWith(grandchild.href)) {
+              ga.className += ' active';
+              ca.className += ' active';
+              childActive = true;
+            }
+            ga.setAttribute('data-ja', grandchild.label);
+            ga.setAttribute('data-en', grandchild.labelEn);
+            ga.textContent = currentLang === 'en' ? grandchild.labelEn : grandchild.label;
+            nested.appendChild(ga);
+          });
+          group.appendChild(nested);
+          sub.appendChild(group);
+        } else {
+          sub.appendChild(ca);
+        }
       });
       if (childActive) a.className += ' active';
       wrapper.appendChild(sub);
@@ -282,7 +324,7 @@
       dropdown.addEventListener('mouseleave', reset);
     };
     // サブメニュー項目クリックでメニュー閉じる
-    nav.querySelectorAll('.nav-dropdown-item').forEach(function(link) {
+    nav.querySelectorAll('.nav-dropdown-item, .nav-submenu-item').forEach(function(link) {
       link.addEventListener('click', function() {
         closeMenu();
         /* PCホバードロップダウンの強制閉じ */

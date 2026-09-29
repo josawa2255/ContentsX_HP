@@ -408,6 +408,61 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
   color: var(--accent);
 }
 
+/* サービス: 事業の紹介ページへ直接移動できる二段メニュー。 */
+.nav-dropdown--services .nav-dropdown-menu { overflow: visible; }
+.nav-submenu-group { position: relative; }
+.nav-submenu-group > .nav-dropdown-item::after,
+.nav-submenu-group > .nav-dropdown-item.active::after {
+  content: '›';
+  color: #52617a;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 400;
+}
+.nav-submenu {
+  position: absolute;
+  top: -1px;
+  left: calc(100% - 1px);
+  min-width: 210px;
+  padding: 8px 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 4px;
+  box-shadow: 0 16px 32px -8px rgba(26, 26, 26, .12);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-6px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+  z-index: 1;
+}
+.nav-submenu-group:hover .nav-submenu,
+.nav-submenu-group:focus-within .nav-submenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+.nav-submenu-item {
+  display: block;
+  padding: 12px 20px;
+  color: #263247;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: color .2s ease, background-color .2s ease;
+}
+.nav-submenu-item:hover,
+.nav-submenu-item:focus-visible,
+.nav-submenu-item.active {
+  color: #0a1b3f;
+  background: #f2f4f7;
+}
+.nav-submenu-item:focus-visible { outline: 2px solid #0a1b3f; outline-offset: -2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-submenu { transition: none; }
+}
+
 /* ---- セクションサイドナビ（ZOON風・右端固定） ---- */
 /* 2カラム: 左=矢印+ラベル  右=ドット */
 .section-dots {
@@ -3079,6 +3134,32 @@ html[lang="ja"] p {
 
 /* ドロワー内の問い合わせは他の項目と同じ行表示に戻す。 */
 @media (max-width: 1280px) {
+  .header .nav.open .nav-submenu {
+    position: static;
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+  .header .nav.open .nav-submenu-group > .nav-dropdown-item {
+    background: #f2f4f7;
+    font-weight: 700;
+  }
+  .header .nav.open .nav-submenu-item {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 24px 12px 64px;
+    border-bottom: 1px solid #e8e8e8;
+    font-size: 14px;
+    white-space: normal;
+  }
   .header .nav.open .nav-cta {
     background: #fff;
     border-radius: 0;
