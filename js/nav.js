@@ -6,12 +6,7 @@
 (function() {
   // ===== メニュー定義（ここだけ変えれば全ページ反映） =====
   var NAV_ITEMS = [
-    { label: 'ホーム', labelEn: 'Home', href: './', indexHref: '#hero',
-      children: [
-        { label: 'ニュース',        labelEn: 'News',          href: '#news' },
-        { label: '新作情報',         labelEn: 'Latest Works',  href: 'https://bizmanga.contentsx.jp/biz-library' }
-      ]
-    },
+    { label: 'ホーム', labelEn: 'Home', href: '/', indexHref: '#hero' },
     { label: 'サービス', labelEn: 'Services', href: '/services/', indexHref: '/services/' },
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
       children: [
@@ -97,17 +92,14 @@
       wrapper.appendChild(sub);
       nav.appendChild(wrapper);
     } else {
-      // 通常リンク（変更なし）
+      // 通常リンク
       var a = document.createElement('a');
-      var rawHref = item.href;
-      if (rawHref.startsWith('#')) {
-        a.href = isIndex ? rawHref : '/' + rawHref;
-      } else {
-        a.href = rawHref;
-      }
+      var rawHref = isIndex && item.indexHref ? item.indexHref : item.href;
+      a.href = resolveHref(rawHref);
       a.className = 'nav-link';
       if (item.cta) a.className += ' nav-cta';
-      if ((!rawHref.startsWith('#') && rawHref === currentFile) ||
+      if ((isIndex && rawHref === '#hero') ||
+          (!rawHref.startsWith('#') && rawHref === currentFile) ||
           (rawHref === '/services/' && path.startsWith('/services/'))) {
         a.className += ' active';
       }
