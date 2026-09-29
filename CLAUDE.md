@@ -4,6 +4,7 @@
 - GitHub: `josawa2255/ContentsX_HP` — **PUBLIC**
 - デプロイ先: GitHub Pages → contentsx.jp
 - DNS: お名前.com
+- Git運用・レビューとマージ許可: [github.md](github.md)（リポジトリ所有者本人の確認による例外を含む）
 
 > ⚠️ **WPプラグイン(PHP)はこのリポジトリにありません**（2026-08-04 分離）。
 > マスターは `~/Documents/contentX/web/contentsx-wp-plugin/contentsx-cms/contentsx-cms.php`
@@ -33,7 +34,7 @@
 <script src="js/i18n.js" defer></script>
 <script src="js/nav.js" defer></script>
 ```
-i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトップを除くページに適用済み。
+i18n.js → nav.js の順序が必須。トップを含む全ページで共通ヘッダーに適用済み。
 
 ### 特殊対応
 - `data-ph-ja` / `data-ph-en`: input placeholder の翻訳（contact.html）
@@ -48,7 +49,7 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
-| トップ | index.html | i18n.js, wp-api.js, home-2026.js（ヘッダー一時撤去・`nav.js` 非読込。仕様は SPEC.md §3） |
+| トップ | index.html | i18n.js, nav.js, wp-api.js, home-2026.js（共通ヘッダーを使用。仕様は SPEC.md §3） |
 | サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, services-ui.js, service-media.js, sitewide-motion.js（`tools/build-services.py` で生成。仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
 | ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |

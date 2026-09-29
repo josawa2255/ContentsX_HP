@@ -1,7 +1,9 @@
 /* Contents X home 2026 — image-led design with restrained, reusable motion */
 body.cxh-home { --accent:#07143b; --accent-light:rgba(7,20,59,.05); --accent-rgb:7,20,59; --text-primary:#07143b; --text-secondary:#172549; --border:#d9e4f2; color:#07143b; background:#fff; }
 .cxh-home { -webkit-font-smoothing:antialiased; }
+.cxh-home main { padding-top:64px; }
 .cxh-home main { overflow:clip; }
+.cxh-home main [id] { scroll-margin-top:80px; }
 .cxh-shell { width:min(100% - 80px, 1250px); margin-inline:auto; }
 .cxh-eyebrow { color:#102653; font-size:11px; font-weight:800; letter-spacing:.22em; line-height:1.5; }
 .cxh-button,.cxh-small-link,.cxh-pill-link { display:inline-flex; align-items:center; justify-content:space-between; gap:22px; min-height:48px; border-radius:100px; font-size:14px; font-weight:800; line-height:1.2; transition:transform .35s cubic-bezier(.2,.8,.2,1),background .35s,border-color .35s,box-shadow .35s; }
@@ -286,6 +288,9 @@ html[lang="en"] .cxh-hero h1 { font-size:clamp(40px,5vw,72px); letter-spacing:-.
   .cxh-hero-note { bottom:19%; }
   .cxh-hero-formula { font-size:clamp(25px,7vw,29px); }
   .cxh-service-item small br { display:none; }
+}
+@media (max-width:480px) {
+  .cxh-home main { padding-top:56px; }
 }
 @media (prefers-reduced-motion:reduce) {
   .cxh-home *, .cxh-home *::before,.cxh-home *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition-duration:.01ms !important; }

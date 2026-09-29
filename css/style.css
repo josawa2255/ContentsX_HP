@@ -183,6 +183,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
    Header — Apple風の白ヘッダー
    ============================================ */
 .header {
+  --accent: #07143b;
+  --accent-light: rgba(7, 20, 59, 0.06);
+  --text-primary: #07143b;
+  --text-secondary: #172549;
+  --text-muted: #68738a;
+  --border: #d9e4f2;
   position: fixed;
   top: 0;
   left: 0;
@@ -2989,4 +2995,58 @@ html[lang="ja"] p {
   line-break: strict;
   word-break: auto-phrase;
   overflow-wrap: break-word;
+}
+
+/* The shared navigation needs a drawer before the labels start wrapping. */
+@media (min-width: 769px) and (max-width: 1280px) {
+  .header-inner { padding-inline: 20px; }
+  .header .logo { flex-shrink: 0; }
+  .header .logo-img { height: 48px; max-width: none; }
+  .header .nav { display: none; }
+  .header .hamburger { display: flex; flex-shrink: 0; min-width: 48px; min-height: 48px; padding: 12px; }
+  .header .nav.open {
+    display: flex;
+    position: fixed;
+    inset: 64px 0 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 8px 0 80px;
+    overflow-y: auto;
+    background: #fff;
+    z-index: 10002;
+  }
+  .header .nav.open .nav-link,
+  .header .nav.open .nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 60px;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .header .nav.open .nav-dropdown { width: 100%; padding: 0; margin: 0; }
+  .header .nav.open .nav-dropdown-menu {
+    display: none;
+    position: static;
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+    padding: 0;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow: none;
+  }
+  .header .nav.open .nav-dropdown.is-open .nav-dropdown-menu { display: block; }
+  .header .nav.open .nav-dropdown-item { min-height: 52px; padding: 14px 44px; }
+  .header .hamburger.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .header .hamburger.is-open span:nth-child(2) { opacity: 0; }
+  .header .hamburger.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  body.nav-locked { overflow: hidden; }
 }
