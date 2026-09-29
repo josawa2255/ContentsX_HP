@@ -387,7 +387,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - UIとモーションの共通基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページは `js/sitewide-motion.js` がセクションの1回だけの登場演出を担う。JS無し・動きの軽減設定時は常時表示する。
 - フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` から読み込み、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
 - 共通の小部品は `cx-ui-surface`（淡色面と枠）、`cx-ui-pill`（丸い外形）、`cx-ui-card`（カード反応）、`cx-ui-action`（操作反応）。ページ固有クラスは配置・内容を担当する。旧生成コラムカード `cx-col-card` の動きは生成テンプレート互換のため保持する。
-- 下層ページの確認結果とページ別の調整範囲は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に記録。採用ヒーローはPC/SP専用の生成WebP（架空の制作チーム）を使用。会社概要の旧 `js/script.js` は不要なホーム専用処理によるエラーを避けるため外し、共通ナビは `js/nav.js` で動かす。
+- 下層ページの確認結果とページ別の調整範囲は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に記録。採用ヒーローはPC/SP専用の生成WebP、会社概要とコラム一覧にも制作・会議イメージの生成WebPを使用。いずれも社内写真を雰囲気の参考にした架空の人物・場所で、写真の転載ではない。会社概要の旧 `js/script.js` は不要なホーム専用処理によるエラーを避けるため外し、共通ナビは `js/nav.js` で動かす。
 - ニュース一覧は `js/wp-api.js` の `wp-news-ready` イベントを受け、`detail.status` が `ready` / `empty` / `error` のいずれかで表示を切り替える。`wp-data-ready` は作品取得完了の通知であり、ニュース完了の判定には使わない。コラム記事の配色と書体は `tools/templates/c-column.html.tpl` と既存の生成HTMLへ同時に適用する。
 
 ## 14. 参照ドキュメント

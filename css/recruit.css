@@ -18,7 +18,7 @@
   background-size: cover;
   background-position: center 45%;
   background-repeat: no-repeat;
-  background-image: url('../material/images/recruit/hero-2026.webp');
+  background-image: url('../material/images/recruit/hero-team-2026.webp');
   z-index: 0;
 }
 .rc-hero-overlay {
@@ -26,6 +26,17 @@
   inset: 0;
   background: rgba(0,0,0,0.35);
   z-index: 1;
+}
+.rc-hero-image-note {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  z-index: 3;
+  margin: 0;
+  color: rgba(255,255,255,.85);
+  font-size: 11px;
+  line-height: 1.4;
+  text-shadow: 0 1px 5px rgba(7,20,59,.8);
 }
 
 /* 中央テキスト */
@@ -782,7 +793,7 @@
     min-height: 100dvh;
   }
   .rc-hero-bg {
-    background-image: url('../material/images/recruit/hero-2026-mobile.webp');
+    background-image: url('../material/images/recruit/hero-team-2026-mobile.webp');
     background-position: center 40%;
   }
   .rc-hero-center {
