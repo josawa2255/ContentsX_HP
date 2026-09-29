@@ -2421,6 +2421,26 @@ a.news-thumb:hover img { transform: scale(1.05); }
     max-width: 100%;
   }
 }
+
+/* 会社情報は狭い画面で項目名と内容を縦に並べ、長い社名も読みやすくする。 */
+@media (max-width: 480px) {
+  .company-info-row,
+  body.cx-sitewide .company--profile .company-info .company-info-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .company-info-row dt {
+    flex: none;
+    padding-top: 0;
+  }
+  body.cx-sitewide .company--profile .company-info .company-info-row dt {
+    flex-basis: auto;
+  }
+  .company-info-row dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
 /* ============================================
    CTA
    ============================================ */
