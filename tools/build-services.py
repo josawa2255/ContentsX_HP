@@ -178,21 +178,12 @@ def render_list(services: list[dict], groups: list[dict]) -> str:
     by_id = {group["id"]: group for group in groups}
     ordered = [by_id[group_id] for group_id in ("creative", "sales") if group_id in by_id]
     ordered += [group for group in groups if group["id"] not in {item["id"] for item in ordered}]
-    jump_links = "".join(
-        f'<a class="cxsd-jump cxsd-jump--{esc(group["id"])}" href="/services/{esc(group["id"])}-x/">'
-        f'<img class="cxsd-jump__image" src="{esc(DIRECTORY_IMAGES[group["id"]][0])}" alt="" '
-        f'width="{DIRECTORY_IMAGES[group["id"]][1]}" height="{DIRECTORY_IMAGES[group["id"]][2]}">'
-        f'<span class="cxsd-jump__content"><span class="cxsd-jump__index">{index:02} / BUSINESS FIELD</span>'
-        f'<strong>{esc(group["name"])}</strong><small>{esc(group["tagline"])}</small>'
-        f'<span class="cxsd-jump__cta">{esc(group["name"])} のページを見る <span aria-hidden="true">↗</span></span></span></a>'
-        for index, group in enumerate(ordered, 1)
-    )
     sections = []
     for index, group in enumerate(ordered, 1):
         if index > 1:
             sections.append(f'<div class="cxsd-next"><span>NEXT FIELD</span><strong>続いて {esc(group["name"])} のサービス</strong></div>')
         sections.append(render_directory_group(group, services, index))
-    return render_template("service-list.html.tpl", {"JUMP_LINKS": jump_links, "GROUPS": "\n".join(sections)})
+    return render_template("service-list.html.tpl", {"GROUPS": "\n".join(sections)})
 
 
 DIRECTORY_IMAGES = {
@@ -247,10 +238,12 @@ def render_directory_group(group: dict, services: list[dict], index: int) -> str
     members = [service for service in services if service["group"] == group_id]
     cards = "\n".join(render_directory_card(service, number) for number, service in enumerate(members, 1))
     name = esc(group["name"])
+    heading = "h1" if index == 1 else "h2"
+    image_loading = 'fetchpriority="high"' if index == 1 else 'loading="lazy"'
     return f'''<section class="cxsd-group cxsd-group--{esc(group_id)}" id="list-group-{esc(group_id)}" aria-labelledby="cxsd-{esc(group_id)}-title">
-  <div class="cxsd-group__intro"><a class="cxsd-group__image" href="/services/{esc(group_id)}-x/" aria-label="{name} の事業ページを見る"><img src="{image}" alt="" width="{width}" height="{height}" loading="lazy"><span>事業ページを見る <span aria-hidden="true">↗</span></span></a>
+  <div class="cxsd-group__intro"><div class="cxsd-group__image"><img src="{image}" alt="" width="{width}" height="{height}" {image_loading} decoding="async"></div>
     <div class="cxsd-group__copy"><span class="cxsd-group__number">{index:02} / BUSINESS FIELD</span><p class="cxsd-group__eyebrow">{esc(group['eyebrow'])}</p>
-      <h2 id="cxsd-{esc(group_id)}-title">{name}</h2><strong>{esc(group['tagline'])}</strong><p>{esc(group['summary'])}</p>
+      <{heading} id="cxsd-{esc(group_id)}-title">{name}</{heading}><strong>{esc(group['tagline'])}</strong><p>{esc(group['summary'])}</p>
       <a class="cxsd-group__link" href="/services/{esc(group_id)}-x/">{name} を詳しく見る <span aria-hidden="true">↗</span></a>
     </div></div>
   <div class="cxs-container cxsd-group__services"><div class="cxsd-group__services-head"><span>OUR SERVICES</span><h3>{name} のサービス</h3><p>気になるサービスから、公式サイトや制作事例をご覧ください。</p></div>
