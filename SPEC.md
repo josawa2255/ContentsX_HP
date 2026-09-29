@@ -231,6 +231,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 5. `touchend` イベントも `click` と一緒に登録（iOS Safari対策）
 6. **`.header` に `isolation: isolate`** + `.header-right` に `position: relative; z-index: 10`
 7. **320px (iPhone SE) まで想定**
+8. メニューの開閉とリンク選択後の閉鎖は `js/nav.js` のみが担当する。`js/script.js` に同じ `#hamburger` / `#nav` のハンドラを置くと1回のタップで開閉が相殺される。
 
 ### 7.2 ドロップダウン仕様
 - PC: hover で展開
