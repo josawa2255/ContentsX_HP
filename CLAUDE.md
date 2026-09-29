@@ -4,6 +4,7 @@
 - GitHub: `josawa2255/ContentsX_HP` — **PUBLIC**
 - デプロイ先: GitHub Pages → contentsx.jp
 - DNS: お名前.com
+- Git運用・レビューとマージ許可: [github.md](github.md)（リポジトリ所有者本人の確認による例外を含む）
 
 > ⚠️ **WPプラグイン(PHP)はこのリポジトリにありません**（2026-08-04 分離）。
 > マスターは `~/Documents/contentX/web/contentsx-wp-plugin/contentsx-cms/contentsx-cms.php`
