@@ -10,7 +10,7 @@
       children: [
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
         { label: '新作情報',         labelEn: 'Latest Works',  href: 'https://bizmanga.contentsx.jp/biz-library' },
-        { label: 'サービス',         labelEn: 'Services',      href: '#about' }
+        { label: 'サービス',         labelEn: 'Services',      href: '/services/' }
       ]
     },
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
