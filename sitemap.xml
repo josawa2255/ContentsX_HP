@@ -79,6 +79,8 @@
 
   <!-- BUILD:SERVICES -->
   <url><loc>https://contentsx.jp/services/</loc></url>
+  <url><loc>https://contentsx.jp/services/sales-x/</loc></url>
+  <url><loc>https://contentsx.jp/services/creative-x/</loc></url>
   <url><loc>https://contentsx.jp/services/bizform/</loc></url>
   <url><loc>https://contentsx.jp/services/bizaio/</loc></url>
   <url><loc>https://contentsx.jp/services/bizkarte/</loc></url>

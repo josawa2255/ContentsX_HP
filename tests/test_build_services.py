@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import pathlib
+import re
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -38,15 +39,19 @@ class ServiceBuildTests(unittest.TestCase):
             builder.validate(services, self.groups)
             self.assertEqual(builder.render_home().count('class="cxs-card"'), 0)
             self.assertIn('href="/services/"', builder.render_home())
-            self.assertEqual(builder.render_list(services, self.groups).count('class="cxs-card"'), count)
-            self.assertEqual(builder.render_group(sales, services, "test").count('class="cxs-card"'), count - 3)
+            self.assertEqual(len(re.findall(r'<article class="cxs-card(?:\s|\")', builder.render_list(services, self.groups))), count)
+            self.assertEqual(len(re.findall(r'<article class="cxs-card(?:\s|\")', builder.render_group(sales, services, "test"))), count - 3)
 
     def test_hover_photos_are_decorative_and_data_driven(self):
         for service in self.services:
             card = builder.render_card(service, "test")
             self.assertIn('class="cxs-card__photo" aria-hidden="true"', card)
             self.assertIn(service["hoverImage"], card)
-            self.assertIn(service["hoverSummary"], card)
+            if service["id"] in builder.COMING_SOON:
+                self.assertIn("乞うご期待", card)
+                self.assertNotIn('class="cxs-card__detail-link"', card)
+            else:
+                self.assertIn(service["hoverSummary"], card)
         detail = builder.render_detail(self.services[0], self.services)
         self.assertIn('alt=""', detail)
         self.assertIn(self.services[0]["hoverImage"], detail)
@@ -58,6 +63,21 @@ class ServiceBuildTests(unittest.TestCase):
         self.assertNotIn("よくある質問", rendered)
         self.assertNotIn("導入の流れ", rendered)
         self.assertIn("role=\"tabpanel\"", rendered)
+
+    def test_group_landings_use_official_creative_destinations(self):
+        sales = builder.render_group_landing("sales", self.services)
+        creative = builder.render_group_landing("creative", self.services)
+        self.assertEqual(sales.count('<article class="cxg-service-card '), 4)
+        self.assertEqual(creative.count('<article class="cxg-service-card '), 3)
+        self.assertIn('href="https://bizmanga.contentsx.jp/bizanime"', creative)
+        self.assertIn('href="https://ichioshi.contentsx.jp/service.html"', sales)
+        self.assertIn('data-video-src="/material/service-2026/bizanime-ieye.mp4"', creative)
+        self.assertIn('data-video-src="/material/service-2026/bizvideo-memory-town.mp4"', creative)
+        self.assertNotIn('youtube.com/watch', creative)
+        self.assertIn('/material/service-2026/manga-justice-cover.webp', creative)
+        self.assertIn('乞うご期待', sales)
+        self.assertIn('class="cxg-button cxg-button--outline js-dl-trigger"', creative)
+        self.assertIn('/services/creative-x/', sales)
 
     def test_sitemap_update_preserves_other_sections(self):
         old = (ROOT / "sitemap.xml").read_text(encoding="utf-8")

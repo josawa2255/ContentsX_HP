@@ -109,28 +109,32 @@ def render_tags(tags: list[str], class_name: str = "cxs-tags") -> str:
 def render_card(service: dict, context: str) -> str:
     control_id = f"cxs-{context}-{service['slug']}-more"
     name = esc(service["name"])
-    href = esc(service["href"])
+    href = esc(GROUP_LINKS.get(service["id"], service["href"]))
+    coming_soon = service["id"] in COMING_SOON
+    detail_button = "" if coming_soon else f'<a class="cxs-icon-button" href="{href}" aria-label="{name}の詳細を見る">{render_icon("arrow-right")}</a>'
+    more_copy = "乞うご期待" if coming_soon else esc(service["hoverSummary"])
+    more_link = "" if coming_soon else f'<a class="cxs-card__detail-link" href="{href}">詳しく見る <span aria-hidden="true">→</span></a>'
     photo = (f'<span class="cxs-card__photo" aria-hidden="true" style="background-image:url(\'{esc(service["hoverImage"])}\')"></span>'
              if service.get("hoverImage") else "")
-    return f'''<article class="cxs-card" data-group="{esc(service['group'])}" data-featured="{str(service['featured']).lower()}">
+    return re.sub(r"(?m)^[ \t]+$", "", f'''<article class="cxs-card{' cxs-card--coming-soon' if coming_soon else ''}" data-group="{esc(service['group'])}" data-featured="{str(service['featured']).lower()}"{' tabindex="0"' if coming_soon else ''}>
   <div class="cxs-card__intro">
     <div class="cxs-card__icon">{render_icon(service['icon'])}</div>
     <h3>{name}</h3>
     <p class="cxs-card__short">{esc(service['shortCopy'])}</p>
     <div class="cxs-card__actions">
-      <button class="cxs-card__expand" type="button" aria-expanded="false" aria-controls="{control_id}">概要を見る</button>
-      <a class="cxs-icon-button" href="{href}" aria-label="{name}の詳細を見る">{render_icon('arrow-right')}</a>
+      <button class="cxs-card__expand" type="button" aria-expanded="false" aria-controls="{control_id}">{'公開予定を見る' if coming_soon else '概要を見る'}</button>
+      {detail_button}
     </div>
   </div>
   <div class="cxs-card__more" id="{control_id}">
     {photo}
     <button class="cxs-card__close" type="button" aria-label="{name}の概要を閉じる">閉じる ×</button>
     <h4>{name}</h4>
-    <p>{esc(service['hoverSummary'])}</p>
-    {render_tags(service['tags'], 'cxs-tags cxs-tags--on-accent')}
-    <a class="cxs-card__detail-link" href="{href}">詳しく見る <span aria-hidden="true">→</span></a>
+    <p>{more_copy}</p>
+    {'' if coming_soon else render_tags(service['tags'], 'cxs-tags cxs-tags--on-accent')}
+    {more_link}
   </div>
-</article>'''
+</article>''')
 
 
 def render_group(group: dict, services: list[dict], context: str) -> str:
@@ -140,10 +144,13 @@ def render_group(group: dict, services: list[dict], context: str) -> str:
     group_id = esc(group["id"])
     heading_id = f"cxs-{context}-{group_id}-title"
     cards = "\n".join(render_card(service, context) for service in members)
+    group_name = esc(group["name"])
+    group_heading = (f'<a href="/services/{group_id}-x/">{group_name}</a>'
+                     if context == "list" else group_name)
     return f'''<section class="cxs-section cxs-service-group" id="{context}-group-{group_id}" data-group="{group_id}" aria-labelledby="{heading_id}">
   <div class="cxs-container">
     <div class="cxs-section-header">
-      <div><p class="cxs-eyebrow">{esc(group.get('eyebrow', group['name']))}</p><h2 id="{heading_id}">{esc(group['name'])}</h2><p class="cxs-section-header__tagline">{esc(group['tagline'])}</p></div>
+      <div><p class="cxs-eyebrow">{esc(group.get('eyebrow', group['name']))}</p><h2 id="{heading_id}">{group_heading}</h2><p class="cxs-section-header__tagline">{esc(group['tagline'])}</p></div>
       <p class="cxs-section-header__summary">{esc(group['summary'])}</p>
     </div>
     <div class="cxs-service-grid">{cards}</div>
@@ -180,10 +187,10 @@ def render_detail_sections(service: dict, services: list[dict]) -> str:
     if service.get("features"):
         tabs.append(("features", "できること"))
         panels.append(("features", "<h3>サービスでできること</h3>" + render_list_items(service["features"])))
-    related = [item for item in services if item["group"] == service["group"] and item["id"] != service["id"]]
+    related = [item for item in services if item["group"] == service["group"] and item["id"] != service["id"] and item["id"] not in COMING_SOON]
     if related:
         tabs.append(("related", "関連サービス"))
-        links = "".join(f'<li><a href="{esc(item["href"])}">{esc(item["name"])} <span aria-hidden="true">→</span></a></li>' for item in related)
+        links = "".join(f'<li><a href="{esc(GROUP_LINKS.get(item["id"], item["href"]))}">{esc(item["name"])} <span aria-hidden="true">→</span></a></li>' for item in related)
         panels.append(("related", f'<h3>同じカテゴリのサービス</h3><ul class="cxs-related-list">{links}</ul>'))
     buttons = "".join(
         f'<button type="button" role="tab" id="cxs-tab-{slug}-{key}" aria-controls="cxs-panel-{slug}-{key}" aria-selected="{str(index == 0).lower()}" tabindex="{0 if index == 0 else -1}">{label}</button>'
@@ -209,7 +216,9 @@ def render_detail_sections(service: dict, services: list[dict]) -> str:
 
 
 def render_detail(service: dict, services: list[dict]) -> str:
-    visual = (f'<img src="{esc(service["image"])}" alt="{esc(service["name"])}のサービスイメージ" loading="lazy">'
+    visual = (render_landing_visual(service, GROUP_IMAGES[service["id"]], f' width="{GROUP_IMAGE_SIZES[service["id"]][0]}" height="{GROUP_IMAGE_SIZES[service["id"]][1]}"')
+              if service["id"] in GROUP_VIDEOS else
+              f'<img src="{esc(service["image"])}" alt="{esc(service["name"])}のサービスイメージ" loading="lazy">'
               if service.get("image") else
               f'<img src="{esc(service["hoverImage"])}" alt="" loading="lazy">'
               if service.get("hoverImage") else render_icon(service["icon"], "cxs-detail-hero__visual-icon"))
@@ -222,9 +231,112 @@ def render_detail(service: dict, services: list[dict]) -> str:
         "TAGS": render_tags(service["tags"]),
         "ICON": render_icon(service["icon"]),
         "VISUAL_ICON": visual,
+        "VISUAL_CLASS": f' cxs-detail-hero__visual--{esc(service["id"])}' if service["id"] in (*GROUP_VIDEOS, "bizmanga", "bizrecruit") else "",
         "DETAIL_SECTIONS": render_detail_sections(service, services),
     }
     return render_template("service-detail.html.tpl", values)
+
+
+GROUP_IMAGES = {
+    "bizform": "/material/service-2026/bizform-research-v2.webp",
+    "bizrecruit": "/material/service-2026/bizrecruit-service.webp",
+    "bizmanga": "/material/service-2026/manga-justice-cover.webp",
+    "bizanime": "/material/service-2026/bizanime-ieye.jpg",
+    "bizvideo": "/material/service-2026/bizvideo-memory-town.jpg",
+}
+GROUP_IMAGE_SIZES = {
+    "bizform": (1672, 941), "bizaio": (1672, 941),
+    "bizkarte": (1672, 941), "bizrecruit": (1672, 941),
+    "bizmanga": (1407, 2000), "bizanime": (1280, 720), "bizvideo": (1280, 720),
+}
+GROUP_LINKS = {
+    "bizmanga": "https://bizmanga.contentsx.jp/",
+    "bizanime": "https://bizmanga.contentsx.jp/bizanime",
+    "bizrecruit": "https://ichioshi.contentsx.jp/service.html",
+}
+COMING_SOON = {"bizaio", "bizkarte"}
+GROUP_VIDEOS = {
+    "bizanime": ("/material/service-2026/bizanime-ieye.mp4", "/material/service-2026/bizanime-ieye.ja.vtt", "ビズアニメ制作事例「I eye」"),
+    "bizvideo": ("/material/service-2026/bizvideo-memory-town.mp4", "/material/service-2026/bizvideo-memory-town.ja.vtt", "ビズビデオ制作事例「私を置いて、記憶だけ残った街」"),
+}
+
+
+def render_landing_visual(service: dict, image: str | None, dimensions: str) -> str:
+    video = GROUP_VIDEOS.get(service["id"])
+    if video:
+        video_src, caption_src, title = video
+        return (f'<button class="cxg-video-play" type="button" data-video-src="{video_src}" data-caption-src="{caption_src}" '
+                f'aria-label="{esc(title)}を音声付きで再生">'
+                f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">'
+                '<span class="cxg-video-play__icon" aria-hidden="true">▶</span>'
+                '<span class="cxg-video-play__caption" aria-hidden="true">動画を再生</span></button>')
+    return (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">'
+            if image else render_icon(service["icon"], "cxg-service-card__icon"))
+
+
+def render_coming_soon() -> str:
+    return '<div class="cxg-coming-soon"><strong>乞うご期待</strong><span>サービスのご案内を準備中です</span></div>'
+
+
+def render_landing_card(service: dict, index: int) -> str:
+    service_id = service["id"]
+    image = GROUP_IMAGES.get(service_id, service.get("hoverImage") or service.get("image"))
+    href = GROUP_LINKS.get(service_id, service["href"])
+    # Decorative card imagery comes from approved site assets, never the AI mockup screenshots.
+    size = GROUP_IMAGE_SIZES.get(service_id)
+    dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    image_markup = render_landing_visual(service, image, dimensions)
+    visual_class = "" if image else " cxg-service-card__image--icon"
+    coming_soon = service_id in COMING_SOON
+    action = (f'<button class="cxg-coming-soon__trigger" type="button" aria-label="{esc(service["name"])}は準備中です">公開予定 <span aria-hidden="true">→</span></button>'
+              if coming_soon else f'<a href="{esc(href)}">詳しく見る <span aria-hidden="true">→</span></a>')
+    return re.sub(r"(?m)^[ \t]+$", "", f'''<article class="cxg-service-card cxg-service-card--{service_id}{' cxg-service-card--coming-soon' if coming_soon else ''}">
+  <div class="cxg-service-card__image{visual_class}">{image_markup}</div>
+  <div class="cxg-service-card__body"><small>{index:02}</small><h3>{esc(service['name'])}</h3>
+    <p>{esc(service['hoverSummary'])}</p>{action}</div>
+  {render_coming_soon() if coming_soon else ''}
+</article>''')
+
+
+def render_landing_row(service: dict, index: int) -> str:
+    image = GROUP_IMAGES.get(service["id"], service.get("hoverImage") or service.get("image"))
+    size = GROUP_IMAGE_SIZES.get(service["id"])
+    dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else
+              render_icon(service["icon"], "cxg-service-card__icon"))
+    coming_soon = service["id"] in COMING_SOON
+    action = (f'<button class="cxg-coming-soon__trigger" type="button" aria-label="{esc(service["name"])}は準備中です">公開予定 →</button>'
+              if coming_soon else f'<a href="{esc(GROUP_LINKS.get(service["id"], service["href"]))}">詳しく見る →</a>')
+    return re.sub(r"(?m)^[ \t]+$", "", f'''<article class="cxg-detail-row{' cxg-detail-row--coming-soon' if coming_soon else ''}">
+  <div class="cxg-detail-row__visual{' cxg-detail-row__visual--icon' if not image else ''}">{visual}
+    {render_coming_soon() if coming_soon else f'<div class="cxg-detail-row__hover"><strong>{esc(service["name"])}</strong><span>{esc(service["hoverSummary"])}</span></div>'}</div>
+  <div class="cxg-detail-row__copy"><span>{index:02} / {esc(service['name'])}</span><h3>{esc(service['shortCopy'])}</h3>
+    <p>{esc(service['hoverSummary'])}</p>{action}</div>
+</article>''')
+
+
+def render_creative_mini(service: dict) -> str:
+    href = GROUP_LINKS.get(service["id"], service["href"])
+    image = GROUP_IMAGES.get(service["id"], service.get("hoverImage") or service.get("image"))
+    size = GROUP_IMAGE_SIZES.get(service["id"])
+    dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
+    visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else
+              render_icon(service["icon"], "cxg-service-card__icon"))
+    return f'<a href="{esc(href)}">{visual}<span>{esc(service["name"])}</span></a>'
+
+
+def render_group_landing(group_id: str, services: list[dict]) -> str:
+    sales = [item for item in services if item["group"] == "sales"]
+    creative = [item for item in services if item["group"] == "creative"]
+    if group_id == "sales":
+        return render_template("service-group-sales.html.tpl", {
+            "SALES_CARDS": "\n".join(render_landing_card(item, i) for i, item in enumerate(sales, 1)),
+            "SALES_ROWS": "\n".join(render_landing_row(item, i) for i, item in enumerate(sales, 1)),
+            "CREATIVE_MINI_CARDS": "\n".join(render_creative_mini(item) for item in creative),
+        })
+    return render_template("service-group-creative.html.tpl", {
+        "CREATIVE_CARDS": "\n".join(render_landing_card(item, i) for i, item in enumerate(creative, 1)),
+    })
 
 
 def script_json(data: dict) -> str:
@@ -249,13 +361,15 @@ def extract_block(source: str, tag: str) -> str:
     return source[opening.start(): closing + len(tag) + 3]
 
 
-def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str) -> str:
+def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str, cta_mount: bool = True) -> str:
     canonical = f"{SITE}{path}"
     page = render_template("service-page.html.tpl", {
         "TITLE": esc(title), "DESCRIPTION": esc(description), "CANONICAL": esc(canonical),
         "JSON_LD": "\n  ".join(script_json(item) for item in json_ld),
         "HEADER": header, "FOOTER": footer, "BODY": body,
     })
+    if not cta_mount:
+        page = page.replace('  <section id="cxCtaMount"></section>\n', '')
     return page.replace("<!DOCTYPE html>", f"<!DOCTYPE html>\n{SIGNATURE}", 1)
 
 
@@ -330,6 +444,14 @@ def build(check: bool = False) -> int:
         list_body, "サービス一覧｜Contents X", "Sales XとCreative Xのサービス一覧。新しい商談づくり、検索・AI対策、顧客管理、マンガ・アニメ・映像による価値訴求を支援します。",
         "/services/", [breadcrumbs_json([("ホーム", SITE + "/"), ("サービス", SITE + "/services/")]), list_schema], header, footer,
     )
+    for group in groups:
+        group_path = f"/services/{group['id']}-x/"
+        outputs[SERVICES_DIR / f"{group['id']}-x" / "index.html"] = render_page(
+            render_group_landing(group["id"], services),
+            f"{group['name']}｜Contents X", f"{group['name']}。{group['summary']}", group_path,
+            [breadcrumbs_json([("ホーム", SITE + "/"), ("サービス", SITE + "/services/"), (group["name"], SITE + group_path)])],
+            header, footer, cta_mount=False,
+        )
     for service in services:
         path = service["href"]
         service_schema = {"@context": "https://schema.org", "@type": "Service", "name": service["name"],
@@ -343,13 +465,13 @@ def build(check: bool = False) -> int:
         )
     sitemap_path = ROOT / "sitemap.xml"
     sitemap = sitemap_path.read_text(encoding="utf-8")
-    urls = ["/services/"] + [service["href"] for service in services]
+    urls = ["/services/"] + [f"/services/{group['id']}-x/" for group in groups] + [service["href"] for service in services]
     entries = "\n".join(f"  <url><loc>{SITE}{path}</loc></url>" for path in urls)
     outputs[sitemap_path] = replace_marked(sitemap, "SERVICES", entries)
     changed = sum(write_output(path, content, check) for path, content in outputs.items())
     stale_files = [
         page for page in SERVICES_DIR.glob("*/index.html")
-        if page.parent.name not in {service["slug"] for service in services}
+        if page.parent.name not in ({service["slug"] for service in services} | {f"{group['id']}-x" for group in groups})
         and SIGNATURE in page.read_text(encoding="utf-8")
     ]
     for page in stale_files:

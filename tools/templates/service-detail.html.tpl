@@ -12,7 +12,7 @@
           {{TAGS}}
           <div class="cxs-detail-hero__actions"><a class="cxs-button" href="/contact">お問い合わせ <span aria-hidden="true">→</span></a><a class="cxs-button cxs-button--outline" href="/services/">サービス一覧へ</a></div>
         </div>
-        <div class="cxs-detail-hero__visual">{{VISUAL_ICON}}</div>
+        <div class="cxs-detail-hero__visual{{VISUAL_CLASS}}">{{VISUAL_ICON}}</div>
       </div>
     </div>
   </section>

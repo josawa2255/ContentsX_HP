@@ -42,6 +42,8 @@
 .cxs-icon-button:focus-visible { position: relative; z-index: 3; background: #fff; }
 .cxs-icon-button .cxs-icon { width: 20px; height: 20px; }
 .cxs-card__more { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; padding: clamp(22px,2.4vw,30px); background: var(--cxs-card-overlay); color: #fff; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .2s ease, visibility .2s ease, transform .2s ease; }
+.cxs-card--coming-soon .cxs-card__more { background:linear-gradient(135deg,#06183f,#005bfa); }
+.cxs-card--coming-soon:focus-within .cxs-card__more { opacity:1; visibility:visible; transform:none; }
 .cxs-card__photo { position: absolute; inset: 0; z-index: 0; background-position: center; background-size: cover; opacity: .18; filter: saturate(.8); transform: scale(1.02); pointer-events: none; }
 .cxs-card__more > :not(.cxs-card__photo) { position: relative; z-index: 1; }
 @media (hover:hover) and (pointer:fine) {
@@ -76,6 +78,11 @@
 .cxs-detail-hero__visual { display: grid; place-items: center; aspect-ratio: 1.15; border-radius: var(--cxs-radius-lg); background: radial-gradient(circle at 80% 18%,#fff 0 3%,transparent 42%),linear-gradient(135deg,var(--cxs-group-soft),#fff); border: 1px solid var(--cxs-border); box-shadow: var(--cxs-shadow-card); }
 .cxs-detail-hero__visual-icon { width: 43%; height: 43%; color: var(--cxs-group); filter: drop-shadow(0 16px 18px rgba(6,20,61,.12)); }
 .cxs-detail-hero__visual img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.cxs-detail-hero__visual--bizanime,.cxs-detail-hero__visual--bizvideo,.cxs-detail-hero__visual--bizrecruit { aspect-ratio:16/9; overflow:hidden; }
+.cxs-detail-hero__visual--bizmanga { background:#102035; overflow:hidden; }
+.cxs-detail-hero__visual--bizmanga img { object-fit:contain; }
+.cxs-detail-hero__visual .cxg-video-play { border-radius:inherit; }
+.cxs-detail-hero__visual iframe { display:block; width:100%; height:100%; border:0; border-radius:inherit; }
 .cxs-detail-content { background: var(--cxs-surface); }
 .cxs-tabs { display: none; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--cxs-border); }
 .cxs-js .cxs-tabs { display: flex; }
