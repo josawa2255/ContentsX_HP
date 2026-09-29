@@ -392,6 +392,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - コラム静的記事は生成物と `tools/templates/c-column.html.tpl` の両方へ共通CSSを読み込む。再ビルド後も外観を維持するため、テンプレートの指定を削除しない。
 - レスポンシブ検証幅は 320/390/412/448/640/768/1024/1440px。本文はユーザーの文字拡大設定を尊重する。
 - 会社概要 `company.html` の会社情報は480px以下で項目名と内容を縦並びにし、長い社名・事業内容の本文幅を確保する。481px以上は2列表示とする。
+- 会社概要 `company.html` 左側の紹介文（`.company-description`）は2026-09-29に営業支援の訴求へ差し替え。見出し1行（`.company-description-lead`「営業の悩みを、売上につながる仕組みに。」）＋本文3段落の構成で、各段落に `data-ja`/`data-en` を付ける。旧文「埋もれていた物語に、光を当てる」「人の手7割・AI3割」は会社概要から削除（about/index/llms.txt 等の他ページは未変更）。
 - UIとモーションの共通基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページは `js/sitewide-motion.js` がセクションの1回だけの登場演出を担う。JS無し・動きの軽減設定時は常時表示する。
 - フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` から読み込み、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
 - 共通の小部品は `cx-ui-surface`（淡色面と枠）、`cx-ui-pill`（丸い外形）、`cx-ui-card`（カード反応）、`cx-ui-action`（操作反応）。ページ固有クラスは配置・内容を担当する。旧生成コラムカード `cx-col-card` の動きは生成テンプレート互換のため保持する。
