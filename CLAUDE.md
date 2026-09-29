@@ -62,7 +62,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 | ニュース一覧 | news.html | wp-config.js, wp-api.js, script.js |
 | ニュース詳細 | news-detail.html | wp-config.js + インラインJS |
 
-企業案内で非表示にした導線、復帰手順、画像素材の扱いは [CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) を参照。
+企業案内で非表示にした導線、復帰手順、画像素材の扱いは [CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) を参照。**コラム（`/column`）も 2026-09-29 から共通ナビの導線だけ一時非表示**（ページ・検索掲載は公開のまま。戻し方も同ファイル）。
 
 ## bizmangaサブページ（contentsx.jp/bizmanga/）
 **現在は301リダイレクトのみ**。2026-04-27にBizMangaサイトが独立ドメイン `bizmanga.contentsx.jp` へ完全移行。
