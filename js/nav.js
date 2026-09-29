@@ -9,10 +9,10 @@
     { label: 'ホーム', labelEn: 'Home', href: './', indexHref: '#hero',
       children: [
         { label: 'ニュース',        labelEn: 'News',          href: '#news' },
-        { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' },
-        { label: 'サービス',         labelEn: 'Services',      href: '/services/' }
+        { label: '新作情報',         labelEn: 'Latest Works',  href: '#new-works' }
       ]
     },
+    { label: 'サービス', labelEn: 'Services', href: '/services/', indexHref: '/services/' },
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
       children: [
         { label: 'Contents Xについて', labelEn: 'About Contents X', href: 'about' },
@@ -87,8 +87,7 @@
         var childHref = child.href;
         ca.href = resolveHref(childHref);
         ca.className = 'nav-dropdown-item';
-        if ((!childHref.startsWith('#') && childHref === currentFile) ||
-            (childHref === '/services/' && path.startsWith('/services/'))) {
+        if (!childHref.startsWith('#') && childHref === currentFile) {
           ca.className += ' active'; childActive = true;
         }
         ca.setAttribute('data-ja', child.label);
@@ -110,7 +109,8 @@
       }
       a.className = 'nav-link';
       if (item.cta) a.className += ' nav-cta';
-      if (!rawHref.startsWith('#') && rawHref === currentFile) {
+      if ((!rawHref.startsWith('#') && rawHref === currentFile) ||
+          (rawHref === '/services/' && path.startsWith('/services/'))) {
         a.className += ' active';
       }
       a.setAttribute('data-ja', item.label);

@@ -33,6 +33,7 @@
       },
       "icon": {"type": "string", "pattern": "^[a-z0-9-]+$"},
       "image": {"type": "string"},
+      "hoverImage": {"type": "string", "pattern": "^/material/[A-Za-z0-9/_-]+\\.(webp|avif|png|jpg)$"},
       "href": {"type": "string", "pattern": "^/services/[a-z0-9-]+/$"},
       "featured": {"type": "boolean"},
       "metaDescription": {"type": "string"}
