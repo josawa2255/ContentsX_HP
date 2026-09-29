@@ -16,6 +16,24 @@ var CX_PARAMS = new URLSearchParams(window.location.search);
 var HUBSPOT_PORTAL_ID = '48367061';
 var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
+// CRM（ビズカルテ）の受信箱へ写しを送る。送信は contact.html 末尾の貼り付けコード
+// （embed/inbound-v1.js）が行う。項目は各入力欄の data-crm-field で指定している。
+// 貼り付けコードは async なので、送信時にまだ読み込めていなければ読み込み完了を待って送る。
+// 例外は外へ出さない＝CRM 側が壊れていても HubSpot への送信とサンクス表示は止めない。
+function copyToCrm(form) {
+  try {
+    if (window.BizcarteInbound && typeof window.BizcarteInbound.sendForm === 'function') {
+      window.BizcarteInbound.sendForm(form);
+      return;
+    }
+    var s = document.querySelector('script[src*="/embed/inbound-v1.js"]');
+    if (s) s.addEventListener('load', function () {
+      try { if (window.BizcarteInbound) window.BizcarteInbound.sendForm(form); }
+      catch (err) { console.warn('CRM inbound failed (ignored):', err); }
+    }, { once: true });
+  } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
+}
+
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -60,11 +78,9 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   };
 
   // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
-  // 送信は contact.html で読み込む CRM の埋め込みスクリプト（inbound-v1.js）が行い、
-  // 項目は name 属性から自動判別される。ボット対策の隠し欄（#cxWebsite）も自動で認識する。
   // ただし採用応募（recruit.html から ?position= 付きで遷移）は営業リードではないため送らない。
   var isRecruitApplication = !!CX_PARAMS.get('position');
-  if (!isRecruitApplication && window.BizcarteInbound) window.BizcarteInbound.sendForm(e.target);
+  if (!isRecruitApplication) copyToCrm(e.target);
 
   var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
     + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
