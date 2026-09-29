@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Contents X service data",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "slug", "group", "name", "eyebrow", "shortCopy", "hoverSummary", "tags", "icon", "href", "featured"],
+    "properties": {
+      "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+      "slug": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+      "group": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+      "name": {"type": "string", "minLength": 1},
+      "eyebrow": {"type": "string", "minLength": 1},
+      "shortCopy": {"type": "string", "minLength": 1},
+      "hoverSummary": {"type": "string", "minLength": 1},
+      "tags": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "features": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "challenges": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "steps": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "useCases": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "faqs": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["question", "answer"],
+          "properties": {
+            "question": {"type": "string", "minLength": 1},
+            "answer": {"type": "string", "minLength": 1}
+          }
+        }
+      },
+      "icon": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+      "image": {"type": "string"},
+      "hoverImage": {"type": "string", "pattern": "^/material/[A-Za-z0-9/_-]+\\.(webp|avif|png|jpg)$"},
+      "href": {"type": "string", "pattern": "^/services/[a-z0-9-]+/$"},
+      "featured": {"type": "boolean"},
+      "metaDescription": {"type": "string"}
+    }
+  }
+}

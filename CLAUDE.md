@@ -49,6 +49,7 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
 | トップ | index.html | i18n.js, wp-api.js, home-2026.js（ヘッダー一時撤去・`nav.js` 非読込。仕様は SPEC.md §3） |
+| サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, services-ui.js, service-media.js（`tools/build-services.py` で生成。仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
 | ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |
 | トップメッセージ（非表示） | message.html | `/about#message` へ転送 |
@@ -100,4 +101,4 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 - トップ・サービス・下層ページのフォント、色、文字階層、画像上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) が正本。再利用する変数・画像文字クラスは `css/brand-system-2026.css`。担当ごとに色・フォントの値を新設しない。
 
 ## 未完了タスク
-- なし（2026-07-19 contentsx-cms.php をお名前.comへアップロード完了。CORS修正・XML-RPC遮断とも本番検証済み — pingback/wp.*系メソッド消滅、両本番オリジンへのCORS応答確認。詳細はルート docs/operations/SECURITY.md）
+- トップページとSales X / Creative X紹介ページに続き、会社案内・採用・ニュース・コラム等の**その他すべてのページ**を同じデザイン体系に揃える。3体目のAIエージェントが担当予定（2026-09-29 平澤依頼）。色・余白・タイポグラフィー・共通ヘッダーを `data/design-tokens.json` とトップ/サービスの実装に照らして統一し、ページ固有機能と既存の外部連携は保つ。並列作業中は別worktreeを使い、トップ・サービス担当とは連絡網でリンク先と共通UIを調整する。

@@ -31,6 +31,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Build service pages from data
+        run: python3 tools/build-services.py
+      - name: Check service data and generated pages
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_build_services.py'
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

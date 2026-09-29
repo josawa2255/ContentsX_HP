@@ -2,8 +2,8 @@
 """
 sitemap.xml 自動生成スクリプト（ContentsX）
 
-WP API から news 一覧を取得し、静的ページ + 個別ニュース記事URLを含む
-sitemap.xml を出力する。
+WP API から news 一覧を取得し、sitemap.xml の BUILD:NEWS 領域だけを更新する。
+静的ページ・サービス・コラムのURLは各々の管理元が保持する。
 
 使い方:
     cd ContentX
@@ -16,10 +16,9 @@ sitemap.xml を出力する。
 Why:
     news-detail.html は 1つのHTMLで `?id=N` により記事を切替える構成のため、
     sitemap.xml に個別URLを列挙しないと Google が個別記事を認識しない。
-    本スクリプトは WP API から最新のID一覧を取得して sitemap を再生成する。
+    本スクリプトは WP API から最新のID一覧を取得してニュース領域を更新する。
 """
 
-import datetime
 import json
 import pathlib
 import sys
@@ -28,17 +27,6 @@ import urllib.request
 API_BASE = "https://cms.contentsx.jp/wp-json/contentsx/v1"
 SITE = "https://contentsx.jp"
 OUT = pathlib.Path(__file__).resolve().parent.parent / "sitemap.xml"
-
-STATIC_PAGES = [
-    ("/",              "weekly",  "1.0"),
-    ("/company",       "monthly", "0.8"),
-    ("/about",         "monthly", "0.8"),
-    ("/contact",       "monthly", "0.9"),
-    ("/recruit",       "monthly", "0.7"),
-    ("/news",          "weekly",  "0.6"),
-]
-
-
 def fetch_news():
     req = urllib.request.Request(f"{API_BASE}/news", headers={"User-Agent": "ContentsX-Sitemap/1.0"})
     with urllib.request.urlopen(req, timeout=15) as res:
@@ -59,34 +47,24 @@ def fetch_news():
 
 
 def build_sitemap(news_items):
-    today = datetime.date.today().isoformat()
-    lines = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-        "",
-        "  <!-- 静的ページ -->",
-    ]
-    for path, changefreq, priority in STATIC_PAGES:
-        lines += [
+    """Only replace news URLs; service/column/static entries have other owners."""
+    source = OUT.read_text(encoding="utf-8")
+    start, end = "<!-- BUILD:NEWS -->", "<!-- /BUILD:NEWS -->"
+    if source.count(start) != 1 or source.count(end) != 1:
+        raise RuntimeError("Missing BUILD:NEWS marker pair in sitemap.xml")
+    lines = []
+    for item in news_items:
+        lines.extend([
             "  <url>",
-            f"    <loc>{SITE}{path}</loc>",
-            f"    <changefreq>{changefreq}</changefreq>",
-            f"    <priority>{priority}</priority>",
-            "  </url>",
-        ]
-    lines += ["", "  <!-- ニュース個別記事（WP API から自動生成） -->"]
-    for n in news_items:
-        lines += [
-            "  <url>",
-            f"    <loc>{SITE}/news-detail?id={n['id']}</loc>",
-            f"    <lastmod>{n['date'] or today}</lastmod>",
+            f"    <loc>{SITE}/news-detail?id={item['id']}</loc>",
+            f"    <lastmod>{item['date']}</lastmod>" if item["date"] else None,
             "    <changefreq>monthly</changefreq>",
             "    <priority>0.5</priority>",
             "  </url>",
-        ]
-    lines.append("")
-    lines.append("</urlset>")
-    return "\n".join(lines) + "\n"
+        ])
+    before, tail = source.split(start, 1)
+    _, after = tail.split(end, 1)
+    return before + start + "\n" + "\n".join(line for line in lines if line is not None) + ("\n" if lines else "") + "  " + end + after
 
 
 def main():
@@ -98,7 +76,6 @@ def main():
     xml = build_sitemap(news)
     OUT.write_text(xml, encoding="utf-8")
     print(f"Wrote {OUT}")
-    print(f"  static pages: {len(STATIC_PAGES)}")
     print(f"  news entries: {len(news)}")
 
 

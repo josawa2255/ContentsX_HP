@@ -13,7 +13,10 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | i18n.js, nav.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css` |
+| トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
+| サービス一覧 | `services/index.html` | i18n.js, nav.js, services-ui.js | データから生成するSales X / Creative Xのサービス一覧 |
+| Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
+| サービス詳細 | `services/{slug}/index.html` | i18n.js, nav.js, services-ui.js | 7サービスの詳細ページ |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表写真は素材待ちでブランド仮表示 |
 | トップメッセージ | `message.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
@@ -42,13 +45,20 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップのヘッダーは2026-09-29の追加指示で一時撤去（他ページは既存ヘッダーを維持）。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
 - 構成: Hero → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
-- 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップで使わない（`body[data-theme="neutral"]`）。他ページのテーマは変更しない。
+- 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 素材: `material/home-2026/{hero,sales,creative,about,contact}.jpg` と事業紹介用の `sales-safe.jpg` / `creative-safe.jpg`。ユーザー指定デザインを参照に生成した画像で、文字とロゴは画像へ焼き込まずHTMLで重ねる。事業紹介の元画像は被写体が素材の端で切れていたため、余白を設けて再生成した `*-safe.jpg` を表示に使用する。生成したオフィスはイメージ画像として扱う。
 - モーション: `js/home-2026.js` と `css/home-2026.css`。ヒーロー文字の登場、スクロールでの段階的な表示、画像の左→右ワイプ（Sales X / Creative X の写真にも適用）、カード・ボタンのホバー移動。`prefers-reduced-motion: reduce` では瞬時表示。JS不在でも内容は表示する。ワイプ要素自身を幅0にクリップすると交差監視できないため、親コンテナを監視して子要素を表示する。
 - ヒーロー右側の理念コピーは、都市画像の明暗の上でも読めるよう紺色の字に白い縁と淡い白い影を重ねる。事業紹介の中央ロゴは、青とオレンジが交差する文字なしのXマークをインラインSVGで表示する。独立したグリッド列に配置して左右の文言・CTAに重ならないようにし、SVGの viewBox に余白を取って両端を欠けずに描画する。写真は左カードを左寄せ、右カードを右寄せとして、余白付き素材の人物と作画の手を表示する。
 - レスポンシブ: 768px以下でヒーローを縦構成、事業カードとサービス欄を1列にする。事業紹介は1100px以下で縦並びに切り替える。文字は `clamp()` で連続スケール。320/390/412/448/640/768/1024/1100/1101/1280/1440/1920pxの横溢れ・事業カード内の文字収まりをブラウザ確認。
-- リンク: 総合ページは `/services/`（Issue #20の別制作）。他ページの共通ナビにある「ホーム > サービス」も旧トップの存在しない `#about` ではなく `/services/` に向ける。ビズフォーム `https://bizform.contentsx.jp/`、ビズマンガ `https://bizmanga.contentsx.jp/`、ビズ採用 `https://ichioshi.contentsx.jp/` は公開先へ直リンク。外部URLが未確定のサービスはIssue #20で用意された `/services/{slug}/`、Sales X / Creative Xの紹介は `/services/#list-group-{sales|creative}` に向ける。制作スタジオ・IP開発は総合ページへ。Issue #20のページが本番公開されるまでこれらの内部リンクは到達先未実装。
+- リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム `https://bizform.contentsx.jp/`、ビズマンガ `https://bizmanga.contentsx.jp/`、ビズ採用 `https://ichioshi.contentsx.jp/` は公開先へ直リンク。その他の個別紹介は `/services/{slug}/`、Sales X / Creative Xの紹介は `/services/#list-group-{sales|creative}` に向ける。制作スタジオ・IP開発は総合ページへ。
 - 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。トップではヘッダー撤去に合わせ `nav.js` も読み込まない。`i18n.js` は引き続き読み込む。他ページでは `i18n.js` → `nav.js` の読込順を維持。
+
+### 3.0 サービスページ生成（Issue #20）
+
+- `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、個別7ページ、共通デザイントークンCSS、サイトマップのサービスURLを生成する。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップにはヘッダーがないため、そこから抽出しない。全ページのサービス導線とフッターの新作情報は実在するURLへ向ける。
+- サービスカードはhover/focusまたはスマホのタップで概要を示す。JSなしでも内容を表示する。ビズAIO・ビズカルテは準備中、ビズマンガ・ビズアニメ・ビズ採用は公開先の公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後に再生する。
+- サービス生成は `python3 tools/build-services.py --check` と `python3 -m unittest discover -s tests -p test_build_services.py` で確認する。Pagesワークフローも同じ生成処理とテストを実行する。
 
 ### 3.1 旧Hero v2（2026-09-29トップから撤去・履歴）
 
