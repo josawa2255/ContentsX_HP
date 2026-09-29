@@ -68,6 +68,16 @@
       color: var(--text-secondary);
       font-size: 14px;
     }
+    .news-page-status {
+      max-width: 680px;
+      padding: 28px 32px;
+      border: 1px solid var(--cx-color-border);
+      border-left: 3px solid var(--cx-color-sales);
+      border-radius: 12px;
+      background: var(--cx-color-surface);
+      color: var(--cx-color-body);
+      line-height: 1.8;
+    }
   </style>
   <script type="application/ld+json">
 {
@@ -128,6 +138,7 @@
     <div class="container">
       <h1 class="news-page-heading" data-ja="News" data-en="News">News</h1>
       <div id="newsPageLoading" class="news-page-loading" data-ja="読み込み中..." data-en="Loading...">読み込み中...</div>
+      <p id="newsPageStatus" class="news-page-status" role="status" hidden></p>
       <ul class="news-list" style="display:none;"></ul>
     </div>
   </section>
@@ -162,11 +173,18 @@
   <script src="js/wp-api.js" defer></script>
   <script src="js/script.js" defer></script>
   <script defer>
-    window.addEventListener('wp-data-ready', function() {
+    window.addEventListener('wp-news-ready', function(event) {
       var loading = document.getElementById('newsPageLoading');
+      var status = document.getElementById('newsPageStatus');
       var list = document.querySelector('.news-list');
       if (loading) loading.style.display = 'none';
-      if (list) list.style.display = '';
+      if (list) list.style.display = event.detail.status === 'ready' ? '' : 'none';
+      if (status) {
+        status.hidden = event.detail.status === 'ready';
+        status.setAttribute('data-ja', event.detail.status === 'error' ? 'ニュースを読み込めませんでした。時間をおいて再度お試しください。' : '現在掲載中のニュースはありません。');
+        status.setAttribute('data-en', event.detail.status === 'error' ? 'News is temporarily unavailable. Please try again later.' : 'There are no news items at the moment.');
+        status.textContent = document.documentElement.lang === 'en' ? status.getAttribute('data-en') : status.getAttribute('data-ja');
+      }
     });
   </script>
 

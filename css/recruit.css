@@ -1,7 +1,4 @@
-/* ============================================
-   Recruit Page — CyberAgent-inspired design
-   rc- prefixed styles
-   ============================================ */
+/* Recruit page, using the shared Contents X brand tokens. */
 
 /* ---------- Hero：フルスクリーン ---------- */
 .rc-hero {
@@ -19,8 +16,9 @@
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center 25%;
+  background-position: center 45%;
   background-repeat: no-repeat;
+  background-image: url('../material/images/recruit/hero-team-2026.webp');
   z-index: 0;
 }
 .rc-hero-overlay {
@@ -28,6 +26,17 @@
   inset: 0;
   background: rgba(0,0,0,0.35);
   z-index: 1;
+}
+.rc-hero-image-note {
+  position: absolute;
+  right: 20px;
+  bottom: 12px;
+  z-index: 3;
+  margin: 0;
+  color: rgba(255,255,255,.85);
+  font-size: 11px;
+  line-height: 1.4;
+  text-shadow: 0 1px 5px rgba(7,20,59,.8);
 }
 
 /* 中央テキスト */
@@ -43,11 +52,11 @@
   padding-bottom: 160px;
 }
 .rc-hero-heading {
-  font-family: 'Sora', sans-serif;
-  font-size: 72px;
+  font-family: var(--cx-font-latin);
+  font-size: var(--cx-type-display);
   font-weight: 800;
   color: #fff;
-  letter-spacing: 4px;
+  letter-spacing: -.045em;
   line-height: 1;
   margin: 0;
 }
@@ -55,7 +64,7 @@
   font-size: 18px;
   font-weight: 500;
   color: rgba(255,255,255,0.8);
-  letter-spacing: 6px;
+  letter-spacing: .18em;
   margin-top: 16px;
 }
 
@@ -97,20 +106,21 @@
   gap: 10px;
 }
 
-/* ピル型ボタン（CyberAgent風グリーン） */
+/* Hero navigation */
 .rc-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 12px 28px;
+  min-height: 44px;
+  padding: 10px 24px;
   background: var(--accent);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 999px;
   letter-spacing: 0.5px;
-  transition: transform 0.2s, box-shadow 0.2s, filter 0.15s;
+  transition: transform var(--cx-motion-ui) var(--cx-motion-ease), box-shadow var(--cx-motion-ui) ease, background-color var(--cx-motion-fast) ease;
   white-space: nowrap;
 }
 .rc-pill::after {
@@ -199,7 +209,7 @@
   box-shadow: 0 8px 28px rgba(0,0,0,0.08);
 }
 .rc-number-value {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cx-font-latin);
   font-size: 48px;
   font-weight: 800;
   color: var(--accent);
@@ -265,7 +275,7 @@
 
 /* ---------- Section Common ---------- */
 .rc-section-label {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cx-font-latin);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -355,7 +365,7 @@
   box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.15);
 }
 .rc-pos-card-num {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cx-font-latin);
   font-size: 11px;
   font-weight: 600;
   color: var(--accent);
@@ -411,7 +421,7 @@
   cursor: pointer;
   letter-spacing: 0.5px;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: var(--cx-font-ja);
   background: var(--accent);
   color: #fff;
 }
@@ -660,7 +670,7 @@
   box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
 }
 .rc-flow-marker span {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cx-font-latin);
   font-size: 15px;
   font-weight: 800;
   color: #fff;
@@ -728,7 +738,7 @@
   margin: 0 auto;
 }
 .rc-cta-label {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cx-font-latin);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 3px;
@@ -756,7 +766,7 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border-radius: 3px;
+  border-radius: 999px;
   letter-spacing: 0.5px;
   transition: background 0.2s, box-shadow 0.2s;
 }
@@ -782,11 +792,15 @@
     min-height: 100vh;
     min-height: 100dvh;
   }
+  .rc-hero-bg {
+    background-image: url('../material/images/recruit/hero-team-2026-mobile.webp');
+    background-position: center 40%;
+  }
   .rc-hero-center {
     padding: 120px 24px 40px;
   }
   .rc-hero-heading {
-    font-size: 44px;
+    font-size: clamp(36px, 10.2vw, 76px);
   }
   .rc-hero-sub {
     font-size: 14px;
@@ -802,8 +816,8 @@
     padding: 0;
   }
   .rc-pill {
-    padding: 10px 22px;
-    font-size: 13px;
+    padding: 10px 18px;
+    font-size: clamp(13px, 3.2vw, 15px);
   }
   .rc-message-inner {
     padding: 60px 24px;
@@ -903,19 +917,12 @@
 }
 
 @media (max-width: 480px) {
-  .rc-hero-heading {
-    font-size: 36px;
-  }
   .rc-hero-sub {
     font-size: 12px;
     letter-spacing: 4px;
   }
   .rc-hero-nav {
     padding: 24px 16px 32px;
-  }
-  .rc-pill {
-    padding: 8px 18px;
-    font-size: 12px;
   }
   .rc-message-inner {
     padding: 48px 20px;
