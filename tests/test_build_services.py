@@ -55,9 +55,37 @@ class ServiceBuildTests(unittest.TestCase):
             self.assertNotIn('cxs-detail-hero', redirect)
         directory = builder.render_list(self.services, self.groups)
         self.assertLess(directory.index('id="list-group-creative"'), directory.index('id="list-group-sales"'))
-        self.assertIn('href="/services/creative-x/"', directory)
-        self.assertIn('href="/services/sales-x/"', directory)
+        self.assertIn('class="cxsd-jump cxsd-jump--creative" href="/services/creative-x/"', directory)
+        self.assertIn('class="cxsd-jump cxsd-jump--sales" href="/services/sales-x/"', directory)
+        self.assertIn('class="cxsd-group__image" href="/services/creative-x/"', directory)
+        self.assertIn('class="cxsd-group__image" href="/services/sales-x/"', directory)
         self.assertIn('href="https://bizform.contentsx.jp/"', directory)
+        self.assertNotIn('href="#list-group-creative"', directory)
+        self.assertNotIn('href="#list-group-sales"', directory)
+
+    def test_service_destinations_are_explicit_and_safe(self):
+        expected = {
+            "bizform": "https://bizform.contentsx.jp/",
+            "bizaio": "/services/#bizaio",
+            "bizkarte": "/services/#bizkarte",
+            "bizrecruit": "https://ichioshi.contentsx.jp/service.html",
+            "bizmanga": "https://bizmanga.contentsx.jp/",
+            "bizanime": "https://bizmanga.contentsx.jp/bizanime",
+            "bizvideo": "/services/#bizvideo",
+        }
+        self.assertEqual({item["id"]: builder.service_destination(item) for item in self.services}, expected)
+        for service in self.services:
+            card = builder.render_directory_card(service, 1)
+            if service["id"] in ("bizaio", "bizkarte"):
+                self.assertNotIn("<a ", card)
+            elif service["id"] == "bizvideo":
+                self.assertIn('href="/contact"', card)
+            else:
+                self.assertIn(f'href="{service["destination"]}"', card)
+                self.assertNotIn(f'href="{service["href"]}"', card)
+        invalid = dict(self.services[0], destination="https://example.com/escape")
+        with self.assertRaises(ValueError):
+            builder.validate([invalid, *self.services[1:]], self.groups)
 
     def test_copy_is_escaped_and_video_stays_on_page(self):
         service = dict(self.services[0], hoverSummary="安全な <文字> & 説明")

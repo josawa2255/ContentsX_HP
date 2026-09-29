@@ -12,6 +12,7 @@
     "icon": "paper-plane",
     "hoverImage": "/material/service-2026/bizform-research-v2.webp",
     "href": "/services/bizform/",
+    "destination": "https://bizform.contentsx.jp/",
     "featured": false
   },
   {
@@ -27,6 +28,7 @@
     "icon": "search",
     "hoverImage": "/material/service-2026/bizaio-search-v2.webp",
     "href": "/services/bizaio/",
+    "destination": "/services/#bizaio",
     "featured": true
   },
   {
@@ -42,6 +44,7 @@
     "icon": "database",
     "hoverImage": "/material/service-2026/bizkarte-record-v3.webp",
     "href": "/services/bizkarte/",
+    "destination": "/services/#bizkarte",
     "featured": false
   },
   {
@@ -57,6 +60,7 @@
     "icon": "people",
     "hoverImage": "/material/service-2026/bizrecruit-service.webp",
     "href": "/services/bizrecruit/",
+    "destination": "https://ichioshi.contentsx.jp/service.html",
     "featured": false
   },
   {
@@ -72,6 +76,7 @@
     "icon": "book",
     "hoverImage": "/material/service-2026/manga-justice-cover.webp",
     "href": "/services/bizmanga/",
+    "destination": "https://bizmanga.contentsx.jp/",
     "featured": false
   },
   {
@@ -87,6 +92,7 @@
     "icon": "play",
     "hoverImage": "/material/service-2026/bizanime-ieye.jpg",
     "href": "/services/bizanime/",
+    "destination": "https://bizmanga.contentsx.jp/bizanime",
     "featured": false
   },
   {
@@ -102,6 +108,7 @@
     "icon": "video",
     "hoverImage": "/material/service-2026/bizvideo-memory-town.jpg",
     "href": "/services/bizvideo/",
+    "destination": "/services/#bizvideo",
     "featured": false
   }
 ]

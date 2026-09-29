@@ -2,10 +2,8 @@
   <section class="cxsd-hero" aria-labelledby="cxsPageTitle">
     <div class="cxs-container">
       <nav class="cxs-breadcrumbs" aria-label="パンくずリスト"><ol><li><a href="/">ホーム</a></li><li aria-current="page">サービス</li></ol></nav>
-      <p class="cxsd-overline">OUR BUSINESS &amp; SERVICES</p>
-      <h1 id="cxsPageTitle">価値を、<span>届ける力に。</span></h1>
-      <p class="cxsd-hero__lead">マンガ・アニメ・映像で価値を伝える Creative X。<br>新しい商談から顧客との関係づくりを支える Sales X。<br>2つの領域から、今の課題に合うサービスをお選びください。</p>
-      <div class="cxsd-jumps" aria-label="事業領域を選ぶ">{{JUMP_LINKS}}</div>
+      <div class="cxsd-hero__heading"><div><p class="cxsd-overline">OUR BUSINESS &amp; SERVICES</p><h1 id="cxsPageTitle">伝える力と、<br><span>届ける仕組み。</span></h1></div><p class="cxsd-hero__lead">マンガ・アニメ・映像の <strong>Creative X</strong>。<br>営業の仕組みをつくる <strong>Sales X</strong>。<br>2つの事業から、課題に合うサービスをお選びください。</p></div>
+      <div class="cxsd-jumps" aria-label="事業ページを選ぶ">{{JUMP_LINKS}}</div>
     </div>
   </section>
   {{GROUPS}}

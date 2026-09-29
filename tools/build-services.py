@@ -13,6 +13,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -36,7 +37,7 @@ def read_json(path: Path):
 def validate(services: list[dict], groups: list[dict]) -> None:
     if not isinstance(services, list) or not isinstance(groups, list):
         raise ValueError("services and groups must be arrays")
-    required = {"id", "slug", "group", "name", "eyebrow", "shortCopy", "hoverSummary", "tags", "icon", "href", "featured"}
+    required = {"id", "slug", "group", "name", "eyebrow", "shortCopy", "hoverSummary", "tags", "icon", "href", "destination", "featured"}
     group_ids: set[str] = set()
     for group in groups:
         if not isinstance(group, dict) or not all(group.get(key) for key in ("id", "name", "tagline", "summary")):
@@ -58,6 +59,11 @@ def validate(services: list[dict], groups: list[dict]) -> None:
             raise ValueError(f"unknown group for {service_id}: {service['group']!r}")
         if service["href"] != f"/services/{slug}/":
             raise ValueError(f"href must match slug for {service_id}")
+        destination = service["destination"]
+        parsed = urlsplit(destination) if isinstance(destination, str) else None
+        approved_host = parsed and parsed.scheme == "https" and (parsed.hostname == "contentsx.jp" or (parsed.hostname or "").endswith(".contentsx.jp"))
+        if destination != f"/services/#{slug}" and not approved_host:
+            raise ValueError(f"invalid destination for {service_id}: {destination!r}")
         if not (ROOT / "material" / "web-system" / "icons" / f"{service['icon']}.svg").is_file():
             raise ValueError(f"unknown icon for {service_id}: {service['icon']!r}")
         if not all(isinstance(service[key], str) and service[key].strip() for key in ("name", "eyebrow", "shortCopy", "hoverSummary")):
@@ -109,7 +115,7 @@ def render_tags(tags: list[str], class_name: str = "cxs-tags") -> str:
 def render_card(service: dict, context: str) -> str:
     control_id = f"cxs-{context}-{service['slug']}-more"
     name = esc(service["name"])
-    href = esc(GROUP_LINKS.get(service["id"], service["href"]))
+    href = esc(service_destination(service))
     coming_soon = service["id"] in COMING_SOON
     detail_button = "" if coming_soon else f'<a class="cxs-icon-button" href="{href}" aria-label="{name}の詳細を見る">{render_icon("arrow-right")}</a>'
     more_copy = "乞うご期待" if coming_soon else esc(service["hoverSummary"])
@@ -173,19 +179,18 @@ def render_list(services: list[dict], groups: list[dict]) -> str:
     ordered = [by_id[group_id] for group_id in ("creative", "sales") if group_id in by_id]
     ordered += [group for group in groups if group["id"] not in {item["id"] for item in ordered}]
     jump_links = "".join(
-        f'<a class="cxsd-jump cxsd-jump--{esc(group["id"])}" href="#list-group-{esc(group["id"])}">'
-        f'<span>{index:02} / {esc(group["name"])}</span><strong>{esc(group["tagline"])}</strong>'
-        '<span class="cxsd-jump__arrow" aria-hidden="true">↘</span></a>'
+        f'<a class="cxsd-jump cxsd-jump--{esc(group["id"])}" href="/services/{esc(group["id"])}-x/">'
+        f'<img class="cxsd-jump__image" src="{esc(DIRECTORY_IMAGES[group["id"]][0])}" alt="" '
+        f'width="{DIRECTORY_IMAGES[group["id"]][1]}" height="{DIRECTORY_IMAGES[group["id"]][2]}">'
+        f'<span class="cxsd-jump__content"><span class="cxsd-jump__index">{index:02} / BUSINESS FIELD</span>'
+        f'<strong>{esc(group["name"])}</strong><small>{esc(group["tagline"])}</small>'
+        f'<span class="cxsd-jump__cta">{esc(group["name"])} のページを見る <span aria-hidden="true">↗</span></span></span></a>'
         for index, group in enumerate(ordered, 1)
     )
     sections = []
     for index, group in enumerate(ordered, 1):
         if index > 1:
-            sections.append(
-                f'<a class="cxsd-next" href="#list-group-{esc(group["id"])}">'
-                f'<span>NEXT FIELD</span><strong>次は {esc(group["name"])} の領域へ</strong>'
-                '<span aria-hidden="true">↓</span></a>'
-            )
+            sections.append(f'<div class="cxsd-next"><span>NEXT FIELD</span><strong>続いて {esc(group["name"])} のサービス</strong></div>')
         sections.append(render_directory_group(group, services, index))
     return render_template("service-list.html.tpl", {"JUMP_LINKS": jump_links, "GROUPS": "\n".join(sections)})
 
@@ -197,7 +202,7 @@ DIRECTORY_IMAGES = {
 
 
 def service_destination(service: dict) -> str:
-    return GROUP_LINKS.get(service["id"], f'/services/#{service["slug"]}')
+    return service["destination"]
 
 
 def render_directory_card(service: dict, index: int) -> str:
@@ -216,7 +221,11 @@ def render_directory_card(service: dict, index: int) -> str:
                   '<span class="cxg-video-play__icon" aria-hidden="true">▶</span>'
                   '<span class="cxg-video-play__caption" aria-hidden="true">動画を再生</span></button>')
     else:
-        visual = f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">'
+        photo = f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">'
+        visual = photo if coming_soon else (
+            f'<a class="cxsd-card__image-link" href="{esc(service_destination(service))}" '
+            f'aria-label="{name}の公式サイトを見る">{photo}</a>'
+        )
     if coming_soon:
         action = '<span class="cxsd-card__soon">公開予定</span>'
     elif service_id == "bizvideo":
@@ -224,9 +233,10 @@ def render_directory_card(service: dict, index: int) -> str:
     else:
         action = f'<a href="{esc(service_destination(service))}">公式サイトを見る <span aria-hidden="true">↗</span></a>'
     overlay = '乞うご期待' if coming_soon else esc(service["hoverSummary"])
+    title = name if coming_soon or service_id == "bizvideo" else f'<a href="{esc(service_destination(service))}">{name}</a>'
     return f'''<article class="cxsd-card cxsd-card--{esc(service_id)}{' cxsd-card--soon' if coming_soon else ''}" id="{esc(service['slug'])}">
   <div class="cxsd-card__visual">{visual}<div class="cxsd-card__overlay" aria-hidden="true"><span>{overlay}</span></div></div>
-  <div class="cxsd-card__body"><div class="cxsd-card__label"><span>{index:02}</span><span>{esc(service['eyebrow'])}</span></div><h3>{name}</h3>
+  <div class="cxsd-card__body"><div class="cxsd-card__label"><span>{index:02}</span><span>{esc(service['eyebrow'])}</span></div><h3>{title}</h3>
     <p>{esc(service['shortCopy'])}</p><div class="cxsd-card__actions">{action}</div></div>
 </article>'''
 
@@ -238,7 +248,7 @@ def render_directory_group(group: dict, services: list[dict], index: int) -> str
     cards = "\n".join(render_directory_card(service, number) for number, service in enumerate(members, 1))
     name = esc(group["name"])
     return f'''<section class="cxsd-group cxsd-group--{esc(group_id)}" id="list-group-{esc(group_id)}" aria-labelledby="cxsd-{esc(group_id)}-title">
-  <div class="cxsd-group__intro"><div class="cxsd-group__image"><img src="{image}" alt="" width="{width}" height="{height}" loading="lazy"></div>
+  <div class="cxsd-group__intro"><a class="cxsd-group__image" href="/services/{esc(group_id)}-x/" aria-label="{name} の事業ページを見る"><img src="{image}" alt="" width="{width}" height="{height}" loading="lazy"><span>事業ページを見る <span aria-hidden="true">↗</span></span></a>
     <div class="cxsd-group__copy"><span class="cxsd-group__number">{index:02} / BUSINESS FIELD</span><p class="cxsd-group__eyebrow">{esc(group['eyebrow'])}</p>
       <h2 id="cxsd-{esc(group_id)}-title">{name}</h2><strong>{esc(group['tagline'])}</strong><p>{esc(group['summary'])}</p>
       <a class="cxsd-group__link" href="/services/{esc(group_id)}-x/">{name} を詳しく見る <span aria-hidden="true">↗</span></a>
@@ -278,7 +288,7 @@ def render_detail_sections(service: dict, services: list[dict]) -> str:
     related = [item for item in services if item["group"] == service["group"] and item["id"] != service["id"] and item["id"] not in COMING_SOON]
     if related:
         tabs.append(("related", "関連サービス"))
-        links = "".join(f'<li><a href="{esc(GROUP_LINKS.get(item["id"], item["href"]))}">{esc(item["name"])} <span aria-hidden="true">→</span></a></li>' for item in related)
+        links = "".join(f'<li><a href="{esc(service_destination(item))}">{esc(item["name"])} <span aria-hidden="true">→</span></a></li>' for item in related)
         panels.append(("related", f'<h3>同じカテゴリのサービス</h3><ul class="cxs-related-list">{links}</ul>'))
     buttons = "".join(
         f'<button type="button" role="tab" id="cxs-tab-{slug}-{key}" aria-controls="cxs-panel-{slug}-{key}" aria-selected="{str(index == 0).lower()}" tabindex="{0 if index == 0 else -1}">{label}</button>'
@@ -336,12 +346,6 @@ GROUP_IMAGE_SIZES = {
     "bizform": (1672, 941), "bizaio": (1672, 941),
     "bizkarte": (1672, 941), "bizrecruit": (1672, 941),
     "bizmanga": (1407, 2000), "bizanime": (1280, 720), "bizvideo": (1280, 720),
-}
-GROUP_LINKS = {
-    "bizform": "https://bizform.contentsx.jp/",
-    "bizmanga": "https://bizmanga.contentsx.jp/",
-    "bizanime": "https://bizmanga.contentsx.jp/bizanime",
-    "bizrecruit": "https://ichioshi.contentsx.jp/service.html",
 }
 COMING_SOON = {"bizaio", "bizkarte"}
 GROUP_VIDEOS = {
