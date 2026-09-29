@@ -20,17 +20,35 @@ var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 // （embed/inbound-v1.js）が行う。項目は各入力欄の data-crm-field で指定している。
 // 貼り付けコードは async なので、送信時にまだ読み込めていなければ読み込み完了を待って送る。
 // 例外は外へ出さない＝CRM 側が壊れていても HubSpot への送信とサンクス表示は止めない。
+// CRM に届かないことは画面に出ないため（BUGS #056）、届けられなかったときはコンソールに残す。
 function copyToCrm(form) {
   try {
     if (window.BizcarteInbound && typeof window.BizcarteInbound.sendForm === 'function') {
       window.BizcarteInbound.sendForm(form);
       return;
     }
-    var s = document.querySelector('script[src*="/embed/inbound-v1.js"]');
-    if (s) s.addEventListener('load', function () {
-      try { if (window.BizcarteInbound) window.BizcarteInbound.sendForm(form); }
-      catch (err) { console.warn('CRM inbound failed (ignored):', err); }
+    // ファイル名ではなく公開キーの属性で探す（貼り付けコードの版が変わってもここは直さなくてよい）
+    var s = document.querySelector('script[data-source-key]');
+    if (!s) {
+      console.warn('CRM inbound skipped: 貼り付けコードが見つかりません');
+      return;
+    }
+    var settled = false;
+    s.addEventListener('load', function () {
+      settled = true;
+      try {
+        if (window.BizcarteInbound) window.BizcarteInbound.sendForm(form);
+        else console.warn('CRM inbound skipped: 貼り付けコードは読み込めたが BizcarteInbound がありません');
+      } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
     }, { once: true });
+    s.addEventListener('error', function () {
+      settled = true;
+      console.warn('CRM inbound skipped: 貼り付けコードを読み込めませんでした');
+    }, { once: true });
+    // 送信より前に読み込みが失敗・完了していると上のイベントは二度と来ないため、時間で見切って記録する
+    setTimeout(function () {
+      if (!settled && !window.BizcarteInbound) console.warn('CRM inbound skipped: 貼り付けコードが読み込めていません');
+    }, 8000);
   } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
 }
 
