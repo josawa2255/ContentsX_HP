@@ -60,7 +60,8 @@
       var rawHref = isIndex && item.indexHref ? item.indexHref : item.href;
       a.href = resolveHref(rawHref);
       a.className = 'nav-link nav-dropdown-toggle';
-      if (!rawHref.startsWith('#') && rawHref === currentFile) {
+      if ((isIndex && rawHref === '#hero') ||
+          (!rawHref.startsWith('#') && rawHref === currentFile)) {
         a.className += ' active';
       }
       a.setAttribute('data-ja', item.label);
@@ -293,7 +294,7 @@
       link.addEventListener('click', function() {
         closeMenu();
         /* PCホバードロップダウンの強制閉じ */
-        if (window.innerWidth > 768) {
+        if (window.innerWidth > 1280) {
           dismissDesktopDropdown(link.closest('.nav-dropdown'));
         }
       });
