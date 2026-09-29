@@ -49,7 +49,7 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
 | トップ | index.html | i18n.js, wp-api.js, home-2026.js（ヘッダー一時撤去・`nav.js` 非読込。仕様は SPEC.md §3） |
-| サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, services-ui.js, service-media.js（`tools/build-services.py` で生成。仕様は SPEC.md §3） |
+| サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, services-ui.js, service-media.js, sitewide-motion.js（`tools/build-services.py` で生成。仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
 | ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |
 | トップメッセージ（非表示） | message.html | `/about#message` へ転送 |
@@ -97,7 +97,7 @@ i18n.js → nav.js の順序が必須。ヘッダーを一時撤去したトッ�
 ## CSS設計
 - メインサイト: `css/style.css`（共通）+ ページ別CSS。トップは `css/home-2026.css`、他ページは `recruit.css` 等を使用。
 - トップ・サービス以外の下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
-- トップ・サービス・下層ページ共通のモーションとUIの判断基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページの登場演出は `js/sitewide-motion.js`。動きの軽減設定とJS無効時の表示を必ず確認する。
+- トップ・サービス・下層ページ共通のモーションとUIの判断基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。サービスと下層ページの登場・画像ワイプ演出は `js/sitewide-motion.js`。動きの軽減設定とJS無効時の表示を必ず確認する。
 - トップ・サービス・下層ページのフォント、色、文字階層、画像上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) が正本。再利用する変数・画像文字クラスは `css/brand-system-2026.css`。担当ごとに色・フォントの値を新設しない。
 
 ## 未完了タスク
