@@ -47,9 +47,9 @@
 
     function add(element, wipe) {
       if (seen.has(element) || element.closest('[hidden], .dl-modal')) return;
-      seen.add(element);
       var target = wipe ? element.parentElement : element;
-      if (!target) return;
+      if (!target || !target.getClientRects().length) return;
+      seen.add(element);
       /* First-screen content must never wait for scroll or a delayed observer. */
       if (target.getBoundingClientRect().top < window.innerHeight * 0.96) return;
       element.classList.add(wipe ? 'cx-wipe-pending' : 'cx-motion-pending');
@@ -68,10 +68,12 @@
     /* News and column cards can arrive after WordPress data loads. */
     var mutations = new MutationObserver(function (records) {
       records.forEach(function (record) {
-        record.addedNodes.forEach(scan);
+        if (record.type === 'attributes') scan(record.target);
+        else record.addedNodes.forEach(scan);
       });
     });
-    mutations.observe(body, { childList: true, subtree: true });
+    mutations.observe(body, { childList: true, attributes: true,
+      attributeFilter: ['style', 'hidden'], subtree: true });
 
     function showAllForReducedMotion() {
       if (!motionQuery.matches) return;

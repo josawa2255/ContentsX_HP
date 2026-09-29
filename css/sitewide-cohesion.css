@@ -227,6 +227,9 @@ body.cx-sitewide .cx-col-card img {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  body.cx-sitewide :is(.company .section-title, .news-page-heading, .cx-col-hero-title) {
+    animation: cx-sitewide-title-in .8s var(--cx-motion-ease) both;
+  }
   body.cx-sitewide .cx-motion-pending:not(.cx-motion-visible) {
     opacity: 0;
     transform: translate3d(0, 24px, 0);
@@ -251,6 +254,11 @@ body.cx-sitewide .cx-col-card img {
   body.cx-sitewide .ab-hero-sub,
   body.cx-sitewide .ot-hero-sub { animation-duration: .8s; animation-delay: .3s; animation-timing-function: var(--cx-motion-ease); }
   body.cx-sitewide .ot-hero-line { animation-duration: .8s; animation-delay: .45s; }
+}
+
+@keyframes cx-sitewide-title-in {
+  from { opacity: .25; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
 
 @media (max-width: 768px) {
