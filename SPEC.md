@@ -14,9 +14,9 @@
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
 | トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
-| サービス一覧 | `services/index.html` | i18n.js, nav.js, services-ui.js | データから生成するSales X / Creative Xのサービス一覧 |
+| サービス一覧 | `services/index.html` | i18n.js, nav.js, service-media.js | Creative X / Sales Xの事業紹介とサービス一覧。動画はページ内再生 |
 | Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
-| サービス詳細 | `services/{slug}/index.html` | i18n.js, nav.js, services-ui.js | 7サービスの詳細ページ |
+| 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表写真は素材待ちでブランド仮表示 |
 | トップメッセージ | `message.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
@@ -51,18 +51,19 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - サービスとその他の下層ページは `js/sitewide-motion.js` を共用する。見出し・カード群は下から24px/0.75秒で1回だけ登場し、主な写真は左から右へ1.05秒で表示する。初画面は即時表示、`prefers-reduced-motion` とJS不在時も内容を表示する。サービス生成テンプレートにも同JSの読込を置く。
 - ヒーロー右側の理念コピーは、都市画像の明暗の上でも読めるよう紺色の字に白い縁と淡い白い影を重ねる。事業紹介の中央ロゴは、青とオレンジが交差する文字なしのXマークをインラインSVGで表示する。独立したグリッド列に配置して左右の文言・CTAに重ならないようにし、SVGの viewBox に余白を取って両端を欠けずに描画する。写真は左カードを左寄せ、右カードを右寄せとして、余白付き素材の人物と作画の手を表示する。
 - レスポンシブ: 768px以下でヒーローを縦構成、事業カードとサービス欄を1列にする。事業紹介は1100px以下で縦並びに切り替える。文字は `clamp()` で連続スケール。320/390/412/448/640/768/1024/1100/1101/1280/1440/1920pxの横溢れ・事業カード内の文字収まりをブラウザ確認。
-- リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム `https://bizform.contentsx.jp/`、ビズマンガ `https://bizmanga.contentsx.jp/`、ビズ採用 `https://ichioshi.contentsx.jp/` は公開先へ直リンク。その他の個別紹介は `/services/{slug}/`、Sales X / Creative Xの紹介は `/services/#list-group-{sales|creative}` に向ける。制作スタジオ・IP開発は総合ページへ。
+- リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム・ビズマンガ・ビズアニメ・ビズ採用は公開先へ直リンク。ビズビデオは一覧内の動画カード、準備中のビズAIO・ビズカルテは一覧内の該当カードへ。Sales X / Creative Xの紹介は `/services/sales-x/` と `/services/creative-x/` に向ける。
 - 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。トップではヘッダー撤去に合わせ `nav.js` も読み込まない。`i18n.js` は引き続き読み込む。他ページでは `i18n.js` → `nav.js` の読込順を維持。
 
 ### 3.0 サービスページ生成（Issue #20）
 
-- `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、個別7ページ、共通デザイントークンCSS、サイトマップのサービスURLを生成する。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、旧個別URLの転送ページ7件、共通デザイントークンCSS、サイトマップを生成する。個別詳細ページは公開しない。サイトマップには一覧と事業群2ページだけを載せる。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- 一覧は `tools/templates/service-list.html.tpl` と `css/service-directory-2026.css` で生成する。Creative X → Sales Xの順に、画像左・濃紺の説明右の事業紹介、事業ページへの明確なリンク、1文の概要を添えたサービスカードを置く。間に次の領域へのジャンプを置く。PCのホバー/キーボードフォーカスで補足文を表示し、タッチ端末は常時見える1文を残す。公開済みサービスは公式サイトへ直接リンクする。
 - 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップにはヘッダーがないため、そこから抽出しない。全ページのサービス導線とフッターの新作情報は実在するURLへ向ける。
 - サービスカードはhover/focusまたはスマホのタップで概要を示す。JSなしでも内容を表示する。ビズAIO・ビズカルテは準備中、ビズマンガ・ビズアニメ・ビズ採用は公開先の公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後に再生する。
 - サービス生成は `python3 tools/build-services.py --check` と `python3 -m unittest discover -s tests -p test_build_services.py` で確認する。Pagesワークフローも同じ生成処理とテストを実行する。
 - Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` から生成する。白・濃紺を土台に、Sales Xの青 `#005bfa` とCreative Xのオレンジ `#fa4d12` を使う。ヒーロー・相談CTAの画像は背景と境界をつなげ、スマホでは本文の下に置く。Creative Xのヒーローは `creative-hero-v2.webp`、Sales Xは `sales-hero-v2.webp`。Creative Xの「夜明けスタジオ」は表示しない。Sales Xのビズフォーム画像は実際の業務内容に沿った `bizform-research-v2.webp` を使う。
 - ビズマンガは共用WordPressの「正義の値段」表紙、ビズアニメとビズビデオは公式の実作品ポスターを使用する。後2者はポスターを押すと `js/service-media.js` がローカルのH.264/AAC MP4をページ内で音声付き再生する。YouTubeのiframe・投稿者表示・外部リンクは置かない。再生/一時停止・音量・字幕・進捗バー・拡大操作はホバー/フォーカス時に表示し、タッチ端末では常時表示する。`media-src 'self'` をサービスページのCSPに指定する。
-- ビズAIO・ビズカルテは画像エリアのホバー/フォーカス時に紺・青の「乞うご期待」を表示し、詳細リンクを出さない。ビズ採用は公式サービスページのヒーロー画像を使い、`https://ichioshi.contentsx.jp/service.html` に遷移する。Creative Xのビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime`、ビズビデオは内部詳細ページに誘導する。両事業ページは独自の相談CTAを持つため共通CTAは重複表示しない。
+- ビズAIO・ビズカルテは画像エリアのホバー/フォーカス時に紺・青の「乞うご期待」を表示し、詳細リンクを出さない。ビズ採用は公式サービスページのヒーロー画像を使い、`https://ichioshi.contentsx.jp/service.html` に遷移する。ビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime` に直リンクする。ビズビデオは一覧内で再生し、制作相談へ誘導する。両事業ページは独自の相談CTAを持つため共通CTAは重複表示しない。
 
 ### 3.1 旧Hero v2（2026-09-29トップから撤去・履歴）
 
