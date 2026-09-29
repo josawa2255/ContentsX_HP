@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https:; frame-src https:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https:; frame-src https:; media-src 'self'; object-src 'none'; base-uri 'self'">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-B000C4JCCX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/web-system-tokens.css">
   <link rel="stylesheet" href="/css/web-system.css">
+  <link rel="stylesheet" href="/css/service-landing-2026.css">
   <link rel="stylesheet" href="/css/dl-modal.css">
   {{JSON_LD}}
 </head>
@@ -57,5 +58,6 @@
 <script src="/js/cta.js" defer></script>
 <script src="/js/dl-modal.js" defer></script>
 <script src="/js/services-ui.js" defer></script>
+<script src="/js/service-media.js" defer></script>
 </body>
 </html>
