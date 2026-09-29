@@ -3,7 +3,7 @@
 **ドメイン**: contentsx.jp
 **リポジトリ**: [josawa2255/ContentsX_HP](https://github.com/josawa2255/ContentsX_HP)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-20
+**最終更新**: 2026-09-29
 
 > このファイルは ContentsX 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約し、将来のメンテ時に参照します。
 
@@ -13,15 +13,15 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js, services-ui.js | Sales X / Creative X Hero (左コピー + 右2カード、PC/SP専用画像) + クライアントロゴカルーセル + サービス一覧への短い導線 + News + 新作情報 + 3事業領域 + CTA |
-| サービス一覧 | `services/index.html` | i18n.js, nav.js, cta.js, services-ui.js | `data/services.json` と `data/service-groups.json` から生成。Sales X / Creative X ごとのカード一覧 |
-| Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, dl-modal.js | 事業群ごとの紹介ページ。PC・スマホ参考画像の構成をHTML/CSSで実装。Creative Xのビズマンガ・ビズアニメから公式サイトへ遷移 |
-| サービス詳細 | `services/{slug}/index.html` | i18n.js, nav.js, cta.js, services-ui.js | 7サービスを共通テンプレートから生成。データにない任意セクションは非表示 |
+| トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
+| サービス一覧 | `services/index.html` | i18n.js, nav.js, services-ui.js | データから生成するSales X / Creative Xのサービス一覧 |
+| Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
+| サービス詳細 | `services/{slug}/index.html` | i18n.js, nav.js, services-ui.js | 7サービスの詳細ページ |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
-| 役員紹介 | `leadership.html` | script.js, cta.js, dl-modal.js | |
-| Contents Xについて | `about.html` | cta.js, dl-modal.js | mixi風。Purpose/Mission/Vision/Values(信じる/届ける/共に)+事業構造+出版モデル比較+グローバル網103社+ロードマップ2026-2028+代表メッセージ誘導+関連リンク（2026-04-23 新設） |
-| トップメッセージ | `message.html` | cta.js, dl-modal.js | 旧 our-thoughts を代表 黒宮 一人称メッセージにリニューアル。CSSは `our-thoughts.css` 流用（ot-* クラス）。旧 `our-thoughts.html` は `/message` への JS+meta リダイレクト |
-| 主要関連会社 | `partners.html` | script.js, dl-modal.js | 提携2社表示中（DM Solutions / KIRINZ）。ASOBISYSTEMは2026-07-08非表示 |
+| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表写真は素材待ちでブランド仮表示 |
+| トップメッセージ | `message.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
+| 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
+| 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
@@ -41,56 +41,68 @@
 `?utm_source=` `?utm_medium=` `?utm_campaign=` `?source=`
 contact フォーム送信時にメッセージ末尾にトラッキング情報を自動付加
 
-## 3. TOP Hero — Sales X / Creative X（トップページ）⭐
+## 3. トップページ 2026年9月版 ⭐
 
-**2026-09-26 Issue #16 採用**: 既存ヘッダー直下のヒーローを、左の企業コピーと右の Sales X / Creative X カードで構成する白〜薄青基調のデザインへ刷新。専用CSSは `css/hero-sales-creative.css`。既存ヘッダーのDOM/CSS/JSは変更しない。
+- デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップのヘッダーは2026-09-29の追加指示で一時撤去（他ページは既存ヘッダーを維持）。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
+- 構成: Hero → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
+- 素材: `material/home-2026/{hero,sales,creative,about,contact}.jpg` と事業紹介用の `sales-safe.jpg` / `creative-safe.jpg`。ユーザー指定デザインを参照に生成した画像で、文字とロゴは画像へ焼き込まずHTMLで重ねる。事業紹介の元画像は被写体が素材の端で切れていたため、余白を設けて再生成した `*-safe.jpg` を表示に使用する。生成したオフィスはイメージ画像として扱う。
+- モーション: `js/home-2026.js` と `css/home-2026.css`。ヒーロー文字の登場、スクロールでの段階的な表示、画像の左→右ワイプ（Sales X / Creative X の写真にも適用）、カード・ボタンのホバー移動。`prefers-reduced-motion: reduce` では瞬時表示。JS不在でも内容は表示する。ワイプ要素自身を幅0にクリップすると交差監視できないため、親コンテナを監視して子要素を表示する。
+- サービスとその他の下層ページは `js/sitewide-motion.js` を共用する。見出し・カード群は下から24px/0.75秒で1回だけ登場し、主な写真は左から右へ1.05秒で表示する。初画面は即時表示、`prefers-reduced-motion` とJS不在時も内容を表示する。サービス生成テンプレートにも同JSの読込を置く。
+- ヒーロー右側の理念コピーは、都市画像の明暗の上でも読めるよう紺色の字に白い縁と淡い白い影を重ねる。事業紹介の中央ロゴは、青とオレンジが交差する文字なしのXマークをインラインSVGで表示する。独立したグリッド列に配置して左右の文言・CTAに重ならないようにし、SVGの viewBox に余白を取って両端を欠けずに描画する。写真は左カードを左寄せ、右カードを右寄せとして、余白付き素材の人物と作画の手を表示する。
+- レスポンシブ: 768px以下でヒーローを縦構成、事業カードとサービス欄を1列にする。事業紹介は1100px以下で縦並びに切り替える。文字は `clamp()` で連続スケール。320/390/412/448/640/768/1024/1100/1101/1280/1440/1920pxの横溢れ・事業カード内の文字収まりをブラウザ確認。
+- リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム `https://bizform.contentsx.jp/`、ビズマンガ `https://bizmanga.contentsx.jp/`、ビズ採用 `https://ichioshi.contentsx.jp/` は公開先へ直リンク。その他の個別紹介は `/services/{slug}/`、Sales X / Creative Xの紹介は `/services/#list-group-{sales|creative}` に向ける。制作スタジオ・IP開発は総合ページへ。
+- 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。トップではヘッダー撤去に合わせ `nav.js` も読み込まない。`i18n.js` は引き続き読み込む。他ページでは `i18n.js` → `nav.js` の読込順を維持。
 
-### 3.1 掲載コピー
+### 3.0 サービスページ生成（Issue #20）
 
-- メインコピー: 「企業の価値を、売上に変える。」
-- リード: 法人の売上づくり、新規商談、検索・AI対策、顧客管理、マンガ・アニメ・映像による価値訴求を一連の流れとして支援する説明
-- 事業カード: Sales X「営業の仕組みをつくる」 / Creative X「価値を、伝わるカタチにする」
-- 装飾コピー: `BUSINESS × CREATIVE` / `CREATE A BRIGHTER TOMORROW`
+- `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、個別7ページ、共通デザイントークンCSS、サイトマップのサービスURLを生成する。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップにはヘッダーがないため、そこから抽出しない。全ページのサービス導線とフッターの新作情報は実在するURLへ向ける。
+- サービスカードはhover/focusまたはスマホのタップで概要を示す。JSなしでも内容を表示する。ビズAIO・ビズカルテは準備中、ビズマンガ・ビズアニメ・ビズ採用は公開先の公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後に再生する。
+- サービス生成は `python3 tools/build-services.py --check` と `python3 -m unittest discover -s tests -p test_build_services.py` で確認する。Pagesワークフローも同じ生成処理とテストを実行する。
+- Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` から生成する。白・濃紺を土台に、Sales Xの青 `#005bfa` とCreative Xのオレンジ `#fa4d12` を使う。ヒーロー・相談CTAの画像は背景と境界をつなげ、スマホでは本文の下に置く。Creative Xのヒーローは `creative-hero-v2.webp`、Sales Xは `sales-hero-v2.webp`。Creative Xの「夜明けスタジオ」は表示しない。Sales Xのビズフォーム画像は実際の業務内容に沿った `bizform-research-v2.webp` を使う。
+- ビズマンガは共用WordPressの「正義の値段」表紙、ビズアニメとビズビデオは公式の実作品ポスターを使用する。後2者はポスターを押すと `js/service-media.js` がローカルのH.264/AAC MP4をページ内で音声付き再生する。YouTubeのiframe・投稿者表示・外部リンクは置かない。再生/一時停止・音量・字幕・進捗バー・拡大操作はホバー/フォーカス時に表示し、タッチ端末では常時表示する。`media-src 'self'` をサービスページのCSPに指定する。
+- ビズAIO・ビズカルテは画像エリアのホバー/フォーカス時に紺・青の「乞うご期待」を表示し、詳細リンクを出さない。ビズ採用は公式サービスページのヒーロー画像を使い、`https://ichioshi.contentsx.jp/service.html` に遷移する。Creative Xのビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime`、ビズビデオは内部詳細ページに誘導する。両事業ページは独自の相談CTAを持つため共通CTAは重複表示しない。
 
-文言は支給プロンプトを正本とし、要約・改変しない。
+### 3.1 旧Hero v2（2026-09-29トップから撤去・履歴）
 
-### 3.2 画像アセット
+**2026-05-10 v2 採用、2026-09-29撤去**: 旧 hero (テキストロゴ+タグライン+カルーセル) を撤去し、左コピー+中央キャラ+右5サービスカード+下USPマーキー帯の構成に刷新していた。CSS: `css/hero-v2.css`（現在のトップでは未使用）。以下は過去の実装記録。
 
-| 用途 | PC | SP |
-|---|---|---|
-| X型背景 | `material/contentsx-hero/desktop/bg-x.png` (1586×992) | `material/contentsx-hero/mobile/bg-x.png` (941×1672) |
-| Sales Xカード | `material/contentsx-hero/desktop/sales-card.png` (1448×1086) | `material/contentsx-hero/mobile/sales-card.png` (1122×1402) |
-| Creative Xカード | `material/contentsx-hero/desktop/creative-card.png` (1448×1086) | `material/contentsx-hero/mobile/creative-card.png` (1122×1402) |
+**2026-07-02 キャラ一体化**: 従来「背景飛沫(`hero_bg`) + 透過キャラ(`hero_chars`)」の2層構成だったが、飛沫と女性キャラ2人を1枚に焼き込んだ画像へ差し替え。専用キャラレイヤー(`.hv2-chars`)と `hero_chars.*` は廃止。女性キャラは背景イラストの一部として描画され、PC では右サービスカードが手前に重なる。PC グリッドは `minmax(620px,1fr) 280px` の2列に変更、`.hv2-bg` の opacity は 1。
 
-- 背景とカードは `<picture>` で768px以下をSP画像へ切り替える。
-- PNGのアルファは維持する。カード画像の大きな透明外周は、元ファイルを加工せず `.cxh-card` のCSSクリッピングで除く。
-- 背景とSalesカードはLCP候補のため eager / `fetchpriority="high"`。Creativeカードもファーストビュー内のため eager、画像寸法属性は実ファイル比と一致させる。
+**2026-07-07 イラスト改訂版へ差し替え**: 同キャラ・同構図の改訂版イラスト（元データ anime_high_quality_3840px.png 3840×2166、飛沫がより濃いバージョン）から hero_bg 6ファイルを再生成して置換。寸法・ファイル名は従来と完全同一（PC 1672×941 / SP 1375×1144、各 avif/webp/png）のため HTML/CSS 変更なし。元画像は16:9より微妙に縦長のため PC は crop 3840×2160(+0,3) で正規化してから縮小、SP はキャラ中心が右寄り約66%になるよう crop 2596×2160(+344,3) してから縮小。変換は ffmpeg(lanczos, rgb24化) + cwebp(-q82) + avifenc(-q60)。
 
-### 3.3 レイアウト
-
-| 幅 | 仕様 |
+### 3.1 PC レイアウト
+| エリア | 内容 |
 |---|---|
-| 769px以上 | 左コピー / 右カードの2列。添付の小さめの表示感に合わせて最大幅1296px、左右余白は `clamp()`、カード2枚を縦積み。既存ヘッダーは変更しない |
-| 768px以下 | コピー → Sales X → Creative X の1列。背景・カードともSP専用画像へ切替 |
-| 320〜340px | 見出しと本文を連続スケールのまま最小値へ調整し、横スクロールを禁止 |
+| 背景(キャラ一体) | `material/hero/hero_bg.{avif,webp,png}` (1672×941) マゼンタ飛沫+女性キャラ2人の一枚絵を全幅描画 (object-fit:cover, opacity:1) |
+| 左コピー | `<h1 class="hv2-headline">` 「ストーリーで／成果を／生み出す」(成果 em 巨大化、回転+skew+SVGグランジフィルタ) + サブコピー「漫画・動画・Web・IPを横断し、企業の成長を加速する。」。**見出し・サブとも白の縁取り(8方向 text-shadow + ソフトハロー)で背景画像から可読性を確保 (2026-07-02)** |
+| 右カード | `.hv2-services` の5サービス(DOM順=表示順): ビズマンガ(→ bizmanga.contentsx.jp) / スクール(→ newmanga-academy.contentsx.jp = ニューマンガアカデミーLP、2026-08-22設定) / コンテンツ採用(フル幅、→ ichioshi.contentsx.jp 2026-07-07設定、2026-07-07にスクール直後へ移動) / コンテンツセールス / IP事業。未確定の2枚(コンテンツセールス・IP事業)は `href="#"` + `data-todo` 属性。スキューシャドウ枠 |
+| CTA | primary「お問い合わせ」(マゼンタ pill) + ghost「資料ダウンロード」(白枠 pill)、hover で alt テキストへスライド |
+| 下帯 | `.hv2-strap` USPマーキー (業界最安値クラス／対応領域 国内外20+言語／最短2週間納品／企画から運用まで一気通貫) |
 
-見出しはモバイル帯を `clamp() + vw` で連続スケールさせる。grid/flex子には `min-width:0` を付け、320/390/412/448/640/768/1024/1440pxで横スクロールと境界崩れを検証する。
+### 3.2 SP レイアウト (max-width: 768px)
+| 不変条件 | 詳細 |
+|---|---|
+| ビジュアルゾーン(比率固定) | `.hv2-bg` を `inset: 60px 0 auto 0 / height: var(--hv2-visual-h)` に閉じ込め、キャラ一体の一枚絵 (`hero_bg_sp.{avif,webp,png}` 1375×1144) を全幅描画。**`--hv2-visual-h = calc(100vw * 1144 / 1375)`** とし box の縦横比を画像と一致させることで `object-fit:cover` でもクロップせず画像全体を表示（トリミングで縦長化するのを防止）。下端は `mask-image` + `::after` 70px 白オーバーレイでフェード |
+| CTA を画像の下へ(絶対条件) | `.hv2-ctas` は `.hv2-copy`(flex縦)の**子**なので `grid-area` は効かない。`.hv2-copy { min-height: calc(var(--hv2-visual-h) + 96px) }` で画像高+余白を確保し、`.hv2-ctas { margin-top: auto }` で下端へ落とす。→ 画面幅で画像高が変わっても CTA は常に画像の直下(≒下端+16px)に並ぶ。検証: 360/390/430/768 で `ctas.top >= bg.bottom` |
+| 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
+| sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
+| client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
 
-### 3.4 アクセシビリティ
+> 2026-07-02: キャラ一体化＋SP一枚絵の比率固定表示に刷新。旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）・透過キャラ `right:-100px`・固定 `margin-top:166px` は全廃止。
 
-カード画像の左側に焼き込まれた文字はCSSの不透明パネルで覆い、Sales X / Creative Xの名称・見出し・本文を**画面に表示されるHTML**として重ねる。名称は`h2`、見出しは`h3`、本文は`p`で提供し、画像の文字だけに依存しない。背景とカード画像は重複読み上げを防ぐため `alt=""` + `aria-hidden="true"`。メインコピーとリードも画像化せずHTMLで提供する。
+### 3.3 CSS変数（SP）
+```css
+.hv2-hero {
+  /* 一枚絵をトリミングせず全幅表示するため画像比率(1375:1144)で高さを算出 */
+  --hv2-visual-h: calc(100vw * 1144 / 1375);
+}
+```
+画像は比率固定で全体表示。CTA は `.hv2-copy` の min-height + `.hv2-ctas { margin-top:auto }` で画像直下へ。`--hv2-chars-h` は廃止済み。
 
-### 3.5 データ駆動サービスシステム（Issue #20）
-
-- 正本は `data/services.json`（サービス情報）、`data/service-groups.json`（分類）、`data/design-tokens.json`（色・余白・文字等）。`data/service-data.schema.json` が項目定義。新サービスはデータに1件追加し、必要時のみ画像を `material/` に追加する。
-- `python3 tools/build-services.py` でTOPの `<!-- BUILD:SERVICES -->`（一覧への短い導線のみ）、`services/index.html`（全サービスカードを集約）、`services/{sales,creative}-x/index.html`、`services/{slug}/index.html`、`css/web-system-tokens.css`、sitemapのサービスURLを生成する。Pagesデプロイでも同コマンドを実行する。`--check` は生成物の鮮度確認。
-- テンプレートは `tools/templates/`、共通CSSは `css/web-system.css`。カードは `repeat(auto-fit,minmax(min(100%,240px),1fr))` で件数に依存しない。Sales/Creativeはグループ属性とtokenで切り替える。支給PNGは装飾、SVGは共通アイコンであり、主要文言はすべてHTMLテキスト。
-- PCカードはhover/focusで概要とサービス別の画像をオーバーレイ表示。画像は `data/services.json` の任意 `hoverImage` を参照する。ビズフォームは公式サイトの「企業を選ぶ→調査→一社ごとの文面作成→フォーム送信」という実務を踏まえた生成画像、ビズAIOはAI検索で企業情報が発見される場面、ビズカルテは顧客とのやりとりを次の営業行動へつなぐ場面の生成画像を使う。ビズマンガは共用WordPress掲載の「正義の値段」表紙、ビズアニメ・ビズビデオは実際の動画のポスター、ビズ採用は公式サービスページのヒーロー画像をローカル保存して使う。ビズAIO・ビズカルテはホバー/フォーカス時に紺・青の「乞うご期待」を表示して詳細リンクを出さない。画像は装飾扱いで主要文言は常にHTMLテキスト。モバイルは `js/services-ui.js` による `aria-expanded` 付き展開、JavaScript無効時は概要を常時表示。詳細のタブはキーボードの左右矢印/Home/Endに対応し、JavaScript無効時は全パネルを表示。
-- 詳細ページは固有title/description/canonical/OGP、BreadcrumbList/Service JSON-LDを持つ。ビズアニメ・ビズビデオの詳細ヒーローも制作事例動画をクリック再生できる。任意の課題・特徴・導入手順・活用シーン・FAQは該当データがある時だけ出力し、実在しない数値・価格・評価は加えない。
-- サイトマップはサービス欄をビルドで更新する。ニュース更新用 `tools/generate-sitemap.py` はNEWSマーカー内だけを置換し、サービス・コラム等のURLを保持する。
-- 既存ヘッダー・フッター・CTAを流用し、ヘッダーの「サービス」は独立したトップ階層の項目として `/services/` に直結させる。TOPフッターも同URL。既存のヒーローは前段のIssue #16の実装を維持する。
-- Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` で構成。トップページ現行案の青 `#005bfa`・橙 `#fa4d12` に合わせ、本文は画像に焼き込まずHTMLで保持する。参考画像はレイアウトの参照に使う。画像は `material/service-2026/` に置く。両ヒーローと相談CTAの画像は背景と重ねて境界をフェードさせ、モバイルでは本文の下に配置する。Creative Xのヒーローは女性・撮影カメラ・モニターと橙/紺の斜線を組み合わせた `creative-hero-v2.webp`、Sales Xはチームと青/紺の斜線を組み合わせた `sales-hero-v2.webp`。Creative Xの「夜明けスタジオ」節は表示しない。Sales Xのビズフォームは公式サイトの業務内容に合わせた `bizform-research-v2.webp` を使用する。Sales Xの詳細カードは参考事業ページに合わせ、画像を上、説明を下に置き、デスクトップのホバー/フォーカス時に画像面へ青/紺の説明を重ねる。ビズマンガは共用WordPressの「正義の値段」高解像度表紙、ビズアニメは公式ページのiPadで流れる「I eye」、ビズビデオは「私を置いて、記憶だけ残った街」の公式動画ポスターを使用する。後2者はポスターを押すと `js/service-media.js` がローカルのH.264/AAC MP4を音声付きで再生し、ページ内で完結する。YouTubeのiframe・投稿者表示・外部リンクは置かない。ページ側の再生/一時停止・音量・自動生成字幕・進捗バー・拡大操作をホバー/フォーカス時に表示し、タッチ端末では常時表示する。
-- Sales XのビズAIO・ビズカルテは画像エリアでホバー/フォーカス時に「乞うご期待」へ切り替え、詳細リンクを出さない。ビズ採用の画像は公式サービスページのヒーローを使用し、カード・詳細行・一覧カードから `https://ichioshi.contentsx.jp/service.html` へ遷移する。Creative Xのビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime` へ直接誘導する。ビズビデオは内部詳細ページに誘導。資料ダウンロードは既存の `js/dl-modal.js` を使用する。Sales X・Creative Xページには独自の相談CTAがあるため、共通CTAは重複表示しない。
+### 3.4 旧仕様（撤去済み・参考）
+旧 hero (テキストロゴ「ContentsX_hero.webp」+ タグライン「埋もれていた物語に光を当てる」+ カルーセル + Phase 2 演出) は v2 採用で実質非表示となった。`hero-new.js` / `hero-fx.js` のトップでの読込は2026-09-29に終了。0〜3.6s イントロオーバーレイ系は 2026-05-10 撤去済み (`heroIntroOverlay` / `startIntro` / `finishIntro` 系全削除)。
 
 ## 4. 共通 JS コンポーネント
 
@@ -103,7 +115,6 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | `js/dl-modal.js` | 資料DLモーダル | contact送信済みか localStorage で判定 |
 | `js/wp-api.js` | WP API クライアント | `WORKS_DETAIL_DATA` / `NEW_WORKS_DATA` 上書き |
 | `js/wp-config.js` | WP設定 | API baseURL / cache TTL |
-| `js/services-ui.js` | サービスカード展開と詳細タブ | TOP・サービス一覧・各詳細（defer） |
 
 ### 4.1 CTA セクション共有化 ⭐
 - 6ページで CTA を重複コピペしていた問題を解消
@@ -131,8 +142,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 | サービス | 用途 | 設定値 |
 |---|---|---|
-| HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
-| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `js/contact.js` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数、`site: "contentsx"`）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信・サンクス表示・資料DLリンクは従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。⚠️ **採用応募（`recruit.html` から `?position=` 付きで遷移）はCRMに送らない**（営業リードのみをCRMに入れる方針。HubSpotには従来どおり全件届く）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#cxWebsite`**（画面外・aria-hidden・`data-i18n-skip`）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は、CRM側 Vercel の `INBOUND_SECRET`・BizManga の `contact.html`・本サイトの `js/contact.js`・イチオシ採用の `js/main.js` の4箇所を同時に更新する**（イチオシ採用は別リポジトリ josawa2255/recruitx＝`crm-token-sync` フックでは検知できない。2026-08-04 追加）。一部だけだとそのサイトのCRM送信が全件401で落ちるが、HubSpot受付は正常に動き続けるため気づきにくい |
+| HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704`。⚠️ **部署（`busyo`）は HubSpot 側で必須**＝空だと送信が拒否される（B/C 共通フォーム）。`contact.html` の部署欄は `required`、加えて `js/contact.js` が送信時に前後の空白を除いて空なら `setCustomValidity` で止める（HTML の `required` は空白だけの入力を通すため。メッセージは日英切替に追従。2026-09-29） |
+| Contents X CRM（ビズカルテ） | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加・2026-09-29 **貼り付けコード方式**へ移行） | **貼り付けコード方式**: CRM の貼り付けコード `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を `contact.html` の `</body>` 直前で1行読み込む（`data-source-key`＝本サイトの公開キー・`data-auto="false"`・`data-honeypot="#cxWebsite"`・`async`）。`js/contact.js` の送信処理で、HubSpot送信の直前に `copyToCrm(form)` を1回呼ぶ（中身は `BizcarteInbound.sendForm(form)`。貼り付けコードは async なので、送信時にまだ読み込めていなければ `load` を待って送る。例外は外へ出さない。読み込み失敗・API 欠落はコンソールに警告を残す。貼り付けコードは `script[data-source-key]` で探すのでファイル名に依存しない）。受信箱の種類は `form_kind: "inquiry"`（お問い合わせ）。⚠️ **採用応募（`recruit.html` から `?position=` 付きで遷移）は呼ばない＝CRMに送らない**（営業リードのみをCRMに入れる方針。HubSpotには従来どおり全件届く）。項目は5つの入力欄の `data-crm-field`（company→`company_name`／department→`department`／fullName→`full_name`／email→`email`／message→`message`）で明示している。ハニーポット `#cxWebsite`（`data-i18n-skip`・`name="website"`＋`tabindex="-1"`）は値が入るとCRM側が黙って破棄する。送信先は `/api/inbound/s/<公開キー>`。公開キーは**秘密ではない**（ブラウザに出る前提）。CRM側は**登録済みの送信元ドメインだけ**を受け付ける＝本番ドメイン `https://contentsx.jp` 以外（localhost 等）からの送信は拒否される（HPの受付には影響なし）。連投制限は送信元ごとに10分5件。`data-auto="false"` は必須（外すと入力チェックで止まった送信まで拾う）。**トークンの管理は不要**（旧方式の `CRM_TOKEN`／CRM側 `INBOUND_SECRET` の同期ルールは廃止）。CSP は `script-src` に `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を**ファイル単位で**追加（`connect-src 'self' https: wss:` は既に CRM への送信を許しているので変更なし）。SRI（`integrity`）は**付けない**（CRM 側が同じファイル名のまま互換更新するため、付けると更新のたびに読み込みが止まり CRM にだけ届かなくなる。ルート docs/operations/SECURITY.md に例外として記録）。⚠️ **CRM のドメインを変えるときは、`contact.html` の script の `src` と CSP の `script-src` の2か所を直す**。**CRM 送信は応答を待たず例外も外へ出さないため、失敗しても HubSpot 送信・完了表示・Google広告CVは従来どおり動く**。CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・担当者・活動が作られる。⚠️ 2026-09-24 の CRM の組織分離から旧経路（`/api/inbound/web` への並行 POST）は 404 になり、この間 HubSpot には届き CRM には届いていなかった（BUGS #056） |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-B000C4JCCX`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = `js/contact.js` の HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正、B/C共通） |
 | WordPress REST API | 漫画事例 / ニュース | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
@@ -238,7 +249,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - `/column/` アクセス時は `column/index.html` の meta refresh で `/column` (= column.html) へ転送
 - `--skip-listing` で個別ページのみ生成可能
 
-## 8. 制作事例モーダル（トップページ）
+## 8. 制作事例モーダル（2026-09-29トップから撤去）
 
 - `openWorkDetail(workId)` で起動（hero-new.js）
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替
@@ -264,8 +275,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ## 11. パートナー企業ロゴ
 
-[partners.html](partners.html) で掲載:
-- 表示中: DM Solutions / KIRINZ
+[CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) に非表示箇所と復帰手順を記録。`partners.html` は現在転送のみで、以下は旧ページの素材に関する記録:
+- 旧掲載: DM Solutions / KIRINZ
 - **ASOBISYSTEMは2026-07-08にコメントアウトで非表示化**（`TEMP-HIDDEN-ASOBI-SYSTEM`マーカー、HTML内に残置。復活は該当ブロックのコメント解除のみ）
 - ロゴ画像: `material/images/partners/*.webp`
 - **背景透過済み**（PIL で RGB>=240を透明化）
@@ -276,8 +287,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | 事項 | 詳細 |
 |---|---|
 | hreflang | **2026-04-14 全ページから削除済**（JS言語切替1URL構成のため誤実装だった。sitemap.xml からも削除） |
-| image alt | Heroの背景・文字入りカードは装飾画像として `alt=""`。同内容をHTML見出し・本文（カード内文言は `.sr-only`）で提供 |
-| image width/height | Hero背景・カードは実ファイル寸法を指定済み。その他の未指定画像は引き続きCLS改善対象 |
+| image alt | hero キャラ画像に alt が無い |
+| image width/height | 未指定 → CLS悪化要因 |
 | description | **2026-04-14 index/news/news-detail/our-thoughts/recruit の5ページを73〜90文字に拡充**（meta/og/twitter/JSON-LD の4箇所同期） |
 | Organization.sameAs | **2026-04-14 `https://x.com/Bizmanga_` 追加**。他SNSは未開設 |
 | Organization 詳細 | **2026-04-14 `foundingDate: 2026-03-03` / `address`（目黒区） / `subOrganization`（BizManga） / `alternateName` を追加** |
@@ -369,7 +380,16 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 | magenta-rose | `#E91E8C` |
 | magenta-deep | `#C2185B` |
 
-現状 `<body data-theme="magenta-hot">` で運用
+### 2026年9月のページ横断デザイン
+
+- トップページとサービスページはそれぞれの担当作業ツリーで設計する。**その他のContents Xページ全体**（会社情報、採用、お問い合わせ、ニュース、コラム、FAQ、法務ページ、404）は第三の担当範囲として統一感を維持する。別セッション間の変更・色の決定は「claude連絡網」で共有する。
+- 下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を使用。白を土台に、濃紺 `#07143b`、Sales X の青 `#005bfa`、Creative X のオレンジ `#fa4d12` を共通の視覚語彙とする。見出し、ラベル、リンク、ボタン、淡色背景、境界線の基準をこのCSSへ集約する。
+- `body[data-theme="magenta-hot"]` と旧テーマ定義は互換性のため残す。下層ページでは `body.cx-sitewide` の変数が優先する。トップ・サービスのレイアウトにはこのクラスを付けない。
+- コラム静的記事は生成物と `tools/templates/c-column.html.tpl` の両方へ共通CSSを読み込む。再ビルド後も外観を維持するため、テンプレートの指定を削除しない。
+- レスポンシブ検証幅は 320/390/412/448/640/768/1024/1440px。本文はユーザーの文字拡大設定を尊重する。
+- UIとモーションの共通基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページは `js/sitewide-motion.js` がセクションの1回だけの登場演出を担う。JS無し・動きの軽減設定時は常時表示する。
+- フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` から読み込み、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
+- 共通の小部品は `cx-ui-surface`（淡色面と枠）、`cx-ui-pill`（丸い外形）、`cx-ui-card`（カード反応）、`cx-ui-action`（操作反応）。ページ固有クラスは配置・内容を担当する。旧生成コラムカード `cx-col-card` の動きは生成テンプレート互換のため保持する。
 
 ## 14. 参照ドキュメント
 

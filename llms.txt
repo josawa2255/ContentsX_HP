@@ -85,9 +85,7 @@ Contents X 株式会社（ContentsX／コンテンツエックス）は、2026�
 
 - [トップページ](https://contentsx.jp/) — 事業概要、新作情報、ギャラリー
 - [会社概要](https://contentsx.jp/company) — 代表挨拶、沿革、拠点情報
-- [役員紹介](https://contentsx.jp/leadership) — 黒宮大貴、鵜池航太、中川祐介のプロフィール
-- [私たちの思い](https://contentsx.jp/our-thoughts) — ビジョン・ミッション・創業ストーリー
-- [主要関連会社](https://contentsx.jp/partners) — ASOBI SYSTEM、DM Solutions等のパートナー
+- [ContentsXについて](https://contentsx.jp/about) — 事業、理念、ミッション・ビジョン、バリュー、代表メッセージ
 - [採用情報](https://contentsx.jp/recruit) — 漫画家 / マンガ制作担当 / 営業 募集中
 - [ニュース](https://contentsx.jp/news) — プレスリリース・最新情報
 - [お問い合わせ](https://contentsx.jp/contact) — フォーム・企業情報

@@ -354,10 +354,10 @@ def breadcrumbs_json(items: list[tuple[str, str]]) -> dict:
 def extract_block(source: str, tag: str) -> str:
     opening = re.search(rf"<{tag}\b[^>]*>", source)
     if not opening:
-        raise ValueError(f"missing <{tag}> in index.html")
+        raise ValueError(f"missing <{tag}> in service chrome source")
     closing = source.find(f"</{tag}>", opening.end())
     if closing < 0:
-        raise ValueError(f"missing </{tag}> in index.html")
+        raise ValueError(f"missing </{tag}> in service chrome source")
     return source[opening.start(): closing + len(tag) + 3]
 
 
@@ -431,10 +431,15 @@ def build(check: bool = False) -> int:
     validate(services, groups)
     index_path = ROOT / "index.html"
     index_source = index_path.read_text(encoding="utf-8")
-    header, footer = extract_block(index_source, "header"), extract_block(index_source, "footer")
+    # The renewed homepage intentionally has no header. Use the service index
+    # as the source of the shared header and footer for generated service pages.
+    chrome_source = (SERVICES_DIR / "index.html").read_text(encoding="utf-8")
+    header = extract_block(chrome_source, "header")
+    footer = extract_block(chrome_source, "footer")
     outputs: dict[Path, str] = {}
     outputs[ROOT / "css" / "web-system-tokens.css"] = render_tokens(tokens)
-    outputs[index_path] = replace_marked(index_source, "SERVICES", render_home())
+    if "<!-- BUILD:SERVICES -->" in index_source or "<!-- /BUILD:SERVICES -->" in index_source:
+        outputs[index_path] = replace_marked(index_source, "SERVICES", render_home())
     list_schema = {"@context": "https://schema.org", "@type": "ItemList", "itemListElement": [
         {"@type": "ListItem", "position": i, "name": service["name"], "url": SITE + service["href"]}
         for i, service in enumerate(services, 1)

@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="/css/dl-modal.css">
   {{JSON_LD}}
 </head>
-<body data-theme="magenta-hot">
+<body class="cxs-services" data-theme="neutral">
 {{HEADER}}
 <main class="cxs-page" id="main">
 {{BODY}}
@@ -59,5 +59,6 @@
 <script src="/js/dl-modal.js" defer></script>
 <script src="/js/services-ui.js" defer></script>
 <script src="/js/service-media.js" defer></script>
+<script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>

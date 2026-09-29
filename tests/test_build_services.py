@@ -73,7 +73,7 @@ class ServiceBuildTests(unittest.TestCase):
         self.assertIn('href="https://ichioshi.contentsx.jp/service.html"', sales)
         self.assertIn('data-video-src="/material/service-2026/bizanime-ieye.mp4"', creative)
         self.assertIn('data-video-src="/material/service-2026/bizvideo-memory-town.mp4"', creative)
-        self.assertNotIn('youtube.com/watch', creative)
+        self.assertNotIn('data-youtube-id=', creative)
         self.assertIn('/material/service-2026/manga-justice-cover.webp', creative)
         self.assertIn('乞うご期待', sales)
         self.assertIn('class="cxg-button cxg-button--outline js-dl-trigger"', creative)

@@ -5,7 +5,7 @@
   <meta http-equiv="last-modified" content="2026-04-25T01:08:15+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net https://contentsx-crm.vercel.app/embed/inbound-v1.js; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
@@ -92,10 +92,11 @@
 }
 </script>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#b85a2b">
+  <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
 </head>
-<body data-theme="magenta-hot">
+<body data-theme="magenta-hot" class="cx-sitewide">
 
   <!-- ===== ヘッダー ===== -->
   <header class="header" id="header">
@@ -123,27 +124,27 @@
       <form class="contact-form" id="contactForm">
         <div class="form-group">
           <label class="form-label" for="company"><span data-ja="会社名" data-en="Company">会社名</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="company" name="company" placeholder="Contents X 株式会社" data-ph-ja="Contents X 株式会社" data-ph-en="Contents X Co., Ltd." required>
+          <input class="form-input" type="text" id="company" name="company" placeholder="Contents X 株式会社" data-ph-ja="Contents X 株式会社" data-ph-en="Contents X Co., Ltd." required data-crm-field="company_name">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="department"><span data-ja="部署" data-en="Department">部署</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="department" name="department" placeholder="マーケティング部" data-ph-ja="マーケティング部" data-ph-en="Marketing Dept." required>
+          <input class="form-input" type="text" id="department" name="department" placeholder="マーケティング部" data-ph-ja="マーケティング部" data-ph-en="Marketing Dept." required data-crm-field="department">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="fullName"><span data-ja="名前" data-en="Name">名前</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="text" id="fullName" name="fullName" placeholder="佐藤 太郎" data-ph-ja="佐藤 太郎" data-ph-en="Taro Sato" required>
+          <input class="form-input" type="text" id="fullName" name="fullName" placeholder="佐藤 太郎" data-ph-ja="佐藤 太郎" data-ph-en="Taro Sato" required data-crm-field="full_name">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="email"><span data-ja="メールアドレス" data-en="Email">メールアドレス</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <input class="form-input" type="email" id="email" name="email" placeholder="example@company.com" required>
+          <input class="form-input" type="email" id="email" name="email" placeholder="example@company.com" required data-crm-field="email">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="message"><span data-ja="お問い合わせ内容" data-en="Message">お問い合わせ内容</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
-          <textarea class="form-textarea" id="message" name="message" placeholder="ご質問やご要望をご記入ください" data-ph-ja="ご質問やご要望をご記入ください" data-ph-en="Please describe your inquiry" required></textarea>
+          <textarea class="form-textarea" id="message" name="message" placeholder="ご質問やご要望をご記入ください" data-ph-ja="ご質問やご要望をご記入ください" data-ph-en="Please describe your inquiry" required data-crm-field="message"></textarea>
         </div>
 
         <!-- ハニーポット: 人には見えない入力欄。ボットだけが埋めるので、
@@ -181,7 +182,6 @@
         <div class="footer-links">
           <a href="./#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
           <a href="./#about" data-ja="サービス" data-en="Services">サービス</a>
-          <a href="partners" data-ja="パートナー" data-en="Partners">パートナー</a>
           <a href="company" data-ja="会社概要" data-en="Company">会社概要</a>
           <a href="contact" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
           <a href="faq" data-ja="よくあるご質問" data-en="FAQ">よくあるご質問</a>
@@ -200,5 +200,9 @@
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 <!-- End of HubSpot Embed Code -->
+  <script src="/js/sitewide-motion.js" defer></script>
+<!-- Contents X CRM 受信箱連携（貼り付けコード）。送信は js/contact.js の copyToCrm() から手動で呼ぶため data-auto="false"。
+     CRM のドメインを変えるときは、この src と head の CSP（script-src）の2か所を直す -->
+<script src="https://contentsx-crm.vercel.app/embed/inbound-v1.js" data-source-key="f36d91ce73f8d0d080796eb551680eca" data-auto="false" data-honeypot="#cxWebsite" async></script>
 </body>
 </html>

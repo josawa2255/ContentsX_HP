@@ -78,10 +78,11 @@
 }
 </script>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#FF0090">
+  <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
 </head>
-<body data-theme="magenta-hot" data-page-column>
+<body data-theme="magenta-hot" data-page-column class="cx-sitewide">
 
   <!-- ===== ヘッダー ===== -->
   <header class="header" id="header">
@@ -112,7 +113,7 @@
     <!-- Featured -->
     <section class="cx-col-featured" id="cxColumnFeatured" style="display:none;">
       <div class="container">
-        <a class="cx-col-featured-card" id="cxColumnFeaturedCard" href="#">
+        <a class="cx-col-featured-card cx-ui-card cx-ui-surface" id="cxColumnFeaturedCard" href="#">
           <div class="cx-col-featured-img">
             <img id="cxColumnFeaturedImg" src="" alt="" loading="eager" width="1200" height="675">
           </div>
@@ -163,7 +164,6 @@
         <div class="footer-links">
           <a href="./#new-works" data-ja="新作情報" data-en="Latest Works">新作情報</a>
           <a href="./#about" data-ja="サービス" data-en="Services">サービス</a>
-          <a href="partners" data-ja="パートナー" data-en="Partners">パートナー</a>
           <a href="company" data-ja="会社概要" data-en="Company">会社概要</a>
           <a href="column" data-ja="コラム" data-en="Column">コラム</a>
           <a href="contact" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
@@ -201,5 +201,6 @@
   <script src="js/tracking.js" defer></script>
   <script src="js/column.js" defer></script>
 
+  <script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>
