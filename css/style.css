@@ -2328,6 +2328,21 @@ a.news-thumb:hover img { transform: scale(1.05); }
   line-height: 2;
   color: var(--text-muted);
   max-width: 420px;
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+
+.company-description > * + * {
+  margin-top: 1.25em;
+}
+
+.company-description .company-description-lead {
+  margin: 0;
+  font-size: clamp(17px, 0.9rem + 0.4vw, 20px);
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--text-primary);
 }
 
 /* 右側：会社情報テーブル */
