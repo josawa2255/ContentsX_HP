@@ -15,7 +15,7 @@
 |---|---|---|---|
 | トップ | `index.html` | script.js, hero-new.js, hero-fx.js, wp-api.js, dl-modal.js, cta.js | Hero v2 (左コピー + キャラ一体背景 + 右5サービスカード + USPマーキー帯) + クライアントロゴカルーセル + News + 新作情報 + 3事業領域 + CTA |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
-| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。代表写真は素材待ちでブランド仮表示 |
+| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表写真は素材待ちでブランド仮表示 |
 | トップメッセージ | `message.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |

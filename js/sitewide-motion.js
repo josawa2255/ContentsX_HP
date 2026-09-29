@@ -7,6 +7,8 @@
   var selector = [
     '.ab-section-head', '.ab-statement', '.ab-biz-grid', '.ab-global-grid',
     '.ab-related-grid', '.ab-cta-message-inner',
+    '.ax-panel-copy', '.ax-purpose-card', '.ax-value-card',
+    '.ax-message-copy', '.ax-portrait', '.ax-contact-inner',
     '.ot-section > h2', '.ot-section-alt h2', '.ot-lead', '.ot-values-grid',
     '.ot-paths', '.ot-closing',
     '.company-info', '.leader-card', '.partners-cards', '.partners-recruit',
