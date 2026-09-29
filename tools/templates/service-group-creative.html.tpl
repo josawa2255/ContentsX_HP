@@ -4,7 +4,7 @@
       <nav class="cxs-breadcrumbs" aria-label="パンくずリスト"><ol><li><a href="/">ホーム</a></li><li><a href="/services/">サービス</a></li><li aria-current="page">Creative X</li></ol></nav>
       <div class="cxg-hero__inner">
         <div class="cxg-hero__copy"><p class="cxg-kicker">STORY × BRAND</p><h1 id="cxg-title"><span>Creative X</span><small>価値を、伝わるカタチにする。</small></h1><p>マンガ・アニメ・映像の力で、<br>商品やサービスを使ったあとの変化をわかりやすく伝え、<br>企業の営業・マーケティング・採用を支援します。</p><a class="cxg-button" href="/contact">まずは相談する <span aria-hidden="true">→</span></a></div>
-        <div class="cxg-hero__image cxg-hero__image--creative"><img class="cxg-hero__anime-player" src="/material/service-2026/bizanime-player.webp" alt="ビズアニメの動画イメージ" width="1366" height="1009" fetchpriority="high"><img class="cxg-hero__anime-character" src="/material/service-2026/bizanime-character.webp" alt="" width="615" height="1513" fetchpriority="high"></div>
+        <div class="cxg-hero__image cxg-hero__image--creative"><img src="/material/service-2026/creative-hero-v2.webp" alt="マンガ・アニメ・映像の制作を表す女性と撮影カメラ" width="1536" height="1024" fetchpriority="high"></div>
       </div>
     </div>
   </section>

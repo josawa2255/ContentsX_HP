@@ -238,14 +238,15 @@ def render_detail(service: dict, services: list[dict]) -> str:
 
 
 GROUP_IMAGES = {
+    "bizform": "/material/service-2026/bizform-research-v2.webp",
     "bizrecruit": "/material/service-2026/bizrecruit-service.webp",
     "bizmanga": "/material/service-2026/manga-justice-cover.webp",
     "bizanime": "/material/service-2026/bizanime-ieye.jpg",
     "bizvideo": "/material/service-2026/bizvideo-memory-town.jpg",
 }
 GROUP_IMAGE_SIZES = {
-    "bizform": (960, 720), "bizaio": (960, 640),
-    "bizkarte": (960, 640), "bizrecruit": (1672, 941),
+    "bizform": (1672, 941), "bizaio": (1672, 941),
+    "bizkarte": (1672, 941), "bizrecruit": (1672, 941),
     "bizmanga": (1407, 2000), "bizanime": (1280, 720), "bizvideo": (1280, 720),
 }
 GROUP_LINKS = {
@@ -302,15 +303,15 @@ def render_landing_row(service: dict, index: int) -> str:
     size = GROUP_IMAGE_SIZES.get(service["id"])
     dimensions = f' width="{size[0]}" height="{size[1]}"' if size else ""
     visual = (f'<img src="{esc(image)}" alt=""{dimensions} loading="lazy">' if image else
-              f'<div class="cxg-detail-row__visual cxg-detail-row__visual--icon">{render_icon(service["icon"], "cxg-service-card__icon")}</div>')
+              render_icon(service["icon"], "cxg-service-card__icon"))
     coming_soon = service["id"] in COMING_SOON
     action = (f'<button class="cxg-coming-soon__trigger" type="button" aria-label="{esc(service["name"])}は準備中です">公開予定 →</button>'
               if coming_soon else f'<a href="{esc(GROUP_LINKS.get(service["id"], service["href"]))}">詳しく見る →</a>')
     return re.sub(r"(?m)^[ \t]+$", "", f'''<article class="cxg-detail-row{' cxg-detail-row--coming-soon' if coming_soon else ''}">
+  <div class="cxg-detail-row__visual{' cxg-detail-row__visual--icon' if not image else ''}">{visual}
+    {render_coming_soon() if coming_soon else f'<div class="cxg-detail-row__hover"><strong>{esc(service["name"])}</strong><span>{esc(service["hoverSummary"])}</span></div>'}</div>
   <div class="cxg-detail-row__copy"><span>{index:02} / {esc(service['name'])}</span><h3>{esc(service['shortCopy'])}</h3>
     <p>{esc(service['hoverSummary'])}</p>{action}</div>
-  {visual}
-  {render_coming_soon() if coming_soon else ''}
 </article>''')
 
 

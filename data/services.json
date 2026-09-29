@@ -10,7 +10,7 @@
     "tags": ["新規開拓", "アポ獲得", "フォーム営業"],
     "features": ["送り先選定", "企業調査", "文章作成", "問い合わせフォームからの送信"],
     "icon": "paper-plane",
-    "hoverImage": "/material/web-system/service-hover/bizform.webp",
+    "hoverImage": "/material/service-2026/bizform-research-v2.webp",
     "href": "/services/bizform/",
     "featured": false
   },
@@ -25,7 +25,7 @@
     "tags": ["SEO", "AIO", "コンテンツ制作"],
     "features": ["サービス・料金情報のコンテンツ化", "事例・よくある質問のコンテンツ化", "検索・AIで見つけてもらいやすい情報整理"],
     "icon": "search",
-    "hoverImage": "/material/web-system/service-hover/bizaio.webp",
+    "hoverImage": "/material/service-2026/bizaio-search-v2.webp",
     "href": "/services/bizaio/",
     "featured": true
   },
@@ -40,7 +40,7 @@
     "tags": ["CRM", "営業管理"],
     "features": ["顧客とのやりとりの蓄積", "次の営業行動につなげる情報整理"],
     "icon": "database",
-    "hoverImage": "/material/web-system/service-hover/bizkarte.webp",
+    "hoverImage": "/material/service-2026/bizkarte-record-v3.webp",
     "href": "/services/bizkarte/",
     "featured": false
   },
