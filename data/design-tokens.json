@@ -1,0 +1,40 @@
+{
+  "colors": {
+    "ink": "#06143D",
+    "text": "#14234A",
+    "muted": "#6D7890",
+    "border": "#DFE6F1",
+    "background": "#FFFFFF",
+    "surface": "#F8FBFF",
+    "sales": "#1677FF",
+    "salesSoft": "#EAF3FF",
+    "creative": "#FF5A1F",
+    "creativeSoft": "#FFF1EA"
+  },
+  "layout": {
+    "containerMax": "1280px",
+    "pageGutterDesktop": "40px",
+    "pageGutterMobile": "20px",
+    "sectionSpaceDesktop": "112px",
+    "sectionSpaceMobile": "72px"
+  },
+  "radius": {
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "pill": "999px"
+  },
+  "shadow": {
+    "card": "0 14px 40px rgba(6,20,61,.08)",
+    "hover": "0 20px 50px rgba(6,20,61,.18)"
+  },
+  "type": {
+    "fontJa": "'Noto Sans JP', sans-serif",
+    "fontLatin": "Inter, sans-serif",
+    "h1": "clamp(42px,5vw,72px)",
+    "h2": "clamp(32px,3.4vw,52px)",
+    "h3": "clamp(24px,2.4vw,34px)",
+    "body": "16px",
+    "caption": "13px"
+  }
+}

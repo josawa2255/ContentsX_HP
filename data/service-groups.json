@@ -1,0 +1,16 @@
+[
+  {
+    "id": "sales",
+    "name": "Sales X",
+    "eyebrow": "SALES × GROWTH",
+    "tagline": "営業の仕組みをつくる。",
+    "summary": "新しい商談づくり、検索・AI対策、顧客管理をつなぎます。"
+  },
+  {
+    "id": "creative",
+    "name": "Creative X",
+    "eyebrow": "STORY × BRAND",
+    "tagline": "価値を、伝わるカタチにする。",
+    "summary": "マンガ・アニメ・映像で、商品やサービスの価値を伝えます。"
+  }
+]

@@ -35,10 +35,12 @@
 | 領域 | 実装先 | 管理 |
 |---|---|---|
 | トップ | `css/home-2026.css`, `js/home-2026.js` | トップ担当。初画面の見出しと画像カーテンは固有演出 |
-| サービス | `css/service-landing-2026.css`, `css/web-system.css` | サービス担当。カード展開とタブは機能優先 |
-| その他 | `css/sitewide-cohesion.css`, `js/sitewide-motion.js` | 下層ページ担当。セクション登場と操作反応 |
+| サービス | `css/service-landing-2026.css`, `css/web-system.css`, `js/sitewide-motion.js` | カード展開とタブは機能優先。下層の見出し・カード群は1回だけ登場 |
+| その他 | `css/sitewide-cohesion.css`, `js/sitewide-motion.js` | セクション登場と操作反応、主な写真の左→右ワイプ |
 
 他担当の作業ツリーを直接編集せず、値や動作の変更は「claude連絡網」で共有する。
+
+`sitewide-motion.js` はサービスとその他の下層ページで共用する。写真ワイプは画像だけに適用し、画像の親を交差監視する。サービス詳細の初画面の画像だけは0.9秒でごく軽く拡大から戻し、見出しとCTAは隠さない。JavaScript・IntersectionObserver が使えない場合も通常表示にする。軽減設定へ切り替わったら未表示要素をすべて表示する。
 
 ## 検証
 
