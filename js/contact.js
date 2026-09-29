@@ -52,8 +52,22 @@ function copyToCrm(form) {
   } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
 }
 
+// 部署は HubSpot のフォーム側で必須（空だと送信が拒否される）。HTML の required は
+// 空白だけの入力を通すので、送信時に前後の空白を除いて空なら止める
+var departmentInput = document.getElementById('department');
+departmentInput.addEventListener('input', function () {
+  departmentInput.setCustomValidity('');
+});
+
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
+
+  if (!departmentInput.value.trim()) {
+    var isEn = window.i18n && typeof window.i18n.getLang === 'function' && window.i18n.getLang() === 'en';
+    departmentInput.setCustomValidity(isEn ? 'Please enter your department.' : '部署を入力してください');
+    departmentInput.reportValidity();
+    return;
+  }
 
   var submitBtn = e.target.querySelector('.form-submit');
   submitBtn.disabled = true;
