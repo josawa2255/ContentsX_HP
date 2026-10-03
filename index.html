@@ -211,6 +211,7 @@
   <link rel="preload" href="/material/home-2026/hero.jpg" as="image" fetchpriority="high">
   <link rel="stylesheet" href="/css/home-2026.css">
   <link rel="stylesheet" href="/css/hero-about.css">
+  <link rel="stylesheet" href="/css/home-sections.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
@@ -229,6 +230,7 @@
   </header>
   <main id="main">
     <div class="cxha-transition">
+      <span class="cxsb-about-snap" aria-hidden="true"></span>
       <div class="cxha-stage">
         <div class="cxha-hero-frame">
     <section class="cxh-hero" id="hero" aria-labelledby="cxh-hero-title">
@@ -250,8 +252,9 @@
     </section>
         </div>
 
-        <section class="cxha-about" id="home-about" aria-labelledby="cxha-title">
-          <div class="cxha-wordmark" aria-hidden="true">CONTENTS <span>X</span></div>
+        <section class="cxha-about cxsb-section" id="home-about" aria-labelledby="cxha-title">
+          <div class="cxsb-backdrop" aria-hidden="true"></div>
+          <div class="cxha-wordmark cxsb-label" aria-hidden="true" data-i18n-skip>ABOUT</div>
           <div class="cxha-main">
             <div class="cxha-copy">
               <p class="cxha-eyebrow" data-cxha-step="label">ABOUT</p>
@@ -317,7 +320,9 @@
       </div>
     </section>
 
-    <section class="cxh-services" id="about" aria-labelledby="cxh-services-title">
+    <section class="cxh-services cxsb-section" id="about" aria-labelledby="cxh-services-title">
+      <div class="cxsb-backdrop" aria-hidden="true"></div>
+      <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>SERVICE</div>
       <span id="services" class="cxh-anchor" aria-hidden="true"></span>
       <div class="cxh-shell">
         <div class="cxh-services-intro" data-cxh-reveal><p class="cxh-eyebrow">SERVICES</p><h2 id="cxh-services-title" data-ja="2つの事業で、企業の成長を支えます。" data-en="Two pillars of business growth">2つの事業で、企業の成長を支えます。</h2><p data-ja="新しい接点をつくり、価値を伝え、顧客情報を会社の資産として残す。 さらに、事業を伸ばす人材の採用まで。7つのサービスで売上づくりを支援します。" data-en="Seven services connect outreach, creativity, customer knowledge, and hiring." data-i18n-html>新しい接点をつくり、価値を伝え、顧客情報を会社の資産として残す。<br>さらに、事業を伸ばす人材の採用まで。7つのサービスで売上づくりを支援します。</p></div>
@@ -344,13 +349,15 @@
       <div class="cxh-about-image" data-cxh-curtain><img src="/material/home-2026/about.jpg" width="2170" height="725" loading="lazy" decoding="async" alt="都心を望むオフィスのイメージビジュアル"><img class="cxh-about-logo" src="/material/images/logo/ContentsX.webp" width="1022" height="192" loading="lazy" decoding="async" alt="Contents X"></div>
     </section>
   <!-- ===== ニュース ===== -->
-  <section class="news-section" id="news">
+  <section class="news-section cxsb-section" id="news">
+    <div class="cxsb-backdrop" aria-hidden="true"></div>
+    <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>NEWS</div>
     <div class="container">
-      <div class="news-header">
+      <div class="news-header" data-cxh-reveal>
         <h2 class="news-heading">News</h2>
         <a href="news" class="news-more" id="newsMore" style="display:none;" data-ja="一覧を見る →" data-en="View All →">一覧を見る →</a>
       </div>
-      <ul class="news-list">
+      <ul class="news-list" data-cxh-reveal>
         <li class="news-item">
           <time class="news-date">2026.03.27</time>
           <span class="news-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
