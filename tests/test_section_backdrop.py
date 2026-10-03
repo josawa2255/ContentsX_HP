@@ -95,6 +95,10 @@ with sync_playwright() as p:
         page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .news-link,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert_sections(page, width)
+        if width <= 768:
+            order = ['.cxha-copy', '.cxha-office', '.cxha-link-purpose', '.cxha-link-company', '.cxha-value-sales', '.cxha-value-creative']
+            tops = [page.locator(f'#home-about {sel}').evaluate('e=>e.getBoundingClientRect().top') for sel in order]
+            assert tops == sorted(tops), f'SP order broken at {width}px: {tops}'
         assert not errors, errors
         report.append({'width': width, 'layout': 'pass', 'snap': snap or 'none', 'text_1_4x': 'pass'})
         page.close()
@@ -111,6 +115,23 @@ with sync_playwright() as p:
     middle = top_of(page, '#about') - 64 + 700
     scroll(page, middle, 1500)
     assert abs(page.evaluate('scrollY') - middle) <= 2
+    page.close()
+
+    # ABOUT (Issue #63): Purpose / Company links and the two business cards use existing URLs.
+    page = browser.new_page(viewport={'width': 1440, 'height': 900})
+    load(page, args.url)
+    hrefs = page.locator('#home-about a').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("href"))')
+    assert hrefs == ['/about', '/company', '/services/sales-x/', '/services/creative-x/'], hrefs
+    assert page.locator('#home-about .cxha-value').count() == 2
+    assert page.locator('#home-about .cxha-value h3').all_inner_texts() == ['Sales X', 'Creative X']
+    scroll(page, about_complete(page), 1500)
+    for selector in ['.cxha-links', '.cxha-values']:
+        assert page.locator(f'#home-about {selector}').evaluate('e=>getComputedStyle(e).opacity') == '1'
+    link = page.locator('.cxha-link-purpose')
+    link.hover()
+    page.wait_for_timeout(400)
+    assert link.locator('.cxha-link-media').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1.02, 0, 0, 1.02, 0, 0)'
+    assert link.locator('.cxha-link-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 3, 0)'
     page.close()
 
     # Hover feedback on news rows survives the entrance animation.

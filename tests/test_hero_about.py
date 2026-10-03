@@ -110,7 +110,7 @@ with sync_playwright() as p:
     # Translation must preserve an intelligible headline and adapt its dimensions.
     page.evaluate('window.i18n.switchLang("en")')
     page.wait_for_timeout(100)
-    assert 'business value' in page.locator('#cxha-title').inner_text()
+    assert 'business potential' in page.locator('#cxha-title').inner_text()
     assert_layout(page)
     page.close()
     # Links in the original Hero still navigate; Home returns to the full Hero.
