@@ -210,6 +210,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="all">
   <link rel="preload" href="/material/home-2026/hero.jpg" as="image" fetchpriority="high">
   <link rel="stylesheet" href="/css/home-2026.css">
+  <link rel="stylesheet" href="/css/hero-about.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
@@ -227,6 +228,9 @@
     </div>
   </header>
   <main id="main">
+    <div class="cxha-transition">
+      <div class="cxha-stage">
+        <div class="cxha-hero-frame">
     <section class="cxh-hero" id="hero" aria-labelledby="cxh-hero-title">
       <div class="cxh-hero-visual" aria-hidden="true"></div>
       <div class="cxh-hero-wash" aria-hidden="true"></div>
@@ -244,6 +248,29 @@
         <p class="cxh-hero-note" data-cxh-reveal data-ja="日本の中にある価値を、 世の中に出し切る。" data-en="Bring Japan's hidden value into the world." data-i18n-html>日本の中にある<br>価値を、<br>世の中に出し切る。</p>
       </div>
     </section>
+        </div>
+
+        <section class="cxha-about" id="home-about" aria-labelledby="cxha-title">
+          <div class="cxha-wordmark" aria-hidden="true">CONTENTS <span>X</span></div>
+          <div class="cxha-main">
+            <div class="cxha-copy">
+              <p class="cxha-eyebrow" data-cxha-step="label">ABOUT</p>
+              <h2 id="cxha-title" data-cxha-step="heading" data-i18n-html data-ja="セールスとクリエイティブで、<br>企業の価値を社会へ届ける。" data-en="Bringing business value to the world through sales and creativity.">セールスとクリエイティブで、<br>企業の価値を社会へ届ける。</h2>
+              <p class="cxha-description" data-cxha-step="body" data-ja="Contents Xは、セールスとクリエイティブの力で企業の成長を支える会社です。新しい接点をつくり、価値を伝え、成果につながる流れを一緒につくります。" data-en="Contents X supports business growth through sales and creativity. We connect businesses with customers, communicate their value, and build a path to results together.">Contents Xは、セールスとクリエイティブの力で企業の成長を支える会社です。新しい接点をつくり、価値を伝え、成果につながる流れを一緒につくります。</p>
+            </div>
+            <picture class="cxha-office">
+              <source media="(max-width: 768px)" srcset="/material/home-2026/about-office-mobile.webp" width="941" height="1672">
+              <img src="/material/home-2026/about-office-pc.webp" alt="青空と街並みが広がる、明るいオフィスのイメージ" width="1672" height="941" loading="eager" decoding="async">
+            </picture>
+          </div>
+          <div class="cxha-values" data-cxha-step="values">
+            <article class="cxha-value cxha-value-sales"><span class="cxha-value-number" aria-hidden="true">01</span><h3>Sales X</h3><p data-ja="接点をつくり、売上につなげる。" data-en="Create connections that lead to growth.">接点をつくり、売上につなげる。</p></article>
+            <article class="cxha-value cxha-value-creative"><span class="cxha-value-number" aria-hidden="true">02</span><h3>Creative X</h3><p data-ja="価値を、伝わるカタチにする。" data-en="Make business value visible.">価値を、伝わるカタチにする。</p></article>
+            <article class="cxha-value cxha-value-contents"><span class="cxha-value-number" aria-hidden="true">03</span><h3>Contents X</h3><p data-ja="営業と創造をつなぎ、成長を支える。" data-en="Connect sales and creativity for lasting growth.">営業と創造をつなぎ、成長を支える。</p></article>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <section class="cxh-concept" aria-labelledby="cxh-concept-title">
       <div class="cxh-shell" data-cxh-reveal>
@@ -364,6 +391,7 @@
   <script src="/js/wp-config.js" defer></script>
   <script src="/js/wp-api.js" defer></script>
   <script src="/js/home-2026.js" defer></script>
+  <script src="/js/hero-about.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script>
   /* HubSpot 遅延ロード: 初回ユーザー操作 or 4秒経過で読込 */
