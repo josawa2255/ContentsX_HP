@@ -44,7 +44,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・サービス一覧・Newsは共通背景） → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・サービス一覧・Newsは共通背景） → Creative X → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。
@@ -86,6 +86,21 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - hover（hover可能な端末のみ・0.2秒）: Purpose / Companyの画像を1.02倍、矢印を3px右へ、重ねた色をわずかに薄く。事業カードは背景を白に、影を強め、矢印を3px右へ。キーボードフォーカスは青い枠。
 - 登場は #59 のスクロール連動の中で、見出し→メインビジュアル→導線カード→事業カードの順に軽くfade-up。`prefers-reduced-motion: reduce` とJS無効時は全表示し、hoverの変化も止める。
 - CSSは `css/hero-about.css`、背景とスナップは `css/home-sections.css`（#61）。検証は `tests/test_hero_about.py`（#59の演出・Hero比較）と `tests/test_section_backdrop.py`（リンク先4件、事業カード2枚、SPの並び順、hover）。
+
+### Creative X セクション（Issue #65）
+
+- 位置: ABOUT（`.cxha-transition`）の直後、`#creative-x`。確定デザインは 2026-10-03 のPC画像（ダウンロードの「ChatGPT 画像 2026年10月3日 16_12_05.png」）。画面を1枚画像にせずHTML/CSS/JSで組む。
+- 背景: ABOUTの共通背景（`.cxsb-section`）をそのまま継続。ABOUTに `.cxsb-join-next`、Creative Xに `.cxsb-join-prev` を付け、境目の白いフェードを出さず1枚の景色として続ける。上部に薄い大きな `CREATIVE X`。PCのスナップ対象。
+- PC（1101px以上）: 左にコピー（「想いを、伝わるカタチに。」）、中央に PICK UP（最大3件のカルーセル、01/03 と前後ボタン、矢印キー）、右に作品カード（先頭3枚をマンガ→アニメ→映像の順で表示）、下に半透明の帯で導入文＋ビズマンガ / ビズアニメ / ビズビデオの3カード。769〜1100px は1列＋作品カード3列、サービス3列。
+- SP（768px以下）: 見出し → PICK UP（指で左右にスワイプでも切替）→ 作品カードの横スワイプ（`scroll-snap-type:x mandatory`、ページ自体は横スクロールしない）→ 3サービス縦並び。端末モック・外側の背景は出さない。
+- データ（`js/home-creative-x.js`、`WP_CONFIG.apiBase` 経由）:
+  - 動画: `GET /bizanime-videos` の `playlists`（WPプラグインの「ビズアニメ・ビズビデオ動画」＞ CREATIVE X プレイリスト。表示ONのみ・管理画面の並び順）。先頭3件が PICK UP、残りが作品カード、種別ごとの先頭が3サービスのサンプル動画。プレイリスト未登録の間は、ビズアニメは既存の `cases`（単体動画）で代用し、ビズビデオは静的カードのまま。
+  - マンガ: `GET /works?site=contentsx`（既存の「ContentsX新作情報に表示」＝掲載可否、`cx_sort_order`＝表示順）。クリックは BizManga の試し読み `https://bizmanga.contentsx.jp/biz-library?manga={id}`。WPの 240px サムネイルと元画像を `srcset` で使い分ける。
+  - YouTube のURLはフロントに書かない。プレイリストIDを検証してから埋め込みURL（`youtube-nocookie.com/embed/videoseries?list=`）を組み立て、APIの `embed` は使わない。画像は `cms.contentsx.jp` / `i.ytimg.com` の https のみ。文字は textContent で入れ、HTMLとして解釈しない。
+- 動画はモーダル（`<dialog>`）で再生し、閉じるとiframeを外して停止。Ctrl/⌘クリック等は YouTube を新しいタブで開ける。PCのhoverは画像1.03倍・矢印4px（サービスカードは再生アイコン3px）、SPはタップのみ。
+- JS無効・WP取得失敗時は `index.html` の静的な表示（サイト内素材のポスターと既存ページへのリンク）が残る。動き軽減時はトランジションを止める。
+- CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。17幅、並び順、XSS・不正URL、カルーセル、モーダル、hover、スナップ、プレイリスト未登録時、取得失敗時、動き軽減、JS無効）。
+- WP側の変更は別リポジトリ `contentsx-wp-plugin` の `contentsx-cms/bizanime-videos.php`（ブランチ `feat/creative-x-playlists`）。本番反映はお名前.comでの手動アップロード（BUGS #002）。
 
 ### 3.0 サービスページ生成（Issue #20）
 
