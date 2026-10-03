@@ -1,0 +1,53 @@
+/* Hero → About. The default flow is also the JS-off/reduced-motion layout. */
+.cxha-transition { --cxha-z-hero:2; --cxha-z-copy:3; --cxha-header:64px; background:#fff; }
+.cxha-stage { position:relative; isolation:isolate; }
+.cxha-hero-frame { position:relative; transform-origin:0 0; }
+.cxha-about { position:relative; padding:clamp(62px,7vw,112px) clamp(24px,5vw,80px) 54px; background:#fff; }
+.cxha-wordmark { position:absolute; top:0; left:3%; width:94%; overflow:hidden; color:rgba(21,88,161,.075); font-family:Arial,sans-serif; font-size:clamp(48px,14.2vw,270px); font-weight:900; line-height:1; letter-spacing:-.065em; white-space:nowrap; pointer-events:none; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+.cxha-wordmark span { background:linear-gradient(120deg,#005bfa,#fa4d12); color:transparent; background-clip:text; -webkit-background-clip:text; opacity:.2; }
+.cxha-main { position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); align-items:center; gap:clamp(28px,4vw,70px); max-width:1560px; margin-inline:auto; }
+.cxha-main>* { min-width:0; }
+.cxha-copy { position:relative; z-index:var(--cxha-z-copy); padding-block:35px; }
+.cxha-eyebrow { display:flex; align-items:center; gap:14px; margin:0 0 23px; font-size:12px; font-weight:700; letter-spacing:.2em; }
+.cxha-eyebrow::before { content:''; width:42px; height:1px; background:#07143b; }
+.cxha-about h2 { margin:0; color:#07143b; font-size:clamp(27px,2.5vw,46px); font-weight:800; line-height:1.65; letter-spacing:-.045em; word-break:normal; overflow-wrap:anywhere; text-wrap:pretty; }
+.cxha-description { max-width:520px; margin:25px 0 0; color:#435272; font-size:clamp(14px,1.05vw,17px); line-height:2; text-wrap:pretty; }
+.cxha-office { display:block; position:relative; align-self:center; overflow:hidden; aspect-ratio:1.35; border-radius:3px; background:#edf7fc; }
+.cxha-office img { display:block; width:100%; height:100%; object-fit:cover; object-position:68% center; }
+.cxha-values { position:relative; z-index:var(--cxha-z-copy); display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); max-width:1560px; margin:50px auto 0; border-top:1px solid #dce4ed; }
+.cxha-value { min-width:0; position:relative; margin-top:25px; padding:0 clamp(18px,2vw,36px); border-left:1px solid #dce4ed; }
+.cxha-value:first-child { padding-left:0; border-left:0; }
+.cxha-value-number { display:block; margin-bottom:9px; color:#65728d; font-size:11px; letter-spacing:.12em; }
+.cxha-value h3 { margin:0; font-family:Arial,sans-serif; font-size:clamp(25px,2.2vw,37px); font-weight:800; letter-spacing:-.04em; line-height:1.3; }
+.cxha-value-sales h3 { color:#005bfa; }
+.cxha-value-creative h3 { color:#fa4d12; }
+.cxha-value-contents h3 { color:#07143b; }
+.cxha-value p { margin:12px 0 0; color:#435272; font-size:14px; line-height:1.8; overflow-wrap:anywhere; }
+
+@media (prefers-reduced-motion:no-preference) {
+  .cxha-transition.cxha-ready { height:calc(var(--cxha-scene-height) + var(--cxha-distance)); }
+  .cxha-ready .cxha-stage { position:sticky; top:var(--cxha-header); min-height:var(--cxha-scene-height); }
+  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); transform:var(--cxha-hero-transform,none); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
+  .cxha-ready .cxh-hero-inner { opacity:var(--cxha-copy-opacity,1); }
+  .cxha-ready .cxha-about { pointer-events:var(--cxha-about-pointer,none); }
+  .cxha-ready .cxh-hero-wash { opacity:var(--cxha-copy-opacity,1); }
+  .cxha-ready .cxha-wordmark { opacity:var(--cxha-wordmark,0); }
+  .cxha-ready [data-cxha-step] { opacity:var(--cxha-step,0); transform:translateY(calc((1 - var(--cxha-step,0)) * 14px)); }
+  .cxha-ready .cxha-office { opacity:var(--cxha-office,0); }
+}
+@media (max-width:768px) {
+  .cxha-about { padding-top:68px; padding-bottom:40px; }
+  .cxha-main { grid-template-columns:minmax(0,1fr); gap:28px; max-width:560px; }
+  .cxha-copy { padding-block:0; }
+  .cxha-eyebrow { margin-bottom:18px; }
+  .cxha-about h2 { font-size:clamp(26px,5.5vw,40px); line-height:1.6; }
+  .cxha-description { margin-top:20px; font-size:clamp(14px,2.5vw,17px); line-height:1.95; }
+  .cxha-office { width:100%; aspect-ratio:941 / 1250; }
+  .cxha-office img { object-position:center bottom; }
+  .cxha-values { grid-template-columns:minmax(0,1fr); max-width:560px; margin-top:32px; }
+  .cxha-value,.cxha-value:first-child { margin:0; padding:24px 0; border-left:0; border-bottom:1px solid #dce4ed; }
+  .cxha-value-number { position:absolute; right:0; top:28px; }
+  .cxha-value h3 { padding-right:35px; font-size:clamp(26px,6vw,36px); }
+  .cxha-value p { margin-top:8px; }
+}
+@media (max-width:480px) { .cxha-transition { --cxha-header:56px; } }
