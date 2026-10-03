@@ -79,7 +79,8 @@
     transition.style.setProperty('--cxha-wordmark', range(p, .12, .4));
     transition.style.setProperty('--cxha-office', range(p, .54, .94));
     transition.style.setProperty('--cxha-about-pointer', p >= .35 ? 'auto' : 'none');
-    var timings = { label:[.26,.48], heading:[.34,.58], body:[.44,.7], values:[.7,.96] };
+    // Heading → main visual (office, .54–.94) → Purpose/Company links → business cards.
+    var timings = { label:[.26,.48], heading:[.34,.58], body:[.44,.7], links:[.62,.9], values:[.72,.98] };
     steps.forEach(function (node) {
       var timing = timings[node.dataset.cxhaStep];
       node.style.setProperty('--cxha-step', range(p, timing[0], timing[1]));
