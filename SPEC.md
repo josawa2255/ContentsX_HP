@@ -98,6 +98,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
   - 動画: `GET /bizanime-videos` の `playlists`（WPプラグインの「ビズアニメ・ビズビデオ動画」＞ CREATIVE X プレイリスト。表示ONのみ・管理画面の並び順）。先頭3件が PICK UP、残りが作品カード、種別ごとの先頭が3サービスのサンプル動画。プレイリスト未登録の間は、ビズアニメは既存の `cases`（単体動画）で代用し、ビズビデオは静的カードのまま。
   - マンガ: `GET /works?site=contentsx`（既存の「ContentsX新作情報に表示」＝掲載可否、`cx_sort_order`＝表示順）。クリックは BizManga の試し読み `https://bizmanga.contentsx.jp/biz-library?manga={id}`。WPの 240px サムネイルと元画像を `srcset` で使い分ける。
   - YouTube のURLはフロントに書かない。プレイリストIDを検証してから埋め込みURL（`youtube-nocookie.com/embed/videoseries?list=`）を組み立て、APIの `embed` は使わない。画像は `cms.contentsx.jp` / `i.ytimg.com` の https のみ。文字は textContent で入れ、HTMLとして解釈しない。
+- 高さ（2026-10-04）: PC（1101px以上）は余白・PICK UP・右の作品カード・3サービスを画面の高さ（`svh`）でも縮め、1366×650〜1920×1080で Creative X 全体が1画面に収まる。
 - 動画はモーダル（`<dialog>`）で再生し、閉じるとiframeを外して停止。Ctrl/⌘クリック等は YouTube を新しいタブで開ける。PCのhoverは画像1.03倍・矢印4px（サービスカードは再生アイコン3px）、SPはタップのみ。
 - JS無効・WP取得失敗時は `index.html` の静的な表示（サイト内素材のポスターと既存ページへのリンク）が残る。動き軽減時はトランジションを止める。
 - CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。17幅、並び順、XSS・不正URL、カルーセル、モーダル、hover、スナップ、プレイリスト未登録時、取得失敗時、動き軽減、JS無効）。
