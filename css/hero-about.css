@@ -63,6 +63,8 @@
   .cxha-ready .cxha-wordmark { opacity:var(--cxha-wordmark,0); }
   .cxha-ready [data-cxha-step] { opacity:var(--cxha-step,0); transform:translateY(calc((1 - var(--cxha-step,0)) * 14px)); }
   .cxha-ready .cxha-office { opacity:var(--cxha-office,0); }
+  .cxha-ready .cxha-about { display:flex; flex-direction:column; justify-content:center; min-height:var(--cxha-about-min,auto); }
+  .cxha-ready .cxha-main,.cxha-ready .cxha-values { width:100%; }
 }
 @media (prefers-reduced-motion:reduce) {
   .cxha-link,.cxha-link-media,.cxha-link::after,.cxha-link-arrow,.cxha-value,.cxha-value-arrow { transition:none; }
@@ -93,3 +95,11 @@
   .cxha-value p { font-size:clamp(14px,3.8vw,16px); }
 }
 @media (max-width:480px) { .cxha-transition { --cxha-header:56px; } }
+
+/* PC: keep ABOUT within one screen on shorter laptop viewports (e.g. 1470×800). */
+@media (min-width:1101px) {
+  .cxha-about { padding-top:clamp(64px,9svh,150px); padding-bottom:clamp(24px,4svh,72px); }
+  .cxha-link { min-height:clamp(118px,min(14.6vw,22svh),290px); }
+  .cxha-values { margin-top:clamp(12px,2svh,24px); padding:clamp(12px,1.8svh,26px); }
+  .cxha-value { min-height:clamp(100px,min(11vw,16svh),190px); padding-block:clamp(14px,2.2svh,30px); }
+}
