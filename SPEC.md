@@ -44,7 +44,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・サービス一覧・Newsは共通背景） → Creative X → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・サービス一覧・Newsは共通背景） → Creative X → Sales X → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。
@@ -101,6 +101,22 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - JS無効・WP取得失敗時は `index.html` の静的な表示（サイト内素材のポスターと既存ページへのリンク）が残る。動き軽減時はトランジションを止める。
 - CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。17幅、並び順、XSS・不正URL、カルーセル、モーダル、hover、スナップ、プレイリスト未登録時、取得失敗時、動き軽減、JS無効）。
 - WP側の変更は別リポジトリ `contentsx-wp-plugin` の `contentsx-cms/bizanime-videos.php`（ブランチ `feat/creative-x-playlists`）。本番反映はお名前.comでの手動アップロード（BUGS #002）。
+
+### Sales X セクション（Issue #67）
+
+- 位置: Creative X の直後、`#sales-x`。共通背景を継続し、Creative X に `.cxsb-join-next`、Sales X に `.cxsb-join-prev` を付けて継ぎ目を出さない。上部に薄い大きな `SALES X`。PCのスナップ対象。
+- PC（1101px以上）: 左に見出し「新しい接点を、売上につなげる。」・説明・「Sales Xについて見る」（`/services/sales-x/`）、右に4サービスを2列×2行。1440×900で4枚が1画面に収まる高さ。769〜1100px は説明が上・カードは2×2。768px以下は4枚を縦並び。
+- カード: 同じ大きさ・角丸16px。画像（`material/home-2026/sales-x-*.webp`、1448×1086、ユーザー提供のイメージ画像）はビジュアル素材としてだけ使い、カテゴリ・サービス名・説明・CTAは画像の下端に重ねた白いパネルにHTMLで書く。カード全体がリンク。
+
+| カード | 色（線・文字） | 遷移先 | 画像 |
+|---|---|---|---|
+| ビズフォーム（新規開拓代行） | 青 `#1265e8` / `#0d4fb8`（ビズフォームサイトのブランド色） | https://bizform.contentsx.jp/ | `sales-x-bizform.webp` |
+| ビズ採用（採用支援） | ピンク `#ec2d87` / `#c0186b`（ビズ採用サイトの `--rx-accent`） | https://ichioshi.contentsx.jp/ | `sales-x-bizrecruit.webp` |
+| ビズAIO（AI検索最適化） | 紫 `#7c4dff` / `#5b30d6` | `/services/#bizaio` | `sales-x-bizaio.webp` |
+| ビズカルテ（次世代AI CRM） | オレンジ `#f26a1b` / `#b4470b` | `/services/#bizkarte` | `sales-x-bizkarte.webp` |
+
+- 文字色は白地でWCAGのコントラスト4.5:1以上になる濃い色を使い、鮮やかな色は線と画像側に使う。PCのhoverは画像1.03倍・矢印4px右、表示時は既存の `data-cxh-reveal` で軽いfade-up（2〜4枚目は0.08秒ずつ遅らせる）。新しいJSは追加しない。
+- CSSは `css/home-sales-x.css`、検証は `python3 tests/test_sales_x.py --url <loopback preview> --artifacts <output>`（17幅、2×2・縦並び・同じ大きさ、リンク先、文字がHTMLであること、hover、カード全体のリンク、スナップ、動き軽減、JS無効）。
 
 ### 3.0 サービスページ生成（Issue #20）
 
