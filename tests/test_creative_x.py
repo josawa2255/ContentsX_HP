@@ -62,9 +62,8 @@ def to_section(page, wait=1500):
     page.wait_for_timeout(wait)
 
 
-def visible_cards(page):
-    return page.locator('[data-cxcx-works] > li').evaluate_all(
-        "(nodes)=>nodes.filter(n=>getComputedStyle(n).display!=='none').map(n=>n.querySelector('.cxcx-work-kind').textContent)")
+def card_rects(page):
+    return page.locator('.cxcx-card').evaluate_all('(n)=>n.map(e=>e.getBoundingClientRect().toJSON())')
 
 
 report = []
@@ -87,20 +86,25 @@ with sync_playwright() as p:
         slides = page.locator('.cxcx-slide')
         assert slides.count() == 3
         assert slides.nth(0).get_attribute('href') == 'https://www.youtube.com/playlist?list=PLbAH9KNME5V0'
-        cards = visible_cards(page)
+        # 2026-10-04 design: no works column; three service cards under PICK UP.
+        assert page.locator('[data-cxcx-works]').count() == 0
+        cards = page.locator('.cxcx-card-name').all_inner_texts()
+        assert cards == ['ビズマンガ', 'ビズアニメ', 'ビズ動画'], cards
+        r = card_rects(page)
         if width > 768:
-            assert cards == ['MANGA', 'ANIME', 'VIDEO'], cards
+            assert abs(r[0]['top'] - r[2]['top']) < 1 and r[1]['left'] > r[0]['right'], 'PC/tablet: cards in one row'
         else:
-            # SP: every card is reachable by horizontal swipe; the page itself never scrolls sideways.
-            works = page.locator('[data-cxcx-works]')
-            assert works.evaluate('e=>getComputedStyle(e).overflowX') == 'auto'
-            assert works.evaluate('e=>e.scrollWidth > e.clientWidth')
-            order = ['.cxcx-copy', '.cxcx-pickup', '[data-cxcx-works]', '[data-cxcx-service="manga"]',
+            assert r[1]['top'] >= r[0]['bottom'] and r[2]['top'] >= r[1]['bottom'], 'SP: cards stacked'
+            order = ['.cxcx-copy', '.cxcx-pickup', '.cxcx-works-intro', '[data-cxcx-service="manga"]',
                      '[data-cxcx-service="bizanime"]', '[data-cxcx-service="bizvideo"]']
             tops = [page.locator(s).evaluate('e=>e.getBoundingClientRect().top') for s in order]
             assert tops == sorted(tops), f'SP order at {width}px: {tops}'
+        if width > 1100:
+            # Copy on the left of PICK UP; OUR WORKS on the left of the cards.
+            assert page.locator('.cxcx-copy').evaluate('e=>e.getBoundingClientRect().right') <= page.locator('.cxcx-pickup').evaluate('e=>e.getBoundingClientRect().left')
+            assert page.locator('.cxcx-works-intro').evaluate('e=>e.getBoundingClientRect().right') <= r[0]['left']
         # Body/UI text expansion (Android scaling); the CREATIVE X label is ornamental and fixed.
-        page.locator('#creative-x h2,#creative-x h3,#creative-x p,#creative-x strong,#creative-x .cxcx-service-text,#creative-x .cxcx-work-text').evaluate_all(
+        page.locator('#creative-x h2,#creative-x h3,#creative-x p:not(.cxcx-tagline),#creative-x strong,#creative-x .cxcx-card-desc,#creative-x .cxcx-button').evaluate_all(
             '(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Overflow with 1.4x text at {width}px'
@@ -118,18 +122,20 @@ with sync_playwright() as p:
     assert page.locator('#creative-x img[src*="evil"], #creative-x img[src^="javascript"]').count() == 0
     hrefs = page.locator('#creative-x a').evaluate_all('(n)=>n.map(a=>a.getAttribute("href"))')
     assert not any('bad"id' in h or 'evil' in h for h in hrefs), hrefs
-    manga = page.locator('[data-cxcx-works] .cxcx-work').first
-    assert manga.get_attribute('href') == 'https://bizmanga.contentsx.jp/biz-library?manga=gaudia'
     assert page.locator('[data-cxcx-service="manga"]').get_attribute('href') == 'https://bizmanga.contentsx.jp/biz-library?manga=gaudia'
-    assert page.locator('.cxcx-work-text', has_text='広告・VTuber').count() == 1
+    assert page.locator('[data-cxcx-service="bizanime"]').get_attribute('href') == 'https://www.youtube.com/playlist?list=PLbAH9KNME5V0'
+    assert page.locator('.cxcx-button').get_attribute('href') == '/services/creative-x/'
 
-    # Carousel: next/prev, counter, keyboard.
+    # PICK UP is switched by the OUR WORKS arrows and dots.
+    dots = page.locator('.cxcx-dot')
+    assert dots.count() == 3 and dots.nth(0).get_attribute('aria-current') == 'true'
     page.locator('[data-cxcx-next]').click()
     assert page.locator('.cxcx-slide.is-active').get_attribute('href').endswith('PLD2nZrEveSfI')
-    assert page.locator('[data-cxcx-current]').inner_text() == '02'
+    assert dots.nth(1).get_attribute('aria-current') == 'true'
     page.locator('[data-cxcx-prev]').click()
     page.locator('[data-cxcx-prev]').click()
-    assert page.locator('[data-cxcx-current]').inner_text() == '03'
+    assert dots.nth(2).get_attribute('aria-current') == 'true'
+    dots.nth(2).click()
 
     # Modal: playlist embed is rebuilt client-side on youtube-nocookie and removed on close.
     page.locator('.cxcx-slide.is-active').click()
@@ -143,12 +149,22 @@ with sync_playwright() as p:
     page.locator('[data-cxcx-close]').click()
     page.wait_for_timeout(200)
 
-    # PC hover: image 1.03x, arrow 4px.
-    card = page.locator('[data-cxcx-works] .cxcx-work').first
+    # PC hover: image 1.03x, arrow button 4px.
+    card = page.locator('.cxcx-card').first
     card.hover()
     page.wait_for_timeout(450)
-    assert card.locator('.cxcx-work-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
+    assert card.locator('img').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1.03, 0, 0, 1.03, 0, 0)'
+    assert card.locator('.cxcx-card-go').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
     page.close()
+
+    # Laptops: the cards stay inside one screen below the fixed header.
+    for w, h in [(1470, 800), (1448, 1086), (1280, 720), (1536, 730), (1366, 650), (1920, 1080)]:
+        page = browser.new_page(viewport={'width': w, 'height': h})
+        load(page)
+        to_section(page)  # measure after the entrance animation (cards start 30px lower)
+        bottom = page.evaluate("(()=>{const s=document.querySelector('#creative-x');return Math.max(...[...s.querySelectorAll('.cxcx-card')].map(e=>e.getBoundingClientRect().bottom))-s.getBoundingClientRect().top})()")
+        assert bottom <= h - 64, (w, h, bottom)
+        page.close()
 
     # PC snap includes Creative X.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
@@ -173,15 +189,15 @@ with sync_playwright() as p:
     to_section(page)
     assert not page.locator('#creative-x').evaluate("e=>e.classList.contains('cxcx-ready')")
     assert page.locator('.cxcx-slide').get_attribute('href') == '/services/creative-x/'
-    assert page.locator('[data-cxcx-works] > li').count() == 3
+    assert page.locator('.cxcx-card').count() == 3 and page.locator('[data-cxcx-pickup-nav]').is_hidden()
     page.close()
 
     # Reduced motion and JS off: content visible.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page)
     to_section(page, 300)
-    for selector in ['.cxcx-copy', '.cxcx-pickup', '[data-cxcx-works]', '.cxcx-services']:
-        assert page.locator(f'#creative-x {selector}').evaluate('e=>getComputedStyle(e).opacity') == '1'
+    for selector in ['.cxcx-copy', '.cxcx-pickup', '.cxcx-works-intro', '.cxcx-card']:
+        assert set(page.locator(f'#creative-x {selector}').evaluate_all('(n)=>n.map(e=>getComputedStyle(e).opacity)')) == {'1'}
     page.close()
     page = browser.new_page(viewport={'width': 390, 'height': 844}, java_script_enabled=False)
     load(page)
