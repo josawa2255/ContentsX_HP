@@ -134,6 +134,16 @@ with sync_playwright() as p:
     assert link.locator('.cxha-link-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 3, 0)'
     page.close()
 
+    # PC laptops: no white band below ABOUT, and ABOUT fits in one screen below the fixed header.
+    for w, h in [(1470, 800), (1440, 900), (1366, 650), (1280, 720), (1536, 730), (1920, 1080)]:
+        page = browser.new_page(viewport={'width': w, 'height': h})
+        load(page, args.url)
+        fit = page.evaluate('''()=>{const q=s=>document.querySelector(s), R=e=>e.getBoundingClientRect();
+          return {gap:q('.cxha-stage').offsetHeight-q('#home-about').offsetHeight,
+            about:R(q('#home-about .cxha-values')).bottom-R(q('#home-about')).top}}''')
+        assert fit['gap'] <= 1 and fit['about'] <= h - 64, (w, h, fit)
+        page.close()
+
     # Hover feedback on news rows survives the entrance animation.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)

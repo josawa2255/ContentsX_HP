@@ -84,6 +84,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 769〜1100px: 見出し・本文を上段の全幅、メインビジュアルとPurpose / Companyを2列、導入文を全幅にして事業カードを2列。
 - 768px以下: ABOUT → 見出し/本文 → メインビジュアル（4:3）→ Purpose → Company → Sales X → Creative X の1カラム。導入文はスマホでは出さない。横移動や強いstickyは使わない（#59の縮小演出は中央線のまま縦方向）。
 - hover（hover可能な端末のみ・0.2秒）: Purpose / Companyの画像を1.02倍、矢印を3px右へ、重ねた色をわずかに薄く。事業カードは背景を白に、影を強め、矢印を3px右へ。キーボードフォーカスは青い枠。
+- 高さ（2026-10-04、平澤さんの1470×800表示で見切れ・白い帯の指摘）: スクロール演出中のABOUTは少なくとも1画面分（画面高−ヘッダー、JSが `--cxha-about-min` に設定）の高さを持ち、中身を縦中央に置く。以前はHeroの高さに合わせた舞台の下に白い帯が出ていた。PC（1101px以上）は余白・Purpose/Companyの高さ・事業カードを `svh` でも縮め、1366×650〜1920×1080でABOUT全体が1画面に収まる。
 - 登場は #59 のスクロール連動の中で、見出し→メインビジュアル→導線カード→事業カードの順に軽くfade-up。`prefers-reduced-motion: reduce` とJS無効時は全表示し、hoverの変化も止める。
 - CSSは `css/hero-about.css`、背景とスナップは `css/home-sections.css`（#61）。検証は `tests/test_hero_about.py`（#59の演出・Hero比較）と `tests/test_section_backdrop.py`（リンク先4件、事業カード2枚、SPの並び順、hover）。
 
