@@ -25,7 +25,11 @@
     var header = parseFloat(getComputedStyle(transition).getPropertyValue('--cxha-header'));
     var heroHeight = hero.offsetHeight;
     var heroWidth = hero.offsetWidth;
-    var sceneHeight = Math.max(heroHeight, about.offsetHeight);
+    // ABOUT fills at least one screen, so the pinned stage never shows an empty white band below it.
+    // The Hero may be taller; its lower part is only visible while it is shrinking inside the stage.
+    var fill = Math.max(0, window.innerHeight - header);
+    transition.style.setProperty('--cxha-about-min', fill + 'px');
+    var sceneHeight = Math.max(fill, about.offsetHeight);
     var distance = Math.max(480, Math.min(1000, window.innerHeight * 1.15));
     transition.style.setProperty('--cxha-scene-height', sceneHeight + 'px');
     transition.style.setProperty('--cxha-distance', distance + 'px');

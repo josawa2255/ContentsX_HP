@@ -115,6 +115,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | ビズAIO（AI検索最適化） | 紫 `#7c4dff` / `#5b30d6` | `/services/#bizaio` | `sales-x-bizaio.webp` |
 | ビズカルテ（次世代AI CRM） | オレンジ `#f26a1b` / `#b4470b` | `/services/#bizkarte` | `sales-x-bizkarte.webp` |
 
+- 高さ（2026-10-04）: PC（1101px以上）はカード画像の高さを画面の高さ（`svh`）に合わせ（21:9 → `clamp(88px,15.5svh,200px)`）、余白も縮めて、1366×650〜1920×1080で4枚が1画面に収まる。
 - 文字色は白地でWCAGのコントラスト4.5:1以上になる濃い色を使い、鮮やかな色は線と画像側に使う。PCのhoverは画像1.03倍・矢印4px右、表示時は既存の `data-cxh-reveal` で軽いfade-up（2〜4枚目は0.08秒ずつ遅らせる）。新しいJSは追加しない。
 - CSSは `css/home-sales-x.css`、検証は `python3 tests/test_sales_x.py --url <loopback preview> --artifacts <output>`（17幅、2×2・縦並び・同じ大きさ、リンク先、文字がHTMLであること、hover、カード全体のリンク、スナップ、動き軽減、JS無効）。
 

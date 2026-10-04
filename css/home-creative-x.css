@@ -125,3 +125,16 @@ html.cxcx-modal-open { overflow:hidden; }
   .cxcx-service { grid-template-columns:minmax(0,1fr); }
   .cxcx-service-thumb { order:-1; min-height:0; aspect-ratio:16 / 9; }
 }
+
+/* PC: fit one screen on shorter laptop viewports (e.g. 1470×800) — sizes follow the height too. */
+@media (min-width:1101px) {
+  .cxcx { padding-top:clamp(56px,8svh,156px); padding-bottom:clamp(28px,4svh,88px); }
+  .cxcx-pickup { min-height:clamp(230px,min(27vw,37svh),470px); }
+  .cxcx-work { min-height:clamp(72px,10.5svh,110px); }
+  .cxcx-services { margin-top:clamp(10px,1.6svh,24px); padding:clamp(10px,1.6svh,24px); }
+  .cxcx-service { padding:clamp(10px,1.6svh,22px) clamp(12px,1.2vw,20px); }
+  .cxcx-service-thumb { min-height:clamp(92px,13svh,140px); }
+  .cxcx-service-text { margin-top:clamp(4px,.8svh,10px); }
+  .cxcx-service-cta { padding-top:clamp(6px,1.2svh,14px); }
+  .cxcx-services-intro p { margin-top:clamp(6px,1.2svh,12px); }
+}

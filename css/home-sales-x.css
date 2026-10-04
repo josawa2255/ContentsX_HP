@@ -55,3 +55,10 @@
   .cxsx-name { font-size:clamp(22px,6.2vw,26px); }
   .cxsx-desc,.cxsx-cta { font-size:14px; }
 }
+
+/* PC: fit one screen on shorter laptop viewports (e.g. 1470×800) — sizes follow the height too. */
+@media (min-width:1101px) {
+  .cxsx { padding-top:clamp(56px,8svh,156px); padding-bottom:clamp(28px,4svh,104px); }
+  .cxsx-media { aspect-ratio:auto; height:clamp(88px,15.5svh,200px); }
+  .cxsx-grid { gap:clamp(10px,1.6svh,20px); }
+}
