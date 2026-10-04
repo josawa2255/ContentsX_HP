@@ -90,19 +90,20 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ### Creative X セクション（Issue #65）
 
-- 位置: ABOUT（`.cxha-transition`）の直後、`#creative-x`。確定デザインは 2026-10-03 のPC画像（ダウンロードの「ChatGPT 画像 2026年10月3日 16_12_05.png」）。画面を1枚画像にせずHTML/CSS/JSで組む。
+- 位置: ABOUT（`.cxha-transition`）の直後、`#creative-x`。確定デザインは 2026-10-04 改訂版（ダウンロードの「ChatGPT 画像 2026年10月4日 18_34_20.png」。初版 10/03 の右上作品カード3枚と導入文の帯は廃止）。画面を1枚画像にせずHTML/CSS/JSで組む。
 - 背景: ABOUTの共通背景（`.cxsb-section`）をそのまま継続。ABOUTに `.cxsb-join-next`、Creative Xに `.cxsb-join-prev` を付け、境目の白いフェードを出さず1枚の景色として続ける。上部に薄い大きな `CREATIVE X`。PCのスナップ対象。
-- PC（1101px以上）: 左にコピー（「想いを、伝わるカタチに。」）、中央に PICK UP（最大3件のカルーセル、01/03 と前後ボタン、矢印キー）、右に作品カード（先頭3枚をマンガ→アニメ→映像の順で表示）、下に半透明の帯で導入文＋ビズマンガ / ビズアニメ / ビズビデオの3カード。769〜1100px は1列＋作品カード3列、サービス3列。
-- SP（768px以下）: 見出し → PICK UP（指で左右にスワイプでも切替）→ 作品カードの横スワイプ（`scroll-snap-type:x mandatory`、ページ自体は横スクロールしない）→ 3サービス縦並び。端末モック・外側の背景は出さない。
+- PC（1101px以上）: 上段は左に「Creative X ——」・見出し「想いを、伝わるカタチに。」・説明・青いボタン「Creative X について →」（`/services/creative-x/`）、右に PICK UP（1枚表示。PICK UP ラベル・作品名・一文、右下に丸い再生ボタン「作品を見る」）。下段は左に「OUR WORKS ——」「作品で見る Creative X」・説明・前後ボタンと点（PICK UP の切替）、右にビズマンガ / ビズアニメ / ビズ動画の3カード（画像・色付きのサービス名・一文・丸い矢印）。最下部に区切り線と「IDEAS INTO IMPACT」（装飾）。769〜1100px は上段・下段とも縦に積み、カードは3列。
+- SP（768px以下）: 見出し・説明・ボタン → PICK UP（指で左右にスワイプでも切替）→ OUR WORKS と前後ボタン → 3カード縦並び。端末モック・外側の背景は出さない。
+- カード: 画像はサイト内素材 `material/web-system/service-hover/{bizmanga,bizanime,bizvideo}.webp`（デザインと同じ）。名前の色はビズマンガ `#ef5a17`・ビズアニメ `#2563eb`・ビズ動画 `#7c3aed`。行き先は WordPress から決まる（下記）。表記はデザインどおり「ビズ動画」（サイトの他の場所は「ビズビデオ」）。
 - データ（`js/home-creative-x.js`、`WP_CONFIG.apiBase` 経由）:
-  - 動画: `GET /bizanime-videos` の `playlists`（WPプラグインの「ビズアニメ・ビズビデオ動画」＞ CREATIVE X プレイリスト。表示ONのみ・管理画面の並び順）。先頭3件が PICK UP、残りが作品カード、種別ごとの先頭が3サービスのサンプル動画。プレイリスト未登録の間は、ビズアニメは既存の `cases`（単体動画）で代用し、ビズビデオは静的カードのまま。
-  - マンガ: `GET /works?site=contentsx`（既存の「ContentsX新作情報に表示」＝掲載可否、`cx_sort_order`＝表示順）。クリックは BizManga の試し読み `https://bizmanga.contentsx.jp/biz-library?manga={id}`。WPの 240px サムネイルと元画像を `srcset` で使い分ける。
+  - 動画: `GET /bizanime-videos` の `playlists`（WPプラグインの「ビズアニメ・ビズビデオ動画」＞ CREATIVE X プレイリスト。表示ONのみ・管理画面の並び順）。先頭3件が PICK UP（点が3つ）、種別ごとの先頭がビズアニメ / ビズ動画カードのサンプル動画。プレイリスト未登録の間は、ビズアニメは既存の `cases`（単体動画）で代用し、ビズ動画カードは静的リンクのまま。
+  - マンガ: `GET /works?site=contentsx`（既存の「ContentsX新作情報に表示」＝掲載可否、`cx_sort_order`＝表示順）の先頭がビズマンガカードの行き先。クリックは BizManga の試し読み `https://bizmanga.contentsx.jp/biz-library?manga={id}`。
   - YouTube のURLはフロントに書かない。プレイリストIDを検証してから埋め込みURL（`youtube-nocookie.com/embed/videoseries?list=`）を組み立て、APIの `embed` は使わない。画像は `cms.contentsx.jp` / `i.ytimg.com` の https のみ。文字は textContent で入れ、HTMLとして解釈しない。
-- 高さ（2026-10-04）: PC（1101px以上）は余白・PICK UP・右の作品カード・3サービスを画面の高さ（`svh`）でも縮め、1366×650〜1920×1080で Creative X 全体が1画面に収まる。
-- 動画はモーダル（`<dialog>`）で再生し、閉じるとiframeを外して停止。Ctrl/⌘クリック等は YouTube を新しいタブで開ける。PCのhoverは画像1.03倍・矢印4px（サービスカードは再生アイコン3px）、SPはタップのみ。
-- JS無効・WP取得失敗時は `index.html` の静的な表示（サイト内素材のポスターと既存ページへのリンク）が残る。動き軽減時はトランジションを止める。
-- CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。17幅、並び順、XSS・不正URL、カルーセル、モーダル、hover、スナップ、プレイリスト未登録時、取得失敗時、動き軽減、JS無効）。
-- WP側の変更は別リポジトリ `contentsx-wp-plugin` の `contentsx-cms/bizanime-videos.php`（ブランチ `feat/creative-x-playlists`）。本番反映はお名前.comでの手動アップロード（BUGS #002）。
+- 高さ: PC は余白・見出し・ボタン・PICK UP・カード画像を画面の高さ（`svh`）でも縮め、1366×650〜1920×1080 でカードまで1画面に収まる（1470×800・1280×720 では「IDEAS INTO IMPACT」まで収まる）。
+- 動画はモーダル（`<dialog>`）で再生し、閉じるとiframeを外して停止。Ctrl/⌘クリック等は YouTube を新しいタブで開ける。PCのhoverはボタンが2px上・矢印4px、画像1.03倍、カードの丸い矢印4px右。SPはタップのみ。
+- JS無効・WP取得失敗時は `index.html` の静的な表示（I eye のポスターと既存ページへのリンク、前後ボタンは非表示）が残る。動き軽減時はトランジションを止める。
+- CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。17幅、カード3枚の並び、XSS・不正URL、点・前後ボタン、モーダル、hover、ノートPC6サイズで1画面、スナップ、プレイリスト未登録時、取得失敗時、動き軽減、JS無効）。
+- WP側は別リポジトリ `contentsx-wp-plugin` の `contentsx-cms/bizanime-videos.php`（2026-10-03 本番反映・正本 main に取り込み済み）。
 
 ### Sales X セクション（Issue #67）
 

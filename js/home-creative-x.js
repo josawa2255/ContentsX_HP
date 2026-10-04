@@ -1,4 +1,4 @@
-/* Creative X: PICK UP, works cards and service samples from WordPress.
+/* Creative X: PICK UP and the three service cards from WordPress.
    - Videos: GET /bizanime-videos → playlists (type bizanime / bizvideo, enabled + admin order).
      Before playlists exist, BizAnime falls back to the existing single-video "cases".
    - Manga: GET /works?site=contentsx (ContentsX display flag + cx_sort_order).
@@ -16,10 +16,11 @@
   var VIDEO_ID = /^[A-Za-z0-9_-]{6,20}$/;
   var WORK_ID = /^[A-Za-z0-9_-]{1,80}$/;
   var IMAGE_HOSTS = ['cms.contentsx.jp', 'i.ytimg.com'];
+  var PICKUP_SUB = 'AIで広がる、伝わるクリエイティブの可能性。';
   var KIND = {
     manga: { label: 'MANGA', name: 'ビズマンガ' },
     bizanime: { label: 'ANIME', name: 'ビズアニメ', sub: 'オリジナルアニメで、ブランドの世界観やメッセージを鮮やかに。' },
-    bizvideo: { label: 'VIDEO', name: 'ビズビデオ', sub: '企業の想いや取り組みを、高品質な映像で印象的に届けます。' }
+    bizvideo: { label: 'VIDEO', name: 'ビズ動画', sub: '企業の想いや取り組みを、高品質な映像で印象的に届けます。' }
   };
 
   function getJSON(path) {
@@ -137,27 +138,40 @@
       slide.setAttribute('role', 'group');
       slide.setAttribute('aria-roledescription', 'slide');
       slide.setAttribute('aria-label', (i + 1) + ' / ' + items.length + '：' + item.title);
-      slide.appendChild(media(item, '(max-width: 768px) 100vw, 52vw'));
-      if (item.video) slide.appendChild(el('span', 'cxcx-play-big'));
+      slide.appendChild(media(item, '(max-width: 768px) 100vw, 58vw'));
       var body = el('span', 'cxcx-slide-text');
-      body.appendChild(el('span', 'cxcx-slide-label', 'Creative X PICK UP ・ ' + KIND[item.kind].name));
+      body.appendChild(el('span', 'cxcx-slide-label', 'PICK UP'));
       var title = el('strong', '', item.title);
       title.setAttribute('data-i18n-skip', '');
       body.appendChild(title);
-      body.appendChild(el('span', 'cxcx-slide-sub', item.sub || KIND[item.kind].sub || ''));
+      body.appendChild(el('span', 'cxcx-slide-sub', PICKUP_SUB));
       slide.appendChild(body);
+      var play = el('span', 'cxcx-slide-play');
+      play.appendChild(el('span', 'cxcx-play-ring')).setAttribute('aria-hidden', 'true');
+      play.appendChild(el('span', '', item.video ? '作品を見る' : '作品を読む'));
+      slide.appendChild(play);
       track.appendChild(slide);
     });
     if (items.length < 2 || !nav) return;
+    // The OUR WORKS arrows and dots switch the PICK UP work.
     nav.hidden = false;
-    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    nav.querySelector('[data-cxcx-total]').textContent = pad(items.length);
+    var dots = nav.querySelector('[data-cxcx-dots]');
+    items.forEach(function (item, i) {
+      var dot = el('button', 'cxcx-dot');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', 'PICK UP ' + (i + 1) + '：' + item.title);
+      dot.addEventListener('click', function () { show(i); });
+      dots.appendChild(dot);
+    });
     function show(index) {
       var slides = track.children;
       pickupIndex = (index + slides.length) % slides.length;
       Array.prototype.forEach.call(slides, function (s, i) { s.classList.toggle('is-active', i === pickupIndex); });
-      nav.querySelector('[data-cxcx-current]').textContent = pad(pickupIndex + 1);
+      Array.prototype.forEach.call(dots.children, function (d, i) {
+        if (i === pickupIndex) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
     }
+    show(0);
     nav.querySelector('[data-cxcx-prev]').addEventListener('click', function () { show(pickupIndex - 1); });
     nav.querySelector('[data-cxcx-next]').addEventListener('click', function () { show(pickupIndex + 1); });
     // Touch swipe: horizontal drags change slides; vertical scrolling stays native.
@@ -178,38 +192,12 @@
     });
   }
 
-  /* ---------- works cards ---------- */
-  function buildWorks(items) {
-    var list = root.querySelector('[data-cxcx-works]');
-    if (!list || !items.length) return;
-    list.textContent = '';
-    items.forEach(function (item) {
-      var li = document.createElement('li');
-      var a = link(item, 'cxcx-work');
-      a.appendChild(media(item, '(max-width: 768px) 72vw, 18vw'));
-      var label = el('span', 'cxcx-work-text');
-      label.appendChild(el('span', 'cxcx-work-kind', KIND[item.kind].label));
-      var title = el('span', '', item.title);
-      title.setAttribute('data-i18n-skip', '');
-      label.appendChild(title);
-      a.appendChild(label);
-      a.appendChild(el('span', 'cxcx-work-arrow', '→')).setAttribute('aria-hidden', 'true');
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-  }
-
   /* ---------- three services: sample = first item of each kind ---------- */
   function buildService(kind, item) {
     var card = root.querySelector('[data-cxcx-service="' + (kind === 'manga' ? 'manga' : kind) + '"]');
     if (!card || !item) return;
+    // The card keeps its design image; WordPress decides where it leads (sample manga / video).
     card.href = item.href;
-    var thumb = card.querySelector('.cxcx-service-thumb');
-    if (thumb && item.poster) {
-      var fresh = media(item, '(max-width: 768px) 40vw, 12vw');
-      fresh.className = thumb.className;
-      thumb.replaceWith(fresh);
-    }
     if (item.video) {
       card.addEventListener('click', function (event) {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
@@ -261,20 +249,11 @@
 
     // PICK UP: the first three playlists in WordPress order (or BizAnime videos before playlists exist).
     var pickup = (playlists.length ? playlists : anime).slice(0, 3);
-    var rest = { manga: manga.slice(), bizanime: anime.filter(function (x) { return pickup.indexOf(x) === -1; }),
-      bizvideo: film.filter(function (x) { return pickup.indexOf(x) === -1; }) };
-    // Cards alternate manga / anime / video so each medium appears in the first three.
-    var cards = [];
-    while (cards.length < 9 && (rest.manga.length || rest.bizanime.length || rest.bizvideo.length)) {
-      ['manga', 'bizanime', 'bizvideo'].forEach(function (k) { if (rest[k].length && cards.length < 9) cards.push(rest[k].shift()); });
-    }
-
     buildPickup(pickup);
-    buildWorks(cards);
     buildService('manga', manga[0]);
     buildService('bizanime', anime[0]);
     buildService('bizvideo', film[0]);
     // Marks that WordPress content replaced the fallback (nothing to mark when both requests failed).
-    if (pickup.length || cards.length) root.classList.add('cxcx-ready');
+    if (pickup.length || manga.length) root.classList.add('cxcx-ready');
   });
 })();
