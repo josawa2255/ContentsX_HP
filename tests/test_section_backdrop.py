@@ -139,10 +139,14 @@ with sync_playwright() as p:
     for w, h in [(1470, 800), (1440, 900), (1366, 650), (1280, 720), (1536, 730), (1920, 1080)]:
         page = browser.new_page(viewport={'width': w, 'height': h})
         load(page, args.url)
+        # Measure after the entrance animations: revealed cards start 30px lower.
+        for section in ['#creative-x', '#sales-x']:
+            page.evaluate("(s)=>window.scrollTo({top:document.querySelector(s).getBoundingClientRect().top+scrollY-64,behavior:'instant'})", section)
+            page.wait_for_timeout(1500)
         fit = page.evaluate('''()=>{const q=s=>document.querySelector(s), R=e=>e.getBoundingClientRect();
           const content=(sec,sel)=>Math.max(...[...q(sec).querySelectorAll(sel)].map(e=>R(e).bottom))-R(q(sec)).top;
           return {gap:q('.cxha-stage').offsetHeight-q('#home-about').offsetHeight,
-            about:content('#home-about','.cxha-values'), cx:content('#creative-x','.cxcx-services'),
+            about:content('#home-about','.cxha-values'), cx:content('#creative-x','.cxcx-card'),
             sx:content('#sales-x','.cxsx-card')}}''')
         assert fit['gap'] <= 1, (w, h, fit)
         for key in ['about', 'cx', 'sx']:
