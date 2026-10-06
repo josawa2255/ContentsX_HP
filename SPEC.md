@@ -3,7 +3,7 @@
 **ドメイン**: contentsx.jp
 **リポジトリ**: [josawa2255/ContentsX_HP](https://github.com/josawa2255/ContentsX_HP)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-09-29
+**最終更新**: 2026-10-07
 
 > このファイルは ContentsX 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約し、将来のメンテ時に参照します。
 
@@ -28,6 +28,22 @@
 | ニュース詳細 | `news-detail.html` | wp-config.js + インラインJS | |
 | コラム一覧 | `column.html` | i18n.js, nav.js, column.js | Featured + カテゴリチップフィルタ + カードグリッド。`tools/build-c-columns.py` が WP API (`?site=contentx`) からカード・カテゴリ・ItemList JSON-LD・Featured を自動注入（`<!-- BUILD:COLUMN_GRID -->` マーカー間） |
 | コラム個別 | `column/{slug}.html` | (静的) | `tools/build-c-columns.py` で生成。`/column/` は `column/index.html` の meta refresh で `/column` へリダイレクト |
+| Chrome 拡張機能一覧 | `extensions/index.html` | i18n.js, nav.js | `/extensions/`。拡張機能ごとにカードを追加できる一覧。トップのフッターから導線を設置 |
+| TabLabo 紹介 | `extensions/tablabo/index.html` | i18n.js, nav.js | `/extensions/tablabo/`。機能・画面・料金・法人導入の案内 |
+| TabLabo ポリシー・規約 | `extensions/tablabo/privacy.html`・`extensions/tablabo/terms.html` | i18n.js, nav.js | 拡張子なしURL。本文は日本語の正本を保持し、自動翻訳の対象外 |
+| TabLabo AIアクセス許可 | `extensions/tablabo/oauth/consent/index.html` | 提供HTML内のJS・supabase-js | `/extensions/tablabo/oauth/consent/`。共通UIと計測タグを入れない独立画面。noindex |
+
+### 1.1 Chrome 拡張機能・TabLabo（Issue #69）
+
+- デザインは `css/extensions.css` と既存の `css/style.css`・`css/sitewide-cohesion.css`。企業の濃紺・共通トークンを使用し、TabLaboの製品色は紫 `#4f46e5`。提供された実画面5枚をWebPで `material/extensions/tablabo/` に配置。画像は全体表示し、クリックで元寸法の画像を別タブに開く。UI内のデータは架空のテストデータ。
+- 一覧に拡張機能を追加する際は `extensions/index.html` の `.ext-grid` 内に `.ext-card` の `article` を追加し、画像・原稿・紹介先を変更する。紹介ページも追加し、`sitemap.xml` に公開URLを登録する。OAuth許可画面はサイトマップへ載せない。
+- 紹介と一覧は日英の `data-ja` / `data-en` を使用。規約・ポリシーの本文は `data-i18n-skip` で日本語を維持。共通JSは `i18n.js` → `nav.js` の順。`base href="/"` と絶対パスで深い階層のナビ・画像・CSSを解決する。
+- ストアURLが未確定の間、CTAは「限定公開中・お問い合わせ」で `/contact` へ。確定後は紹介と一覧のCTAをストアへの導線へ差し替える。窓口は `help@contentsx.jp`。
+- 規約・ポリシーは提供原稿の本文を保持し、草案・根拠・編集者向けの注記を公開HTMLから除く。初回公開日は2026年10月7日（日本時間）。`data-publication-date` の制定日・最終更新日4箇所に同日を設定。改定時は制定日を維持し、最終更新日だけ実際の改定日に変更する。未確定表示のまま公開しない。
+- 公開は所有者の内容確認・明示的なマージ許可後に行い、公開URL5件を依頼元へ連絡する。ポリシーと規約は `/extensions/tablabo/privacy`・`/extensions/tablabo/terms`、紹介・一覧・OAuth許可画面は末尾 `/` を維持する。
+- OAuth許可画面はTabLabo担当のHTMLをバイト単位で変更せず配置。ヘッダー・フッター・計測・共通CSS/JS・`base`・転送処理を追加しない。SupabaseのURLとpublishableキーはブラウザ公開を前提とする値。変更が必要な場合は担当へ依頼し、更新原稿を再配置する。
+- OAuthの公開前検証は `?authorization_id=test` 付きのURLで「TabLabo にログイン」または「この接続の情報を確認できませんでした」の表示を確認する。ローカル検証では認証SDKをスタブ化し、Googleログイン・トークン発行・許可/拒否の本番書き込みを行わない。
+- 再検証用スクリプト: `python3 tests/verify_extensions_layout.py --url http://127.0.0.1:8769` と `python3 tests/verify_tablabo_oauth.py --url http://127.0.0.1:8769`（Python PlaywrightとGoogle Chromeが必要）。先に `python3 tools/preview-extensions.py --port 8769` で、拡張子なしの `.html` 解決に対応したローカルサーバーを起動する。OAuth検証には提供HTMLのSHA-256一致チェックを含むため、原稿を更新した場合は担当から受け取った版との一致を確認してハッシュも更新する。PR確認用の画像は `tests/screenshots/extensions/`。
 
 ## 2. URL パラメータ
 
@@ -40,6 +56,9 @@
 ### 2.3 UTM / トラッキング
 `?utm_source=` `?utm_medium=` `?utm_campaign=` `?source=`
 contact フォーム送信時にメッセージ末尾にトラッキング情報を自動付加
+
+### 2.4 TabLabo OAuth許可画面
+`/extensions/tablabo/oauth/consent/?authorization_id=...` — AIアプリから受け取った認可要求IDを保持する。Googleログインから戻る `?code=...` は提供HTMLのSupabase SDKが処理する。URLの正規化や転送でクエリを削除しない。
 
 ## 3. トップページ 2026年9月版 ⭐
 

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>TabLabo — AI からのアクセスの許可</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #18181b;
+        --muted: #71717a;
+        --bg: #fafafa;
+        --card: #fff;
+        --line: #e4e4e7;
+        --brand: #4f46e5;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #f4f4f5;
+          --muted: #a1a1aa;
+          --bg: #18181b;
+          --card: #27272a;
+          --line: #3f3f46;
+        }
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+      }
+      main {
+        max-width: 440px;
+        margin: 48px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      p,
+      li {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      ul {
+        padding-left: 1.2em;
+      }
+      .buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+      }
+      button {
+        flex: 1;
+        height: 40px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--fg);
+      }
+      button.primary {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .error {
+        color: #dc2626;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="card" id="app"><p class="muted">読み込み中…</p></div>
+      <p class="muted" style="text-align: center; margin-top: 16px">
+        運営: Contents X 株式会社 ・
+        <a href="https://contentsx.jp/extensions/tablabo/privacy">プライバシーポリシー</a>
+      </p>
+    </main>
+    <!-- supabase-js (version pinned). The URL and publishable key are public values. -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+    <script>
+      ;(async () => {
+        const SUPABASE_URL = 'https://xshhsvlvxklwjdwwelsg.supabase.co'
+        const SUPABASE_KEY = 'sb_publishable_57Zf23xuggBJISz7wq8oTQ_zjNSIhuw'
+        const app = document.getElementById('app')
+        const esc = (s) =>
+          String(s ?? '').replace(
+            /[&<>"']/g,
+            (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+          )
+        const show = (html) => {
+          app.innerHTML = html
+        }
+        const params = new URLSearchParams(location.search)
+        const authorizationId = params.get('authorization_id')
+        if (!authorizationId)
+          return show('<p class="error">このページは AI アプリからの接続のときだけ使います。</p>')
+
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true },
+        })
+        // returning from Google sign-in (?code=...): supabase-js exchanges it automatically
+        const {
+          data: { session },
+        } = await sb.auth.getSession()
+        if (!session) {
+          show(`<h1>TabLabo にログイン</h1>
+      <p>AI アプリから TabLabo への接続を許可するには、TabLabo と同じ Google アカウントでログインしてください。</p>
+      <div class="buttons"><button class="primary" id="login">Google でログイン</button></div>`)
+          document.getElementById('login').onclick = () =>
+            sb.auth.signInWithOAuth({
+              provider: 'google',
+              options: {
+                redirectTo:
+                  location.origin +
+                  location.pathname +
+                  '?authorization_id=' +
+                  encodeURIComponent(authorizationId),
+              },
+            })
+          return
+        }
+
+        const { data, error } = await sb.auth.oauth.getAuthorizationDetails(authorizationId)
+        if (error || !data)
+          return show(
+            '<p class="error">この接続の情報を確認できませんでした。AI アプリから接続をやり直してください。</p>',
+          )
+        const client = esc(data.client?.name || 'AI アプリ')
+        show(`<h1>${client} に TabLabo へのアクセスを許可しますか？</h1>
+    <p class="muted">${esc(session.user.email)} としてログイン中</p>
+    <p>許可すると、${client} は次のことができます。</p>
+    <ul>
+      <li>あなたが見られる Workspace（会社のもの・マイワークスペース）の名前・URL・メモを読む</li>
+      <li>新しいマイワークスペースを作る</li>
+      <li>候補トレイにページを提案する</li>
+    </ul>
+    <p>既存の Workspace の変更・削除、メンバーや組織の設定はできません。AI 連携は有料プランの機能です。</p>
+    <p class="muted">接続先: ${esc(data.redirect_uri)}</p>
+    <div class="buttons"><button id="deny">許可しない</button><button class="primary" id="approve">許可する</button></div>
+    <p class="error" id="err"></p>`)
+        const decide = async (approve) => {
+          document.querySelectorAll('button').forEach((b) => (b.disabled = true))
+          const r = approve
+            ? await sb.auth.oauth.approveAuthorization(authorizationId)
+            : await sb.auth.oauth.denyAuthorization(authorizationId)
+          const url = r.data?.redirect_url || r.data?.redirect_to
+          if (r.error || !url) {
+            document.getElementById('err').textContent =
+              '処理できませんでした。AI アプリから接続をやり直してください。'
+            document.querySelectorAll('button').forEach((b) => (b.disabled = false))
+            return
+          }
+          location.href = url
+        }
+        document.getElementById('approve').onclick = () => decide(true)
+        document.getElementById('deny').onclick = () => decide(false)
+      })()
+    </script>
+  </body>
+</html>
