@@ -8,7 +8,7 @@ parser.add_argument('--url', default='http://127.0.0.1:8769')
 parser.add_argument('--output', default='/private/tmp/tablabo-preview')
 args = parser.parse_args()
 BASE = args.url.rstrip('/')
-assert urlsplit(BASE).hostname in ('localhost', '127.0.0.1', '::1'), 'Use a local preview only' 
+assert urlsplit(BASE).hostname in ('localhost', '127.0.0.1', '::1'), 'Use a local preview only'
 URL=BASE+'/extensions/tablabo/oauth/consent/'
 OUT=Path(args.output); OUT.mkdir(parents=True, exist_ok=True)
 SDK='''window.supabase={createClient:(url,key,options)=>{window.sdkOptions=options;return {auth:{getSession:async()=>({data:{session:SESSION}}),signInWithOAuth:async(args)=>{window.loginArgs=args;return {data:{},error:null}},oauth:{getAuthorizationDetails:async(id)=>({data:DETAILS,error:DETAIL_ERROR}),approveAuthorization:async(id)=>{window.approvedId=id;return DECISION},denyAuthorization:async(id)=>{window.deniedId=id;return DECISION}}}}}};'''

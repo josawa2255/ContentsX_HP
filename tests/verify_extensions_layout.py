@@ -8,7 +8,7 @@ parser.add_argument('--url', default='http://127.0.0.1:8769')
 parser.add_argument('--output', default='/private/tmp/tablabo-preview')
 args = parser.parse_args()
 BASE = args.url.rstrip('/')
-assert urlsplit(BASE).hostname in ('localhost', '127.0.0.1', '::1'), 'Use a local preview only' 
+assert urlsplit(BASE).hostname in ('localhost', '127.0.0.1', '::1'), 'Use a local preview only'
 OUT=Path(args.output); OUT.mkdir(parents=True, exist_ok=True)
 WIDTHS=[320,375,390,412,448,640,768,899,900,901,1024,1200,1280,1281,1440,1920]
 PATHS=['/extensions/','/extensions/tablabo/','/extensions/tablabo/privacy','/extensions/tablabo/terms']
