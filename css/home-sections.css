@@ -73,3 +73,6 @@
   .cxsb-section .news-list { border-radius:12px; }
   .cxh-home .cxsb-section>.container { width:min(100% - 32px,560px); }
 }
+
+/* Adjacent backdrop sections (ABOUT → CREATIVE X) read as one continuous scene: no white seam. */
+.cxsb-section.cxsb-join-next::after,.cxsb-section.cxsb-join-prev::before { display:none; }

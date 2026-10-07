@@ -212,6 +212,7 @@
   <link rel="stylesheet" href="/css/home-2026.css">
   <link rel="stylesheet" href="/css/hero-about.css">
   <link rel="stylesheet" href="/css/home-sections.css">
+  <link rel="stylesheet" href="/css/home-creative-x.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
@@ -252,7 +253,7 @@
     </section>
         </div>
 
-        <section class="cxha-about cxsb-section" id="home-about" aria-labelledby="cxha-title">
+        <section class="cxha-about cxsb-section cxsb-join-next" id="home-about" aria-labelledby="cxha-title">
           <div class="cxsb-backdrop" aria-hidden="true"></div>
           <div class="cxha-wordmark cxsb-label" aria-hidden="true" data-i18n-skip>ABOUT</div>
           <div class="cxha-main">
@@ -293,6 +294,87 @@
         </section>
       </div>
     </div>
+
+    <!-- ===== Creative X（PICK UP・各カードのリンク先はWordPressから取得。下のHTMLはJS無効・取得失敗時の表示） ===== -->
+    <section class="cxcx cxsb-section cxsb-join-prev" id="creative-x" aria-labelledby="cxcx-title" data-cxcx>
+      <div class="cxsb-backdrop" aria-hidden="true"></div>
+      <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>CREATIVE X</div>
+      <div class="cxcx-top">
+        <div class="cxcx-copy" data-cxh-reveal>
+          <p class="cxcx-eyebrow" data-i18n-skip>Creative X</p>
+          <h2 id="cxcx-title" data-i18n-html data-ja="想いを、<br>伝わるカタチに。" data-en="Turning ideas<br>into stories that land.">想いを、<br>伝わるカタチに。</h2>
+          <p class="cxcx-lead" data-i18n-html data-ja="マンガ・アニメ・映像の力で、<br>企業の想いを人の心に届けます。" data-en="Through manga, animation and video,<br>we bring your message to people's hearts.">マンガ・アニメ・映像の力で、<br>企業の想いを人の心に届けます。</p>
+          <a class="cxcx-button" href="/services/creative-x/"><span data-ja="Creative X について" data-en="About Creative X">Creative X について</span><span class="cxcx-button-arrow" aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="cxcx-pickup" data-cxh-reveal aria-roledescription="carousel" aria-label="Creative X PICK UP">
+          <div class="cxcx-pickup-track" data-cxcx-pickup aria-live="polite">
+            <a class="cxcx-slide is-active" href="/services/creative-x/">
+              <span class="cxcx-media"><img src="/material/service-2026/bizanime-ieye.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async"></span>
+              <span class="cxcx-slide-text">
+                <span class="cxcx-slide-label" data-i18n-skip>PICK UP</span>
+                <strong data-i18n-skip>目MEめぇ～愛 I eye</strong>
+                <span class="cxcx-slide-sub" data-ja="AIで広がる、伝わるクリエイティブの可能性。" data-en="AI expands what creative work can communicate.">AIで広がる、伝わるクリエイティブの可能性。</span>
+              </span>
+              <span class="cxcx-slide-play"><span class="cxcx-play-ring" aria-hidden="true"></span><span data-ja="作品を見る" data-en="View work">作品を見る</span></span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="cxcx-bottom">
+        <div class="cxcx-works-intro" data-cxh-reveal>
+          <p class="cxcx-eyebrow" data-i18n-skip>OUR WORKS</p>
+          <h3 data-i18n-html data-ja="作品で見る<br><span>Creative X</span>" data-en="See<br><span>Creative X</span>">作品で見る<br><span>Creative X</span></h3>
+          <p data-i18n-html data-ja="多彩な表現で、<br>ビジネスの課題を解決します。" data-en="Diverse formats<br>that solve business challenges.">多彩な表現で、<br>ビジネスの課題を解決します。</p>
+          <div class="cxcx-pickup-nav" data-cxcx-pickup-nav hidden>
+            <button type="button" class="cxcx-arrow" data-cxcx-prev aria-label="前のPICK UP"><span aria-hidden="true">&#8249;</span></button>
+            <span class="cxcx-dots" data-cxcx-dots></span>
+            <button type="button" class="cxcx-arrow" data-cxcx-next aria-label="次のPICK UP"><span aria-hidden="true">&#8250;</span></button>
+          </div>
+        </div>
+        <div class="cxcx-cards">
+          <a class="cxcx-card cxcx-card--manga" href="https://bizmanga.contentsx.jp/" data-cxcx-service="manga" data-cxh-reveal>
+            <span class="cxcx-media cxcx-card-media"><img src="/material/web-system/service-hover/bizmanga.webp" width="960" height="408" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxcx-card-body">
+              <strong class="cxcx-card-name">ビズマンガ</strong>
+              <span class="cxcx-card-desc" data-ja="ストーリーで、想いをわかりやすく。" data-en="Stories that make ideas clear.">ストーリーで、想いをわかりやすく。</span>
+            </span>
+            <span class="cxcx-card-go" aria-hidden="true"></span>
+            <span class="cxcx-visually-hidden" data-ja="サンプルを読む" data-en="サンプルを読む">サンプルを読む</span>
+          </a>
+          <a class="cxcx-card cxcx-card--anime" href="https://bizmanga.contentsx.jp/bizanime" data-cxcx-service="bizanime" data-cxh-reveal>
+            <span class="cxcx-media cxcx-card-media"><img src="/material/web-system/service-hover/bizanime.webp" width="960" height="540" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxcx-card-body">
+              <strong class="cxcx-card-name">ビズアニメ</strong>
+              <span class="cxcx-card-desc" data-ja="動かすチカラで、もっと深く届く。" data-en="Motion that reaches deeper.">動かすチカラで、もっと深く届く。</span>
+            </span>
+            <span class="cxcx-card-go" aria-hidden="true"></span>
+            <span class="cxcx-visually-hidden" data-ja="サンプル動画を見る" data-en="サンプル動画を見る">サンプル動画を見る</span>
+          </a>
+          <a class="cxcx-card cxcx-card--video" href="/services/#bizvideo" data-cxcx-service="bizvideo" data-cxh-reveal>
+            <span class="cxcx-media cxcx-card-media"><img src="/material/web-system/service-hover/bizvideo.webp" width="960" height="540" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxcx-card-body">
+              <strong class="cxcx-card-name">ビズビデオ</strong>
+              <span class="cxcx-card-desc" data-ja="リアルな映像で、未来をつくる。" data-en="Real footage that shapes the future.">リアルな映像で、未来をつくる。</span>
+            </span>
+            <span class="cxcx-card-go" aria-hidden="true"></span>
+            <span class="cxcx-visually-hidden" data-ja="サンプル動画を見る" data-en="サンプル動画を見る">サンプル動画を見る</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="cxcx-tagline" aria-hidden="true" data-i18n-skip><span>IDEAS INTO IMPACT</span></p>
+
+      <dialog class="cxcx-modal" data-cxcx-modal aria-labelledby="cxcx-modal-title">
+        <div class="cxcx-modal-head">
+          <p id="cxcx-modal-title" data-cxcx-modal-title></p>
+          <button type="button" class="cxcx-modal-close" data-cxcx-close aria-label="閉じる">&times;</button>
+        </div>
+        <div class="cxcx-modal-frame" data-cxcx-frame></div>
+        <a class="cxcx-modal-link" data-cxcx-youtube href="https://www.youtube.com/" target="_blank" rel="noopener" data-ja="YouTubeで再生リストを開く" data-en="Open the playlist on YouTube">YouTubeで再生リストを開く</a>
+      </dialog>
+    </section>
 
     <section class="cxh-concept" aria-labelledby="cxh-concept-title">
       <div class="cxh-shell" data-cxh-reveal>
@@ -418,6 +500,7 @@
   <script src="/js/wp-api.js" defer></script>
   <script src="/js/home-2026.js" defer></script>
   <script src="/js/hero-about.js" defer></script>
+  <script src="/js/home-creative-x.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script>
   /* HubSpot 遅延ロード: 初回ユーザー操作 or 4秒経過で読込 */
