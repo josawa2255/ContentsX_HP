@@ -80,13 +80,13 @@ with sync_playwright() as p:
             assert page.locator(f'{selector} > .cxsb-backdrop').evaluate('e=>Math.abs(e.getBoundingClientRect().top)') < 1
         # The clip keeps the fixed layer out of neighbouring white sections.
         # Make the neighbouring section transparent: if the fixed layer leaked, the sky would show.
-        page.add_style_tag(content='#flow{background:none!important}')
-        scroll(page, top_of(page, '#flow') - 64 + 40)
-        shot = out / f'{width}-flow-clip.png'
+        page.add_style_tag(content='#company-intro{background:none!important}')
+        scroll(page, top_of(page, '#company-intro') - 64 + 40)
+        shot = out / f'{width}-company-clip.png'
         page.screenshot(path=str(shot))
-        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('#flow').getBoundingClientRect().top + 120)"))
+        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('#company-intro').getBoundingClientRect().top + 120)"))
         pixel = Image.open(shot).convert('RGB').getpixel((2, y))
-        assert min(pixel) >= 248, f'Backdrop leaked into #flow at {width}px: {pixel}'
+        assert min(pixel) >= 248, f'Backdrop leaked into #company-intro at {width}px: {pixel}'
         if width in [390, 1440]:
             for selector in SECTIONS:
                 scroll(page, about_complete(page) if selector == '#home-about' else top_of(page, selector) - 64, 1500)
