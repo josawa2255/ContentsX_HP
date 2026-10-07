@@ -65,6 +65,8 @@
 
 .cxcx-tagline { position:relative; z-index:1; display:flex; align-items:center; gap:clamp(16px,2vw,28px); max-width:1500px; margin:clamp(14px,2.6svh,48px) auto 0; color:#7a879e; font-family:Inter,Arial,sans-serif; font-size:clamp(10px,.85vw,12px); letter-spacing:.5em; white-space:nowrap; }
 .cxcx-tagline::before,.cxcx-tagline::after { content:''; flex:1; height:1px; background:#c9d3e2; }
+/* A soft white backing keeps the words readable over darker parts of the blurred backdrop. */
+.cxcx-tagline span { padding:4px 14px 4px calc(14px + .5em); border-radius:999px; background:rgba(255,255,255,.72); color:#52627e; }
 
 .cxcx-button:focus-visible,.cxcx-slide:focus-visible,.cxcx-card:focus-visible,.cxcx-arrow:focus-visible,.cxcx-dot:focus-visible,.cxcx-modal-close:focus-visible { outline:3px solid #005cff; outline-offset:3px; }
 
