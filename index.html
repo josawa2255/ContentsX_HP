@@ -213,6 +213,7 @@
   <link rel="stylesheet" href="/css/hero-about.css">
   <link rel="stylesheet" href="/css/home-sections.css">
   <link rel="stylesheet" href="/css/home-creative-x.css">
+  <link rel="stylesheet" href="/css/home-sales-x.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
@@ -296,7 +297,7 @@
     </div>
 
     <!-- ===== Creative X（PICK UP・各カードのリンク先はWordPressから取得。下のHTMLはJS無効・取得失敗時の表示） ===== -->
-    <section class="cxcx cxsb-section cxsb-join-prev" id="creative-x" aria-labelledby="cxcx-title" data-cxcx>
+    <section class="cxcx cxsb-section cxsb-join-prev cxsb-join-next" id="creative-x" aria-labelledby="cxcx-title" data-cxcx>
       <div class="cxsb-backdrop" aria-hidden="true"></div>
       <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>CREATIVE X</div>
       <div class="cxcx-top">
@@ -374,6 +375,57 @@
         <div class="cxcx-modal-frame" data-cxcx-frame></div>
         <a class="cxcx-modal-link" data-cxcx-youtube href="https://www.youtube.com/" target="_blank" rel="noopener" data-ja="YouTubeで再生リストを開く" data-en="Open the playlist on YouTube">YouTubeで再生リストを開く</a>
       </dialog>
+    </section>
+
+    <!-- ===== Sales X ===== -->
+    <section class="cxsx cxsb-section cxsb-join-prev" id="sales-x" aria-labelledby="cxsx-title">
+      <div class="cxsb-backdrop" aria-hidden="true"></div>
+      <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>SALES X</div>
+      <div class="cxsx-inner">
+        <div class="cxsx-copy" data-cxh-reveal>
+          <h2 id="cxsx-title" data-i18n-html data-ja="新しい接点を、<br>売上につなげる。" data-en="Turning new connections<br>into revenue.">新しい接点を、<br>売上につなげる。</h2>
+          <p class="cxsx-lead" data-ja="Contents X の Sales X は、新規開拓・採用・AI検索対策・顧客管理をテクノロジーでつなぎ、営業の成果が生まれる仕組みをつくります。" data-en="Sales X connects outbound, recruiting, AI search and CRM with technology to build a system that produces results.">Contents X の Sales X は、新規開拓・採用・AI検索対策・顧客管理をテクノロジーでつなぎ、営業の成果が生まれる仕組みをつくります。</p>
+          <a class="cxh-button cxh-button-dark cxsx-more" href="/services/sales-x/"><span data-ja="Sales Xについて見る" data-en="Explore Sales X">Sales Xについて見る</span><span aria-hidden="true">→</span></a>
+        </div>
+        <div class="cxsx-grid">
+          <a class="cxsx-card cxsx-card--bizform" href="https://bizform.contentsx.jp/" data-cxh-reveal>
+            <span class="cxsx-media"><img src="/material/service-2026/bizform-research-v2.webp" width="1672" height="941" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxsx-body">
+              <span class="cxsx-eyebrow" data-ja="新規開拓代行" data-en="Outbound prospecting">新規開拓代行</span>
+              <strong class="cxsx-name">ビズフォーム</strong>
+              <span class="cxsx-desc" data-ja="企業ごとに文章をカスタマイズし、数千社規模へ問い合わせ・営業メールを送る新規開拓代行です。" data-en="Personalized outreach to thousands of companies, run for you from research to sending.">企業ごとに文章をカスタマイズし、数千社規模へ問い合わせ・営業メールを送る新規開拓代行です。</span>
+              <span class="cxsx-cta"><span data-ja="サイトを見る" data-en="Visit site">サイトを見る</span><span class="cxsx-arrow" aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="cxsx-card cxsx-card--bizrecruit" href="https://ichioshi.contentsx.jp/" data-cxh-reveal>
+            <span class="cxsx-media"><img src="/material/home-2026/sales-x-bizrecruit.webp" width="1448" height="1086" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxsx-body">
+              <span class="cxsx-eyebrow" data-ja="採用支援" data-en="Recruiting">採用支援</span>
+              <strong class="cxsx-name">ビズ採用</strong>
+              <span class="cxsx-desc" data-ja="SNS・コンテンツ制作・広告で、「知ってもらう → 好きになってもらう → 応募される」流れをつくります。" data-en="Social, content and ads that turn awareness into affinity and applications.">SNS・コンテンツ制作・広告で、「知ってもらう → 好きになってもらう → 応募される」流れをつくります。</span>
+              <span class="cxsx-cta"><span data-ja="サイトを見る" data-en="Visit site">サイトを見る</span><span class="cxsx-arrow" aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="cxsx-card cxsx-card--bizaio" href="/services/#bizaio" data-cxh-reveal>
+            <span class="cxsx-media"><img src="/material/service-2026/bizaio-search-v2.webp" width="1672" height="941" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxsx-body">
+              <span class="cxsx-eyebrow" data-ja="AI検索最適化" data-en="AI search optimization">AI検索最適化</span>
+              <strong class="cxsx-name">ビズAIO</strong>
+              <span class="cxsx-desc" data-ja="ChatGPTなどのAI検索で、自社が回答・おすすめ・引用元として選ばれる状態をつくります。" data-en="Be found, recommended and cited by AI search such as ChatGPT.">ChatGPTなどのAI検索で、自社が回答・おすすめ・引用元として選ばれる状態をつくります。</span>
+              <span class="cxsx-cta"><span data-ja="詳しく見る" data-en="Learn more">詳しく見る</span><span class="cxsx-arrow" aria-hidden="true">→</span></span>
+            </span>
+          </a>
+          <a class="cxsx-card cxsx-card--bizkarte" href="/services/#bizkarte" data-cxh-reveal>
+            <span class="cxsx-media"><img src="/material/home-2026/sales-x-bizkarte.webp" width="1448" height="1086" alt="" loading="lazy" decoding="async"></span>
+            <span class="cxsx-body">
+              <span class="cxsx-eyebrow" data-ja="次世代AI CRM" data-en="AI-powered CRM">次世代AI CRM</span>
+              <strong class="cxsx-name">ビズカルテ</strong>
+              <span class="cxsx-desc" data-ja="顧客・商談・活動をひとつに管理。AIが次に連絡すべき会社とアクションを提案し、アポ獲得につなげます。" data-en="Customers, deals and activity in one place, with AI suggesting who to contact next.">顧客・商談・活動をひとつに管理。AIが次に連絡すべき会社とアクションを提案し、アポ獲得につなげます。</span>
+              <span class="cxsx-cta"><span data-ja="詳しく見る" data-en="Learn more">詳しく見る</span><span class="cxsx-arrow" aria-hidden="true">→</span></span>
+            </span>
+          </a>
+        </div>
+      </div>
     </section>
 
     <section class="cxh-concept" aria-labelledby="cxh-concept-title">

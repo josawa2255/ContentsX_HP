@@ -134,14 +134,23 @@ with sync_playwright() as p:
     assert link.locator('.cxha-link-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 3, 0)'
     page.close()
 
-    # PC laptops: no white band below ABOUT, and ABOUT fits in one screen below the fixed header.
+    # PC laptops (Issue #67 feedback): no white band below ABOUT, and ABOUT / Creative X / Sales X
+    # each fit in one screen below the fixed header.
     for w, h in [(1470, 800), (1440, 900), (1366, 650), (1280, 720), (1536, 730), (1920, 1080)]:
         page = browser.new_page(viewport={'width': w, 'height': h})
         load(page, args.url)
+        # Measure after the entrance animations: revealed cards start 30px lower.
+        for section in ['#creative-x', '#sales-x']:
+            page.evaluate("(s)=>window.scrollTo({top:document.querySelector(s).getBoundingClientRect().top+scrollY-64,behavior:'instant'})", section)
+            page.wait_for_timeout(1500)
         fit = page.evaluate('''()=>{const q=s=>document.querySelector(s), R=e=>e.getBoundingClientRect();
+          const content=(sec,sel)=>Math.max(...[...q(sec).querySelectorAll(sel)].map(e=>R(e).bottom))-R(q(sec)).top;
           return {gap:q('.cxha-stage').offsetHeight-q('#home-about').offsetHeight,
-            about:R(q('#home-about .cxha-values')).bottom-R(q('#home-about')).top}}''')
-        assert fit['gap'] <= 1 and fit['about'] <= h - 64, (w, h, fit)
+            about:content('#home-about','.cxha-values'), cx:content('#creative-x','.cxcx-card'),
+            sx:content('#sales-x','.cxsx-card')}}''')
+        assert fit['gap'] <= 1, (w, h, fit)
+        for key in ['about', 'cx', 'sx']:
+            assert fit[key] <= h - 64, (w, h, key, fit)
         page.close()
 
     # Hover feedback on news rows survives the entrance animation.
