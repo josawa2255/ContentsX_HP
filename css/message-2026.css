@@ -26,6 +26,7 @@
 .cm-chapter + .cm-chapter { margin-top: clamp(48px, 6vw, 72px); }
 .cm-chapter h2 { display: flex; align-items: baseline; gap: 16px; color: var(--cx-color-ink); font-size: clamp(1.25rem, 1.6vw, 1.5rem); font-weight: 700; line-height: 1.65; letter-spacing: -.02em; margin: 0 0 28px; }
 .cm-chapter h2 > span { min-width: 0; overflow-wrap: anywhere; }
+.cm-chapter h2 > span:not(.cm-chapter-num) { word-break: keep-all; }
 .cm-chapter .cm-brand-name { white-space: nowrap; }
 .cm-chapter .cm-chapter-num { flex-shrink: 0; color: var(--cx-color-muted); font-family: var(--cx-font-latin); font-size: .75rem; font-weight: 500; letter-spacing: .12em; }
 .cm-chapter > p { color: var(--cx-color-body); font-size: clamp(1rem, .96rem + .2vw, 1.0625rem); font-weight: 400; line-height: 1.95; letter-spacing: .025em; margin: 0 0 32px; overflow-wrap: anywhere; }

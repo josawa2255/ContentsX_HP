@@ -85,6 +85,8 @@ with sync_playwright() as p:
             rects=page.locator('.cm-hero-image,.cm-hero-copy').evaluate_all('(es)=>es.map(e=>e.getBoundingClientRect().toJSON())')
             assert rects[0]['right']<=rects[1]['left']+1, ('hero overlaps',width,rects)
         if width in (320,390,768,1024,1440,1920):
+            page.locator('.cm-team img').evaluate('(e)=>e.loading="eager"')
+            page.wait_for_function('document.querySelector(".cm-team img").complete && document.querySelector(".cm-team img").naturalWidth>0')
             # Scroll every block into view so a full-page capture contains the entire message.
             for item in page.locator('[data-cm-reveal]').all():
                 item.scroll_into_view_if_needed(); page.wait_for_timeout(80)
