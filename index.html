@@ -214,6 +214,7 @@
   <link rel="stylesheet" href="/css/home-sections.css">
   <link rel="stylesheet" href="/css/home-creative-x.css">
   <link rel="stylesheet" href="/css/home-sales-x.css">
+  <link rel="stylesheet" href="/css/home-topics.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
@@ -473,7 +474,7 @@
       </div>
     </section>
 
-    <section class="cxh-services cxsb-section" id="about" aria-labelledby="cxh-services-title">
+    <section class="cxh-services cxsb-section cxsb-join-next" id="about" aria-labelledby="cxh-services-title">
       <div class="cxsb-backdrop" aria-hidden="true"></div>
       <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>SERVICE</div>
       <span id="services" class="cxh-anchor" aria-hidden="true"></span>
@@ -494,6 +495,50 @@
           </div></div>
         </div>
         <div class="cxh-service-cta" data-cxh-reveal><strong data-ja="1つのサービスだけのご依頼も可能です" data-en="Start with a single service">1つのサービスだけのご依頼も可能です</strong><p data-ja="貴社の課題に合わせて、必要なサービスからご利用いただけます。まずはお気軽にご相談ください。" data-en="Choose the services that fit your needs. Talk with us to get started." data-i18n-html>貴社の課題に合わせて、必要なサービスからご利用いただけます。<br>まずはお気軽にご相談ください。</p><a class="cxh-button cxh-button-dark" href="/contact"><span data-ja="お問い合わせ" data-en="Contact us">お問い合わせ</span><span aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+
+    <!-- ===== TOPICS（WordPress「Contents X ＞ TOPICS」から取得。下の3件はJS無効・取得失敗時の表示） ===== -->
+    <section class="cxtp cxsb-section cxsb-join-prev" id="topics" aria-labelledby="cxtp-title" data-cxtp>
+      <div class="cxsb-backdrop" aria-hidden="true"></div>
+      <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>TOPICS</div>
+      <div class="cxtp-inner">
+        <div class="cxtp-head" data-cxh-reveal>
+          <div>
+            <p class="cxtp-eyebrow" data-i18n-skip>TOPICS</p>
+            <h2 id="cxtp-title" data-ja="Contents X を、もっと知る。" data-en="Get to know Contents X.">Contents X を、もっと知る。</h2>
+          </div>
+          <div class="cxtp-nav" data-cxtp-nav hidden>
+            <button type="button" class="cxtp-arrow-btn" data-cxtp-prev aria-label="前のトピックス"><span aria-hidden="true">&#8249;</span></button>
+            <button type="button" class="cxtp-arrow-btn" data-cxtp-next aria-label="次のトピックス"><span aria-hidden="true">&#8250;</span></button>
+          </div>
+        </div>
+        <ul class="cxtp-list" data-cxtp-list aria-label="TOPICS" data-cxh-reveal>
+        <li><a class="cxtp-card" href="/about#message">
+          <span class="cxtp-thumb"><img src="/material/home-2026/topics/topics-message-kuromiya.webp" width="960" height="540" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxtp-body">
+            <span class="cxtp-meta"><span class="cxtp-type" data-i18n-skip>MESSAGE</span><time datetime="2026-09-29">2026.09.29</time><span class="cxtp-arrow" aria-hidden="true">→</span></span>
+            <span class="cxtp-title" data-i18n-skip>代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。</span>
+            <span class="cxtp-tags" data-i18n-skip><span>#代表メッセージ</span><span>#ContentsX</span></span>
+          </span>
+        </a></li>
+        <li><a class="cxtp-card" href="https://www.youtube.com/watch?v=w_O3iaQKduQ" target="_blank" rel="noopener">
+          <span class="cxtp-thumb"><img src="https://i.ytimg.com/vi/w_O3iaQKduQ/hqdefault.jpg" width="480" height="360" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxtp-body">
+            <span class="cxtp-meta"><span class="cxtp-type" data-i18n-skip>VIDEO</span><time datetime="2026-08-11">2026.08.11</time><span class="cxtp-arrow" aria-hidden="true">↗</span></span>
+            <span class="cxtp-title" data-i18n-skip>BtoB営業で“漫画”が商談を生む理由｜AI企業マクニカが語る新しいリード獲得戦略</span>
+            <span class="cxtp-tags" data-i18n-skip><span>#ビズマンガ</span><span>#導入事例</span></span><span class="cxtp-visually-hidden">（外部サイトが開きます）</span>
+          </span>
+        </a></li>
+        <li><a class="cxtp-card" href="https://prtimes.jp/main/html/rd/p/000000003.000182345.html" target="_blank" rel="noopener">
+          <span class="cxtp-thumb"><img src="/material/home-2026/topics/topics-press-kirinz.webp" width="888" height="500" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxtp-body">
+            <span class="cxtp-meta"><span class="cxtp-type" data-i18n-skip>PRESS</span><time datetime="2026-08-31">2026.08.31</time><span class="cxtp-arrow" aria-hidden="true">↗</span></span>
+            <span class="cxtp-title" data-i18n-skip>ContentsX、株式会社KIRINZと共同創業AI時代のコンテンツIP事業を本格始動</span>
+            <span class="cxtp-tags" data-i18n-skip><span>#プレスリリース</span><span>#IP事業</span></span><span class="cxtp-visually-hidden">（外部サイトが開きます）</span>
+          </span>
+        </a></li>
+        </ul>
       </div>
     </section>
 
@@ -553,6 +598,7 @@
   <script src="/js/home-2026.js" defer></script>
   <script src="/js/hero-about.js" defer></script>
   <script src="/js/home-creative-x.js" defer></script>
+  <script src="/js/home-topics.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script>
   /* HubSpot 遅延ロード: 初回ユーザー操作 or 4秒経過で読込 */
