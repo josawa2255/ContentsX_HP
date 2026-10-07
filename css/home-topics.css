@@ -1,0 +1,57 @@
+/* TOPICS — a quiet place to read and choose. Continues the shared backdrop from SERVICE
+   (home-sections.css). Cards come from WordPress via js/home-topics.js; the three cards in
+   index.html are the JS-off / API-failure fallback. */
+.cxtp { --cxtp-ink:#07143b; --cxtp-body:#2a3654; --cxtp-muted:#5d6a84; --cxtp-accent:#2563eb; --cxtp-gap:clamp(14px,1.6vw,24px);
+  padding:clamp(76px,9svh,150px) clamp(24px,3.8vw,64px) clamp(40px,6svh,96px); color:var(--cxtp-ink); }
+.cxtp-inner { position:relative; z-index:1; max-width:1400px; margin-inline:auto; }
+.cxtp-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+.cxtp-head { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:clamp(18px,3svh,32px); }
+.cxtp-eyebrow { display:flex; align-items:center; gap:16px; margin:0; color:var(--cxtp-muted); font-family:Inter,Arial,sans-serif; font-size:clamp(11px,.9vw,14px); font-weight:500; letter-spacing:.35em; }
+.cxtp-eyebrow::after { content:''; width:44px; height:1px; background:currentColor; opacity:.7; }
+.cxtp h2 { margin:clamp(8px,1.4svh,14px) 0 0; font-size:clamp(24px,2.3vw,36px); font-weight:900; line-height:1.35; letter-spacing:-.02em; }
+.cxtp-nav { display:flex; gap:12px; flex:0 0 auto; }
+.cxtp-nav[hidden] { display:none; }
+.cxtp-arrow-btn { display:grid; place-items:center; width:48px; height:48px; border:1px solid #d3dbe8; border-radius:50%; background:#fff; color:var(--cxtp-ink); font-size:26px; line-height:1; cursor:pointer; transition:border-color .2s ease,opacity .2s ease; }
+.cxtp-arrow-btn span { margin-top:-3px; }
+.cxtp-arrow-btn:disabled { opacity:.35; cursor:default; }
+
+/* Three columns on PC; the row scrolls sideways when there are more topics. */
+.cxtp-list { display:flex; gap:var(--cxtp-gap); margin:0; padding:4px 2px 12px; list-style:none; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; scroll-behavior:smooth; scrollbar-width:none; }
+.cxtp-list::-webkit-scrollbar { display:none; }
+.cxtp-list>li { flex:0 0 calc((100% - 2 * var(--cxtp-gap)) / 3); min-width:0; scroll-snap-align:start; }
+.cxtp-card { display:flex; flex-direction:column; height:100%; overflow:hidden; border:1px solid rgba(255,255,255,.9); border-radius:14px; background:rgba(255,255,255,.94); color:var(--cxtp-ink); box-shadow:0 12px 32px rgba(17,52,104,.08); }
+.cxtp-thumb { display:block; aspect-ratio:16 / 9; overflow:hidden; background:#e3eaf3; }
+.cxtp-thumb img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .3s cubic-bezier(.16,1,.3,1); }
+/* YouTube hqdefault is 4:3 with black bars; 16:9 cover crops the bars away. */
+.cxtp-body { display:flex; flex:1; flex-direction:column; gap:8px; padding:clamp(14px,1.4vw,20px) clamp(14px,1.5vw,22px) clamp(14px,1.4vw,20px); }
+.cxtp-meta { display:flex; align-items:center; gap:12px; font-size:12px; line-height:1.4; }
+.cxtp-type { color:var(--cxtp-accent); font-family:Inter,Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.14em; }
+.cxtp-meta time { color:var(--cxtp-muted); font-family:Inter,Arial,sans-serif; letter-spacing:.04em; }
+.cxtp-arrow { margin-left:auto; color:var(--cxtp-ink); font-size:16px; transition:transform .25s cubic-bezier(.16,1,.3,1),color .25s ease; }
+.cxtp-title { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:clamp(15px,1.1vw,17px); font-weight:700; line-height:1.6; word-break:auto-phrase; overflow-wrap:anywhere; transition:color .25s ease; }
+.cxtp-tags { display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:auto; padding-top:4px; color:var(--cxtp-muted); font-size:12px; line-height:1.5; }
+
+.cxtp-card:focus-visible,.cxtp-arrow-btn:focus-visible { outline:3px solid #005cff; outline-offset:3px; }
+
+@media (hover:hover) {
+  .cxtp-card:hover .cxtp-thumb img { transform:scale(1.02); }
+  .cxtp-card:hover .cxtp-arrow { transform:translateX(3px); color:var(--cxtp-accent); }
+  .cxtp-card:hover .cxtp-title { color:var(--cxtp-accent); }
+  .cxtp-arrow-btn:not(:disabled):hover { border-color:#9fb0c9; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .cxtp-list { scroll-behavior:auto; }
+  .cxtp-thumb img,.cxtp-arrow,.cxtp-title,.cxtp-arrow-btn { transition:none; }
+}
+
+/* SP: swipe; the next card peeks in. Arrows are not needed for touch. */
+@media (max-width:768px) {
+  .cxtp { padding:clamp(80px,21vw,116px) 16px 48px; }
+  .cxtp-inner { max-width:560px; }
+  .cxtp h2 { font-size:clamp(22px,6.4vw,30px); }
+  .cxtp-nav { display:none !important; }
+  .cxtp-list { margin-inline:-16px; padding-inline:16px; scroll-padding-inline:16px; }
+  .cxtp-list>li { flex-basis:82%; }
+  .cxtp-title { font-size:15px; }
+}

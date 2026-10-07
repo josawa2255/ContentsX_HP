@@ -71,7 +71,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・サービス一覧・Newsは共通背景） → Creative X → Sales X → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・サービス一覧・Newsは共通背景） → Creative X → Sales X → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → TOPICS → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。
@@ -149,6 +149,17 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 画像の暫定差し替え（2026-10-07 平澤さん判断）: 提供画像のうちビズフォーム（実在企業のロゴが送信先として描かれていた）とビズAIO（実在メディアの架空記事の引用・根拠のない「導入企業1,000社以上」・BizAIOをCRMと説明）は公開せず、サービス一覧で使っている既存画像に差し替えた。作り直した画像が届いたら `material/home-2026/sales-x-bizform.webp` / `sales-x-bizaio.webp` として追加し、`index.html` の該当2枚の `src` と `width/height` を戻す。
 - 文字色は白地でWCAGのコントラスト4.5:1以上になる濃い色を使い、鮮やかな色は線と画像側に使う。PCのhoverは画像1.03倍・矢印4px右、表示時は既存の `data-cxh-reveal` で軽いfade-up（2〜4枚目は0.08秒ずつ遅らせる）。新しいJSは追加しない。
 - CSSは `css/home-sales-x.css`、検証は `python3 tests/test_sales_x.py --url <loopback preview> --artifacts <output>`（17幅、2×2・縦並び・同じ大きさ、リンク先、文字がHTMLであること、hover、カード全体のリンク、スナップ、動き軽減、JS無効）。
+
+### TOPICS セクション（Issue #76）
+
+- 目的: 正式な NEWS とは別に、動画・代表メッセージ・プレスリリース・コラム・事例などを横断して載せる「読む・選ぶ」場所。上のセクションほど演出せず、静かで見やすくする（参考: レバレジーズ「INTERVIEW by meLev」）。
+- 位置: SERVICE（サービス一覧 `#about`）の直後、`#topics`。SERVICE に `.cxsb-join-next`、TOPICS に `.cxsb-join-prev` を付け、共通背景を継ぎ目なく続ける。上部に薄い大きな `TOPICS`。PCのスナップ対象。NEWS（`#news`）はこの後ろ（間に会社紹介）。
+- 見出し: 「TOPICS ——」「Contents X を、もっと知る。」。PCは右上に前後の丸い矢印（1枚ずつ移動。端・全件が収まるときは押せない表示）。SP（768px以下）は矢印なしの横スワイプで、次のカードが少し見える（1枚82%）。
+- カード: サムネイル（16:9）/ 種別（英大文字、MESSAGE・VIDEO・PRESS・COLUMN・CASE など自由）/ 日付 / タイトル（2行まで）/ タグ（#付き）。PCは3枚横並び、4枚目以降は横に並び矢印で送る。hover は画像1.02倍・矢印3px右・タイトルを青に。カード全体がリンクで、サイト内は同じタブ（→）、外部（YouTube・PR TIMES等）は新しいタブ（↗、読み上げに「外部サイトが開きます」）。
+- データ（`js/home-topics.js`）: `GET /contentsx/v1/topics`（WPプラグイン「Contents X ＞ TOPICS」、`contentsx-cms/contentsx-topics.php`）。表示ONのみ、PICK UP を先頭に、あとは管理画面の並び順。リンクは `/` 始まりのサイト内パスか http(s)、画像は `cms.contentsx.jp` / `contentsx.jp` / `i.ytimg.com` の https かサイト内パスのみ、日付は実在する日付のみ表示。文字は textContent。
+- 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/about#message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
+- NEWS セクションと代表メッセージ本文ページは、このプロジェクトでは作らない（代表メッセージのリンク先は既存の `/about#message`）。
+- CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
 
 ### 3.0 サービスページ生成（Issue #20）
 
