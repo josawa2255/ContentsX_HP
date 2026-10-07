@@ -25,7 +25,8 @@
     { label: '企業案内', labelEn: 'Corporate',      href: 'about',  indexHref: 'about',
       children: [
         { label: 'Contents Xについて', labelEn: 'About Contents X', href: 'about' },
-        { label: '会社概要',          labelEn: 'Company',          href: 'company' }
+        { label: '会社概要',          labelEn: 'Company',          href: 'company' },
+        { label: '代表メッセージ', labelEn: 'Message from the CEO', href: '/message' }
       ]
     },
     // コラム（/column）は 2026-09-29 から導線だけ一時非表示（一覧・記事ページと検索掲載はそのまま公開）。

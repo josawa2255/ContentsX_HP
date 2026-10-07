@@ -153,3 +153,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ax-page *, .ax-page *::before, .ax-page *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
 }
+
+/* Full CEO message, alongside the existing introduction. */
+.cm-message-link { display:inline-flex; align-items:center; min-height:44px; margin-top:16px; color:var(--cx-color-sales); font-weight:700; text-decoration:underline; text-underline-offset:6px; }

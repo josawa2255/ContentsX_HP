@@ -19,7 +19,7 @@
 | 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表メッセージには黒宮代表の実写真、事業紹介とバリュー03には実際の会議写真を掲載。バリュー01は20代前半〜中盤の日本人男女の生成イメージ。バリュー02は提供された実会議写真の人物・会議室を参考に生成した別場面のイメージであり、実際の会議記録ではない |
-| トップメッセージ | `message.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
+| 代表メッセージ | `message.html` | i18n.js, nav.js | `/message`。旧メッセージの導入＋5章を全文掲載。支給ポートレートと会議イメージ、共通ヘッダー・フッター・パンくず。PCは写真の左にタイトル、1024px以下は画像→タイトル→本文。本文は最大760px。独自スクロール演出なし |
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
@@ -526,3 +526,13 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 8. **タグラインの波・点滅を止めたい** → `hero-new.css` の `cxCharRipple` / `cxCharBlink` keyframes
 9. **資料DL制限** → お問い合わせ送信済みか `localStorage.cx_form_submitted` で判定
 10. **bizmangaサブページは別ナビ** → `ContentX/bizmanga/` 配下は `bm-nav.js` を使用（独立BizMangaサイトとは別物）
+
+## 14. 代表メッセージ独立ページ（2026-10-07）
+
+- 正規URL: `/message`。既存の `message.html` を再利用する。新規 `company/` ディレクトリが既存の拡張子なしURL `/company` を遮らない構成。企業案内の共通ナビ、`/about#message` 内の「代表メッセージを全文読む」、TOPICSから遷移する。旧 `/message` の転送を解除し、このページを正規URLとして再公開する。
+- 原稿: Git履歴 `07a92552329b2892871cc984cf46fc3127555387:message.html` の導入＋5章を全文使用。本文・見出し・企業向け/クリエイター向けの説明を改変・要約しない。日英切替でも原文の句読点・文言を保つ。
+- 写真: `material/images/message-2026/portrait.webp`（支給「明るいオフィスのビジネスポートレート.png」、元ファイル `ChatGPT 画像 2026年10月7日 13_59_44-1.png`）、`team-meeting.webp`（支給「ホワイトボード前のチームミーティング.png」、元ファイル `ChatGPT 画像 2026年10月7日 14_00_10.png`）。どちらも1448×1086、支給画像をWebPへ変換。背景や人物の追加・生成・修正は行っていない。支給イメージを実際の会議記録と扱わない。会議画像は第4章の採用・仲間に関する段落の直後。
+- デザイン: `css/message-2026.css`。既存の濃紺・白・Noto Sans JPと共通トークンを使用。本文760px、関連導線はPC3列/SP1列。1024px以下は画像→タイトル→本文。独自のスクロールアニメーション・固定演出は追加しない。
+- 関連導線: `/about`（私たちについて）、`/company`（会社概要）、`/company#officers`（役員紹介。現在公開されている役員情報）、`/`。非表示中の `/leadership` は復元しない。
+- 共通ナビの企業案内に `/message` を追加する。i18n.js → nav.js の順序を維持。
+- 検証: `python3 tests/test_message.py --url http://127.0.0.1:8777`。loopback previewで原稿一致、320〜1920px・境界幅、1.4倍文字拡大、日英往復、タッチナビ、関連導線、画像比率、既存URL、JS無効/動き軽減を確認する。

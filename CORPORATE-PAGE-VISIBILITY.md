@@ -1,15 +1,15 @@
-# 企業案内の公開状態（2026-09-29）
+# 企業案内の公開状態（2026-10-07更新）
 
 ## 公開するページ
 
 - `/about` (`about.html`): 「ContentsXについて」。事業、理念、ミッション・ビジョン、バリュー、代表メッセージを一つのページに掲載する。代表メッセージのアンカーは `#message`。
-- `/company` (`company.html`): 会社概要。
+- `/company` (`company.html`): 会社概要。役員紹介の関連導線は公開済みの `#officers`。
+- `/message` (`message.html`): 代表メッセージ独立ページ。導入＋5章の原稿全文、支給ポートレート・会議イメージを掲載。共通ナビ、TOPICS、`/about#message` 内の全文リンクから遷移。詳細は [SPEC.md §14](SPEC.md#14-代表メッセージ独立ページ2026-10-07)。
 
 ## 一時非表示のページと導線
 
 | 元のページ | 現在の動作 | 非表示にした場所 |
 |---|---|---|
-| `/message` (`message.html`) | `noindex`、`/about#message` に転送 | 共通ナビ `js/nav.js` の「トップメッセージ」、記事フッター `column/*.html` と `tools/templates/c-column.html.tpl` の「代表メッセージ」、サイトマップ |
 | `/leadership` (`leadership.html`) | `noindex`、`/about#message` に転送 | 共通ナビの「役員紹介」、記事フッターの「経営陣」、`faq.html` と `404.html` のリンク、サイトマップ |
 | `/partners` (`partners.html`) | `noindex`、`/company` に転送 | 共通ナビの「主要関連会社」、トップ・会社概要・採用・ニュース・フォーム等の共通フッターの「パートナー」、サイトマップ |
 | `/our-thoughts` (`our-thoughts.html`) | `noindex`、`/about#message` に転送 | `recruit.html` のリンクを `/about#message` に変更 |
@@ -34,8 +34,8 @@
 
 - デザイン: `css/about-2026.css`。サイト共通の `css/sitewide-cohesion.css` にある色・文字・ボタンのトークンを使用。
 - 画像: `material/images/about-2026/*.webp`。参考デザインをもとに生成したイメージ素材。オフィス写真は実在するContents X オフィスではない。価値観セクションの人物も実在社員ではない。
-- 代表写真: 元の `material/images/leadership/kuromiya.webp` はリポジトリに存在しなかったため、現在はブランドの X を仮表示。実際の代表写真を受領したらここだけ差し替える。実在人物のAI生成肖像を代用しない。
-- 代表メッセージ本文: 旧 `message.html` の文章を抜粋して構成。見出しは支給されたデザイン案を採用。
+- 旧実装時の代表写真記録: 元の `material/images/leadership/kuromiya.webp` はリポジトリに存在しなかったため、現在はブランドの X を仮表示。実際の代表写真を受領したらここだけ差し替える。実在人物のAI生成肖像を代用しない。
+- `/about#message` は抜粋版を維持し、全文へのリンクを追加。独立ページには旧 `message.html` の全文を改変せず掲載する。
 
 ## 画像生成記録
 
