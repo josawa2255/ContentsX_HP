@@ -56,13 +56,18 @@ with sync_playwright() as p:
     assert content(page)==EXPECTED, 'Original manuscript changed or truncated'
     assert page.locator('.cm-chapter').count()==4
     assert page.locator('.cm-chapter h2').all_text_contents()==['01 原点とこれまで','02 全国で見てきた光景','03 Contents Xをつくった理由','04 これから']
-    assert page.locator('.cm-message [data-cm-reveal]').count()==0
-    assert page.locator('[data-cm-reveal]').count()==2
-    assert page.locator('.cm-team img').get_attribute('src')=='/material/images/about-2026/team-meeting-overview.webp'
+    assert page.locator('.cm-message [data-cm-reveal]:not(figure)').count()==0
+    assert page.locator('[data-cm-reveal]').count()==4
+    assert page.locator('.cm-team img').get_attribute('src')=='/material/images/message-2026/team-meeting.webp'
     assert page.locator('script[src*=wp]').count()==0
     assert page.locator('h1').text_content()==HEADLINE
     assert page.locator('.cm-signature p').all_text_contents()==['Contents X株式会社','代表取締役　黒宮 大貴']
-    assert page.locator('.cm-chapter').first.evaluate('(e)=>e.getBoundingClientRect().width')==720
+    assert page.locator('.cm-origin').evaluate('(e)=>e.getBoundingClientRect().width')==1240
+    assert page.locator('.cm-origin > p').first.evaluate('(e)=>e.getBoundingClientRect().width')<=720
+    assert page.locator('.cm-related-links a img').count()==3
+    assert page.locator('#cm-related-title').text_content()=='RELATED CONTENTS'
+    assert 650<=page.locator('.cm-hero').evaluate('(e)=>e.getBoundingClientRect().height')<=720
+    assert page.locator('.cm-hero-copy').evaluate('(e)=>Math.abs(e.getBoundingClientRect().width/document.querySelector(".cm-hero").getBoundingClientRect().width-.45)<.001')
     assert page.locator('.cm-team').evaluate('(e)=>e.previousElementSibling.textContent.trim().endsWith("全国どこへ行っても、同じ光景がありました。") && e.nextElementSibling.querySelector("p").textContent.trim().startsWith("伝え方や売り方")')
     assert page.locator('link[rel=canonical]').get_attribute('href')=='https://contentsx.jp'+PATH
     assert page.locator('script[src$="i18n.js"]').evaluate('(e)=>e.compareDocumentPosition(document.querySelector("script[src$=\\\"nav.js\\\"]")) & Node.DOCUMENT_POSITION_FOLLOWING')
@@ -127,9 +132,9 @@ with sync_playwright() as p:
     phone.locator('#nav a[href="/message"]').tap(); phone.wait_for_url(BASE+PATH)
     phone.locator('#hamburger').tap(); phone.locator('#nav a[href="contact"]').tap(); phone.wait_for_url(BASE+'/contact')
     touch.close()
-    # Only the Hero reveals; article and meeting photo are readable before any scroll.
+    # Hero and photos reveal once; manuscript and chapter headings never hide.
     load(page); page.set_viewport_size({'width':390,'height':844}); load(page)
-    static_content='.cm-chapter,.cm-team'
+    static_content='.cm-chapter,.cm-chapter > p,.cm-chapter h2 > span'
     assert page.locator(static_content).evaluate_all('(es)=>es.every(e=>getComputedStyle(e).opacity==="1" && getComputedStyle(e).transform==="none" && getComputedStyle(e).transitionDuration==="0s")')
     for item in page.locator('[data-cm-reveal]').all():
         item.scroll_into_view_if_needed()
@@ -156,7 +161,7 @@ with sync_playwright() as p:
     assert not errors, errors
     assert not missing, missing
     assert not cms_requests, cms_requests
-    report={'widths':WIDTHS,'paragraphs':len(EXPECTED),'manuscript':'unchanged','enlargement':'1.4x pass','motion':'Hero only; article always visible; live reduced-motion pass','static_page':'no WordPress requests','language_roundtrip':'pass','touch_navigation':'pass','assets':'pass','console':'pass','no_js_reduced_motion':'pass'}
+    report={'widths':WIDTHS,'paragraphs':len(EXPECTED),'manuscript':'unchanged','enlargement':'1.4x pass','motion':'Hero and photos only; manuscript always visible; live reduced-motion pass','static_page':'no WordPress requests','language_roundtrip':'pass','touch_navigation':'pass','assets':'pass','console':'pass','no_js_reduced_motion':'pass'}
     (OUT/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
     print(json.dumps(report,ensure_ascii=False))
     context.close(); browser.close()

@@ -53,7 +53,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 | サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, services-ui.js, service-media.js, sitewide-motion.js（`tools/build-services.py` で生成。仕様は SPEC.md §3） |
 | 会社概要 | company.html | script.js, dl-modal.js |
 | ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |
-| 代表メッセージ | message.html | i18n.js, nav.js（`/message`。全文、支給画像、関連導線。SPEC.md §14） |
+| 代表メッセージ | message.html | i18n.js, nav.js, message-2026.js（`/message`。指定7段落・4章、PC/SPレイアウト、支給画像、関連導線。SPEC.md §14） |
 | 役員紹介（非表示） | leadership.html | `/about#message` へ転送 |
 | 関連会社（非表示） | partners.html | `/company` へ転送 |
 | 私たちの思い（旧URL） | our-thoughts.html | `/about#message` へ転送 |

@@ -1,7 +1,7 @@
-/* Hero-only, once-only reveals. The article is always visible and stationary. */
+/* Once-only hero and photo reveals. Manuscript and chapter headings stay visible. */
 (function () {
   'use strict';
-  var items = Array.from(document.querySelectorAll('.cm-hero [data-cm-reveal]'));
+  var items = Array.from(document.querySelectorAll('[data-cm-reveal]'));
   var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var observer;
 
