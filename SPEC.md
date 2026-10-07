@@ -159,6 +159,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - データ（`js/home-topics.js`）: `GET /contentsx/v1/topics`（WPプラグイン「Contents X ＞ TOPICS」、`contentsx-cms/contentsx-topics.php`）。表示ONのみ、PICK UP を先頭に、あとは管理画面の並び順。リンクは `/` 始まりのサイト内パスか http(s)、画像は `cms.contentsx.jp` / `contentsx.jp` / `i.ytimg.com` の https かサイト内パスのみ、日付は実在する日付のみ表示。文字は textContent。
 - 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
 - TOPICSはNEWSと別のセクション。代表メッセージ本文は独立ページ `/message` へ接続（§14参照）。
+- WPプラグインのアップロード前確認（2026-10-07）: TOPICSの `contentsx-topics.php` と `contentsx-cms.php` の読み込み行はプラグインのmainに取り込み済み。お名前.comへ `contentsx-cms.php` をアップロードする前に、必ずプラグイン側の最新mainを取り込み、TOPICSの読み込み行と参照先ファイルがそろっていることを確認する。古い作業ブランチのファイルで上書きしない。アップロード対象PHPは `php -l` で構文チェックする。
 - CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
 
 ### 3.0 サービスページ生成（Issue #20）
