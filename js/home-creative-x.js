@@ -20,7 +20,7 @@
   var KIND = {
     manga: { label: 'MANGA', name: 'ビズマンガ' },
     bizanime: { label: 'ANIME', name: 'ビズアニメ', sub: 'オリジナルアニメで、ブランドの世界観やメッセージを鮮やかに。' },
-    bizvideo: { label: 'VIDEO', name: 'ビズ動画', sub: '企業の想いや取り組みを、高品質な映像で印象的に届けます。' }
+    bizvideo: { label: 'VIDEO', name: 'ビズビデオ', sub: '企業の想いや取り組みを、高品質な映像で印象的に届けます。' }
   };
 
   function getJSON(path) {
