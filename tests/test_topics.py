@@ -115,7 +115,7 @@ with sync_playwright() as p:
     load(page)
     to_section(page)
     cards = page.locator('.cxtp-card')
-    assert cards.nth(0).get_attribute('href') == '/about#message' and cards.nth(0).get_attribute('target') is None
+    assert cards.nth(0).get_attribute('href') == '/message' and cards.nth(0).get_attribute('target') is None
     for i in [1, 2]:
         assert cards.nth(i).get_attribute('target') == '_blank' and cards.nth(i).get_attribute('rel') == 'noopener'
     # Hover: image 1.02x, arrow 3px, title accent.
@@ -123,6 +123,24 @@ with sync_playwright() as p:
     page.wait_for_timeout(450)
     assert cards.nth(0).locator('img').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1.02, 0, 0, 1.02, 0, 0)'
     assert cards.nth(0).locator('.cxtp-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 3, 0)'
+    cards.nth(0).click()
+    page.wait_for_url(args.url.rstrip('/') + '/message')
+    assert page.locator('h1').inner_text() == '代表メッセージ'
+    assert page.locator('.cm-chapter').count() == 6
+    page.close()
+
+    # Only known same-site CEO message targets migrate; queries and other links survive.
+    page = browser.new_page(viewport={'width':1440, 'height':900})
+    cases = [
+        ('MESSAGE', '/about?lang=en#message', '/message?lang=en'),
+        ('MESSAGE', 'https://contentsx.jp/about#message', '/message'),
+        ('MESSAGE', '/message.html?lang=en', '/message?lang=en'),
+        ('MESSAGE', 'https://example.com/about#message', 'https://example.com/about#message'),
+        ('MESSAGE', '/about#values', '/about#values'),
+        ('PRESS', '/about#message', '/about#message'),
+    ]
+    load(page, topics=[dict(BASE[0], type=kind, title='target'+str(i), url=url) for i,(kind,url,_) in enumerate(cases)])
+    assert page.locator('.cxtp-card').evaluate_all('(es)=>es.map(e=>e.getAttribute("href"))') == [c[2] for c in cases]
     page.close()
 
     # More than three topics: arrows scroll one card at a time.
@@ -157,7 +175,10 @@ with sync_playwright() as p:
     to_section(page)
     assert not page.locator('#topics').evaluate("e=>e.classList.contains('cxtp-ready')")
     assert page.locator('.cxtp-card').count() == 3
-    assert page.locator('.cxtp-card').nth(0).get_attribute('href') == '/about#message'
+    assert page.locator('.cxtp-card').nth(0).get_attribute('href') == '/message'
+    page.locator('.cxtp-card').nth(0).click()
+    page.wait_for_url(args.url.rstrip('/') + '/message')
+    assert page.locator('.cm-chapter').count() == 6
     page.close()
 
     # Laptops: the cards stay inside one screen; PC snap includes TOPICS.

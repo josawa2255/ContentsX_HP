@@ -536,3 +536,9 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - 関連導線: `/about`（私たちについて）、`/company`（会社概要）、`/company#officers`（役員紹介。現在公開されている役員情報）、`/`。非表示中の `/leadership` は復元しない。
 - 共通ナビの企業案内に `/message` を追加する。i18n.js → nav.js の順序を維持。
 - 検証: `python3 tests/test_message.py --url http://127.0.0.1:8777`。loopback previewで原稿一致、320〜1920px・境界幅、1.4倍文字拡大、日英往復、タッチナビ、関連導線、画像比率、既存URL、JS無効/動き軽減を確認する。
+
+### 14.1 TOPICSとの接続
+
+- TOPICS制作PR #78を土台にする。静的フォールバックカードの代表メッセージは `/message`。
+- `js/home-topics.js` は WordPress の `type: MESSAGE` かつ既知の自サイトURL（`/about#message`・`/message`・`/message.html`）だけを `/message` に揃える。言語等のクエリを保持し、外部サイトや別のMESSAGEリンクは変更しない。本番WPの書換えは不要。
+- `tests/test_topics.py` の旧リンクfixtureを維持して新しい行き先を検証する。静的・WP正常・取得失敗・JS無効の各経路と実クリックを確認する。

@@ -44,6 +44,16 @@
 
   function card(t) {
     var link = safeLink(t.url);
+    /* The independent CEO message replaces this topic's former about-page anchor.
+       Keep WordPress content untouched; only migrate known same-site legacy targets. */
+    if (link && text(t.type).toUpperCase() === 'MESSAGE') {
+      var target = new URL(link.href, location.origin);
+      if ([location.origin, 'https://contentsx.jp', 'https://www.contentsx.jp'].indexOf(target.origin) !== -1 &&
+          ((target.pathname === '/about' && target.hash === '#message') ||
+           target.pathname === '/message' || target.pathname === '/message.html')) {
+        link = { href: '/message' + target.search, external: false };
+      }
+    }
     var title = text(t.title);
     if (!link || !title) return null;
     var li = document.createElement('li');
