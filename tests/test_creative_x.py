@@ -89,7 +89,7 @@ with sync_playwright() as p:
         # 2026-10-04 design: no works column; three service cards under PICK UP.
         assert page.locator('[data-cxcx-works]').count() == 0
         cards = page.locator('.cxcx-card-name').all_inner_texts()
-        assert cards == ['ビズマンガ', 'ビズアニメ', 'ビズ動画'], cards
+        assert cards == ['ビズマンガ', 'ビズアニメ', 'ビズビデオ'], cards
         r = card_rects(page)
         if width > 768:
             assert abs(r[0]['top'] - r[2]['top']) < 1 and r[1]['left'] > r[0]['right'], 'PC/tablet: cards in one row'
