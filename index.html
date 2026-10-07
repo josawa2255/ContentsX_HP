@@ -215,6 +215,7 @@
   <link rel="stylesheet" href="/css/home-creative-x.css">
   <link rel="stylesheet" href="/css/home-sales-x.css">
   <link rel="stylesheet" href="/css/home-topics.css">
+  <link rel="stylesheet" href="/css/home-news.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff">
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
@@ -499,31 +500,44 @@
       </div>
     </section>
 
-  <!-- ===== ニュース ===== -->
-  <section class="news-section cxsb-section cxsb-join-prev" id="news">
+  <!-- ===== ニュース（最新4件をWordPressから取得。下の4件はJS無効・取得失敗時の表示） ===== -->
+  <section class="news-section cxsb-section cxsb-join-prev" id="news" aria-labelledby="cxnw-title">
     <div class="cxsb-backdrop" aria-hidden="true"></div>
     <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>NEWS</div>
     <div class="container">
-      <div class="news-header" data-cxh-reveal>
-        <h2 class="news-heading">News</h2>
-        <a href="news" class="news-more" id="newsMore" style="display:none;" data-ja="一覧を見る →" data-en="View All →">一覧を見る →</a>
+      <div class="news-header cxnw-head">
+        <h2 class="cxnw-visually-hidden" id="cxnw-title" data-ja="ニュース" data-en="News">ニュース</h2>
+        <a href="/news" class="news-more cxnw-more" id="newsMore"><span data-ja="一覧を見る" data-en="View all">一覧を見る</span><span class="cxnw-more-arrow" aria-hidden="true">→</span></a>
       </div>
-      <ul class="news-list" data-cxh-reveal>
-        <li class="news-item">
-          <time class="news-date">2026.03.27</time>
-          <span class="news-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
-          <a href="news-detail?id=462" class="news-link" data-ja="株式会社DMソリューションと業務提携いたしました" data-en="Strategic Partnership with DM Solution Inc.">株式会社DMソリューションと業務提携いたしました</a>
-        </li>
-        <li class="news-item">
-          <time class="news-date">2026.03.21</time>
-          <span class="news-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
-          <a href="news-detail?id=15" class="news-link" data-ja="ビジネスマンガ制作サービス「ビズマンガ」の公式サイトをリニューアルしました" data-en="Corporate website has been renewed">ビジネスマンガ制作サービス「ビズマンガ」の公式サイトをリニューアルしました</a>
-        </li>
-        <li class="news-item">
-          <time class="news-date">2026.03.15</time>
-          <span class="news-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
-          <a href="news-detail?id=460" class="news-link" data-ja="株式会社KIRINZと業務提携いたしました" data-en="Strategic Partnership with KIRINZ Inc.">株式会社KIRINZと業務提携いたしました</a>
-        </li>
+      <ul class="news-list cxnw-list" data-cxh-reveal>
+        <li class="cxnw-item"><a class="cxnw-row" href="/news-detail?id=1439">
+          <span class="cxnw-thumb"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/10/news-asobisystem-alliance-handshake-01-768x512.webp" width="160" height="100" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxnw-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
+          <time class="cxnw-date" datetime="2026-10-02">2026.10.02</time>
+          <span class="cxnw-title" data-ja="アソビシステム株式会社と資本業務提携を締結しました" data-en="Capital and Business Alliance with ASOBISYSTEM Co., Ltd.">アソビシステム株式会社と資本業務提携を締結しました</span>
+          <span class="cxnw-arrow" aria-hidden="true">→</span>
+        </a></li>
+        <li class="cxnw-item"><a class="cxnw-row" href="/news-detail?id=1441">
+          <span class="cxnw-thumb"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/10/news-kirinz-alliance-keyvisual-768x575.webp" width="160" height="100" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxnw-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
+          <time class="cxnw-date" datetime="2026-08-31">2026.08.31</time>
+          <span class="cxnw-title" data-ja="株式会社KIRINZと資本業務提携を締結しました" data-en="Capital and Business Alliance with KIRINZ Inc.">株式会社KIRINZと資本業務提携を締結しました</span>
+          <span class="cxnw-arrow" aria-hidden="true">→</span>
+        </a></li>
+        <li class="cxnw-item"><a class="cxnw-row" href="/news-detail?id=1234">
+          <span class="cxnw-thumb"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-01-768x1086.webp" width="160" height="100" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxnw-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
+          <time class="cxnw-date" datetime="2026-08-05">2026.08.05</time>
+          <span class="cxnw-title" data-ja="「マクニカAI研修」を公開しました" data-en="New manga &quot;Macnica AI Training&quot; released">「マクニカAI研修」を公開しました</span>
+          <span class="cxnw-arrow" aria-hidden="true">→</span>
+        </a></li>
+        <li class="cxnw-item"><a class="cxnw-row" href="/news-detail?id=1238">
+          <span class="cxnw-thumb"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/08/e382a2e382bde38393e68ea1e794a8ae6a188_20260728_compressed-p01-768x960.webp" width="160" height="100" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxnw-tag" data-ja="お知らせ" data-en="News">お知らせ</span>
+          <time class="cxnw-date" datetime="2026-08-05">2026.08.05</time>
+          <span class="cxnw-title" data-ja="「アソビシステム採用漫画(総合職)」を公開しました" data-en="New manga &quot;ASOBI SYSTEM Recruiting&quot; released">「アソビシステム採用漫画(総合職)」を公開しました</span>
+          <span class="cxnw-arrow" aria-hidden="true">→</span>
+        </a></li>
       </ul>
     </div>
   </section>

@@ -93,7 +93,7 @@ with sync_playwright() as p:
                 scroll(page, about_complete(page) if selector == '#home-about' else top_of(page, selector) - 64, 1500)
                 page.screenshot(path=str(out / f'{width}-{selector[1:]}.png'))
         # Body/UI text expansion (Android scaling); the ornamental labels stay fixed.
-        page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .news-link,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
+        page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .cxnw-title,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert_sections(page, width)
         if width <= 768:
@@ -153,14 +153,15 @@ with sync_playwright() as p:
             assert fit[key] <= h - 64, (w, h, key, fit)
         page.close()
 
-    # Hover feedback on news rows survives the entrance animation.
+    # NEWS rows (Issue #85 redesign): quiet hover — arrow 4px, no row movement.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)
     scroll(page, top_of(page, '#news') - 64, 1600)
-    row = page.locator('#news .news-item').first
+    row = page.locator('#news .cxnw-row').first
     row.hover()
-    page.wait_for_timeout(500)
-    assert 'matrix(1, 0, 0, 1, 4, 0)' == row.evaluate('e=>getComputedStyle(e).transform')
+    page.wait_for_timeout(400)
+    assert row.locator('.cxnw-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
+    assert row.evaluate('e=>getComputedStyle(e).transform') == 'none'
     page.close()
 
     # Reduced motion: everything visible without entrance motion.

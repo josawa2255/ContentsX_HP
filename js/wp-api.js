@@ -87,7 +87,7 @@
   }
 
   /* ── ニュース DOM を動的に生成 ── */
-  const NEWS_HOME_LIMIT = 5;
+  const NEWS_HOME_LIMIT = 4;
 
   async function loadNews() {
     const data = await apiFetch('/news?site=contentsx&per_page=50');
@@ -104,8 +104,81 @@
     const isHome = !document.body.hasAttribute('data-page-news');
     const displayData = isHome ? data.slice(0, NEWS_HOME_LIMIT) : data;
 
-    while (list.firstChild) list.removeChild(list.firstChild);
     const FALLBACK_THUMB = 'https://contentsx.jp/material/images/og/og-index.webp';
+
+    /* トップ（2026-10-07 Issue #85）: 行全体を1つのリンクにした簡素な一覧。
+       サムネイル / カテゴリ / 日付 / タイトル / 矢印。/news ページは下の従来の描画のまま。 */
+    if (isHome) {
+      const rows = [];
+      displayData.forEach(item => {
+        // 外部URLは http(s) か / 始まりのサイト内パスだけ通す（javascript: 等は詳細ページへ）
+        const safeUrl = /^(https?:\/\/|\/(?!\/))/i.test(item.url || '') ? item.url : '';
+        const hasLink = safeUrl || (item.has_detail && item.id);
+        const li = document.createElement('li');
+        li.className = 'cxnw-item';
+        const row = document.createElement(hasLink ? 'a' : 'div');
+        row.className = 'cxnw-row';
+        if (hasLink) row.href = safeUrl || ('/news-detail?id=' + encodeURIComponent(item.id));
+
+        const thumb = document.createElement('span');
+        thumb.className = 'cxnw-thumb';
+        const img = document.createElement('img');
+        img.src = item.thumbnail || FALLBACK_THUMB;
+        img.alt = '';
+        img.width = 160; img.height = 100;
+        img.loading = 'lazy'; img.decoding = 'async';
+        const mode = item.image_mode_top || item.image_mode || 'contain';
+        if (mode === 'crop' && item.thumbnail) {
+          // crop: 枠を埋め、管理画面で決めたクロップ中心を枠の中央に置く
+          const w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
+          const h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
+          const x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
+          const y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
+          img.style.objectFit = 'cover';
+          img.style.objectPosition = Math.max(0, Math.min(100, x + w / 2)).toFixed(2) + '% ' + Math.max(0, Math.min(100, y + h / 2)).toFixed(2) + '%';
+        }
+        img.onerror = function () { this.onerror = null; this.src = FALLBACK_THUMB; };
+        thumb.appendChild(img);
+        row.appendChild(thumb);
+
+        const tag = document.createElement('span');
+        tag.className = 'cxnw-tag';
+        tag.setAttribute('data-ja', item.tag_ja || '');
+        tag.setAttribute('data-en', item.tag_en || item.tag_ja || '');
+        tag.textContent = (lang === 'en' ? (item.tag_en || item.tag_ja) : item.tag_ja) || '';
+        if (tag.textContent) row.appendChild(tag);
+
+        const time = document.createElement('time');
+        time.className = 'cxnw-date';
+        time.textContent = item.date || '';
+        if (/^\d{4}\.\d{2}\.\d{2}$/.test(item.date || '')) time.dateTime = item.date.replace(/\./g, '-');
+        row.appendChild(time);
+
+        const title = document.createElement('span');
+        title.className = 'cxnw-title';
+        title.setAttribute('data-ja', item.title_ja || '');
+        title.setAttribute('data-en', item.title_en || item.title_ja || '');
+        title.textContent = lang === 'en' ? (item.title_en || item.title_ja) : item.title_ja;
+        row.appendChild(title);
+
+        const arrow = document.createElement('span');
+        arrow.className = 'cxnw-arrow';
+        arrow.setAttribute('aria-hidden', 'true');
+        arrow.textContent = '→';
+        row.appendChild(arrow);
+
+        li.appendChild(row);
+        rows.push(li);
+      });
+      if (rows.length) {
+        while (list.firstChild) list.removeChild(list.firstChild);
+        rows.forEach(li => list.appendChild(li));
+      }
+      console.log(`[WP-API] ニュース(トップ): ${rows.length}/${data.length}件 rendered`);
+      return;
+    }
+
+    while (list.firstChild) list.removeChild(list.firstChild);
 
     displayData.forEach(item => {
       const li = document.createElement('li');

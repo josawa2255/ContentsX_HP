@@ -164,6 +164,15 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - NEWS セクションと代表メッセージ本文ページは、このプロジェクトでは作らない（代表メッセージのリンク先は既存の `/about#message`）。
 - CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
 
+### NEWS セクション（2026-10-07 ブラッシュアップ・Issue #85）
+
+- 方針: 情報を確認する場所なので、演出は控えて読みやすさ・一覧性を優先。目指す形は「巨大な薄い NEWS ＋ 右上の一覧リンク ＋ シンプルな4件の一覧」。共通背景は TOPICS から継ぎ目なく続く（`.cxsb-join-prev`）。
+- 見出し: 巨大な薄い `NEWS`（`.cxsb-label`）は残し、黒文字の「News」は表示しない（読み上げ用に `#cxnw-title`「ニュース」を視覚的に隠して残す）。「一覧を見る →」（`/news`、常に表示）は一覧の右上。
+- 一覧: 最新4件（`wp-api.js` の `NEWS_HOME_LIMIT = 4`）。白い大枠は枠線・影を弱めた半透明。行は「サムネイル / カテゴリ / 日付 / タイトル / 矢印」の順で、行全体が1つのリンク（`a.cxnw-row`）。全行同じ高さ（`grid-auto-rows:1fr`、区切り線は行の内側に描く）、サムネイルは全行同じ 8:5 の枠に `contain`（WPの crop 指定がある画像は cover＋中心位置）。タイトルは濃紺・太字で最も強く、日付はやや薄く、カテゴリは小さな枠付きラベル。PC は横一列（2行まで）、1024px以下はサムネイル右に「カテゴリ・日付」→タイトル、768px以下はサムネイル88px・タイトル3行まで・行の高さ96px以上。
+- 動き: 一覧全体が画面に入ったときに軽く fade-up（`data-cxh-reveal`）するだけ。hover は行の背景がごく薄く変わり、矢印が4px右、サムネイル1.02倍。行ごとの時間差アニメーションと行の横移動は廃止。
+- 描画: `js/wp-api.js` の `loadNews()` が、トップ（`body` に `data-page-news` が無いとき）だけ上の行を描く。`/news` ページは従来の描画のまま。WP の `url` は http(s) か `/` 始まりだけリンクにし、それ以外は詳細ページ `/news-detail?id=` へ。`index.html` の4件は JS無効・取得失敗時の表示（2026-10-07 時点の最新4件）。
+- CSS は `css/home-news.css`（旧 NEWS 指定は `home-sections.css` から削除）。検証は `python3 tests/test_news.py --url <拡張子なしURL対応のプレビュー> --artifacts <output>`（16幅、4行同じ高さ・同じサムネイル、表示順、文字の強弱、右上リンク、SPの並び、hover、不正データ、取得失敗・JS無効、/news が従来どおり）。
+
 ### 3.0 サービスページ生成（Issue #20）
 
 - `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、旧個別URLの転送ページ7件、共通デザイントークンCSS、サイトマップを生成する。`href` は旧URL、`destination` は現在の遷移先で、生成ページは後者を使う。個別詳細ページは公開しない。サイトマップには一覧と事業群2ページだけを載せる。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
