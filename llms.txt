@@ -84,6 +84,7 @@ Contents X 株式会社（ContentsX／コンテンツエックス）は、2026�
 ## 主要ページ
 
 - [トップページ](https://contentsx.jp/) — 事業概要、新作情報、ギャラリー
+- [代表メッセージ](https://contentsx.jp/message) — 黒宮大貴の創業背景・想い・会社の方向性を全文掲載
 - [会社概要](https://contentsx.jp/company) — 代表挨拶、沿革、拠点情報
 - [ContentsXについて](https://contentsx.jp/about) — 事業、理念、ミッション・ビジョン、バリュー、代表メッセージ
 - [採用情報](https://contentsx.jp/recruit) — 漫画家 / マンガ制作担当 / 営業 募集中

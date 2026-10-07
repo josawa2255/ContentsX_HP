@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <!-- ===== 静的ページ ===== -->
+  <url><loc>https://contentsx.jp/message</loc><lastmod>2026-10-07</lastmod></url>
 
   <!-- Chrome extensions (OAuth consent is intentionally excluded) -->
   <url><loc>https://contentsx.jp/extensions/</loc></url>
