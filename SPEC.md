@@ -45,6 +45,14 @@
 - OAuthの公開前検証は `?authorization_id=test` 付きのURLで「TabLabo にログイン」または「この接続の情報を確認できませんでした」の表示を確認する。ローカル検証では認証SDKをスタブ化し、Googleログイン・トークン発行・許可/拒否の本番書き込みを行わない。
 - 再検証用スクリプト: `python3 tests/verify_extensions_layout.py --url http://127.0.0.1:8769` と `python3 tests/verify_tablabo_oauth.py --url http://127.0.0.1:8769`（Python PlaywrightとGoogle Chromeが必要）。先に `python3 tools/preview-extensions.py --port 8769` で、拡張子なしの `.html` 解決に対応したローカルサーバーを起動する。OAuth検証には提供HTMLのSHA-256一致チェックを含むため、原稿を更新した場合は担当から受け取った版との一致を確認してハッシュも更新する。PR確認用の画像は `tests/screenshots/extensions/`。
 
+### 1.2 TabLabo規約・ポリシーの原稿更新（Issue #71）
+
+- 2026年10月7日、TabLaboのmain（コミット `715bf521c0940b9d118acbaa6c56269139fcc2fe`）の `docs/store/terms.md`・`docs/store/privacy-policy.md` から本文を取得して更新。作業ツリーの古い原稿ではなく、依頼元が指定したmainのコミットを参照する。
+- 利用規約の第7条に無料プラン・月額300円の有料プラン・1人あたり月額200円の組織プラン、支払い・解約等を反映。料金条項は11項目と第1項内の2つの箇条書きの階層を保持する。
+- プライバシーポリシーにURLごとのメモ・作業の栞・候補トレイ・共有リンク・AI連携の記録・個人/組織プランの契約情報・ピン留め、端末内の起動日時とタブID、Stripeへの委託を反映。
+- 同日内の差し替えのため、制定日・最終更新日は2026年10月7日を維持。草案・編集者向け注記は除外し、日本語の本文を保持。ピン留めの行は依頼に従って含める。
+- 一覧・紹介・OAuth同意画面は変更しない。特定商取引法に基づく表記はStripeの準備後に依頼元から別途依頼されるため、本作業では追加しない。
+
 ## 2. URL パラメータ
 
 ### 2.1 プラン事前選択（BizMangaと共通）
