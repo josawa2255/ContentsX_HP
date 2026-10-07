@@ -16,8 +16,9 @@ args = parser.parse_args()
 out = Path(args.artifacts)
 out.mkdir(parents=True, exist_ok=True)
 widths = [320, 375, 390, 412, 448, 480, 481, 640, 767, 768, 769, 1024, 1025, 1280, 1440, 1920]
-SECTIONS = ['#home-about', '#about', '#news']
-LABELS = {'#home-about': 'ABOUT', '#about': 'SERVICE', '#news': 'NEWS'}
+# SERVICE (#about) is hidden since Issue #85; TOPICS carries the shared backdrop instead.
+SECTIONS = ['#home-about', '#topics', '#news']
+LABELS = {'#home-about': 'ABOUT', '#topics': 'TOPICS', '#news': 'NEWS'}
 
 
 def load(page, url):
@@ -73,7 +74,7 @@ with sync_playwright() as p:
         else:
             assert snap in ('none', ''), f'Snap must be off at {width}px: {snap}'
         # Each backdrop stays pinned to the viewport while its section scrolls.
-        for selector in ['#about', '#news']:
+        for selector in ['#topics', '#news']:
             scroll(page, top_of(page, selector) - 64, 1600)
             assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
             scroll(page, top_of(page, selector) - 64 + 200, 300)
@@ -106,15 +107,14 @@ with sync_playwright() as p:
     # PC snap: stopping just above a section edge settles on the section top (or ABOUT completion).
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)
-    for name, target in [('ABOUT', about_complete(page)), ('#about', top_of(page, '#about') - 64), ('#news', top_of(page, '#news') - 64)]:
+    for name, target in [('ABOUT', about_complete(page)), ('#topics', top_of(page, '#topics') - 64), ('#news', top_of(page, '#news') - 64)]:
         scroll(page, target - 120, 1500)
         assert abs(page.evaluate('scrollY') - target) <= 2, (name, page.evaluate('scrollY'), target)
     scroll(page, about_complete(page), 1500)
     assert page.locator('.cxha-office').evaluate('(e)=>getComputedStyle(e).opacity') == '1'
-    # Free scrolling in the middle of a tall section is not pulled back.
-    middle = top_of(page, '#about') - 64 + 700
-    scroll(page, middle, 1500)
-    assert abs(page.evaluate('scrollY') - middle) <= 2
+    # (The tall-section free-scroll check used SERVICE, the only section taller than a PC screen;
+    #  it is hidden since Issue #85.)
+    assert page.locator('#about').evaluate('e=>e.hidden && getComputedStyle(e).display === "none"')
     page.close()
 
     # ABOUT (Issue #63): Purpose / Company links and the two business cards use existing URLs.
@@ -166,7 +166,7 @@ with sync_playwright() as p:
     # Reduced motion: everything visible without entrance motion.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page, args.url)
-    for selector in ['#about', '#news']:
+    for selector in ['#topics', '#news']:
         assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
     assert page.locator('#news .news-list').evaluate('e=>getComputedStyle(e).opacity') == '1'
     page.close()

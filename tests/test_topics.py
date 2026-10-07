@@ -65,12 +65,13 @@ with sync_playwright() as p:
         page.on('pageerror', lambda e: errors.append(str(e)))
         load(page)
         assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Horizontal overflow at {width}px'
-        # Between SERVICE and NEWS, continuing SERVICE's backdrop without a seam.
-        order = page.evaluate("['#about','#topics','#news'].map(s=>document.querySelector(s).getBoundingClientRect().top+scrollY)")
+        # After Sales X (SERVICE is hidden since Issue #85) and before NEWS, on the same backdrop without a seam.
+        assert page.locator('#about').evaluate('e=>e.hidden')
+        order = page.evaluate("['#sales-x','#topics','#news'].map(s=>document.querySelector(s).getBoundingClientRect().top+scrollY)")
         assert order == sorted(order), order
         assert page.locator('#topics > .cxsb-backdrop').evaluate('e=>getComputedStyle(e).position') == 'fixed'
         assert page.locator('#topics').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
-        assert page.locator('#about').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        assert page.locator('#sales-x').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
         to_section(page)
         assert page.locator('#topics').evaluate("e=>e.classList.contains('cxtp-ready')")
         assert page.locator('#topics > .cxsb-label').inner_text().strip() == 'TOPICS'
