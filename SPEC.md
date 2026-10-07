@@ -71,9 +71,10 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・TOPICS・Newsは共通背景。ABOUT〜TOPICS は継ぎ目なく連続） → Creative X → Sales X →（サービス一覧＝非表示中）→ TOPICS → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・TOPICS・Newsは共通背景。ABOUT〜NEWS は継ぎ目なく連続） → Creative X → Sales X →（サービス一覧＝非表示中）→ TOPICS → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 2026-10-07（Issue #83）: コンセプト（Sales X × Creative X = Contents X）・Sales X / Creative X の2枚カード・「売上が生まれるまでの流れ」を削除。ABOUT / Creative X / Sales X と内容が重なり、共通背景を白いブロックで途切れさせていたため。サービス同士のつながり（接点 → 価値 → 顧客情報）はサービス一覧ページ `/services/` で伝える。`css/home-2026.css` の `.cxh-concept` / `.cxh-pillar*` / `.cxh-mark` / `.cxh-flow*` の指定は未使用のまま残っている（戻す場合に備えて削除していない）。
 - 2026-10-07（Issue #85）: サービス一覧（SERVICE、`#about`「2つの事業で、企業の成長を支えます。」）を `hidden` 属性で一時非表示（マークアップは `TEMP-HIDDEN SERVICE` コメント付きで残置）。Creative X / Sales X と内容が重なるため。後で「Contents X のまとめ」セクションとして作り直す予定。戻すときは `hidden` を外す（Sales X → SERVICE → TOPICS の `cxsb-join-*` はそのまま使える）。下層9ページの下部メニュー「サービス」は `./#about` から `/services/` に付け替えた。「制作スタジオ・IP開発（YOAKE STUDIO）」は現在トップに出ていない。
+- 2026-10-07（Issue #85）: 会社紹介「Contents Xとは？ 法人の営業と売上づくりを支援する会社です。」（`#company-intro`）を削除。ABOUT の会社説明・Purpose（/about）・Company（/company）と重なるため。TOPICS → NEWS を共通背景で継ぎ目なくつなぐ。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。

@@ -72,6 +72,11 @@ with sync_playwright() as p:
         assert page.locator('#topics > .cxsb-backdrop').evaluate('e=>getComputedStyle(e).position') == 'fixed'
         assert page.locator('#topics').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
         assert page.locator('#sales-x').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        # Issue #85: the company intro is removed; TOPICS runs straight into NEWS on the same backdrop.
+        assert page.locator('#company-intro').count() == 0
+        assert page.evaluate("document.querySelector('#topics').nextElementSibling.id") == 'news'
+        assert page.locator('#topics').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        assert page.locator('#news').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
         to_section(page)
         assert page.locator('#topics').evaluate("e=>e.classList.contains('cxtp-ready')")
         assert page.locator('#topics > .cxsb-label').inner_text().strip() == 'TOPICS'
