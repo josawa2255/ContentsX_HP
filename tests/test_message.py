@@ -15,7 +15,7 @@ BASE = args.url.rstrip('/')
 assert urlsplit(BASE).hostname in ('127.0.0.1', 'localhost', '::1'), 'Local preview only'
 OUT = Path(args.artifacts); OUT.mkdir(parents=True, exist_ok=True)
 PATH = '/message'
-WIDTHS = [320,375,390,412,448,480,481,640,767,768,769,1023,1024,1025,1280,1440,1920]
+WIDTHS = [320,375,390,412,448,480,481,640,767,768,769,1023,1024,1025,1199,1200,1201,1280,1440,1920]
 # Exact user-supplied copy, including punctuation and spaces.
 HEADLINE = '全国で見てきたあの光景を、一社ずつ変えていきたい。'
 EXPECTED = [
@@ -56,14 +56,16 @@ with sync_playwright() as p:
     assert content(page)==EXPECTED, 'Original manuscript changed or truncated'
     assert page.locator('.cm-chapter').count()==4
     assert page.locator('.cm-chapter h2').all_text_contents()==['01 原点とこれまで','02 全国で見てきた光景','03 Contents Xをつくった理由','04 これから']
-    assert page.locator('.cm-message [data-cm-reveal]').count()==0
-    assert page.locator('[data-cm-reveal]').count()==2
-    assert page.locator('.cm-team img').get_attribute('src')=='/material/images/about-2026/team-meeting-overview.webp'
+    assert page.locator('.cm-chapter [data-cm-reveal]').count()==0
+    assert page.locator('[data-cm-reveal]').count()==3
+    assert page.locator('.cm-team img').get_attribute('src')=='/material/images/message-2026/team-original.webp'
     assert page.locator('script[src*=wp]').count()==0
     assert page.locator('h1').text_content()==HEADLINE
+    assert page.locator('.cm-hero img').get_attribute('src')=='/material/images/message-2026/portrait-original.webp'
+    assert page.locator('.cm-related img').count()==3
     assert page.locator('.cm-signature p').all_text_contents()==['Contents X株式会社','代表取締役　黒宮 大貴']
-    assert page.locator('.cm-chapter').first.evaluate('(e)=>e.getBoundingClientRect().width')==720
-    assert page.locator('.cm-team').evaluate('(e)=>e.previousElementSibling.textContent.trim().endsWith("全国どこへ行っても、同じ光景がありました。") && e.nextElementSibling.querySelector("p").textContent.trim().startsWith("伝え方や売り方")')
+    assert page.locator('.cm-chapter >p').first.evaluate('(e)=>e.getBoundingClientRect().width')==720
+    assert page.locator('.cm-scene-row').evaluate('(e)=>e.querySelector(".cm-scene p").textContent.trim().endsWith("全国どこへ行っても、同じ光景がありました。") && e.nextElementSibling.querySelector("p").textContent.trim().startsWith("伝え方や売り方")')
     assert page.locator('link[rel=canonical]').get_attribute('href')=='https://contentsx.jp'+PATH
     assert page.locator('script[src$="i18n.js"]').evaluate('(e)=>e.compareDocumentPosition(document.querySelector("script[src$=\\\"nav.js\\\"]")) & Node.DOCUMENT_POSITION_FOLLOWING')
     page.locator('img[loading="lazy"]').evaluate_all('(es)=>es.forEach(e=>e.loading="eager")')
@@ -84,6 +86,13 @@ with sync_playwright() as p:
         else:
             rects=page.locator('.cm-hero-image,.cm-hero-copy').evaluate_all('(es)=>es.map(e=>e.getBoundingClientRect().toJSON())')
             assert rects[0]['right']<=rects[1]['left']+1, ('hero overlaps',width,rects)
+        labels=page.locator('.cm-chapter-num').evaluate_all('(es)=>es.map(e=>e.getBoundingClientRect().toJSON())')
+        assert all(r['left']>=0 and r['right']<=width for r in labels), ('chapter labels',width,labels)
+        scene=page.locator('.cm-scene').bounding_box(); photo=page.locator('.cm-team').bounding_box()
+        if width>1024:
+            assert photo['x']+photo['width']<=scene['x'], ('scene split',width)
+        else:
+            assert scene['y']+scene['height']<=photo['y']+1, ('scene order',width)
         if width in (320,390,768,1024,1440,1920):
             page.locator('.cm-team img').evaluate('(e)=>e.loading="eager"')
             page.wait_for_function('document.querySelector(".cm-team img").complete && document.querySelector(".cm-team img").naturalWidth>0')
@@ -127,9 +136,9 @@ with sync_playwright() as p:
     phone.locator('#nav a[href="/message"]').tap(); phone.wait_for_url(BASE+PATH)
     phone.locator('#hamburger').tap(); phone.locator('#nav a[href="contact"]').tap(); phone.wait_for_url(BASE+'/contact')
     touch.close()
-    # Only the Hero reveals; article and meeting photo are readable before any scroll.
+    # Prose stays stationary; only the Hero and meeting photograph reveal.
     load(page); page.set_viewport_size({'width':390,'height':844}); load(page)
-    static_content='.cm-chapter,.cm-team'
+    static_content='.cm-chapter'
     assert page.locator(static_content).evaluate_all('(es)=>es.every(e=>getComputedStyle(e).opacity==="1" && getComputedStyle(e).transform==="none" && getComputedStyle(e).transitionDuration==="0s")')
     for item in page.locator('[data-cm-reveal]').all():
         item.scroll_into_view_if_needed()
@@ -156,7 +165,7 @@ with sync_playwright() as p:
     assert not errors, errors
     assert not missing, missing
     assert not cms_requests, cms_requests
-    report={'widths':WIDTHS,'paragraphs':len(EXPECTED),'manuscript':'unchanged','enlargement':'1.4x pass','motion':'Hero only; article always visible; live reduced-motion pass','static_page':'no WordPress requests','language_roundtrip':'pass','touch_navigation':'pass','assets':'pass','console':'pass','no_js_reduced_motion':'pass'}
+    report={'widths':WIDTHS,'paragraphs':len(EXPECTED),'manuscript':'unchanged','enlargement':'1.4x pass','motion':'Hero and photo only; prose always visible; live reduced-motion pass','static_page':'no WordPress requests','language_roundtrip':'pass','touch_navigation':'pass','assets':'pass','console':'pass','no_js_reduced_motion':'pass'}
     (OUT/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
     print(json.dumps(report,ensure_ascii=False))
     context.close(); browser.close()
