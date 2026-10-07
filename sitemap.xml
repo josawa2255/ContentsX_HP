@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <!-- ===== 静的ページ ===== -->
+
+  <!-- Chrome extensions (OAuth consent is intentionally excluded) -->
+  <url><loc>https://contentsx.jp/extensions/</loc></url>
+  <url><loc>https://contentsx.jp/extensions/tablabo/</loc></url>
+  <url><loc>https://contentsx.jp/extensions/tablabo/privacy</loc></url>
+  <url><loc>https://contentsx.jp/extensions/tablabo/terms</loc></url>
+
   <url>
     <loc>https://contentsx.jp/</loc>
     <lastmod>2026-04-24</lastmod>
