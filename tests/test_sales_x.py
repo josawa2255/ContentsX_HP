@@ -51,6 +51,13 @@ with sync_playwright() as p:
         assert page.locator('#sales-x > .cxsb-backdrop').evaluate('e=>getComputedStyle(e).position') == 'fixed'
         assert page.locator('#sales-x').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
         assert page.locator('#creative-x').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        # Issue #83: the duplicate blocks are gone; Sales X runs straight into SERVICE on the same backdrop.
+        assert page.locator('.cxh-concept, .cxh-pillars, #flow').count() == 0
+        assert page.locator('#sales-x').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        assert page.locator('#about').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
+        assert page.evaluate("document.querySelector('#sales-x').nextElementSibling.id") == 'about'
+        for href in ['/services/sales-x/', '/services/creative-x/']:
+            assert page.locator(f'main a[href="{href}"]').count() >= 1, href
         to_section(page)
         assert page.locator('#sales-x > .cxsb-label').inner_text().strip() == 'SALES X'
         cards = page.locator('.cxsx-card')
