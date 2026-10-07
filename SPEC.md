@@ -19,7 +19,7 @@
 | 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
 | ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表メッセージには黒宮代表の実写真、事業紹介とバリュー03には実際の会議写真を掲載。バリュー01は20代前半〜中盤の日本人男女の生成イメージ。バリュー02は提供された実会議写真の人物・会議室を参考に生成した別場面のイメージであり、実際の会議記録ではない |
-| 代表メッセージ | `message.html` | i18n.js, nav.js | `/message`。旧メッセージの導入＋5章を全文掲載。支給ポートレートと会議イメージ、共通ヘッダー・フッター・パンくず。PCは写真の左にタイトル、1024px以下は画像→タイトル→本文。本文は最大760px。独自スクロール演出なし |
+| 代表メッセージ | `message.html` | i18n.js, nav.js, message-2026.js | `/message`。指定された新原稿を全文掲載。PCは左コピー・右ポートレート、1024px以下はMESSAGE→コピー・署名→写真→本文。本文最大720px、経験からチームへつなぐ会議画像、終章・署名・関連リンク。控えめな表示フェード、動き軽減・JS無効に対応 |
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
 | 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
@@ -157,8 +157,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 見出し: 「TOPICS ——」「Contents X を、もっと知る。」。PCは右上に前後の丸い矢印（1枚ずつ移動。端・全件が収まるときは押せない表示）。SP（768px以下）は矢印なしの横スワイプで、次のカードが少し見える（1枚82%）。
 - カード: サムネイル（16:9）/ 種別（英大文字、MESSAGE・VIDEO・PRESS・COLUMN・CASE など自由）/ 日付 / タイトル（2行まで）/ タグ（#付き）。PCは3枚横並び、4枚目以降は横に並び矢印で送る。hover は画像1.02倍・矢印3px右・タイトルを青に。カード全体がリンクで、サイト内は同じタブ（→）、外部（YouTube・PR TIMES等）は新しいタブ（↗、読み上げに「外部サイトが開きます」）。
 - データ（`js/home-topics.js`）: `GET /contentsx/v1/topics`（WPプラグイン「Contents X ＞ TOPICS」、`contentsx-cms/contentsx-topics.php`）。表示ONのみ、PICK UP を先頭に、あとは管理画面の並び順。リンクは `/` 始まりのサイト内パスか http(s)、画像は `cms.contentsx.jp` / `contentsx.jp` / `i.ytimg.com` の https かサイト内パスのみ、日付は実在する日付のみ表示。文字は textContent。
-- 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/about#message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
-- NEWS セクションと代表メッセージ本文ページは、このプロジェクトでは作らない（代表メッセージのリンク先は既存の `/about#message`）。
+- 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
+- TOPICSはNEWSと別のセクション。代表メッセージ本文は独立ページ `/message` へ接続（§14参照）。
 - CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
 
 ### 3.0 サービスページ生成（Issue #20）
@@ -530,12 +530,13 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 ## 14. 代表メッセージ独立ページ（2026-10-07）
 
 - 正規URL: `/message`。既存の `message.html` を再利用する。新規 `company/` ディレクトリが既存の拡張子なしURL `/company` を遮らない構成。企業案内の共通ナビ、`/about#message` 内の「代表メッセージを全文読む」、TOPICSから遷移する。旧 `/message` の転送を解除し、このページを正規URLとして再公開する。
-- 原稿: Git履歴 `07a92552329b2892871cc984cf46fc3127555387:message.html` の導入＋5章を全文使用。本文・見出し・企業向け/クリエイター向けの説明を改変・要約しない。日英切替でも原文の句読点・文言を保つ。
-- 写真: `material/images/message-2026/portrait.webp`（支給「明るいオフィスのビジネスポートレート.png」、元ファイル `ChatGPT 画像 2026年10月7日 13_59_44-1.png`）、`team-meeting.webp`（支給「ホワイトボード前のチームミーティング.png」、元ファイル `ChatGPT 画像 2026年10月7日 14_00_10.png`）。どちらも1448×1086、支給画像をWebPへ変換。背景や人物の追加・生成・修正は行っていない。支給イメージを実際の会議記録と扱わない。会議画像は第4章の採用・仲間に関する段落の直後。
-- デザイン: `css/message-2026.css`。既存の濃紺・白・Noto Sans JPと共通トークンを使用。本文760px、関連導線はPC3列/SP1列。1024px以下は画像→タイトル→本文。独自のスクロールアニメーション・固定演出は追加しない。
-- 関連導線: `/about`（私たちについて）、`/company`（会社概要）、`/company#officers`（役員紹介。現在公開されている役員情報）、`/`。非表示中の `/leadership` は復元しない。
-- 共通ナビの企業案内に `/message` を追加する。i18n.js → nav.js の順序を維持。
-- 検証: `python3 tests/test_message.py --url http://127.0.0.1:8777`。loopback previewで原稿一致、320〜1920px・境界幅、1.4倍文字拡大、日英往復、タッチナビ、関連導線、画像比率、既存URL、JS無効/動き軽減を確認する。
+- 原稿（Issue #80、2026-10-07更新）: 「全国で見てきたあの光景を、一社ずつ変えていきたい。」をHero見出しとし、ユーザー指定の7段落を要約・改変せず全文掲載。旧導入＋5章は新原稿へ差し替える。日英切替でも日本語の句読点・スペース・署名を保つ。本文の正本は `message.html`、一致検証用の支給原稿は `tests/test_message.py` に保持する。
+- 写真: `material/images/message-2026/portrait.webp`（支給「明るいオフィスのビジネスポートレート.png」、元ファイル `ChatGPT 画像 2026年10月7日 13_59_44-1.png`）、`team-meeting.webp`（支給「ホワイトボード前のチームミーティング.png」、元ファイル `ChatGPT 画像 2026年10月7日 14_00_10.png`）。どちらも1448×1086、支給画像をWebPへ変換した既存ファイルを使用。人物・会社風景の生成や追加は行わない。支給イメージを実際の会議記録として扱わない。会議画像は「全国どこへ行っても、同じ光景がありました。」の段落直後、「伝え方や売り方」からContents Xの取り組みへ続く位置に置く。
+- デザイン: `css/message-2026.css`。既存の白・濃紺・淡いブルーに薄いXモチーフ。PCは左コピー/署名・右の大きなポートレートを別カラムで配置。1024px以下はMESSAGE→コピー/署名→写真→本文。Heroのサイズはclampで連続調整し、画像上に文字を重ねない。本文は最大720px、SP16〜17px・行間1.85、PC行間1.95。本文は濃紺、肩書・英字は一段薄い色。終章は「昭和と令和、地方と東京。」から始まる原稿の最終段落を保持し、余白を広げて署名で締める。
+- 動き: `js/message-2026.js` のIntersectionObserverでHeroコピーは10pxのfade-up、写真は0.12秒遅れてフェード、本文は大きな4ブロック単位、会議画像は8px/1秒のfade-up。一度表示した後は再び隠さない。スクロールロック・スナップ・パララックスを追加しない。JS無効・Observer非対応/初期化失敗・印刷時も全文を表示。`prefers-reduced-motion` と実行中の設定変更に対応する。
+- 関連導線: 署名の直後に `/about`（私たちについて）、`/company`（会社概要）、`/company#officers`（役員紹介。現在公開されている役員情報）の3リンク。PC3列/SP1列のシンプルな表示。非表示中の `/leadership` は復元しない。
+- 共通ナビの企業案内に `/message` を追加する。i18n.js → nav.js → message-2026.jsの順序を維持する。
+- 検証: `python3 tests/test_message.py --url http://127.0.0.1:8780`。loopback previewで原稿完全一致、320〜1920px・境界幅、1.4倍文字拡大、日英往復、タッチナビ、関連導線、画像比率、既存URL、スクロール表示/再非表示防止、JS無効/Observer非対応/動き軽減を確認する。
 
 ### 14.1 TOPICSとの接続
 
