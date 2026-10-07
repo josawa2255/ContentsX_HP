@@ -16,8 +16,9 @@ args = parser.parse_args()
 out = Path(args.artifacts)
 out.mkdir(parents=True, exist_ok=True)
 widths = [320, 375, 390, 412, 448, 480, 481, 640, 767, 768, 769, 1024, 1025, 1280, 1440, 1920]
-SECTIONS = ['#home-about', '#about', '#news']
-LABELS = {'#home-about': 'ABOUT', '#about': 'SERVICE', '#news': 'NEWS'}
+# SERVICE (#about) is hidden since Issue #85; TOPICS carries the shared backdrop instead.
+SECTIONS = ['#home-about', '#topics', '#news']
+LABELS = {'#home-about': 'ABOUT', '#topics': 'TOPICS', '#news': 'NEWS'}
 
 
 def load(page, url):
@@ -73,26 +74,26 @@ with sync_playwright() as p:
         else:
             assert snap in ('none', ''), f'Snap must be off at {width}px: {snap}'
         # Each backdrop stays pinned to the viewport while its section scrolls.
-        for selector in ['#about', '#news']:
+        for selector in ['#topics', '#news']:
             scroll(page, top_of(page, selector) - 64, 1600)
             assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
             scroll(page, top_of(page, selector) - 64 + 200, 300)
             assert page.locator(f'{selector} > .cxsb-backdrop').evaluate('e=>Math.abs(e.getBoundingClientRect().top)') < 1
         # The clip keeps the fixed layer out of neighbouring white sections.
         # Make the neighbouring section transparent: if the fixed layer leaked, the sky would show.
-        page.add_style_tag(content='#company-intro{background:none!important}')
-        scroll(page, top_of(page, '#company-intro') - 64 + 40)
+        page.add_style_tag(content='.cxh-footer{background:none!important}')
+        scroll(page, top_of(page, '.cxh-footer') - 64 + 40)
         shot = out / f'{width}-company-clip.png'
         page.screenshot(path=str(shot))
-        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('#company-intro').getBoundingClientRect().top + 120)"))
+        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('.cxh-footer').getBoundingClientRect().top + 120)"))
         pixel = Image.open(shot).convert('RGB').getpixel((2, y))
-        assert min(pixel) >= 248, f'Backdrop leaked into #company-intro at {width}px: {pixel}'
+        assert min(pixel) >= 248, f'Backdrop leaked into the footer at {width}px: {pixel}'
         if width in [390, 1440]:
             for selector in SECTIONS:
                 scroll(page, about_complete(page) if selector == '#home-about' else top_of(page, selector) - 64, 1500)
                 page.screenshot(path=str(out / f'{width}-{selector[1:]}.png'))
         # Body/UI text expansion (Android scaling); the ornamental labels stay fixed.
-        page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .news-link,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
+        page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .cxnw-title,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert_sections(page, width)
         if width <= 768:
@@ -106,15 +107,14 @@ with sync_playwright() as p:
     # PC snap: stopping just above a section edge settles on the section top (or ABOUT completion).
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)
-    for name, target in [('ABOUT', about_complete(page)), ('#about', top_of(page, '#about') - 64), ('#news', top_of(page, '#news') - 64)]:
+    for name, target in [('ABOUT', about_complete(page)), ('#topics', top_of(page, '#topics') - 64), ('#news', top_of(page, '#news') - 64)]:
         scroll(page, target - 120, 1500)
         assert abs(page.evaluate('scrollY') - target) <= 2, (name, page.evaluate('scrollY'), target)
     scroll(page, about_complete(page), 1500)
     assert page.locator('.cxha-office').evaluate('(e)=>getComputedStyle(e).opacity') == '1'
-    # Free scrolling in the middle of a tall section is not pulled back.
-    middle = top_of(page, '#about') - 64 + 700
-    scroll(page, middle, 1500)
-    assert abs(page.evaluate('scrollY') - middle) <= 2
+    # (The tall-section free-scroll check used SERVICE, the only section taller than a PC screen;
+    #  it is hidden since Issue #85.)
+    assert page.locator('#about').evaluate('e=>e.hidden && getComputedStyle(e).display === "none"')
     page.close()
 
     # ABOUT (Issue #63): Purpose / Company links and the two business cards use existing URLs.
@@ -153,20 +153,21 @@ with sync_playwright() as p:
             assert fit[key] <= h - 64, (w, h, key, fit)
         page.close()
 
-    # Hover feedback on news rows survives the entrance animation.
+    # NEWS rows (Issue #85 redesign): quiet hover — arrow 4px, no row movement.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)
     scroll(page, top_of(page, '#news') - 64, 1600)
-    row = page.locator('#news .news-item').first
+    row = page.locator('#news .cxnw-row').first
     row.hover()
-    page.wait_for_timeout(500)
-    assert 'matrix(1, 0, 0, 1, 4, 0)' == row.evaluate('e=>getComputedStyle(e).transform')
+    page.wait_for_timeout(400)
+    assert row.locator('.cxnw-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
+    assert row.evaluate('e=>getComputedStyle(e).transform') == 'none'
     page.close()
 
     # Reduced motion: everything visible without entrance motion.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page, args.url)
-    for selector in ['#about', '#news']:
+    for selector in ['#topics', '#news']:
         assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
     assert page.locator('#news .news-list').evaluate('e=>getComputedStyle(e).opacity') == '1'
     page.close()

@@ -71,8 +71,10 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・サービス一覧・TOPICS・Newsは共通背景。ABOUT〜TOPICS は継ぎ目なく連続） → Creative X → Sales X → サービス一覧 → TOPICS → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・TOPICS・Newsは共通背景。ABOUT〜NEWS は継ぎ目なく連続） → Creative X → Sales X →（サービス一覧＝非表示中）→ TOPICS → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 2026-10-07（Issue #83）: コンセプト（Sales X × Creative X = Contents X）・Sales X / Creative X の2枚カード・「売上が生まれるまでの流れ」を削除。ABOUT / Creative X / Sales X と内容が重なり、共通背景を白いブロックで途切れさせていたため。サービス同士のつながり（接点 → 価値 → 顧客情報）はサービス一覧ページ `/services/` で伝える。`css/home-2026.css` の `.cxh-concept` / `.cxh-pillar*` / `.cxh-mark` / `.cxh-flow*` の指定は未使用のまま残っている（戻す場合に備えて削除していない）。
+- 2026-10-07（Issue #85）: サービス一覧（SERVICE、`#about`「2つの事業で、企業の成長を支えます。」）を `hidden` 属性で一時非表示（マークアップは `TEMP-HIDDEN SERVICE` コメント付きで残置）。Creative X / Sales X と内容が重なるため。後で「Contents X のまとめ」セクションとして作り直す予定。戻すときは `hidden` を外す（Sales X → SERVICE → TOPICS の `cxsb-join-*` はそのまま使える）。下層9ページの下部メニュー「サービス」は `./#about` から `/services/` に付け替えた。「制作スタジオ・IP開発（YOAKE STUDIO）」は現在トップに出ていない。
+- 2026-10-07（Issue #85）: 会社紹介「Contents Xとは？ 法人の営業と売上づくりを支援する会社です。」（`#company-intro`）を削除。ABOUT の会社説明・Purpose（/about）・Company（/company）と重なるため。TOPICS → NEWS を共通背景で継ぎ目なくつなぐ。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。
@@ -161,6 +163,15 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/about#message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
 - NEWS セクションと代表メッセージ本文ページは、このプロジェクトでは作らない（代表メッセージのリンク先は既存の `/about#message`）。
 - CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
+
+### NEWS セクション（2026-10-07 ブラッシュアップ・Issue #85）
+
+- 方針: 情報を確認する場所なので、演出は控えて読みやすさ・一覧性を優先。目指す形は「巨大な薄い NEWS ＋ 右上の一覧リンク ＋ シンプルな4件の一覧」。共通背景は TOPICS から継ぎ目なく続く（`.cxsb-join-prev`）。
+- 見出し: 巨大な薄い `NEWS`（`.cxsb-label`）は残し、黒文字の「News」は表示しない（読み上げ用に `#cxnw-title`「ニュース」を視覚的に隠して残す）。「一覧を見る →」（`/news`、常に表示）は一覧の右上。
+- 一覧: 最新4件（`wp-api.js` の `NEWS_HOME_LIMIT = 4`）。白い大枠は枠線・影を弱めた半透明。行は「サムネイル / カテゴリ / 日付 / タイトル / 矢印」の順で、行全体が1つのリンク（`a.cxnw-row`）。全行同じ高さ（`grid-auto-rows:1fr`、区切り線は行の内側に描く）、サムネイルは全行同じ 8:5 の枠に `contain`（WPの crop 指定がある画像は cover＋中心位置）。タイトルは濃紺・太字で最も強く、日付はやや薄く、カテゴリは小さな枠付きラベル。PC は横一列（2行まで）、1024px以下はサムネイル右に「カテゴリ・日付」→タイトル、768px以下はサムネイル88px・タイトル3行まで・行の高さ96px以上。
+- 動き: 一覧全体が画面に入ったときに軽く fade-up（`data-cxh-reveal`）するだけ。hover は行の背景がごく薄く変わり、矢印が4px右、サムネイル1.02倍。行ごとの時間差アニメーションと行の横移動は廃止。
+- 描画: `js/wp-api.js` の `loadNews()` が、トップ（`body` に `data-page-news` が無いとき）だけ上の行を描く。`/news` ページは従来の描画のまま。WP の `url` は http(s) か `/` 始まりだけリンクにし、それ以外は詳細ページ `/news-detail?id=` へ。`index.html` の4件は JS無効・取得失敗時の表示（2026-10-07 時点の最新4件）。
+- CSS は `css/home-news.css`（旧 NEWS 指定は `home-sections.css` から削除）。検証は `python3 tests/test_news.py --url <拡張子なしURL対応のプレビュー> --artifacts <output>`（16幅、4行同じ高さ・同じサムネイル、表示順、文字の強弱、右上リンク、SPの並び、hover、不正データ、取得失敗・JS無効、/news が従来どおり）。
 
 ### 3.0 サービスページ生成（Issue #20）
 
