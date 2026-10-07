@@ -1,7 +1,7 @@
-/* Small, once-only reveals. Reading and native scrolling stay in the browser. */
+/* Hero-only, once-only reveals. The article is always visible and stationary. */
 (function () {
   'use strict';
-  var items = Array.from(document.querySelectorAll('[data-cm-reveal]'));
+  var items = Array.from(document.querySelectorAll('.cm-hero [data-cm-reveal]'));
   var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var observer;
 

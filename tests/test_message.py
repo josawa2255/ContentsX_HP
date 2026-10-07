@@ -47,17 +47,23 @@ with sync_playwright() as p:
     context=browser.new_context(viewport={'width':1440,'height':1000})
     # Avoid analytics and live third-party calls during preview.
     context.route(re.compile(r'https?://(?!127\.0\.0\.1|localhost)'), lambda r:r.abort())
-    page=context.new_page(); errors=[]; missing=[]
+    page=context.new_page(); errors=[]; missing=[]; cms_requests=[]
     page.on('pageerror', lambda e:errors.append(str(e)))
+    page.on('request', lambda r:cms_requests.append(r.url) if urlsplit(r.url).hostname=='cms.contentsx.jp' or '/wp-json/' in r.url else None)
     page.on('response', lambda r:missing.append(r.url) if r.status>=400 and r.url.startswith(BASE) else None)
     load(page)
     assert page.locator('h1').count()==1
     assert content(page)==EXPECTED, 'Original manuscript changed or truncated'
     assert page.locator('.cm-chapter').count()==4
+    assert page.locator('.cm-chapter h2').all_text_contents()==['01 原点とこれまで','02 全国で見てきた光景','03 Contents Xをつくった理由','04 これから']
+    assert page.locator('.cm-message [data-cm-reveal]').count()==0
+    assert page.locator('[data-cm-reveal]').count()==2
+    assert page.locator('.cm-team img').get_attribute('src')=='/material/images/about-2026/team-meeting-overview.webp'
+    assert page.locator('script[src*=wp]').count()==0
     assert page.locator('h1').text_content()==HEADLINE
     assert page.locator('.cm-signature p').all_text_contents()==['Contents X株式会社','代表取締役　黒宮 大貴']
     assert page.locator('.cm-chapter').first.evaluate('(e)=>e.getBoundingClientRect().width')==720
-    assert page.locator('.cm-team').evaluate('(e)=>e.previousElementSibling.textContent.trim().endsWith("全国どこへ行っても、同じ光景がありました。") && e.nextElementSibling.textContent.trim().startsWith("伝え方や売り方")')
+    assert page.locator('.cm-team').evaluate('(e)=>e.previousElementSibling.textContent.trim().endsWith("全国どこへ行っても、同じ光景がありました。") && e.nextElementSibling.querySelector("p").textContent.trim().startsWith("伝え方や売り方")')
     assert page.locator('link[rel=canonical]').get_attribute('href')=='https://contentsx.jp'+PATH
     assert page.locator('script[src$="i18n.js"]').evaluate('(e)=>e.compareDocumentPosition(document.querySelector("script[src$=\\\"nav.js\\\"]")) & Node.DOCUMENT_POSITION_FOLLOWING')
     page.locator('img[loading="lazy"]').evaluate_all('(es)=>es.forEach(e=>e.loading="eager")')
@@ -119,18 +125,19 @@ with sync_playwright() as p:
     phone.locator('#nav a[href="/message"]').tap(); phone.wait_for_url(BASE+PATH)
     phone.locator('#hamburger').tap(); phone.locator('#nav a[href="contact"]').tap(); phone.wait_for_url(BASE+'/contact')
     touch.close()
-    # Scroll reveals run once, leave native scrolling intact, and honour a live preference change.
+    # Only the Hero reveals; article and meeting photo are readable before any scroll.
     load(page); page.set_viewport_size({'width':390,'height':844}); load(page)
-    assert page.locator('.cm-team').evaluate('(e)=>getComputedStyle(e).opacity')=='0'
+    static_content='.cm-chapter,.cm-team'
+    assert page.locator(static_content).evaluate_all('(es)=>es.every(e=>getComputedStyle(e).opacity==="1" && getComputedStyle(e).transform==="none" && getComputedStyle(e).transitionDuration==="0s")')
     for item in page.locator('[data-cm-reveal]').all():
         item.scroll_into_view_if_needed()
         page.wait_for_function('(e)=>e.classList.contains("cm-visible")',arg=item.element_handle())
     page.wait_for_timeout(1100)
     assert page.locator('[data-cm-reveal]').evaluate_all('(es)=>es.every(e=>getComputedStyle(e).opacity==="1")')
     page.evaluate('window.scrollTo({top:0,behavior:"instant"})'); page.wait_for_timeout(100)
-    assert page.locator('.cm-team').evaluate('(e)=>getComputedStyle(e).opacity')=='1'
     page.mouse.wheel(0,300); page.wait_for_timeout(200)
     assert page.evaluate('scrollY')>0
+    assert page.locator(static_content).evaluate_all('(es)=>es.every(e=>getComputedStyle(e).opacity==="1" && getComputedStyle(e).transform==="none")')
     load(page); page.emulate_media(reduced_motion='reduce')
     assert page.locator('[data-cm-reveal]').evaluate_all('(es)=>es.every(e=>getComputedStyle(e).opacity==="1" && getComputedStyle(e).transitionDuration==="0s")')
     page.emulate_media(reduced_motion='no-preference')
@@ -146,7 +153,8 @@ with sync_playwright() as p:
         c.close()
     assert not errors, errors
     assert not missing, missing
-    report={'widths':WIDTHS,'paragraphs':len(EXPECTED),'manuscript':'unchanged','enlargement':'1.4x pass','scroll_motion':'once-only / live reduced-motion pass','language_roundtrip':'pass','touch_navigation':'pass','assets':'pass','console':'pass','no_js_reduced_motion':'pass'}
+    assert not cms_requests, cms_requests
+    report={'widths':WIDTHS,'paragraphs':len(EXPECTED),'manuscript':'unchanged','enlargement':'1.4x pass','motion':'Hero only; article always visible; live reduced-motion pass','static_page':'no WordPress requests','language_roundtrip':'pass','touch_navigation':'pass','assets':'pass','console':'pass','no_js_reduced_motion':'pass'}
     (OUT/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
     print(json.dumps(report,ensure_ascii=False))
     context.close(); browser.close()
