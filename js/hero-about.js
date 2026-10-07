@@ -25,7 +25,11 @@
     var header = parseFloat(getComputedStyle(transition).getPropertyValue('--cxha-header'));
     var heroHeight = hero.offsetHeight;
     var heroWidth = hero.offsetWidth;
-    var sceneHeight = Math.max(heroHeight, about.offsetHeight);
+    // ABOUT fills at least one screen, so the pinned stage never shows an empty white band below it.
+    // The Hero may be taller; its lower part is only visible while it is shrinking inside the stage.
+    var fill = Math.max(0, window.innerHeight - header);
+    transition.style.setProperty('--cxha-about-min', fill + 'px');
+    var sceneHeight = Math.max(fill, about.offsetHeight);
     var distance = Math.max(480, Math.min(1000, window.innerHeight * 1.15));
     transition.style.setProperty('--cxha-scene-height', sceneHeight + 'px');
     transition.style.setProperty('--cxha-distance', distance + 'px');
@@ -79,7 +83,8 @@
     transition.style.setProperty('--cxha-wordmark', range(p, .12, .4));
     transition.style.setProperty('--cxha-office', range(p, .54, .94));
     transition.style.setProperty('--cxha-about-pointer', p >= .35 ? 'auto' : 'none');
-    var timings = { label:[.26,.48], heading:[.34,.58], body:[.44,.7], values:[.7,.96] };
+    // Heading → main visual (office, .54–.94) → Purpose/Company links → business cards.
+    var timings = { label:[.26,.48], heading:[.34,.58], body:[.44,.7], links:[.62,.9], values:[.72,.98] };
     steps.forEach(function (node) {
       var timing = timings[node.dataset.cxhaStep];
       node.style.setProperty('--cxha-step', range(p, timing[0], timing[1]));

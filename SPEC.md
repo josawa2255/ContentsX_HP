@@ -71,7 +71,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続） → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・サービス一覧・Newsは共通背景） → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。
@@ -86,12 +86,34 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### Hero直下のAboutと接続演出（Issue #59）
 
 - `index.html` の既存Heroはマークアップ・初期デザインを維持し、`.cxha-transition` / `.cxha-stage` / `.cxha-hero-frame` で包む。直後に `#home-about` を置く。既存のサービス用 `#about` と会社案内URL `/about` は維持する。
-- Aboutは白地、濃紺の見出し「セールスとクリエイティブで、企業の価値を社会へ届ける。」、短い会社説明、薄い巨大な `CONTENTS X`、右側のオフィス画像、下部の Sales X / Creative X / Contents X の3要素で構成。Sales Xは青、Creative Xはオレンジ。768px以下では本文→縦長画像→3要素を縦並びにする。
-- ユーザー提供のオフィス素材をWebPに変換して `material/home-2026/about-office-pc.webp`（1672×941）、`about-office-mobile.webp`（941×1672）に格納。`picture`で768pxを境に切り替える。オフィスはイメージ画像であり、実際の所在地写真として扱わない。遷移参考画像は実装素材には含めない。
-- 専用の `css/hero-about.css` / `js/hero-about.js` を使用。ネイティブスクロールとstickyで、画面高の1.15倍（480〜1000px）のスクロール区間に追従する。Hero全体を中央へ縮小し、白い余白を開く→巨大文字→ABOUT→見出し→本文→3要素の順に表示する。Heroのコピーは先に薄くし、Xを含む背景は後半まで残してオフィス画像とクロスフェードする。PCでは画像位置へ、スマホでは中央線を維持して主に縦へつなぐ。
+- ABOUTの内容・レイアウトは Issue #63 で刷新（下の「ABOUTの構成（Issue #63）」）。この節は Hero→ABOUT の接続演出の仕様。
+- ユーザー提供のオフィス素材 `material/home-2026/about-office-pc.webp`（1672×941）は、#63 以降 Purpose / Company カードの画像（別crop）として使う。スマホ用の縦長版 `about-office-mobile.webp` は #63 で不要になり削除。オフィスはイメージ画像であり、実際の所在地写真として扱わない。遷移参考画像は実装素材には含めない。
+- 専用の `css/hero-about.css` / `js/hero-about.js` を使用。ネイティブスクロールとstickyで、画面高の1.15倍（480〜1000px）のスクロール区間に追従する。Hero全体を中央へ縮小し、余白を開く→巨大文字→見出し→本文→メインビジュアル→Purpose / Company→事業カードの順に表示する（`js/hero-about.js` の `timings`）。Heroのコピーは先に薄くし、Xを含む背景は後半まで残してメインビジュアルとクロスフェードする。PCでは画像位置へ、スマホでは中央線を維持して主に縦へつなぐ。
 - 描画は受動的なscroll監視とrequestAnimationFrameでまとめる。wheel/touchのキャンセルやスクロールロックを行わない。逆スクロールでも同じ量に戻り、サイズ変更・文字拡大・フォント読込・i18n切替・履歴復帰時には実寸から再計算する。非表示のAboutがHeroのCTAを遮らないよう初期はpointer-eventsを無効にする。薄くなったHeroのリンクはinertでクリック・フォーカスを抑え、完了後にaria-hiddenにする。
 - `#home-about` への直接アクセスは演出完了位置へ、既存ナビの `#hero` は縮小前の先頭へ戻す。通常のアンカー操作・戻る/進むで表示状態が食い違わないようにする。
 - JS無効時と `prefers-reduced-motion: reduce` ではHero→Aboutを通常フローで全表示し、sticky・縮小・フェードを使わない。設定の実行中変更にも追従する。i18n.js → nav.jsの既存読込順は維持する。
+
+### ABOUT / SERVICE / NEWS の共通背景（Issue #61）
+
+- 対象は `#home-about`（ABOUT）、`#about`（サービス一覧＝SERVICE）、`#news`（NEWS）の3つ。各セクションに `.cxsb-section` を付け、間のコンセプト・Sales X / Creative X・流れ・会社紹介・相談CTAは従来どおり白系の背景のまま残す。
+- 背景はハンドオフ（ContentsX_About_Handoff）の `02_common_bg_pc` / `03_common_bg_sp`（= #59 のオフィス画像）に、ぼかし（PC 15px・SP 16px相当）と明るさ調整を焼き込んだもの。`material/home-2026/section-bg-pc.webp`（1672×941）と `section-bg-mobile.webp`（941×1672）を、768px以下または縦長画面（縦横比3:4以下）で切り替える。CSSの `filter: blur` はスクロール中の描画負荷が高いため使わない。実在のオフィス写真としては扱わない。
+- 各セクション先頭の `.cxsb-backdrop` を `position:fixed` で画面全体に置き、セクション側の `clip-path:inset(0)` で切り抜く。背景は動かず、カード・見出しだけが上を流れる（`background-attachment:fixed` は iOS で効かないため使わない）。白いベールで濃紺文字の可読性を保ち、上下端は白へフェードして隣の白いセクションへつなぐ。
+- 各セクション上部に大きく薄い英字 `.cxsb-label`（ABOUT / SERVICE / NEWS、`aria-hidden`・`data-i18n-skip`・`text-size-adjust:100%`）。ABOUTは #59 の巨大文字 `.cxha-wordmark` の文言を「CONTENTS X」から「ABOUT」へ変更して流用し、表示タイミングは #59 のスクロール連動のまま。
+- 動き: SERVICE / NEWS の英字は左から軽くスライドしてフェード、サービス列とニュースのカードは下から＋scale .97→1 で登場、ニュースの行は0.08秒ずつ時間差。いずれも `home-2026.js` の既存 `data-cxh-reveal` を使い、新しいJSは追加しない。ニュースの行はhover可能な端末だけ右へ4px動かす。NEWSの一覧は白いカードにし、本文幅はサービスと同じ `min(100% - 80px, 1250px)`（スマホは `min(100% - 32px, 560px)`）。
+- スクロールスナップ: 1025px以上かつマウス操作の端末だけ `html` に `scroll-snap-type:y proximity`。SERVICE / NEWS は先頭（固定ヘッダー64px下）、ABOUTは #59 の演出完了位置に置いた `.cxsb-about-snap` に吸着する。背の高いセクションの途中では引き戻さない。1024px以下・タッチ端末ではスナップなし。既存の `.cxh-home main [id]` の80pxずらしより後に読み込み、同じ詳細度で64pxに上書きしている。
+- CSSは `css/home-sections.css`（`hero-about.css` の後に読込）。検証は `python3 tests/test_section_backdrop.py --url <loopback preview> --artifacts <output>`（16幅、背景の固定、画像切替、隣セクションへの漏れ、文字1.4倍、PCのみのスナップ、hover、動き軽減、JS無効）。
+
+### ABOUTの構成（Issue #63）
+
+- 基準: ハンドオフ `ContentsX_About_Handoff/00_reference_about.png`。画面を1枚画像にせず、背景・画像・文字・カードをHTML/CSSで分ける。ヘッダーは共通ヘッダーのまま。
+- PC（1101px以上）: 左に見出し「コンテンツで、企業の可能性をひらく。」と本文、中央に大きなメインビジュアル `.cxha-office`（`material/home-2026/about-main-visual.webp`、1672×941、2:1で表示）、右に Purpose 導線（「コンテンツの力で、社会にもっといい未来を。」OUR PURPOSE → `/about`）と Company 導線（「私たちについて」COMPANY → `/company`）。下段は半透明の白い帯に「価値を生み出す、2つの力。」の導入文と、Sales X（→ `/services/sales-x/`）/ Creative X（→ `/services/creative-x/`）の2カード。Contents Xカードは置かない。カードのXは Sales X が青、Creative X がオレンジ。
+- Purpose / Company カードは新しい画像を増やさず、`about-office-pc.webp` を `background-size` / `background-position` で別の範囲に切り出し、Purpose は白、Company は濃紺のグラデーションを重ねる。
+- 769〜1100px: 見出し・本文を上段の全幅、メインビジュアルとPurpose / Companyを2列、導入文を全幅にして事業カードを2列。
+- 768px以下: ABOUT → 見出し/本文 → メインビジュアル（4:3）→ Purpose → Company → Sales X → Creative X の1カラム。導入文はスマホでは出さない。横移動や強いstickyは使わない（#59の縮小演出は中央線のまま縦方向）。
+- hover（hover可能な端末のみ・0.2秒）: Purpose / Companyの画像を1.02倍、矢印を3px右へ、重ねた色をわずかに薄く。事業カードは背景を白に、影を強め、矢印を3px右へ。キーボードフォーカスは青い枠。
+- 高さ（2026-10-04、平澤さんの1470×800表示で見切れ・白い帯の指摘）: スクロール演出中のABOUTは少なくとも1画面分（画面高−ヘッダー、JSが `--cxha-about-min` に設定）の高さを持ち、中身を縦中央に置く。以前はHeroの高さに合わせた舞台の下に白い帯が出ていた。PC（1101px以上）は余白・Purpose/Companyの高さ・事業カードを `svh` でも縮め、1366×650〜1920×1080でABOUT全体が1画面に収まる。
+- 登場は #59 のスクロール連動の中で、見出し→メインビジュアル→導線カード→事業カードの順に軽くfade-up。`prefers-reduced-motion: reduce` とJS無効時は全表示し、hoverの変化も止める。
+- CSSは `css/hero-about.css`、背景とスナップは `css/home-sections.css`（#61）。検証は `tests/test_hero_about.py`（#59の演出・Hero比較）と `tests/test_section_backdrop.py`（リンク先4件、事業カード2枚、SPの並び順、hover）。
 
 ### 3.0 サービスページ生成（Issue #20）
 
