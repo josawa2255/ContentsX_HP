@@ -38,6 +38,7 @@
   <link rel="stylesheet" href="/css/service-directory-2026.css">
   <link rel="stylesheet" href="/css/dl-modal.css">
   {{JSON_LD}}
+  <link rel="stylesheet" href="/css/site-footer.css">
 </head>
 <body class="cxs-services" data-theme="neutral">
 {{HEADER}}

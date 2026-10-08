@@ -97,6 +97,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 
 ## CSS設計
 - メインサイト: `css/style.css`（共通）+ ページ別CSS。トップは `css/home-2026.css`（Hero→Aboutは `hero-about.css`、ABOUT / SERVICE / NEWS の共通背景とスナップは `home-sections.css`、Creative X は `home-creative-x.css`、Sales X は `home-sales-x.css`、TOPICS は `home-topics.css`、NEWS は `home-news.css`（行の描画は `wp-api.js` のトップ用分岐）。仕様は SPEC.md §3）、他ページは `recruit.css` 等を使用。
+- フッターは全ページ共通の `.cx-footer`（`css/site-footer.css`）。変更時は静的ページ・コラム記事テンプレ・`services/index.html` の3か所を揃える（SPEC.md §7.5）。
 - トップ・サービス以外の下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
 - トップ・サービス・下層ページ共通のモーションとUIの判断基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。サービスと下層ページの登場・画像ワイプ演出は `js/sitewide-motion.js`。動きの軽減設定とJS無効時の表示を必ず確認する。
 - トップ・サービス・下層ページのフォント、色、文字階層、画像上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) が正本。再利用する変数・画像文字クラスは `css/brand-system-2026.css`。担当ごとに色・フォントの値を新設しない。

@@ -1,0 +1,128 @@
+/* ==========================================================================
+   全ページ共通フッター（.cx-footer）
+   - HTMLは全ページ同一。生成元: tools/templates/c-column.html.tpl（コラム記事）、
+     services/index.html（tools/build-services.py がサービスページへ複製）
+   - 旧フッター（.footer / .ax-footer / .cxh-footer）のCSSと干渉しないよう、
+     別クラス名・このファイルを各ページの最後に読み込む
+   ========================================================================== */
+.cx-footer {
+  --cx-footer-bg: #07143b;
+  --cx-footer-text: rgba(255, 255, 255, .86);
+  --cx-footer-muted: rgba(255, 255, 255, .56);
+  --cx-footer-line: rgba(255, 255, 255, .14);
+  background: var(--cx-footer-bg);
+  color: var(--cx-footer-text);
+  font-family: "Noto Sans JP", sans-serif;
+  padding: clamp(48px, 7vw, 80px) 0 clamp(28px, 4vw, 40px);
+}
+.cx-footer *,
+.cx-footer *::before,
+.cx-footer *::after { box-sizing: border-box; }
+.cx-footer ul { list-style: none; margin: 0; padding: 0; }
+.cx-footer a { color: inherit; text-decoration: none; transition: color .2s ease, opacity .2s ease; }
+.cx-footer a:hover,
+.cx-footer a:focus-visible { color: #fff; opacity: .7; }
+.cx-footer a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; opacity: 1; }
+
+.cx-footer__inner {
+  width: min(100% - 32px, 1360px);
+  margin-inline: auto;
+}
+.cx-footer__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 48px clamp(40px, 8vw, 120px);
+  align-items: start;
+}
+.cx-footer__brand { min-width: 0; }
+
+/* ロゴは濃紺の面で白抜きにする（元画像は濃色＋グレー） */
+.cx-footer__logo { display: inline-block; }
+.cx-footer__logo img {
+  display: block;
+  width: 168px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+/* 左: 小さなリンク（2段） */
+.cx-footer__nav { margin-top: 36px; display: grid; gap: 10px; }
+.cx-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+}
+.cx-footer__links a,
+.cx-footer__group a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  font-size: 13px;
+  letter-spacing: .08em;
+  line-height: 1.5;
+}
+.cx-footer__links a::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  margin-right: 8px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+.cx-footer__links--sub a { color: var(--cx-footer-muted); font-size: 12px; }
+
+/* 右: サービス一覧（2列） */
+.cx-footer__services {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  gap: 32px clamp(32px, 5vw, 72px);
+}
+.cx-footer__group { min-width: 0; }
+.cx-footer__group .cx-footer__group-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--cx-footer-muted);
+  margin-bottom: 6px;
+}
+.cx-footer__group ul { display: grid; gap: 2px; }
+/* 外部サイトへのリンクは左上に小さな角の印 */
+.cx-footer__group a { position: relative; padding-left: 16px; }
+.cx-footer__group a.is-external::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -8px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+}
+.cx-footer__group .cx-footer__group-title { padding-left: 0; }
+
+.cx-footer__copy {
+  display: block;
+  margin-top: clamp(48px, 7vw, 72px);
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: var(--cx-footer-muted);
+}
+
+/* タブレット以下: 縦積み。タップしやすい高さを確保 */
+@media (max-width: 768px) {
+  .cx-footer__main { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .cx-footer__nav { margin-top: 28px; gap: 4px; }
+  .cx-footer__links { gap: 0 24px; }
+  .cx-footer__links a,
+  .cx-footer__group a { min-height: 44px; }
+  .cx-footer__services {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 16px;
+    padding-top: 32px;
+    border-top: 1px solid var(--cx-footer-line);
+  }
+  .cx-footer__group ul { gap: 0; }
+}
