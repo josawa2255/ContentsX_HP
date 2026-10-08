@@ -6,6 +6,7 @@
   var stage = transition.querySelector('.cxha-stage');
   var frame = transition.querySelector('.cxha-hero-frame');
   var hero = frame.querySelector('.cxh-hero');
+  var visual = hero.querySelector('.cxh-hero-visual');
   var about = transition.querySelector('.cxha-about');
   var office = about.querySelector('.cxha-office');
   var steps = about.querySelectorAll('[data-cxha-step]');
@@ -20,8 +21,20 @@
   function clamp(value) { return Math.max(0, Math.min(1, value)); }
   function ease(value) { value = clamp(value); return value * value * (3 - 2 * value); }
   function range(p, start, end) { return ease((p - start) / (end - start)); }
+  // Starts at scroll speed (no dead zone) and settles softly onto the photo.
+  function follow(value) { value = clamp(value); return value + value * value - value * value * value; }
+  function lerp(from, to, t) { return from + (to - from) * t; }
+
+  // Scroll share per phase. The Hero becomes the main visual in one move (0 → morphEnd),
+  // the photo is fully in place underneath before the aligned Hero dissolves away.
+  var PC = { distance:1.15, morphEnd:.78, clipCurve:1.4, copy:[.1,.4], wordmark:[.12,.4], office:[.6,.8], hero:[.78,.96],
+    steps:{ heading:[.24,.48], body:[.34,.58], links:[.66,.9], values:[.74,.98] } };
+  // SP: the photo window is near the Hero's width, so the move is mostly vertical and shorter.
+  var SP = { distance:1, morphEnd:.76, clipCurve:1, copy:[.1,.38], wordmark:[.12,.4], office:[.58,.78], hero:[.76,.95],
+    steps:{ heading:[.22,.46], body:[.32,.56], links:[.62,.88], values:[.72,.98] } };
 
   function measure() {
+    var tune = mobile.matches ? SP : PC;
     var header = parseFloat(getComputedStyle(transition).getPropertyValue('--cxha-header'));
     var heroHeight = hero.offsetHeight;
     var heroWidth = hero.offsetWidth;
@@ -30,18 +43,33 @@
     var fill = Math.max(0, window.innerHeight - header);
     transition.style.setProperty('--cxha-about-min', fill + 'px');
     var sceneHeight = Math.max(fill, about.offsetHeight);
-    var distance = Math.max(480, Math.min(1000, window.innerHeight * 1.15));
+    var distance = Math.max(480, Math.min(1000, window.innerHeight * tune.distance));
     transition.style.setProperty('--cxha-scene-height', sceneHeight + 'px');
     transition.style.setProperty('--cxha-distance', distance + 'px');
     transition.classList.add('cxha-ready');
     var stageRect = stage.getBoundingClientRect();
     var photoRect = office.getBoundingClientRect();
+    // Crop window inside the Hero (unscaled Hero coordinates): the largest area with the photo's
+    // aspect ratio, centred on the Hero artwork. On SP the artwork starts at 41%, so the plain
+    // upper part is cropped away instead of shrinking into an empty box.
+    var aspect = photoRect.width / photoRect.height;
+    var top = Math.max(0, Math.min(heroHeight, visual.offsetTop));
+    var areaHeight = Math.max(1, Math.min(heroHeight, visual.offsetTop + visual.offsetHeight) - top);
+    var cropWidth = Math.min(heroWidth, heroHeight * aspect);
+    var cropHeight = cropWidth / aspect;
+    var cropX = (heroWidth - cropWidth) / 2;
+    var cropY = Math.max(0, Math.min(heroHeight - cropHeight, top + (areaHeight - cropHeight) / 2));
+    var scale = photoRect.width / cropWidth;
     metrics = {
+      tune: tune,
       start: transition.getBoundingClientRect().top + window.scrollY - header,
       distance: distance,
       width: heroWidth, height: heroHeight,
-      x: photoRect.left - stageRect.left, y: photoRect.top - stageRect.top,
-      sx: photoRect.width / heroWidth, sy: photoRect.height / heroHeight
+      crop: [cropY, heroWidth - cropX - cropWidth, heroHeight - cropY - cropHeight, cropX],
+      scale: scale,
+      radius: parseFloat(getComputedStyle(office).borderTopLeftRadius) || 0,
+      x: photoRect.left - stageRect.left - cropX * scale,
+      y: photoRect.top - stageRect.top - cropY * scale
     };
     needsMeasure = false;
     lastProgress = -1;
@@ -63,30 +91,27 @@
     var p = clamp((window.scrollY - metrics.start) / metrics.distance);
     if (p === lastProgress) return;
     lastProgress = p;
-    var shrink = range(p, 0, .52);
-    var move = range(p, .28, .84);
-    var centerScale = 1 - .32 * shrink;
-    // Uniform scaling keeps the existing X artwork undistorted during the dissolve.
-    var finalScale = Math.min(metrics.sx, metrics.sy);
-    var scale = centerScale + (finalScale - centerScale) * move;
-    var x = metrics.width * (1 - centerScale) / 2;
-    var y = metrics.height * (1 - centerScale) / 2;
-    // Mobile stays on the center line, including when the photo width changes.
-    var targetX = mobile.matches ? metrics.width * (1 - finalScale) / 2 : metrics.x + metrics.width * (metrics.sx - finalScale) / 2;
-    var targetY = metrics.y + metrics.height * (metrics.sy - finalScale) / 2;
-    x += (targetX - x) * move;
-    y += (targetY - y) * move;
-    transition.style.setProperty('--cxha-hero-transform', p === 0 ? 'none' : 'translate(' + x + 'px,' + y + 'px) scale(' + scale + ')');
+    var tune = metrics.tune;
+    // One progress value drives scale, position and crop together, so the path never changes course.
+    var m = follow(p / tune.morphEnd);
+    // The crop closes slightly behind the shrink, keeping the Hero copy readable while it fades.
+    var c = Math.pow(m, tune.clipCurve);
+    var scale = lerp(1, metrics.scale, m);
+    var crop = metrics.crop.map(function (edge) { return (edge * c).toFixed(2) + 'px'; });
+    // Rounded corners reach the photo's on-screen radius exactly when the two overlap.
+    var radius = (metrics.radius * c / scale).toFixed(2);
+    transition.style.setProperty('--cxha-hero-transform', p === 0 ? 'none' : 'translate(' + lerp(0, metrics.x, m) + 'px,' + lerp(0, metrics.y, m) + 'px) scale(' + scale + ')');
+    transition.style.setProperty('--cxha-hero-clip', p === 0 ? 'none' : 'inset(' + crop.join(' ') + ' round ' + radius + 'px)');
     transition.style.setProperty('--cxha-compositing', p > 0 && p < 1 ? 'transform,opacity' : 'auto');
-    transition.style.setProperty('--cxha-copy-opacity', 1 - range(p, .08, .35));
-    transition.style.setProperty('--cxha-hero-opacity', 1 - range(p, .54, .94));
-    transition.style.setProperty('--cxha-wordmark', range(p, .12, .4));
-    transition.style.setProperty('--cxha-office', range(p, .54, .94));
+    transition.style.setProperty('--cxha-copy-opacity', 1 - range(p, tune.copy[0], tune.copy[1]));
+    // The photo is complete underneath before the aligned Hero starts to dissolve: no see-through dip.
+    transition.style.setProperty('--cxha-hero-opacity', 1 - range(p, tune.hero[0], tune.hero[1]));
+    transition.style.setProperty('--cxha-wordmark', range(p, tune.wordmark[0], tune.wordmark[1]));
+    transition.style.setProperty('--cxha-office', range(p, tune.office[0], tune.office[1]));
     transition.style.setProperty('--cxha-about-pointer', p >= .35 ? 'auto' : 'none');
-    // Heading → main visual (office, .54–.94) → Purpose/Company links → business cards.
-    var timings = { label:[.26,.48], heading:[.34,.58], body:[.44,.7], links:[.62,.9], values:[.72,.98] };
+    // Heading (overlaps the fading Hero copy) → body → main visual → Purpose/Company links → business cards.
     steps.forEach(function (node) {
-      var timing = timings[node.dataset.cxhaStep];
+      var timing = tune.steps[node.dataset.cxhaStep];
       node.style.setProperty('--cxha-step', range(p, timing[0], timing[1]));
     });
     // Invisible Hero links must not intercept pointer or keyboard input.
