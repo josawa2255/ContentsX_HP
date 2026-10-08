@@ -28,7 +28,7 @@
 | ニュース詳細 | `news-detail.html` | wp-config.js + インラインJS | |
 | コラム一覧 | `column.html` | i18n.js, nav.js, column.js | Featured + カテゴリチップフィルタ + カードグリッド。`tools/build-c-columns.py` が WP API (`?site=contentx`) からカード・カテゴリ・ItemList JSON-LD・Featured を自動注入（`<!-- BUILD:COLUMN_GRID -->` マーカー間） |
 | コラム個別 | `column/{slug}.html` | (静的) | `tools/build-c-columns.py` で生成。`/column/` は `column/index.html` の meta refresh で `/column` へリダイレクト |
-| Chrome 拡張機能一覧 | `extensions/index.html` | i18n.js, nav.js | `/extensions/`。拡張機能ごとにカードを追加できる一覧。トップのフッターから導線を設置 |
+| Chrome 拡張機能一覧 | `extensions/index.html` | i18n.js, nav.js | `/extensions/`。拡張機能ごとにカードを追加できる一覧。全ページ共通フッター（§7.5）から導線を設置 |
 | TabLabo 紹介 | `extensions/tablabo/index.html` | i18n.js, nav.js | `/extensions/tablabo/`。機能・画面・料金・法人導入の案内 |
 | TabLabo ポリシー・規約 | `extensions/tablabo/privacy.html`・`extensions/tablabo/terms.html` | i18n.js, nav.js | 拡張子なしURL。本文は日本語の正本を保持し、自動翻訳の対象外 |
 | TabLabo AIアクセス許可 | `extensions/tablabo/oauth/consent/index.html` | 提供HTML内のJS・supabase-js | `/extensions/tablabo/oauth/consent/`。共通UIと計測タグを入れない独立画面。noindex |
@@ -177,7 +177,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 - `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、旧個別URLの転送ページ7件、共通デザイントークンCSS、サイトマップを生成する。`href` は旧URL、`destination` は現在の遷移先で、生成ページは後者を使う。個別詳細ページは公開しない。サイトマップには一覧と事業群2ページだけを載せる。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
 - 一覧は `tools/templates/service-list.html.tpl` と `css/service-directory-2026.css` で生成する。冒頭の重複ヒーローと事業カードを置かず、Creative X の写真・紹介から始める。Creative X → Sales Xの順に、画像左・濃紺の説明右の事業紹介、1文の概要を添えたサービスカードを置く。事業紹介の写真は装飾画像とし、各事業ページへの遷移は説明側のCTA1個に絞る。最初のCreative X見出しを一覧のH1とする。領域間の帯は見出しで、クリックできるリンクにはしない。PCのホバー/キーボードフォーカスで補足文を表示し、タッチ端末は常時見える1文を残す。公式サイトがある静止画カードは画像・見出し・CTAを同じ公開先へ向ける。動画カードのポスターはページ内再生で、ビズアニメの見出しとCTAのみ公式サイトへ進む。
-- 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップのヘッダー構成が変わっても、生成時はトップから抽出しない。全ページのサービス導線とフッターの新作情報は実在するURLへ向ける。
+- 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップのヘッダー構成が変わっても、生成時はトップから抽出しない。全ページのサービス導線は実在するURLへ向ける。フッターは全ページ共通（§7.5）。
 - サービスカードはPCのhover/focusで補足文を示し、スマホでは1文の概要を常時表示する。JSなしでも概要は読める。ビズAIO・ビズカルテは準備中、公開済みサービスは公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後にページ内で再生する。
 - サービス生成は `python3 tools/build-services.py --check` と `python3 -m unittest discover -s tests -p test_build_services.py` で確認する。Pagesワークフローも同じ生成処理とテストを実行する。
 - Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` から生成する。白・濃紺を土台に、Sales Xの青 `#005bfa` とCreative Xのオレンジ `#fa4d12` を使う。ヒーロー・相談CTAの画像は背景と境界をつなげ、スマホでは本文の下に置く。Creative Xのヒーローは `creative-hero-v2.webp`、Sales Xは `sales-hero-v2.webp`。Creative Xの「夜明けスタジオ」は表示しない。Sales Xのビズフォーム画像は実際の業務内容に沿った `bizform-research-v2.webp` を使う。
@@ -360,6 +360,14 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ホーム | 企業案内 ▾ (Contents Xについて / トップメッセージ / 会社概要 / 役員紹介 / 主要関連会社) | コラム | 採用情報 | お問い合わせ
 ```
 - ⚠️ 「強み」は一時削除中（BizManga特化のため）→ 他事業展開後に全面刷新してメニュー復帰予定
+
+### 7.5 共通フッター（2026-10-08 統一、Issue #87）
+- 全ページ同じHTML・同じCSS（`.cx-footer`、`css/site-footer.css`）。各ページの `</head>` 直前で最後に読み込み、旧フッター（`.footer` / `.ax-footer` / `.cxh-footer`）のCSSとは干渉させない。旧フッターのCSSは未使用のまま残っている。
+- 参考: レバレジーズ株式会社のコーポレートサイトのフッター。濃紺（`--cx-color-ink` #07143b）の面に白抜きロゴ。
+- 構成: 左＝ロゴ＋小さなリンク2段（会社概要・私たちについて・ニュース・採用情報・お問い合わせ／よくあるご質問・プライバシーポリシー・利用規約・Chrome 拡張機能）、右＝Sales X・Creative X のサービス一覧2列（外部サイトへのリンクは左上に角の印＋別タブ）、下＝`© 2026 Contents X Inc.`。住所・会社名の文字表記は置かない（会社概要・構造化データに記載）。
+- 768px以下は縦積み。リンクの高さは44px以上。各リンクに `data-ja` / `data-en`。
+- **変更するときは3か所を同じ内容にする**: 静的ページ全部（`<footer class="cx-footer">` を一括置換）、`tools/templates/c-column.html.tpl`（コラム記事の生成元）、`services/index.html`（`tools/build-services.py` がサービスページへ複製）。置換後に `python3 tools/build-services.py --check` で差分がないことを確認する。
+- サービス名・遷移先は `data/services.json` と `js/nav.js` に合わせる（サービスを増減したらフッターも直す）。
 
 ## 7.4 コラム機能（2026-05-08 新設）
 - 個別記事は WP CMS → `tools/build-c-columns.py` → `column/{slug}.html` で静的生成（既存）
