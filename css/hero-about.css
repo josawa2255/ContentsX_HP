@@ -56,7 +56,7 @@
 @media (prefers-reduced-motion:no-preference) {
   .cxha-transition.cxha-ready { height:calc(var(--cxha-scene-height) + var(--cxha-distance)); }
   .cxha-ready .cxha-stage { position:sticky; top:var(--cxha-header); min-height:var(--cxha-scene-height); }
-  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); transform:var(--cxha-hero-transform,none); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
+  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); transform:var(--cxha-hero-transform,none); clip-path:var(--cxha-hero-clip,none); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
   .cxha-ready .cxh-hero-inner { opacity:var(--cxha-copy-opacity,1); }
   .cxha-ready .cxha-about { pointer-events:var(--cxha-about-pointer,none); }
   .cxha-ready .cxh-hero-wash { opacity:var(--cxha-copy-opacity,1); }
