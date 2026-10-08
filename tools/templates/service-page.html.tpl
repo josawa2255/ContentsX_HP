@@ -44,7 +44,7 @@
 {{HEADER}}
 <main class="cxs-page" id="main">
 {{BODY}}
-  <section id="cxCtaMount"></section>
+  <section id="cxCtaMount" data-cx-page-cta></section>
 </main>
 {{FOOTER}}
 <div class="dl-modal-overlay" id="dlModal">
