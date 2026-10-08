@@ -55,3 +55,17 @@
 
 /* Adjacent backdrop sections (ABOUT → CREATIVE X) read as one continuous scene: no white seam. */
 .cxsb-section.cxsb-join-next::after,.cxsb-section.cxsb-join-prev::before { display:none; }
+
+/* Fixed section names (Issue #89). With JS (html.cxsb-fixed-labels), each big name is fixed to the
+   screen like the backdrop and clipped by its own section. Only the section that fully contains its
+   name shows it; while a boundary passes over the name both fade out, so a name is never cut in half
+   and the next one fades in (0.3s). ABOUT keeps the Hero → ABOUT reveal (--cxha-wordmark). */
+@property --cxsb-label-o { syntax:'<number>'; inherits:false; initial-value:0; }
+html.cxsb-fixed-labels .cxsb-section > .cxsb-label { position:fixed; top:calc(64px + clamp(10px,1.6vw,26px)); --cxsb-label-o:0; opacity:calc(var(--cxsb-label-o) * var(--cxha-wordmark,1)); transform:none; transition:--cxsb-label-o .3s ease; }
+html.cxsb-fixed-labels .cxsb-section > .cxsb-label.is-current { --cxsb-label-o:1; }
+@media (max-width:480px) {
+  html.cxsb-fixed-labels .cxsb-section > .cxsb-label { top:calc(56px + clamp(10px,1.6vw,26px)); }
+}
+@media (prefers-reduced-motion:reduce) {
+  html.cxsb-fixed-labels .cxsb-section > .cxsb-label { transition:none; }
+}

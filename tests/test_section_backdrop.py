@@ -81,11 +81,11 @@ with sync_playwright() as p:
             assert page.locator(f'{selector} > .cxsb-backdrop').evaluate('e=>Math.abs(e.getBoundingClientRect().top)') < 1
         # The clip keeps the fixed layer out of neighbouring white sections.
         # Make the neighbouring section transparent: if the fixed layer leaked, the sky would show.
-        page.add_style_tag(content='.cxh-footer{background:none!important}')
-        scroll(page, top_of(page, '.cxh-footer') - 64 + 40)
+        page.add_style_tag(content='.cx-footer{background:none!important}')
+        scroll(page, top_of(page, '.cx-footer') - 64 + 40)
         shot = out / f'{width}-company-clip.png'
         page.screenshot(path=str(shot))
-        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('.cxh-footer').getBoundingClientRect().top + 120)"))
+        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('.cx-footer').getBoundingClientRect().top + 120)"))
         pixel = Image.open(shot).convert('RGB').getpixel((2, y))
         assert min(pixel) >= 248, f'Backdrop leaked into the footer at {width}px: {pixel}'
         if width in [390, 1440]:
@@ -167,10 +167,36 @@ with sync_playwright() as p:
     # Reduced motion: everything visible without entrance motion.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page, args.url)
+    # Section names are fixed and only the current one shows (Issue #89); with reduced motion it switches instantly.
     for selector in ['#topics', '#news']:
+        scroll(page, top_of(page, selector) - 64, 300)
         assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
     assert page.locator('#news .news-list').evaluate('e=>getComputedStyle(e).opacity') == '1'
     page.close()
+
+    # Fixed section names (Issue #89): fixed to the screen, one at a time, hidden while a boundary crosses them.
+    for w, h in [(1440, 900), (390, 844)]:
+        page = browser.new_page(viewport={'width': w, 'height': h})
+        load(page, args.url)
+        page.add_style_tag(content='html{scroll-snap-type:none!important}')
+        assert page.evaluate("document.documentElement.classList.contains('cxsb-fixed-labels')")
+        def shown():
+            page.wait_for_timeout(700)
+            return page.evaluate('''[...document.querySelectorAll('.cxsb-section > .cxsb-label')]
+              .filter(l=>parseFloat(getComputedStyle(l).opacity)>0.05).map(l=>[l.textContent.trim(), Math.round(l.getBoundingClientRect().top)])''')
+        for selector, name in [('#creative-x', 'CREATIVE X'), ('#sales-x', 'SALES X'), ('#topics', 'TOPICS'), ('#news', 'NEWS')]:
+            top = top_of(page, selector) - 64
+            scroll(page, top + 40, 100)
+            first = shown()
+            assert [n for n, _ in first] == [name], (w, selector, first)
+            scroll(page, top + 140, 100)
+            second = shown()
+            assert second == first, ('name must stay fixed on screen', w, selector, first, second)
+            # While the boundary passes over the name, nothing is shown (never a half-cut name).
+            label_mid = page.locator(f'{selector} > .cxsb-label').evaluate('e=>{const r=e.getBoundingClientRect();return (r.top+r.bottom)/2}')
+            scroll(page, top_of(page, selector) - label_mid, 100)
+            assert shown() == [], (w, selector, 'boundary crossing should hide both names')
+        page.close()
 
     # JS off: backdrop, labels and content render in normal order.
     page = browser.new_page(viewport={'width': 390, 'height': 844}, java_script_enabled=False)
