@@ -163,6 +163,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - カード: サムネイル（16:9）/ 種別（英大文字、MESSAGE・VIDEO・PRESS・COLUMN・CASE など自由）/ 日付 / タイトル（2行まで）/ タグ（#付き）。PCは3枚横並び、4枚目以降は横に並び矢印で送る。hover は画像1.02倍・矢印3px右・タイトルを青に。カード全体がリンクで、サイト内は同じタブ（→）、外部（YouTube・PR TIMES等）は新しいタブ（↗、読み上げに「外部サイトが開きます」）。
 - データ（`js/home-topics.js`）: `GET /contentsx/v1/topics`（WPプラグイン「Contents X ＞ TOPICS」、`contentsx-cms/contentsx-topics.php`）。表示ONのみ、PICK UP を先頭に、あとは管理画面の並び順。リンクは `/` 始まりのサイト内パスか http(s)、画像は `cms.contentsx.jp` / `contentsx.jp` / `i.ytimg.com` の https かサイト内パスのみ、日付は実在する日付のみ表示。文字は textContent。
 - 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/about#message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
+- 項目の追加・変更（2026-10-08 追記）: WP管理画面「Contents X ＞ TOPICS」で行う。REST の `POST /contentsx/v1/topics`（要 edit_posts）でもできるが、**一覧を丸ごと置き換える**仕様で、公開の GET は表示ONの項目しか返さない。GET の結果に足して POST すると、管理画面で表示OFFにしている項目が消えるので、表示OFFの項目が無いことを確かめてから使う。VIDEO の画像はYouTubeのURLから自動で補われるので、保存し直すときは空のまま送る。
+- 反映の遅れ: `cms.contentsx.jp` の nginx が API応答を最大10分キャッシュする（`s-maxage=600`）。`Vary: Origin` のため、ブラウザからの取得（Origin付き）は curl 等とは別のキャッシュになり、curl で新しい値が見えてもトップの表示は最大10分古いまま。確認は時間を置くか、`Origin: https://contentsx.jp` を付けた取得で行う。
 - NEWS セクションと代表メッセージ本文ページは、このプロジェクトでは作らない（代表メッセージのリンク先は既存の `/about#message`）。
 - CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
 
