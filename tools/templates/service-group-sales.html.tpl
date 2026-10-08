@@ -39,7 +39,7 @@
       <a class="cxg-button cxg-button--creative" href="/services/creative-x/">Creative Xについて見る <span aria-hidden="true">→</span></a>
     </div>
   </section>
-  <section class="cxg-section cxg-contact" aria-labelledby="cxg-contact">
+  <section class="cxg-section cxg-contact" data-cx-page-cta aria-labelledby="cxg-contact">
     <div class="cxs-container cxg-contact__inner"><div><p class="cxg-index">04 <span>CONTACT</span></p><h2 id="cxg-contact">まずはご相談ください</h2><p>1つのサービスだけのご依頼も可能です。<br>貴社の課題に合わせて、必要なサービスからご提案します。</p><a class="cxg-button" href="/contact">お問い合わせ <span aria-hidden="true">→</span></a></div><img src="/material/service-2026/contact.jpg" alt="窓の向こうに広がる都市を見つめるビジネスチーム" width="2039" height="771" loading="lazy"></div>
   </section>
 </div>

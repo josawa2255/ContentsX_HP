@@ -456,7 +456,7 @@ def render_page(body: str, title: str, description: str, path: str, json_ld: lis
         "HEADER": header, "FOOTER": footer, "BODY": body,
     })
     if not cta_mount:
-        page = page.replace('  <section id="cxCtaMount"></section>\n', '')
+        page = page.replace('  <section id="cxCtaMount" data-cx-page-cta></section>\n', '')
     return page.replace("<!DOCTYPE html>", f"<!DOCTYPE html>\n{SIGNATURE}", 1)
 
 

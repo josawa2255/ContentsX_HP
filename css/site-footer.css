@@ -28,6 +28,45 @@
   width: min(100% - 32px, 1360px);
   margin-inline: auto;
 }
+/* 上部の小さなお問い合わせ導線（トップの写真付きCTAの代わり、Issue #94） */
+.cx-footer__contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: clamp(40px, 5vw, 56px);
+  padding-bottom: clamp(28px, 3.5vw, 40px);
+  border-bottom: 1px solid var(--cx-footer-line);
+}
+.cx-footer__contact-text { min-width: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
+.cx-footer__contact-text strong { color: #fff; font-size: clamp(17px, 1.5vw, 20px); font-weight: 700; letter-spacing: .04em; }
+.cx-footer__contact-text span { color: var(--cx-footer-muted); font-size: 13px; letter-spacing: .04em; line-height: 1.7; }
+.cx-footer .cx-footer__contact-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 48px;
+  min-width: 200px;
+  padding: 0 24px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  transition: background-color .2s ease, color .2s ease;
+}
+.cx-footer .cx-footer__contact-link:hover,
+.cx-footer .cx-footer__contact-link:focus-visible { background: #fff; color: var(--cx-footer-bg); opacity: 1; }
+@media (hover: hover) {
+  .cx-footer__contact-arrow { transition: transform .2s ease; }
+  .cx-footer__contact-link:hover .cx-footer__contact-arrow { transform: translateX(3px); }
+}
+/* ページ専用のCTA（またはお問い合わせフォーム）に data-cx-page-cta を付けたページでは重複させない */
+body:has([data-cx-page-cta]) .cx-footer__contact { display: none; }
+
 .cx-footer__main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -114,6 +153,9 @@
 /* タブレット以下: 縦積み。タップしやすい高さを確保 */
 @media (max-width: 768px) {
   .cx-footer__main { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .cx-footer__contact { flex-direction: column; align-items: stretch; }
+  .cx-footer__contact-text { flex-direction: column; gap: 4px; }
+  .cx-footer .cx-footer__contact-link { width: 100%; }
   .cx-footer__nav { margin-top: 28px; gap: 4px; }
   .cx-footer__links { gap: 0 24px; }
   .cx-footer__links a,

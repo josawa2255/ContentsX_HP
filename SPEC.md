@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
+| トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News（写真付きの相談CTAは2026-10-08に撤去し、共通フッター上部の小さな導線に置き換え）。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
 | サービス一覧 | `services/index.html` | i18n.js, nav.js, service-media.js | Creative X / Sales Xの事業紹介とサービス一覧。動画はページ内再生 |
 | Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
 | 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
@@ -71,7 +71,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・TOPICS・Newsは共通背景。ABOUT〜NEWS は継ぎ目なく連続） → Creative X → Sales X →（サービス一覧＝非表示中）→ TOPICS → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・TOPICS・Newsは共通背景。ABOUT〜NEWS は継ぎ目なく連続） → Creative X → Sales X →（サービス一覧＝非表示中）→ TOPICS → News → フッター（写真付きの相談CTA `.cxh-contact` は Issue #94 で撤去。NEWSは最後のセクションなので下の余白を白フェードより広く取り、白になりきってから濃紺のフッターへ切り替える）。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
 - 2026-10-07（Issue #83）: コンセプト（Sales X × Creative X = Contents X）・Sales X / Creative X の2枚カード・「売上が生まれるまでの流れ」を削除。ABOUT / Creative X / Sales X と内容が重なり、共通背景を白いブロックで途切れさせていたため。サービス同士のつながり（接点 → 価値 → 顧客情報）はサービス一覧ページ `/services/` で伝える。`css/home-2026.css` の `.cxh-concept` / `.cxh-pillar*` / `.cxh-mark` / `.cxh-flow*` の指定は未使用のまま残っている（戻す場合に備えて削除していない）。
 - 2026-10-07（Issue #85）: サービス一覧（SERVICE、`#about`「2つの事業で、企業の成長を支えます。」）を `hidden` 属性で一時非表示（マークアップは `TEMP-HIDDEN SERVICE` コメント付きで残置）。Creative X / Sales X と内容が重なるため。後で「Contents X のまとめ」セクションとして作り直す予定。戻すときは `hidden` を外す（Sales X → SERVICE → TOPICS の `cxsb-join-*` はそのまま使える）。下層9ページの下部メニュー「サービス」は `./#about` から `/services/` に付け替えた。「制作スタジオ・IP開発（YOAKE STUDIO）」は現在トップに出ていない。
 - 2026-10-07（Issue #85）: 会社紹介「Contents Xとは？ 法人の営業と売上づくりを支援する会社です。」（`#company-intro`）を削除。ABOUT の会社説明・Purpose（/about）・Company（/company）と重なるため。TOPICS → NEWS を共通背景で継ぎ目なくつなぐ。
@@ -100,7 +100,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ### ABOUT / SERVICE / NEWS の共通背景（Issue #61）
 
-- 対象は `#home-about`（ABOUT）、`#about`（サービス一覧＝SERVICE）、`#news`（NEWS）の3つ。各セクションに `.cxsb-section` を付け、間のコンセプト・Sales X / Creative X・流れ・会社紹介・相談CTAは従来どおり白系の背景のまま残す。
+- 対象は `#home-about`（ABOUT）、`#about`（サービス一覧＝SERVICE）、`#news`（NEWS）の3つ。各セクションに `.cxsb-section` を付け、間のコンセプト・Sales X / Creative X・流れ・会社紹介は従来どおり白系の背景のまま残す。
 - 背景はハンドオフ（ContentsX_About_Handoff）の `02_common_bg_pc` / `03_common_bg_sp`（= #59 のオフィス画像）に、ぼかし（PC 15px・SP 16px相当）と明るさ調整を焼き込んだもの。`material/home-2026/section-bg-pc.webp`（1672×941）と `section-bg-mobile.webp`（941×1672）を、768px以下または縦長画面（縦横比3:4以下）で切り替える。CSSの `filter: blur` はスクロール中の描画負荷が高いため使わない。実在のオフィス写真としては扱わない。
 - 各セクション先頭の `.cxsb-backdrop` を `position:fixed` で画面全体に置き、セクション側の `clip-path:inset(0)` で切り抜く。背景は動かず、カード・見出しだけが上を流れる（`background-attachment:fixed` は iOS で効かないため使わない）。白いベールで濃紺文字の可読性を保ち、上下端は白へフェードして隣の白いセクションへつなぐ。
 - 各セクション上部に大きく薄い英字 `.cxsb-label`（ABOUT / SERVICE / NEWS、`aria-hidden`・`data-i18n-skip`・`text-size-adjust:100%`）。ABOUTは #59 の巨大文字 `.cxha-wordmark` の文言を「CONTENTS X」から「ABOUT」へ変更して流用し、表示タイミングは #59 のスクロール連動のまま。
@@ -376,6 +376,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 参考: レバレジーズ株式会社のコーポレートサイトのフッター。濃紺（`--cx-color-ink` #07143b）の面に白抜きロゴ。
 - 構成: 左＝ロゴ＋小さなリンク2段（会社概要・私たちについて・ニュース・採用情報・お問い合わせ／よくあるご質問・プライバシーポリシー・利用規約・Chrome 拡張機能）、右＝Sales X・Creative X のサービス一覧2列（外部サイトへのリンクは左上に角の印＋別タブ）、下＝`© 2026 Contents X Inc.`。住所・会社名の文字表記は置かない（会社概要・構造化データに記載）。
 - 768px以下は縦積み。リンクの高さは44px以上。各リンクに `data-ja` / `data-en`。
+- 上部の小さなお問い合わせ導線 `.cx-footer__contact`（Issue #94）: 「まずはご相談ください／利用するサービスが決まっていなくても構いません。」＋白枠の「お問い合わせ」ボタン（`/contact`）。濃紺の面はそのまま、下に区切り線。768px以下は縦積みでボタン全幅。
+- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要・採用・サービス一覧／`service-page.html.tpl`）、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
 - **変更するときは3か所を同じ内容にする**: 静的ページ全部（`<footer class="cx-footer">` を一括置換）、`tools/templates/c-column.html.tpl`（コラム記事の生成元）、`services/index.html`（`tools/build-services.py` がサービスページへ複製）。置換後に `python3 tools/build-services.py --check` で差分がないことを確認する。
 - サービス名・遷移先は `data/services.json` と `js/nav.js` に合わせる（サービスを増減したらフッターも直す）。
 
