@@ -1,7 +1,9 @@
 /* NEWS (top) — a place to check information: readability and scanning first, little motion.
    Shared backdrop from home-sections.css. Rows come from WordPress via js/wp-api.js (home branch);
    the four rows in index.html are the JS-off / API-failure fallback. */
-.cxh-home .news-section.cxsb-section { padding:clamp(96px,10svh,160px) 0 clamp(56px,7svh,104px); border-bottom:0; }
+/* NEWS is the last section before the navy footer (Issue #94): the bottom space is taller than the
+   white edge fade, so the list stays clear of it and the page turns fully white before the footer. */
+.cxh-home .news-section.cxsb-section { padding:clamp(96px,10svh,160px) 0 clamp(136px,11vw,184px); border-bottom:0; }
 .cxh-home .news-section.cxsb-section>.container { position:relative; z-index:1; width:min(100% - 80px,1250px); max-width:none; padding-inline:0; }
 .cxnw-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
@@ -48,7 +50,7 @@
 }
 /* SP: small thumbnail on the left, category and date above a title of up to three lines. */
 @media (max-width:768px) {
-  .cxh-home .news-section.cxsb-section { padding:clamp(80px,22vw,118px) 0 56px; }
+  .cxh-home .news-section.cxsb-section { padding:clamp(80px,22vw,118px) 0 104px; }
   .cxh-home .news-section.cxsb-section>.container { width:min(100% - 32px,560px); }
   .cxnw-list { border-radius:12px; }
   .cxnw-row { grid-template-columns:88px auto minmax(0,1fr) 16px; column-gap:12px; row-gap:6px; min-height:96px; padding:16px 14px; }
