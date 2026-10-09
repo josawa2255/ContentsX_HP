@@ -111,7 +111,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### ABOUTの構成（Issue #63）
 
 - 基準: ハンドオフ `ContentsX_About_Handoff/00_reference_about.png`。画面を1枚画像にせず、背景・画像・文字・カードをHTML/CSSで分ける。ヘッダーは共通ヘッダーのまま。
-- PC（1101px以上）: 左に見出し「コンテンツで、企業の可能性をひらく。」と本文、中央に大きなメインビジュアル `.cxha-office`（`material/home-2026/about-main-visual.webp`、1672×941、2:1で表示）、右に Purpose 導線（「コンテンツの力で、社会にもっといい未来を。」OUR PURPOSE → `/about`）と Company 導線（「私たちについて」COMPANY → `/company`）。下段は半透明の白い帯に「価値を生み出す、2つの力。」の導入文と、Sales X（→ `/services/sales-x/`）/ Creative X（→ `/services/creative-x/`）の2カード。Contents Xカードは置かない。カードのXは Sales X が青、Creative X がオレンジ。
+- PC（1101px以上）: 左に見出し「コンテンツで、企業の可能性をひらく。」と本文、中央に大きなメインビジュアル `.cxha-office`（2026-10-09 から社員の集合写真 `material/home-2026/about-team-photo.webp`、2000×1500。PCは2:1の枠で後列の頭と前列の顔が入る位置〈`object-position: 50% 35%`〉、768px以下は4:3で全体を表示。旧画像 `about-main-visual.webp` は戻す場合に備えて残置）、右に Purpose 導線（「コンテンツの力で、社会にもっといい未来を。」OUR PURPOSE → `/about`）と Company 導線（「私たちについて」COMPANY → `/company`）。下段は半透明の白い帯に「価値を生み出す、2つの力。」の導入文と、Sales X（→ `/services/sales-x/`）/ Creative X（→ `/services/creative-x/`）の2カード。Contents Xカードは置かない。カードのXは Sales X が青、Creative X がオレンジ。
 - Purpose / Company カードは新しい画像を増やさず、`about-office-pc.webp` を `background-size` / `background-position` で別の範囲に切り出し、Purpose は白、Company は濃紺のグラデーションを重ねる。
 - 769〜1100px: 見出し・本文を上段の全幅、メインビジュアルとPurpose / Companyを2列、導入文を全幅にして事業カードを2列。
 - 768px以下: ABOUT → 見出し/本文 → メインビジュアル（4:3）→ Purpose → Company → Sales X → Creative X の1カラム。導入文はスマホでは出さない。横移動や強いstickyは使わない（#59の縮小演出は中央線のまま縦方向）。
