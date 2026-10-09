@@ -47,6 +47,12 @@
 
 `recruit.html` のヒーローに白文字の共通クラスを適用。暗いオーバーレイも合わせて設定した。白い縁取りが適切な写真では `cx-image-text--dark` を選ぶ。背景を差し替えたら 320 / 390 / 768 / 1440px で確認する。
 
+## 共通レスポンシブUI
+
+**SP / 共通部品の詳細な正本は [RESPONSIVE-UI-STANDARD.md](RESPONSIVE-UI-STANDARD.md)** とする。ページごとに文字サイズ、タップ領域、左右余白、カードグリッドの数値をコピーせず、ブランドCSSの --cx-rsp-* トークンおよび .cx-ui-shell / .cx-ui-section / .cx-ui-title / .cx-ui-copy / .cx-ui-meta / .cx-ui-grid / .cx-ui-hit / .cx-ui-media を再利用する。Hero固有演出は担当外の変更をしない。
+
+共通ヘッダー・フッターは主要ページと生成テンプレートで構造を一致させ、`python3 tools/check-shared-ui.py` を変更前後で実行する。静的チェックに加え、幅320〜430px、文字200%でも実表示を確認する。
+
 ## 実装時の使い方
 
 共通クラスは単一の役割だけを持たせ、ページ固有の配置や余白は従来のクラスが担当する。
