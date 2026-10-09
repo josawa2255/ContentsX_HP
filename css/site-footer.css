@@ -6,7 +6,7 @@
      別クラス名・このファイルを各ページの最後に読み込む
    ========================================================================== */
 .cx-footer {
-  --cx-footer-bg: #07143b;
+  --cx-footer-bg: var(--cx-color-ink, #07143b);
   --cx-footer-text: rgba(255, 255, 255, .86);
   --cx-footer-muted: rgba(255, 255, 255, .56);
   --cx-footer-line: rgba(255, 255, 255, .14);
@@ -159,7 +159,7 @@ body:has([data-cx-page-cta]) .cx-footer__contact { display: none; }
   .cx-footer__nav { margin-top: 28px; gap: 4px; }
   .cx-footer__links { gap: 0 24px; }
   .cx-footer__links a,
-  .cx-footer__group a { min-height: 44px; }
+  .cx-footer__group a { min-height: var(--cx-rsp-touch-target, 44px); }
   .cx-footer__services {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px 16px;
