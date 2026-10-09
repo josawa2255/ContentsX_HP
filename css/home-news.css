@@ -55,8 +55,24 @@
   .cxnw-list { border-radius:12px; }
   .cxnw-row { grid-template-columns:88px auto minmax(0,1fr) 16px; column-gap:12px; row-gap:6px; min-height:96px; padding:16px 14px; }
   .cxnw-thumb { width:88px; align-self:start; }
-  .cxnw-tag { font-size:10px; padding:2px 7px; }
+  .cxnw-tag { font-size:12px; padding:2px 7px; }
   .cxnw-date { font-size:12px; }
   .cxnw-title { -webkit-line-clamp:3; font-size:15px; line-height:1.6; }
   .cxnw-arrow { font-size:16px; }
+}
+
+/* Narrow SP: avoid squeezing category and date into tiny side-by-side tracks. */
+@media (max-width:430px) {
+  .cxnw-list { grid-auto-rows:auto; }
+  .cxnw-row {
+    grid-template-columns:76px minmax(0,1fr) 14px;
+    grid-template-areas:"thumb tag arrow" "thumb date arrow" "thumb title arrow";
+    column-gap:12px;
+    row-gap:4px;
+    min-height:112px;
+    padding:14px 12px;
+  }
+  .cxnw-thumb { width:76px; align-self:center; }
+  .cxnw-date { white-space:normal; }
+  .cxnw-title { font-size:15px; line-height:1.55; }
 }
