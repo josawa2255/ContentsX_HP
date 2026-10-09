@@ -60,6 +60,9 @@ WORKS = [{'id': 'nogallery', 'title_ja': 'ページなし', 'gallery': []}, MANG
 VERTICAL = [{'id': 'tate', 'title_ja': '縦読み', 'view_type': 'vertical_only', 'gallery': [UP + 'tall1.png', UP + 'tall2.png', UP + 'tall3.png']}]
 
 
+HELD = []  # API requests left unanswered by load(hang=True)
+
+
 def load(page, videos=VIDEOS, works=WORKS, fail=False, hang=False):
     def route(r):
         u = r.request.url
@@ -67,7 +70,7 @@ def load(page, videos=VIDEOS, works=WORKS, fail=False, hang=False):
             if fail:
                 return r.abort()
             if hang:
-                return None  # never answers: the loading state stays
+                return HELD.append(r)  # no answer yet: the loading state stays
             body = videos if '/bizanime-videos' in u else works if '/works' in u else []
             return r.fulfill(status=200, content_type='application/json', body=json.dumps(body))
         if u.startswith(UP):
@@ -318,7 +321,9 @@ with sync_playwright() as p:
     load(page, hang=True)
     to_section(page, 300)
     assert page.locator('#cxcx-panel .cxcx-message').inner_text() == '読み込み中…'
-    page.unroute_all(behavior='ignoreErrors')
+    for r in HELD:
+        r.abort()
+    page.wait_for_timeout(300)
     page.close()
     page = browser.new_page(viewport={'width': 390, 'height': 844})
     errors = []
