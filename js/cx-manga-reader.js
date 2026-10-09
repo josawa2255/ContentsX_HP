@@ -7,8 +7,11 @@
      1.8× its width (bm-view-type.js isForcedVertical / isVerticalByRatio).
    - Spread on wide frames, one page at a time on narrow ones; swipe left = next, right = previous;
      ← = next, → = previous. Pages are never cropped (object-fit: contain).
-   Usage: var r = CxMangaReader(container, work, { wide: function () { return true; } });
-          r.reset(); r.destroy(); */
+   The vertical rule is copied rather than delegated to window.bmViewType because contentsx.jp does
+   not load BizManga's scripts (another site; Issue #97 keeps the sites independent). If BizManga
+   changes bm-view-type.js (ratio 1.8, view_type values), change VERTICAL_RATIO / forcedVertical here.
+   Like bm-view-type.js, a first page that fails to load counts as "not vertical".
+   Usage: var r = CxMangaReader(container, work, { wide: function () { return true; } }); r.destroy(); */
 (function () {
   'use strict';
   var THANKS = '/material/manga/thanks_v02.webp';
@@ -35,10 +38,10 @@
     return vt === 'vertical_only' || vt === 'vertical';
   }
   function probeRatio(src) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       var img = new Image();
       img.onload = function () { resolve(img.naturalHeight / Math.max(1, img.naturalWidth)); };
-      img.onerror = reject;
+      img.onerror = function () { resolve(0); };
       img.src = src;
     });
   }
@@ -73,7 +76,7 @@
       status.textContent = '漫画を表示できませんでした。時間をおいて、もう一度お試しください。';
       root.classList.add('is-error');
     }
-    if (!pages.length) { fail(); return { reset: function () {}, destroy: function () {} }; }
+    if (!pages.length) { fail(); return { stop: function () {}, destroy: function () { root.textContent = ''; } }; }
 
     function units() {
       if (state.mode !== 'spread') return pages.map(function (_, i) { return [i]; });
@@ -173,22 +176,18 @@
     var onResize = function () { relayout(); };
     window.addEventListener('resize', onResize, { passive: true });
 
-    probeRatio(pages[0]).then(function (ratio) {
+    (forcedVertical(work) ? Promise.resolve(Infinity) : probeRatio(pages[0])).then(function (ratio) {
       if (state.destroyed) return;
-      state.vertical = forcedVertical(work) || ratio > VERTICAL_RATIO;
+      state.vertical = ratio > VERTICAL_RATIO;
       state.mode = layoutMode();
       render();
       status.textContent = '';
       root.classList.add('is-ready');
-    }).catch(fail);
+    });
 
+    // Leaving the service destroys the reader; coming back builds a new one at page 1 without zoom.
     return {
-      reset: function () {
-        state.index = 0;
-        if (state.zoom) zoom.click();
-        stage.scrollTop = 0;
-        render();
-      },
+      stop: function () {},
       destroy: function () { state.destroyed = true; window.removeEventListener('resize', onResize); root.textContent = ''; }
     };
   };

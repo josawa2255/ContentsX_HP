@@ -3,7 +3,9 @@
    load); the embed is then created in place (no popup). Choosing another video, switching service
    or calling stop() removes the embed, so the previous video stops.
    items: [{ title, description, provider: youtube|youtube_playlist|drive|mp4, video_id, src, poster }]
-   Embed URLs are rebuilt from validated IDs; nothing from the data is written as HTML. */
+   Embed URLs are rebuilt from validated IDs; nothing from the data is written as HTML.
+   CxVideoPlayer.playable(items) returns the items that can be played (the caller decides what to
+   show when there are none). */
 (function () {
   'use strict';
   var YT_ID = /^[A-Za-z0-9_-]{6,20}$/;
@@ -49,25 +51,31 @@
     if ((item.provider === 'youtube') && YT_ID.test(String(item.video_id || ''))) return 'https://i.ytimg.com/vi/' + item.video_id + '/hqdefault.jpg';
     return '';
   }
+  /** YouTube answers a missing maxresdefault with a 120×90 grey placeholder: fall back to hqdefault. */
+  function poster(img, src) {
+    img.src = src;
+    img.addEventListener('load', function () {
+      if (img.naturalWidth <= 120 && /\/maxresdefault\.jpg$/.test(img.src)) img.src = img.src.replace(/maxresdefault\.jpg$/, 'hqdefault.jpg');
+    });
+  }
+  function playable(items) {
+    return (Array.isArray(items) ? items : []).filter(function (it) { return it && embedFor(it); });
+  }
 
   window.CxVideoPlayer = function (root, items, opts) {
     opts = opts || {};
-    items = (Array.isArray(items) ? items : []).filter(function (it) { return it && embedFor(it); }).slice(0, opts.max || 3);
+    items = playable(items).slice(0, opts.max || 3);
     var current = 0;
     root.textContent = '';
     root.classList.add('cxvp');
-    if (!items.length) {
-      var empty = el('div', 'cxvp-empty', opts.emptyText || '動画は準備中です。');
-      empty.setAttribute('role', 'status');
-      root.appendChild(empty);
-      return { stop: function () {}, reset: function () {}, destroy: function () { root.textContent = ''; } };
-    }
+    if (!items.length) return { stop: function () {}, destroy: function () { root.textContent = ''; } };
 
     var stage = el('div', 'cxvp-stage');
     var strip = el('div', 'cxvp-strip');
     var prevBtn = iconButton('cxvp-arrow cxvp-arrow-prev', '前の動画', '‹');
     var thumbs = el('div', 'cxvp-thumbs');
-    thumbs.setAttribute('role', 'list');
+    thumbs.setAttribute('role', 'group');
+    thumbs.setAttribute('aria-label', '動画を選ぶ');
     var nextBtn = iconButton('cxvp-arrow cxvp-arrow-next', '次の動画', '›');
     strip.appendChild(prevBtn); strip.appendChild(thumbs); strip.appendChild(nextBtn);
     root.appendChild(stage); root.appendChild(strip);
@@ -75,11 +83,10 @@
     var thumbButtons = items.map(function (item, i) {
       var b = el('button', 'cxvp-thumb');
       b.type = 'button';
-      b.setAttribute('role', 'listitem');
       b.setAttribute('aria-label', (i + 1) + '本目: ' + (item.title || '動画'));
       var media = el('span', 'cxvp-thumb-media');
       var src = posterFor(item);
-      if (src) { var img = el('img'); img.src = src; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; media.appendChild(img); }
+      if (src) { var img = el('img'); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; poster(img, src); media.appendChild(img); }
       b.appendChild(media);
       var t = el('span', 'cxvp-thumb-title', item.title || '動画');
       t.setAttribute('data-i18n-skip', '');
@@ -96,13 +103,14 @@
       return b;
     });
 
-    function poster(item) {
+    function showPoster(item) {
       stage.textContent = '';
       stage.classList.remove('is-playing', 'is-loading', 'is-error');
       var src = posterFor(item);
       if (src) {
         var img = el('img', 'cxvp-poster');
-        img.src = src; img.alt = ''; img.decoding = 'async';
+        img.alt = ''; img.decoding = 'async';
+        poster(img, src);
         img.addEventListener('error', function () { img.remove(); });
         stage.appendChild(img);
       }
@@ -164,9 +172,11 @@
         b.classList.toggle('is-active', k === current);
         if (k === current) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
       });
-      poster(items[current]);
+      showPoster(items[current]);
       var tb = thumbButtons[current];
-      thumbs.scrollTo({ left: tb.offsetLeft - (thumbs.clientWidth - tb.clientWidth) / 2, behavior: 'smooth' });
+      // Centre the chosen thumbnail inside the strip (measured against the strip, not its offset parent).
+      var shift = tb.getBoundingClientRect().left - thumbs.getBoundingClientRect().left;
+      thumbs.scrollTo({ left: thumbs.scrollLeft + shift - (thumbs.clientWidth - tb.offsetWidth) / 2, behavior: 'smooth' });
       prevBtn.disabled = items.length < 2;
       nextBtn.disabled = items.length < 2;
     }
@@ -175,9 +185,9 @@
     select(0);
 
     return {
-      stop: function () { if (stage.classList.contains('is-playing')) poster(items[current]); },
-      reset: function () { select(0); },
+      stop: function () { if (stage.classList.contains('is-playing')) showPoster(items[current]); },
       destroy: function () { root.textContent = ''; }
     };
   };
+  window.CxVideoPlayer.playable = playable;
 })();

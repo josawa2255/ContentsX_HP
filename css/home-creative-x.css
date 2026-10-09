@@ -6,9 +6,6 @@
   padding:clamp(60px,8svh,150px) clamp(24px,3.8vw,64px) clamp(20px,3svh,48px); color:var(--cxcx-ink); }
 .cxcx-media { position:relative; display:block; overflow:hidden; background:#dfe8f2; }
 .cxcx-media img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .3s cubic-bezier(.16,1,.3,1); }
-/* YouTube hqdefault is 4:3 with black bars; crop them when only that size exists. */
-.cxcx-media img.is-letterboxed { transform:scale(1.34); }
-.cxcx-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 .cxcx-eyebrow { display:flex; align-items:center; gap:18px; margin:0; color:var(--cxcx-muted); font-family:Inter,Arial,sans-serif; font-size:clamp(11px,.95vw,15px); font-weight:500; letter-spacing:.35em; line-height:1.4; }
 .cxcx-eyebrow::after { content:''; width:44px; height:1px; background:currentColor; opacity:.7; }
 
@@ -120,7 +117,6 @@
 .cxvp-thumb-media { display:block; aspect-ratio:16 / 9; overflow:hidden; border-radius:6px; background:#1b2a50; }
 .cxvp-thumb-media img { display:block; width:100%; height:100%; object-fit:cover; }
 .cxvp-thumb-title { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:12px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; }
-.cxvp-empty { display:grid; place-items:center; min-height:calc(var(--cxcx-stage-h) + 76px); color:#dbe4f3; font-size:14px; }
 
 /* Manga reader (js/cx-manga-reader.js) — pages are never cropped. */
 .cxmr { position:relative; display:grid; gap:12px; }
@@ -161,7 +157,7 @@
 }
 
 /* Service cards are the switch: the selected one is outlined in its colour. */
-.cxcx-card { width:100%; font:inherit; text-align:left; cursor:pointer; }
+.cxcx-card { width:100%; font:inherit; text-align:left; text-decoration:none; cursor:pointer; }
 .cxcx-card[aria-selected="true"] { border-color:var(--cxcx-accent); box-shadow:0 0 0 2px var(--cxcx-accent),0 16px 40px rgba(17,52,104,.12); background:#fff; }
 .cxcx-card[aria-selected="true"] .cxcx-card-go { background:var(--cxcx-accent); }
 .cxcx-card[aria-selected="true"] .cxcx-card-go::before { border-color:#fff; }
@@ -183,7 +179,7 @@
   .cxcx-viewer { padding:10px; }
   .cxvp-stage { width:100%; }
   .cxcx-panel[data-service="bizanime"],.cxcx-panel[data-service="bizvideo"] { min-height:0; }
-  .cxvp-empty,.cxcx-message { min-height:calc((min(100vw,592px) - 20px) * 9 / 16 + 76px); }
+  .cxcx-message { min-height:calc((min(100vw,592px) - 20px) * 9 / 16 + 76px); }
   .cxvp-thumb { flex-basis:72%; }
   .cxvp-strip { grid-template-columns:minmax(0,1fr); }
   .cxvp-arrow { display:none; }

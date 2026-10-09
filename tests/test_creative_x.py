@@ -30,13 +30,15 @@ def png(w, h, rgb=(200, 210, 230)):
 PAGE = png(70, 100)       # portrait manga page
 TALL = png(60, 200)       # vertical-scroll page (ratio > 1.8)
 POSTER = png(160, 90, (60, 80, 120))
+GREY = png(120, 90, (200, 200, 200))  # what YouTube returns when maxresdefault does not exist
 
 UP = 'https://cms.contentsx.jp/wp-content/uploads/2026/06/'
 VIEWER = [
     {'type': 'bizanime', 'title': '<img src=x onerror="window.__xss=1">アニメ1', 'description': '説明1',
      'provider': 'youtube', 'video_id': 'V9ZC16hTlZI', 'poster': 'javascript:alert(1)',
      'embed': 'https://attacker.example.com/embed'},  # must be ignored: the client rebuilds embeds
-    {'type': 'bizvideo', 'title': 'ビデオ1', 'description': '', 'provider': 'youtube', 'video_id': 'DkmWuOSvCEY', 'poster': ''},
+    {'type': 'bizvideo', 'title': 'ビデオ1', 'description': '', 'provider': 'youtube', 'video_id': 'DkmWuOSvCEY',
+     'poster': 'https://i.ytimg.com/vi/DkmWuOSvCEY/maxresdefault.jpg'},
     {'type': 'bizanime', 'title': 'broken id', 'provider': 'youtube', 'video_id': 'bad"id'},
     {'type': 'bizanime', 'title': 'アニメ2', 'description': '', 'provider': 'youtube', 'video_id': '7m2ORgR-PDg',
      'poster': 'https://evil.example.com/x.jpg'},
@@ -71,12 +73,16 @@ def load(page, videos=VIDEOS, works=WORKS, fail=False, hang=False):
                 return r.abort()
             if hang:
                 return HELD.append(r)  # no answer yet: the loading state stays
+            if videos is None and '/bizanime-videos' in u:
+                return r.abort()  # only the video API fails
             body = videos if '/bizanime-videos' in u else works if '/works' in u else []
             return r.fulfill(status=200, content_type='application/json', body=json.dumps(body))
         if u.startswith(UP):
+            if 'missing' in u:
+                return r.fulfill(status=404, body='')
             return r.fulfill(status=200, content_type='image/png', body=TALL if 'tall' in u else POSTER if 'poster' in u else PAGE)
         if u.startswith('https://i.ytimg.com/'):
-            return r.fulfill(status=200, content_type='image/png', body=POSTER)
+            return r.fulfill(status=200, content_type='image/png', body=GREY if 'maxresdefault' in u else POSTER)
         if u.startswith(('http://127.0.0.1:', 'https://fonts.googleapis.com/', 'https://fonts.gstatic.com/')):
             return r.continue_()
         return r.abort()  # includes the YouTube/Drive embeds: the test only checks their URLs
@@ -173,6 +179,7 @@ with sync_playwright() as p:
     assert page.locator('.cxvp-desc').inner_text() == '説明1'
     assert page.locator('.cxvp-poster').get_attribute('src') == 'https://i.ytimg.com/vi/V9ZC16hTlZI/hqdefault.jpg'
     assert page.locator('.cxvp-stage iframe').count() == 0, 'no autoplay on load'
+    assert page.locator('.cxvp-thumbs').get_attribute('role') == 'group' and page.locator('.cxvp-thumb').first.get_attribute('role') is None
     page.locator('.cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').get_attribute('src') == 'https://www.youtube-nocookie.com/embed/V9ZC16hTlZI?autoplay=1&rel=0&playsinline=1'
     assert page.locator('.cxvp-stage iframe').get_attribute('title') == titles[0]
@@ -201,6 +208,8 @@ with sync_playwright() as p:
     assert not page.locator('#cxcx-panel').evaluate("e=>e.classList.contains('is-fading')")
     assert page.locator('#cxcx-panel').get_attribute('aria-labelledby') == 'cxcx-tab-bizvideo'
     assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['ビデオ1', 'ビデオ2', 'ビデオ3']
+    page.wait_for_timeout(300)
+    assert page.locator('.cxvp-poster').get_attribute('src') == 'https://i.ytimg.com/vi/DkmWuOSvCEY/hqdefault.jpg', 'grey maxres placeholder replaced'
     h_video = rect(page, '.cxcx-viewer')['height']
     page.locator('.cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').get_attribute('src').startswith('https://www.youtube-nocookie.com/embed/DkmWuOSvCEY?')
@@ -244,7 +253,13 @@ with sync_playwright() as p:
     page.wait_for_selector('.cxmr.is-ready')
     assert page.locator('.cxmr-count').inner_text() == '1-2 / 5'
     assert page.locator('.cxmr-zoom').get_attribute('aria-pressed') == 'false'
-    assert page.locator('.cxcx-card').first.evaluate('e=>e.tagName') == 'BUTTON'  # no navigation
+    # The cards are links in the HTML; with JS a plain click switches the viewer instead of leaving the page.
+    assert page.locator('.cxcx-card').first.evaluate('e=>e.tagName') == 'A'
+    assert page.url.rstrip('/') == args.url.rstrip('/')
+    page.locator('[data-cxcx-service="bizvideo"]').focus()
+    page.keyboard.press(' ')
+    page.wait_for_timeout(450)
+    assert page.locator('[data-cxcx-service="bizvideo"]').get_attribute('aria-selected') == 'true'
     assert page.url.rstrip('/') == args.url.rstrip('/')
     page.close()
 
@@ -308,8 +323,8 @@ with sync_playwright() as p:
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, videos={'main': [], 'cases': CASES, 'playlists': PLAYLISTS})
     to_section(page)
-    assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['I eye']
-    assert page.locator('.cxvp-arrow-next').is_disabled()
+    # BizAnime: its playlists first, then the existing single videos.
+    assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['IPキャラクター・オリジナル開発', 'I eye']
     switch(page, 'bizvideo')
     assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['VLOG・旅行・ライフスタイルCM', 'シネマティック・ストーリーMV']
     page.locator('.cxvp-play').click()
@@ -330,10 +345,29 @@ with sync_playwright() as p:
     page.on('pageerror', lambda e: errors.append(str(e)))
     load(page, fail=True)
     to_section(page)
-    assert '動画を読み込めませんでした' in page.locator('.cxvp-empty').inner_text()
+    assert '動画を読み込めませんでした' in page.locator('.cxcx-message').inner_text()
+    assert page.locator('.cxcx-message a').get_attribute('href') == 'https://bizmanga.contentsx.jp/bizanime'
     switch(page, 'manga')
     assert page.locator('.cxcx-message a').get_attribute('href') == 'https://bizmanga.contentsx.jp/biz-library'
     assert page.evaluate('document.body.scrollWidth <= innerWidth') and not errors, errors
+    page.close()
+
+    # Only the video API fails: the viewer says so (not "準備中") and links to the service; manga still reads.
+    page = browser.new_page(viewport={'width': 1440, 'height': 900})
+    load(page, videos=None)
+    to_section(page)
+    assert '動画を読み込めませんでした' in page.locator('.cxcx-message').inner_text()
+    switch(page, 'manga')
+    page.wait_for_selector('.cxmr.is-ready')
+    page.close()
+
+    # A broken first page does not stop the reader (same as bm-view-type.js: treated as not vertical).
+    page = browser.new_page(viewport={'width': 1440, 'height': 900})
+    load(page, works=[{**MANGA, 'gallery': [UP + 'missing.png'] + MANGA['gallery'][1:]}])
+    to_section(page)
+    switch(page, 'manga')
+    page.wait_for_selector('.cxmr.is-ready')
+    assert page.locator('.cxmr-count').inner_text() == '1-2 / 5'
     page.close()
 
     # Reduced motion: switch without fading; content visible.
@@ -352,6 +386,9 @@ with sync_playwright() as p:
     load(page)
     assert page.locator('.cxcx-fallback').is_visible()
     assert page.locator('.cxcx-fallback').get_attribute('href') == 'https://bizmanga.contentsx.jp/bizanime'
+    hrefs = page.locator('.cxcx-card').evaluate_all('(n)=>n.map(a=>a.getAttribute("href"))')
+    assert hrefs == ['https://bizmanga.contentsx.jp/biz-library', 'https://bizmanga.contentsx.jp/bizanime', '/services/#bizvideo'], hrefs
+    assert page.locator('.cxcx-card[role="tab"]').count() == 0
     assert page.evaluate('document.body.scrollWidth <= innerWidth')
     page.close()
     browser.close()
