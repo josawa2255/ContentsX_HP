@@ -176,12 +176,13 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 描画: `js/wp-api.js` の `loadNews()` が、トップ（`body` に `data-page-news` が無いとき）だけ上の行を描く。`/news` ページは従来の描画のまま。WP の `url` は http(s) か `/` 始まりだけリンクにし、それ以外は詳細ページ `/news-detail?id=` へ。`index.html` の4件は JS無効・取得失敗時の表示（2026-10-07 時点の最新4件）。
 - CSS は `css/home-news.css`（旧 NEWS 指定は `home-sections.css` から削除）。検証は `python3 tests/test_news.py --url <拡張子なしURL対応のプレビュー> --artifacts <output>`（16幅、4行同じ高さ・同じサムネイル、表示順、文字の強弱、右上リンク、SPの並び、hover、不正データ、取得失敗・JS無効、/news が従来どおり）。
 
-### 大きな半透明のセクション名を画面に固定（Issue #89）
+### 大きな半透明のセクション名を画面に固定（Issue #89 / タイミング改善 #93）
 
-- ABOUT / CREATIVE X / SALES X / TOPICS / NEWS の大きな半透明文字（`.cxsb-label`）を、背景の景色と同じく画面に固定する（ヘッダー下 `64px + clamp(10px,1.6vw,26px)`、480px以下は 56px 基準）。各文字は自分のセクションで切り抜かれる。
-- 表示: 文字の位置が1つのセクションに完全に収まっている間だけ、そのセクション名を出す。境目が文字の上を通過している間は両方とも消し、通過後に次のセクション名が0.3秒でふわっと出る（2026-10-08 平澤さん指定の B 案。文字が途中で切れて見えることはない）。ABOUT は Hero → ABOUT の演出（`--cxha-wordmark`）と掛け合わせ、ページ先頭では出ず、Hero が縮むのに合わせて現れる。
-- 実装: `js/home-section-labels.js`（受動的な scroll ＋ requestAnimationFrame で、各文字に `.is-current` を付ける。非表示のセクションは対象外）が `html.cxsb-fixed-labels` を付け、`css/home-sections.css` が固定と切り替え（登録カスタムプロパティ `--cxsb-label-o` の transition）を行う。JS無効時は従来どおりセクションと一緒に流れる。動き軽減時は切り替えのフェードなし。
-- 検証: `tests/test_section_backdrop.py` に、PC・スマホで各セクションの文字が1つだけ・スクロールしても同じ位置・境目の通過中は非表示、を追加。
+- ABOUT / CREATIVE X / SALES X / TOPICS / NEWS の大きな半透明文字を、背景の景色と同じく画面に固定する（ヘッダー下 `64px + clamp(10px,1.6vw,26px)`、480px以下は 56px 基準）。
+- 仕組み（#93）: `js/home-section-labels.js` が各セクションの名前を**すべての背景（`.cxsb-backdrop`）の中に** `.cxsb-names > .cxsb-name` として描き、`html.cxsb-fixed-labels` を付けて元の `.cxsb-label` を隠す。どの背景にも同じ名前が同じ位置に出るので、セクションの境目をまたいでも文字が切れない。
+- 切り替え: 画面の**上から40%の線**を含むセクションの名前を出す（2026-10-08 平澤さん「もっと早く出したい・少し戻っても残してほしい」）。下にスクロールすると次のセクションの上端がこの線を越えた時点で切り替わり、少し上に戻っても上端がこの線より下がるまでは今の名前が残る。切り替えは0.2秒のフェード。ABOUT は Hero → ABOUT の演出（`--cxha-wordmark`）に合わせて現れる。
+- JS無効時は元の `.cxsb-label` がセクションと一緒に流れる。動き軽減時はフェードなし。CSS は `css/home-sections.css`。
+- 検証: `tests/test_section_backdrop.py`（PC・スマホで、各セクションの名前が1つ・スクロールしても同じ位置・上端が画面の30%まで戻っても残る・50%まで戻ると前の名前に戻る）。
 
 ### 3.0 サービスページ生成（Issue #20）
 

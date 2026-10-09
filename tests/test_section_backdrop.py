@@ -43,6 +43,11 @@ def scroll(page, y, wait=900):
     page.wait_for_timeout(wait)
 
 
+def current_names(page):
+    """Section names currently drawn in the backdrops (Issue #89/#93): unique visible texts."""
+    return page.evaluate("[...new Set([...document.querySelectorAll('.cxsb-name')].filter(n=>n.getClientRects().length && parseFloat(getComputedStyle(n).opacity)>0.05).map(n=>n.textContent))]")
+
+
 def assert_sections(page, width):
     assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Horizontal overflow at {width}px'
     for selector in SECTIONS:
@@ -76,7 +81,7 @@ with sync_playwright() as p:
         # Each backdrop stays pinned to the viewport while its section scrolls.
         for selector in ['#topics', '#news']:
             scroll(page, top_of(page, selector) - 64, 1600)
-            assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
+            assert current_names(page) == [LABELS[selector]], (width, selector, current_names(page))
             scroll(page, top_of(page, selector) - 64 + 200, 300)
             assert page.locator(f'{selector} > .cxsb-backdrop').evaluate('e=>Math.abs(e.getBoundingClientRect().top)') < 1
         # The clip keeps the fixed layer out of neighbouring white sections.
@@ -167,35 +172,42 @@ with sync_playwright() as p:
     # Reduced motion: everything visible without entrance motion.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page, args.url)
-    # Section names are fixed and only the current one shows (Issue #89); with reduced motion it switches instantly.
+    # Section names are fixed and only the current one shows (Issue #89/#93); with reduced motion it switches instantly.
     for selector in ['#topics', '#news']:
-        scroll(page, top_of(page, selector) - 64, 300)
-        assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
+        scroll(page, top_of(page, selector) - 64, 100)
+        assert current_names(page) == [LABELS[selector]], (selector, current_names(page))
     assert page.locator('#news .news-list').evaluate('e=>getComputedStyle(e).opacity') == '1'
     page.close()
 
-    # Fixed section names (Issue #89): fixed to the screen, one at a time, hidden while a boundary crosses them.
+    # Fixed section names (Issue #89, timing #93): drawn in every backdrop at one fixed screen position;
+    # the current one is the section under a line 40% down the screen, so it appears early when scrolling
+    # down and stays a little when scrolling back up. Never cut by a boundary (all backdrops agree).
     for w, h in [(1440, 900), (390, 844)]:
         page = browser.new_page(viewport={'width': w, 'height': h})
         load(page, args.url)
-        page.add_style_tag(content='html{scroll-snap-type:none!important}')
+        page.add_style_tag(content='html{scroll-snap-type:none!important;scroll-behavior:auto!important}')
         assert page.evaluate("document.documentElement.classList.contains('cxsb-fixed-labels')")
+        assert page.locator('.cxsb-section > .cxsb-label:visible').count() == 0
         def shown():
-            page.wait_for_timeout(700)
-            return page.evaluate('''[...document.querySelectorAll('.cxsb-section > .cxsb-label')]
-              .filter(l=>parseFloat(getComputedStyle(l).opacity)>0.05).map(l=>[l.textContent.trim(), Math.round(l.getBoundingClientRect().top)])''')
-        for selector, name in [('#creative-x', 'CREATIVE X'), ('#sales-x', 'SALES X'), ('#topics', 'TOPICS'), ('#news', 'NEWS')]:
+            page.wait_for_timeout(450)
+            names = current_names(page)
+            tops = page.evaluate("[...new Set([...document.querySelectorAll('.cxsb-name.is-current')].filter(n=>n.getClientRects().length).map(n=>Math.round(n.getBoundingClientRect().top)))]")
+            return names, tops
+        order = [('#creative-x', 'CREATIVE X'), ('#sales-x', 'SALES X'), ('#topics', 'TOPICS'), ('#news', 'NEWS')]
+        for i, (selector, name) in enumerate(order):
             top = top_of(page, selector) - 64
-            scroll(page, top + 40, 100)
+            scroll(page, top + 40, 50)
             first = shown()
-            assert [n for n, _ in first] == [name], (w, selector, first)
-            scroll(page, top + 140, 100)
-            second = shown()
-            assert second == first, ('name must stay fixed on screen', w, selector, first, second)
-            # While the boundary passes over the name, nothing is shown (never a half-cut name).
-            label_mid = page.locator(f'{selector} > .cxsb-label').evaluate('e=>{const r=e.getBoundingClientRect();return (r.top+r.bottom)/2}')
-            scroll(page, top_of(page, selector) - label_mid, 100)
-            assert shown() == [], (w, selector, 'boundary crossing should hide both names')
+            assert first[0] == [name] and len(first[1]) == 1, (w, selector, first)
+            scroll(page, top + 140, 50)
+            assert shown() == first, ('name must stay fixed on screen', w, selector, first)
+            # Scrolling back up a little (the section top 30% down the screen) keeps the name.
+            scroll(page, top + 64 - int(h * 0.3), 50)
+            assert shown()[0] == [name], (w, selector, 'should persist when scrolling back up a little')
+            # Further up (section top 50% down the screen) the previous section's name returns.
+            if i:
+                scroll(page, top + 64 - int(h * 0.5), 50)
+                assert shown()[0] == [order[i - 1][1]], (w, selector, shown())
         page.close()
 
     # JS off: backdrop, labels and content render in normal order.
