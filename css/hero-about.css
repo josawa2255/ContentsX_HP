@@ -1,4 +1,5 @@
-/* Hero → About. The default flow is also the JS-off/reduced-motion layout. */
+/* Hero → About (fade hand-off since Issue #108; js/hero-about.js). The default flow is also the
+   JS-off/reduced-motion layout. The Hero's cards read --cxha-cards-* in css/home-hero.css. */
 .cxha-transition { --cxha-z-hero:2; --cxha-z-copy:3; --cxha-header:64px; background:#fff; }
 .cxha-stage { position:relative; isolation:isolate; }
 .cxha-hero-frame { position:relative; transform-origin:0 0; }
@@ -56,15 +57,16 @@
 
 @media (prefers-reduced-motion:no-preference) {
   .cxha-transition.cxha-ready { height:calc(var(--cxha-scene-height) + var(--cxha-distance)); }
-  .cxha-ready .cxha-stage { position:sticky; top:var(--cxha-header); min-height:var(--cxha-scene-height); }
-  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); transform:var(--cxha-hero-transform,none); clip-path:var(--cxha-hero-clip,none); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
-  .cxha-ready .cxh-hero-inner { opacity:var(--cxha-copy-opacity,1); }
+  /* flow-root: ABOUT's top margin (--cxha-overflow) must not collapse through the stage and push the Hero down. */
+  .cxha-ready .cxha-stage { position:sticky; top:calc(var(--cxha-header) - var(--cxha-overflow,0px)); display:flow-root; min-height:var(--cxha-scene-height); }
+  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
+  .cxha-ready .cxhv-copy,.cxha-ready .cxhv-words,.cxha-ready .cxhv-mark,.cxha-ready .cxhv-scroll { opacity:var(--cxha-copy-opacity,1); }
+  .cxha-ready .cxhv-stage { will-change:var(--cxha-compositing,auto); }
   .cxha-ready .cxha-about { pointer-events:var(--cxha-about-pointer,none); }
-  .cxha-ready .cxh-hero-wash { opacity:var(--cxha-copy-opacity,1); }
   .cxha-ready .cxha-wordmark { opacity:var(--cxha-wordmark,0); }
   .cxha-ready [data-cxha-step] { opacity:var(--cxha-step,0); transform:translateY(calc((1 - var(--cxha-step,0)) * 14px)); }
-  .cxha-ready .cxha-office { opacity:var(--cxha-office,0); }
-  .cxha-ready .cxha-about { display:flex; flex-direction:column; justify-content:center; min-height:var(--cxha-about-min,auto); }
+  .cxha-ready .cxha-office { opacity:var(--cxha-office,0); scale:calc(.96 + .04 * var(--cxha-office,0)); }
+  .cxha-ready .cxha-about { display:flex; flex-direction:column; justify-content:center; min-height:var(--cxha-about-min,auto); margin-top:var(--cxha-overflow,0px); }
   .cxha-ready .cxha-main,.cxha-ready .cxha-values { width:100%; }
 }
 @media (prefers-reduced-motion:reduce) {

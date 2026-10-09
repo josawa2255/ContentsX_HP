@@ -5,7 +5,7 @@
   <meta http-equiv="last-modified" content="2026-04-25T01:08:15+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
@@ -208,8 +208,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="all">
-  <link rel="preload" href="/material/home-2026/hero.jpg" as="image" fetchpriority="high">
+  <!-- HEROのメインコピー（とCreativeカードの見出し）だけ明朝体。使う文字だけに絞って読み込む（DESIGN-SYSTEM-2026.md のHERO例外） -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&amp;display=swap&amp;text=%20.CTabeghilmnorstuvwy%E3%80%81%E3%80%82%E3%81%88%E3%81%8B%E3%81%99%E3%81%A7%E3%81%AB%E3%81%AE%E3%82%8B%E3%82%92%E3%82%A3%E3%82%A4%E3%82%A8%E3%82%AF%E3%82%B8%E3%82%B9%E3%83%86%E3%83%8D%E3%83%93%E3%83%96%E3%83%AA%E4%B8%8A%E4%BC%81%E4%BE%A1%E5%80%A4%E5%8B%95%E5%A3%B2%E5%A4%89%E6%A5%AD" rel="stylesheet">
+  <link rel="preload" href="/material/home-2026/hero/hero-bg.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="/css/home-2026.css">
+  <link rel="stylesheet" href="/css/home-hero.css">
   <link rel="stylesheet" href="/css/hero-about.css">
   <link rel="stylesheet" href="/css/home-sections.css">
   <link rel="stylesheet" href="/css/home-creative-x.css">
@@ -238,21 +241,56 @@
       <span class="cxsb-about-snap" aria-hidden="true"></span>
       <div class="cxha-stage">
         <div class="cxha-hero-frame">
-    <section class="cxh-hero" id="hero" aria-labelledby="cxh-hero-title">
-      <div class="cxh-hero-visual" aria-hidden="true"></div>
-      <div class="cxh-hero-wash" aria-hidden="true"></div>
-      <div class="cxh-hero-inner">
-        <div class="cxh-hero-copy" data-cxh-reveal>
-          <h1 id="cxh-hero-title"><span data-ja="企業の価値を、" data-en="Turn business value">企業の価値を、</span><br><span data-ja="売上に変える。" data-en="into growth.">売上に変える。</span></h1>
-          <p class="cxh-hero-lead" data-ja="法人の営業と売上づくりを、 仕組みとクリエイティブで支援します。" data-en="We grow business sales through systems and creativity." data-i18n-html>法人の営業と売上づくりを、<br>仕組みとクリエイティブで支援します。</p>
-          <p class="cxh-hero-formula"><span>Sales X</span><b>×</b><span>Creative X</span></p>
-          <p class="cxh-hero-date"><span aria-hidden="true"></span>2026.09</p>
-          <div class="cxh-hero-actions">
-            <a class="cxh-button cxh-button-dark" href="/contact"><span data-ja="まずは相談する" data-en="Talk to us">まずは相談する</span><span aria-hidden="true">→</span></a>
+    <!-- ===== HERO（2026-10-10 確定デザイン、Issue #108）: 左にコピー、右に3カード。
+         カード1はYouTube 3本のプレビュー（PCは読み込み後・表示中にミュート自動再生、SPはタップで再生）と拡大再生。
+         カード2・3の行き先は各 <a> の href で変える（暫定: /about と #sales-x）。動画は js/home-hero.js の VIDEOS。 ===== -->
+    <section class="cxh-hero cxhv" id="hero" aria-labelledby="cxh-hero-title">
+      <div class="cxhv-bg" aria-hidden="true"></div>
+      <div class="cxhv-inner">
+        <div class="cxhv-copy">
+          <p class="cxhv-kicker" data-i18n-skip>BUSINESS × CREATIVE</p>
+          <h1 id="cxh-hero-title" class="cxhv-title"><span data-ja="企業の価値を、" data-en="Turn business value">企業の価値を、</span><br><span data-ja="売上に変える。" data-en="into growth.">売上に変える。</span></h1>
+          <p class="cxhv-lead" data-i18n-html data-ja="法人の営業と売上づくりを、<br class=&quot;cxhv-sp-br&quot;>仕組みとクリエイティブで支援します。" data-en="We grow business sales through systems and creativity.">法人の営業と売上づくりを、<br class="cxhv-sp-br">仕組みとクリエイティブで支援します。</p>
+          <div class="cxhv-actions">
+            <a class="cxh-button cxh-button-dark" href="/contact"><span data-ja="お問い合わせ" data-en="Contact us">お問い合わせ</span><span aria-hidden="true">→</span></a>
             <a class="cxh-button cxh-button-outline" href="/services/"><span data-ja="サービスを見る" data-en="Explore services">サービスを見る</span><span aria-hidden="true">→</span></a>
           </div>
         </div>
-        <p class="cxh-hero-note" data-cxh-reveal data-ja="日本の中にある価値を、 世の中に出し切る。" data-en="Bring Japan's hidden value into the world." data-i18n-html>日本の中にある<br>価値を、<br>世の中に出し切る。</p>
+
+        <div class="cxhv-stage" data-cxhv-stage>
+          <div class="cxhv-card cxhv-card--creative" id="cxhv-creative" role="group" aria-labelledby="cxhv-creative-title" data-cxhv-creative>
+            <div class="cxhv-screen">
+              <img class="cxhv-thumb" src="https://i.ytimg.com/vi/zKvRR8xT_zY/hqdefault.jpg" width="480" height="360" alt="" decoding="async" data-cxhv-thumb>
+              <div class="cxhv-player" data-cxhv-player></div>
+              <button type="button" class="cxhv-tap" data-cxhv-open aria-label="動画を再生する"><span class="cxhv-tap-ring" aria-hidden="true"></span></button>
+            </div>
+            <div class="cxhv-caption">
+              <p class="cxhv-caption-title" id="cxhv-creative-title" data-i18n-html data-ja="クリエイティブで、<br>ビジネスを動かす。" data-en="Creativity<br>that moves business.">クリエイティブで、<br>ビジネスを動かす。</p>
+              <p class="cxhv-caption-sub" aria-hidden="true" data-i18n-skip>CREATIVE FOR BUSINESS</p>
+              <button type="button" class="cxhv-expand" data-cxhv-open aria-expanded="false" aria-controls="cxhv-creative"><span class="cxhv-expand-icon" aria-hidden="true"></span><span data-ja="拡大して見る" data-en="Watch larger">拡大して見る</span></button>
+              <button type="button" class="cxhv-close" data-cxhv-close hidden><span aria-hidden="true">×</span><span class="cxhv-visually-hidden" data-ja="動画を閉じる" data-en="Close the video">動画を閉じる</span></button>
+            </div>
+            <div class="cxhv-controls" data-cxhv-controls hidden>
+              <div class="cxhv-picker" role="group" aria-label="動画を選ぶ" data-cxhv-picker></div>
+              <button type="button" class="cxhv-sound" data-cxhv-sound aria-pressed="false"><span data-ja="音を出す" data-en="Sound on">音を出す</span></button>
+            </div>
+            <p class="cxhv-status" role="status" data-cxhv-status></p>
+          </div>
+          <a class="cxhv-card cxhv-card--business" href="/about">
+            <img src="/material/home-2026/hero/hero-card-business.webp" width="840" height="1061" alt="" decoding="async">
+            <span class="cxhv-visually-hidden" data-ja="事業を、次のステージへ。（Contents Xについて）" data-en="Take your business to the next stage (About Contents X)">事業を、次のステージへ。（Contents Xについて）</span>
+            <span class="cxhv-go" aria-hidden="true">→</span>
+          </a>
+          <a class="cxhv-card cxhv-card--system" href="#sales-x" data-cxhv-scroll>
+            <img src="/material/home-2026/hero/hero-card-system.webp" width="840" height="1084" alt="" decoding="async">
+            <span class="cxhv-visually-hidden" data-ja="仕組みで、成果をつくる。（Sales Xを見る）" data-en="Build results with systems (See Sales X)">仕組みで、成果をつくる。（Sales Xを見る）</span>
+            <span class="cxhv-go" aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <ul class="cxhv-words" aria-hidden="true" data-i18n-skip><li>PEOPLE</li><li>IDEAS</li><li>SYSTEMS</li><li>GROWTH</li></ul>
+        <p class="cxhv-mark" aria-hidden="true" data-i18n-skip>CONTENTS X INC.</p>
+        <p class="cxhv-scroll" aria-hidden="true" data-i18n-skip>SCROLL</p>
       </div>
     </section>
         </div>
@@ -609,6 +647,7 @@
   <script src="/js/home-2026.js" defer></script>
   <script src="/js/home-section-labels.js" defer></script>
   <script src="/js/hero-about.js" defer></script>
+  <script src="/js/home-hero.js" defer></script>
   <script src="/js/cx-manga-reader.js" defer></script>
   <script src="/js/cx-video-player.js" defer></script>
   <script src="/js/home-creative-x.js" defer></script>

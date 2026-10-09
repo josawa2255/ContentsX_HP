@@ -37,7 +37,7 @@
   .cxh-home main .cxsb-section { scroll-snap-align:start; scroll-margin-top:64px; }
   /* During the Hero → ABOUT scene, ABOUT is complete at the end of the sticky distance. */
   .cxha-transition.cxha-ready .cxha-about.cxsb-section { scroll-snap-align:none; }
-  .cxha-transition.cxha-ready .cxsb-about-snap { position:absolute; top:var(--cxha-distance); left:0; width:1px; height:1px; scroll-snap-align:start; scroll-margin-top:64px; pointer-events:none; }
+  .cxha-transition.cxha-ready .cxsb-about-snap { position:absolute; top:calc(var(--cxha-distance) + var(--cxha-overflow,0px)); left:0; width:1px; height:1px; scroll-snap-align:start; scroll-margin-top:64px; pointer-events:none; }
 }
 
 /* Motion: headings fade/slide; SERVICE columns add a slight scale. */

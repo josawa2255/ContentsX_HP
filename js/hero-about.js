@@ -1,4 +1,13 @@
-/* Native scroll only: no wheel/touch interception, timers, or scroll locking. */
+/* Hero → About hand-off (Issue #59; fade hand-off since Issue #108). Native scroll only: no
+   wheel/touch interception, timers, or scroll locking.
+   While the stage is pinned, one progress value (0 → 1) drives everything: the Hero copy fades, the
+   three cards shrink slightly and recede upwards as they fade, then the whole Hero dissolves while
+   ABOUT's heading, text, photo and links come in underneath. The photo grows from 96% to 100%.
+   When the Hero is taller than the screen (tablet/SP), it first scrolls normally until its bottom is
+   in view (--cxha-overflow); only then does the stage pin and the hand-off start, so the cards at
+   the bottom of the Hero are never faded before they have been seen.
+   Fires `cxha:hero` on document ({ active }) when the Hero stops / starts being the scene, so the
+   Hero's video can stop (js/home-hero.js). */
 (function () {
   'use strict';
   var transition = document.querySelector('.cxha-transition');
@@ -6,9 +15,7 @@
   var stage = transition.querySelector('.cxha-stage');
   var frame = transition.querySelector('.cxha-hero-frame');
   var hero = frame.querySelector('.cxh-hero');
-  var visual = hero.querySelector('.cxh-hero-visual');
   var about = transition.querySelector('.cxha-about');
-  var office = about.querySelector('.cxha-office');
   var steps = about.querySelectorAll('[data-cxha-step]');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   var mobile = window.matchMedia('(max-width: 768px)');
@@ -16,63 +23,43 @@
   var raf = 0;
   var needsMeasure = true;
   var lastProgress = -1;
+  var heroActive = true;
   var pendingHash = location.hash;
 
   function clamp(value) { return Math.max(0, Math.min(1, value)); }
   function ease(value) { value = clamp(value); return value * value * (3 - 2 * value); }
   function range(p, start, end) { return ease((p - start) / (end - start)); }
-  // Starts at scroll speed (no dead zone) and settles softly onto the photo.
-  function follow(value) { value = clamp(value); return value + value * value - value * value * value; }
-  function lerp(from, to, t) { return from + (to - from) * t; }
 
-  // Scroll share per phase. The Hero becomes the main visual in one move (0 → morphEnd),
-  // the photo is fully in place underneath before the aligned Hero dissolves away.
-  var PC = { distance:1.15, morphEnd:.78, clipCurve:1.4, copy:[.1,.4], wordmark:[.12,.4], office:[.6,.8], hero:[.78,.96],
-    steps:{ heading:[.24,.48], body:[.34,.58], links:[.66,.9], values:[.74,.98] } };
-  // SP: the photo window is near the Hero's width, so the move is mostly vertical and shorter.
-  var SP = { distance:1, morphEnd:.76, clipCurve:1, copy:[.1,.38], wordmark:[.12,.4], office:[.58,.78], hero:[.76,.95],
-    steps:{ heading:[.22,.46], body:[.32,.56], links:[.62,.88], values:[.72,.98] } };
+  // Scroll share per phase. The Hero is fully gone at `hero[1]`; ABOUT finishes by the end.
+  var PC = { distance:1, copy:[.04,.3], cards:[.04,.62], cardsFade:[.22,.6], shift:-64, hero:[.32,.64], wordmark:[.3,.6], office:[.46,.76],
+    steps:{ heading:[.34,.6], body:[.42,.68], links:[.6,.86], values:[.68,.96] } };
+  var SP = { distance:.85, copy:[.04,.28], cards:[.04,.6], cardsFade:[.2,.58], shift:-36, hero:[.3,.62], wordmark:[.3,.58], office:[.44,.74],
+    steps:{ heading:[.32,.58], body:[.4,.66], links:[.58,.84], values:[.66,.95] } };
 
   function measure() {
     var tune = mobile.matches ? SP : PC;
     var header = parseFloat(getComputedStyle(transition).getPropertyValue('--cxha-header'));
-    var heroHeight = hero.offsetHeight;
-    var heroWidth = hero.offsetWidth;
     // ABOUT fills at least one screen, so the pinned stage never shows an empty white band below it.
-    // The Hero may be taller; its lower part is only visible while it is shrinking inside the stage.
     var fill = Math.max(0, window.innerHeight - header);
     transition.style.setProperty('--cxha-about-min', fill + 'px');
-    var sceneHeight = Math.max(fill, about.offsetHeight);
-    var distance = Math.max(480, Math.min(1000, window.innerHeight * tune.distance));
+    var overflow = Math.max(0, Math.round(hero.offsetHeight - fill));
+    transition.style.setProperty('--cxha-overflow', overflow + 'px');
+    // Set every size first and only then switch to the pinned layout: a pinned stage without sizes
+    // briefly puts the ABOUT snap point at the top, and scroll snapping would follow it down.
+    var sceneHeight = Math.max(hero.offsetHeight, overflow + Math.max(fill, about.offsetHeight));
+    var distance = Math.max(420, Math.min(900, window.innerHeight * tune.distance));
     transition.style.setProperty('--cxha-scene-height', sceneHeight + 'px');
     transition.style.setProperty('--cxha-distance', distance + 'px');
     transition.classList.add('cxha-ready');
-    var stageRect = stage.getBoundingClientRect();
-    var photoRect = office.getBoundingClientRect();
-    // Crop window inside the Hero (unscaled Hero coordinates): the largest area with the photo's
-    // aspect ratio, centred on the Hero artwork. On SP the artwork starts at 41%, so the plain
-    // upper part is cropped away instead of shrinking into an empty box.
-    var aspect = photoRect.width / photoRect.height;
-    var top = Math.max(0, Math.min(heroHeight, visual.offsetTop));
-    var areaHeight = Math.max(1, Math.min(heroHeight, visual.offsetTop + visual.offsetHeight) - top);
-    var cropWidth = Math.min(heroWidth, heroHeight * aspect);
-    var cropHeight = cropWidth / aspect;
-    var cropX = (heroWidth - cropWidth) / 2;
-    var cropY = Math.max(0, Math.min(heroHeight - cropHeight, top + (areaHeight - cropHeight) / 2));
-    var scale = photoRect.width / cropWidth;
-    metrics = {
-      tune: tune,
-      start: transition.getBoundingClientRect().top + window.scrollY - header,
-      distance: distance,
-      width: heroWidth, height: heroHeight,
-      crop: [cropY, heroWidth - cropX - cropWidth, heroHeight - cropY - cropHeight, cropX],
-      scale: scale,
-      radius: parseFloat(getComputedStyle(office).borderTopLeftRadius) || 0,
-      x: photoRect.left - stageRect.left - cropX * scale,
-      y: photoRect.top - stageRect.top - cropY * scale
-    };
+    var top = transition.getBoundingClientRect().top + window.scrollY - header;
+    metrics = { tune: tune, top: top, start: top + overflow, distance: distance };
     needsMeasure = false;
     lastProgress = -1;
+  }
+  function report(active) {
+    if (active === heroActive) return;
+    heroActive = active;
+    document.dispatchEvent(new CustomEvent('cxha:hero', { detail: { active: active } }));
   }
 
   function render() {
@@ -81,42 +68,40 @@
       transition.classList.remove('cxha-ready');
       frame.inert = false;
       frame.removeAttribute('aria-hidden');
+      report(true);
       return;
     }
     if (needsMeasure || !metrics) measure();
     if (pendingHash === '#home-about' || pendingHash === '#hero') {
-      window.scrollTo({ top:Math.max(0, metrics.start + (pendingHash === '#home-about' ? metrics.distance : 0)), behavior:'instant' });
+      window.scrollTo({ top:Math.max(0, pendingHash === '#home-about' ? metrics.start + metrics.distance : metrics.top), behavior:'instant' });
     }
     pendingHash = '';
     var p = clamp((window.scrollY - metrics.start) / metrics.distance);
+    // "Left the Hero" once the hand-off is clearly under way (a small reflow, e.g. the Hero video
+    // opening on a phone, must not count as leaving).
+    report(p < .2);
     if (p === lastProgress) return;
     lastProgress = p;
     var tune = metrics.tune;
-    // One progress value drives scale, position and crop together, so the path never changes course.
-    var m = follow(p / tune.morphEnd);
-    // The crop closes slightly behind the shrink, keeping the Hero copy readable while it fades.
-    var c = Math.pow(m, tune.clipCurve);
-    var scale = lerp(1, metrics.scale, m);
-    var crop = metrics.crop.map(function (edge) { return (edge * c).toFixed(2) + 'px'; });
-    // Rounded corners reach the photo's on-screen radius exactly when the two overlap.
-    var radius = (metrics.radius * c / scale).toFixed(2);
-    transition.style.setProperty('--cxha-hero-transform', p === 0 ? 'none' : 'translate(' + lerp(0, metrics.x, m) + 'px,' + lerp(0, metrics.y, m) + 'px) scale(' + scale + ')');
-    transition.style.setProperty('--cxha-hero-clip', p === 0 ? 'none' : 'inset(' + crop.join(' ') + ' round ' + radius + 'px)');
+    var k = range(p, tune.cards[0], tune.cards[1]);
     transition.style.setProperty('--cxha-compositing', p > 0 && p < 1 ? 'transform,opacity' : 'auto');
     transition.style.setProperty('--cxha-copy-opacity', 1 - range(p, tune.copy[0], tune.copy[1]));
-    // The photo is complete underneath before the aligned Hero starts to dissolve: no see-through dip.
+    // Cards: a little smaller and further back (upwards) as they fade.
+    transition.style.setProperty('--cxha-cards-scale', (1 - .12 * k).toFixed(4));
+    transition.style.setProperty('--cxha-cards-shift', (tune.shift * k).toFixed(2) + 'px');
+    transition.style.setProperty('--cxha-cards-opacity', (1 - range(p, tune.cardsFade[0], tune.cardsFade[1])).toFixed(4));
     transition.style.setProperty('--cxha-hero-opacity', 1 - range(p, tune.hero[0], tune.hero[1]));
     transition.style.setProperty('--cxha-wordmark', range(p, tune.wordmark[0], tune.wordmark[1]));
     transition.style.setProperty('--cxha-office', range(p, tune.office[0], tune.office[1]));
-    transition.style.setProperty('--cxha-about-pointer', p >= .35 ? 'auto' : 'none');
-    // Heading (overlaps the fading Hero copy) → body → main visual → Purpose/Company links → business cards.
+    transition.style.setProperty('--cxha-about-pointer', p >= .4 ? 'auto' : 'none');
+    // Heading → body → main visual → Purpose/Company links → business cards.
     steps.forEach(function (node) {
       var timing = tune.steps[node.dataset.cxhaStep];
       node.style.setProperty('--cxha-step', range(p, timing[0], timing[1]));
     });
-    // Invisible Hero links must not intercept pointer or keyboard input.
-    frame.inert = p >= .35;
-    if (p >= .94) frame.setAttribute('aria-hidden', 'true');
+    // Fading Hero links must not intercept pointer or keyboard input.
+    frame.inert = p >= .3;
+    if (p >= tune.hero[1]) frame.setAttribute('aria-hidden', 'true');
     else frame.removeAttribute('aria-hidden');
   }
   function schedule() { if (!raf) raf = requestAnimationFrame(render); }
@@ -132,12 +117,12 @@
     if (needsMeasure || !metrics) measure();
     var hash = anchor.getAttribute('href');
     if (location.hash !== hash) history.pushState(null, '', hash);
-    window.scrollTo({ top:Math.max(0, metrics.start + (hash === '#home-about' ? metrics.distance : 0)), behavior:'smooth' });
+    window.scrollTo({ top:Math.max(0, hash === '#home-about' ? metrics.start + metrics.distance : metrics.top), behavior:'smooth' });
   });
   reduced.addEventListener('change', refresh);
   mobile.addEventListener('change', refresh);
   document.addEventListener('i18n-lang-changed', refresh);
-  // Reflow (fonts, text zoom, translation) changes the photo destination.
+  // Reflow (fonts, text zoom, translation, the Hero video opening) changes the scene height.
   if ('ResizeObserver' in window) {
     var observer = new ResizeObserver(refresh);
     observer.observe(hero);
