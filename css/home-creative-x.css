@@ -74,53 +74,61 @@
   .cxcx-tagline { margin-top:28px; letter-spacing:.35em; }
 }
 
-/* ---------- Main viewer (Issue #97) ----------
-   One frame for manga and video. --cxcx-stage-h is the stage height; PC follows the screen height
-   so the whole section stays within one laptop screen. */
-.cxcx { --cxcx-stage-h:clamp(220px,35svh,520px); }
-/* Short laptop screens (e.g. 1280×720): a little smaller so the section still fits. */
-@media (min-width:1101px) and (max-height:760px) { .cxcx { --cxcx-stage-h:clamp(200px,31svh,520px); } }
-@media (min-width:1101px) and (max-height:680px) { .cxcx { --cxcx-stage-h:clamp(170px,27svh,520px); } }
-.cxcx-viewer { position:relative; min-width:0; padding:clamp(10px,1vw,14px); border-radius:18px; background:#0b1838; color:#fff; box-shadow:0 26px 60px rgba(17,52,104,.2); }
-.cxcx-panel { min-height:calc(var(--cxcx-stage-h) + 76px); transition:opacity .2s ease; }
+/* ---------- Main viewer (Issue #97; video carousel Issue #102) ----------
+   One frame for manga and video. Sizes follow the frame width (container units): a video uses the
+   whole width at 16:9 and the manga stage gets the same height, so switching never changes the
+   frame height on PC/tablet. Short screens cap the height so the section stays on one screen. */
+.cxcx { --cxcx-view-h:min(56.25cqw,calc(100svh - 140px)); --cxcx-manga-h:var(--cxcx-view-h); }
+/* PC: on short laptops (under ~800px tall) the height is capped so the cards still fit one screen. */
+@media (min-width:1101px) { .cxcx { --cxcx-view-h:min(56.25cqw,calc(100svh - 340px)); } }
+.cxcx-viewer { position:relative; min-width:0; container-type:inline-size; padding:clamp(8px,.7vw,10px); border-radius:18px; background:#0b1838; color:#fff; box-shadow:0 26px 60px rgba(17,52,104,.2); }
+.cxcx-panel { min-height:var(--cxcx-view-h); transition:opacity .2s ease; }
 .cxcx-panel.is-fading { opacity:0; }
-.cxcx-message { display:grid; place-content:center; justify-items:center; gap:12px; min-height:calc(var(--cxcx-stage-h) + 76px); padding:20px; color:#dbe4f3; font-size:14px; text-align:center; }
+.cxcx-message { display:grid; place-content:center; justify-items:center; gap:12px; min-height:var(--cxcx-view-h); padding:20px; color:#dbe4f3; font-size:14px; text-align:center; }
 .cxcx-message p { margin:0; }
 .cxcx-message a { color:#fff; font-weight:700; text-decoration:underline; text-underline-offset:3px; }
-.cxcx-fallback { position:relative; display:block; height:calc(var(--cxcx-stage-h) + 76px); overflow:hidden; border-radius:12px; color:#fff; }
+.cxcx-fallback { position:relative; display:block; height:var(--cxcx-view-h); overflow:hidden; border-radius:12px; color:#fff; }
 .cxcx-fallback img { display:block; width:100%; height:100%; object-fit:cover; }
 .cxcx-fallback span { position:absolute; left:20px; bottom:18px; padding:8px 14px; border-radius:999px; background:rgba(7,20,59,.78); font-size:14px; font-weight:700; }
 
-/* Video player (js/cx-video-player.js) — 16:9 stage, thumbnails below. */
-.cxvp { display:grid; gap:12px; }
-.cxvp-stage { position:relative; width:min(100%,calc(var(--cxcx-stage-h) * 16 / 9)); aspect-ratio:16 / 9; margin-inline:auto; overflow:hidden; border-radius:12px; background:#000; }
+/* Laptops up to 860px tall: lower card images so the bigger viewer and the cards share one screen. */
+@media (min-width:1101px) and (max-height:860px) {
+  .cxcx { padding-top:clamp(36px,5svh,150px); }
+  .cxcx-card-media { height:clamp(52px,7.5svh,170px); }
+  .cxcx-bottom { margin-top:clamp(10px,1.8svh,48px); }
+}
+
+/* Video carousel (js/cx-video-player.js) — one 16:9 video per view, scrolled sideways. */
+.cxvp { position:relative; }
+.cxvp-track { display:flex; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; scrollbar-width:none; border-radius:12px; background:#000; }
+.cxvp-track::-webkit-scrollbar { display:none; }
+.cxvp-stage { position:relative; flex:0 0 100%; height:var(--cxcx-view-h); overflow:hidden; scroll-snap-align:center; scroll-snap-stop:always; background:#000; }
 .cxvp-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.cxvp-stage::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(7,20,59,0) 48%,rgba(7,20,59,.82)); pointer-events:none; }
+.cxvp-stage::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(7,20,59,0) 55%,rgba(7,20,59,.82)); pointer-events:none; }
 .cxvp-stage.is-playing::after { display:none; }
-.cxvp-caption { position:absolute; left:clamp(14px,1.8vw,26px); right:clamp(90px,8vw,120px); bottom:clamp(12px,1.6vw,22px); z-index:1; pointer-events:none; }
-.cxvp-title { margin:0; font-size:clamp(15px,1.4vw,22px); font-weight:800; line-height:1.4; text-shadow:0 2px 10px rgba(7,20,59,.5); overflow-wrap:anywhere; }
-.cxvp-desc { margin:4px 0 0; font-size:clamp(12px,.95vw,14px); line-height:1.6; opacity:.92; white-space:pre-line; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
+.cxvp-caption { position:absolute; left:clamp(16px,2vw,32px); right:clamp(16px,2vw,32px); bottom:clamp(14px,1.8vw,26px); z-index:1; pointer-events:none; }
+.cxvp-title { margin:0; font-size:clamp(16px,1.6vw,26px); font-weight:800; line-height:1.4; text-shadow:0 2px 10px rgba(7,20,59,.5); overflow-wrap:anywhere; }
+.cxvp-desc { margin:4px 0 0; max-width:40em; font-size:clamp(12px,.95vw,14px); line-height:1.6; opacity:.92; white-space:pre-line; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
 .cxvp-play { position:absolute; inset:0; z-index:2; display:grid; place-items:center; padding:0; border:0; background:transparent; cursor:pointer; }
-.cxvp-play-ring { display:grid; place-items:center; width:clamp(54px,5vw,72px); aspect-ratio:1; border:2.5px solid #fff; border-radius:50%; background:rgba(7,20,59,.25); transition:transform .2s ease,background .2s ease; }
+.cxvp-play-ring { display:grid; place-items:center; width:clamp(56px,5.6vw,80px); aspect-ratio:1; border:2.5px solid #fff; border-radius:50%; background:rgba(7,20,59,.25); transition:transform .2s ease,background .2s ease; }
 .cxvp-play-ring::before { content:''; margin-left:5px; border-style:solid; border-width:11px 0 11px 18px; border-color:transparent transparent transparent #fff; }
 .cxvp-media { position:absolute; inset:0; width:100%; height:100%; border:0; background:#000; }
 .cxvp-loading { position:absolute; inset:0; z-index:1; display:grid; place-items:center; padding:20px; color:#dbe4f3; font-size:14px; text-align:center; pointer-events:none; }
 .cxvp-stage:not(.is-loading):not(.is-error) .cxvp-loading { display:none; }
-.cxvp-strip { display:grid; grid-template-columns:40px minmax(0,1fr) 40px; align-items:center; gap:8px; min-height:64px; }
-.cxvp-arrow { display:grid; place-items:center; width:40px; height:40px; padding:0; border:1px solid rgba(255,255,255,.3); border-radius:50%; background:rgba(255,255,255,.06); color:#fff; font-size:22px; line-height:1; cursor:pointer; }
-.cxvp-arrow:disabled { opacity:.35; cursor:default; }
+/* ‹ › sit on the left/right edges of the video; the dots show which video is in view. */
+.cxvp-arrow { position:absolute; top:50%; z-index:3; display:grid; place-items:center; width:44px; height:44px; margin-top:-22px; padding:0; border:1px solid rgba(255,255,255,.4); border-radius:50%; background:rgba(7,20,59,.62); color:#fff; font-size:24px; line-height:1; cursor:pointer; transition:opacity .2s ease,background .2s ease; }
+.cxvp-arrow-prev { left:12px; }
+.cxvp-arrow-next { right:12px; }
+.cxvp-arrow:disabled { opacity:0; pointer-events:none; }
 .cxvp-arrow span { margin-top:-2px; }
-.cxvp-thumbs { display:flex; gap:10px; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; scrollbar-width:none; }
-.cxvp-thumbs::-webkit-scrollbar { display:none; }
-.cxvp-thumb { flex:0 0 calc((100% - 20px) / 3); display:grid; grid-template-columns:minmax(0,88px) minmax(0,1fr); align-items:center; gap:10px; min-width:0; min-height:56px; padding:5px; border:2px solid transparent; border-radius:10px; background:rgba(255,255,255,.06); color:#fff; font:inherit; text-align:left; cursor:pointer; scroll-snap-align:start; transition:background .2s ease,border-color .2s ease; }
-.cxvp-thumb.is-active { border-color:#fff; background:rgba(255,255,255,.14); }
-.cxvp-thumb-media { display:block; aspect-ratio:16 / 9; overflow:hidden; border-radius:6px; background:#1b2a50; }
-.cxvp-thumb-media img { display:block; width:100%; height:100%; object-fit:cover; }
-.cxvp-thumb-title { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:12px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; }
+.cxvp-dots { position:absolute; top:14px; left:50%; z-index:3; display:flex; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(7,20,59,.5); transform:translateX(-50%); pointer-events:none; }
+.cxvp-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.45); transition:background .2s ease,transform .2s ease; }
+.cxvp-dot.is-active { background:#fff; transform:scale(1.25); }
+.cxvp.is-playing .cxvp-dots { display:none; }
 
 /* Manga reader (js/cx-manga-reader.js) — pages are never cropped. */
 .cxmr { position:relative; display:grid; gap:12px; }
-.cxmr-stage { position:relative; display:flex; align-items:center; justify-content:center; height:var(--cxcx-stage-h); overflow:hidden; border-radius:12px; background:#111a33; touch-action:pan-y; }
+.cxmr-stage { position:relative; display:flex; align-items:center; justify-content:center; height:var(--cxcx-manga-h); overflow:hidden; border-radius:12px; background:#111a33; touch-action:pan-y; }
 .cxmr-spread { display:flex; justify-content:center; height:100%; }
 .cxmr-page { display:block; height:100%; width:auto; max-width:100%; object-fit:contain; background:#fff; }
 .cxmr-stage.is-spread .cxmr-page { max-width:50%; }
@@ -145,7 +153,7 @@
    (next on the left, previous on the right, as in a right-bound book). */
 @media (min-width:769px) {
   .cxmr { gap:0; }
-  .cxmr-stage { height:calc(var(--cxcx-stage-h) + 76px); }
+  .cxmr-stage { height:var(--cxcx-manga-h); }
   .cxmr-bar { position:absolute; inset:0; min-height:0; pointer-events:none; }
   .cxmr-bar>* { pointer-events:auto; }
   .cxmr-btn { position:absolute; top:50%; margin-top:-22px; background:rgba(7,20,59,.72); }
@@ -162,27 +170,21 @@
 .cxcx-card[aria-selected="true"] .cxcx-card-go { background:var(--cxcx-accent); }
 .cxcx-card[aria-selected="true"] .cxcx-card-go::before { border-color:#fff; }
 
-.cxvp-thumb:focus-visible,.cxvp-arrow:focus-visible,.cxvp-play:focus-visible,.cxmr-stage:focus-visible,.cxmr-btn:focus-visible,.cxmr-zoom:focus-visible,.cxcx-fallback:focus-visible,.cxcx-message a:focus-visible { outline:3px solid #7fb1ff; outline-offset:2px; }
+.cxvp-arrow:focus-visible,.cxvp-play:focus-visible,.cxmr-stage:focus-visible,.cxmr-btn:focus-visible,.cxmr-zoom:focus-visible,.cxcx-fallback:focus-visible,.cxcx-message a:focus-visible { outline:3px solid #7fb1ff; outline-offset:2px; }
 @media (hover:hover) {
   .cxvp-play:hover .cxvp-play-ring { transform:scale(1.06); background:rgba(255,255,255,.14); }
-  .cxvp-thumb:not(.is-active):hover { background:rgba(255,255,255,.12); }
+  .cxvp-arrow:hover { background:rgba(7,20,59,.86); }
 }
 @media (prefers-reduced-motion:reduce) {
-  .cxvp-play-ring,.cxvp-thumb { transition:none; }
-}
-@media (max-width:1100px) {
-  .cxcx { --cxcx-stage-h:min(calc((100vw - 2 * clamp(24px,3.8vw,64px) - 28px) * 9 / 16),60svh); }
+  .cxvp-play-ring,.cxvp-arrow,.cxvp-dot { transition:none; }
 }
 /* SP: cards become a compact three-way switch; manga pages get a tall single-page stage. */
 @media (max-width:768px) {
-  .cxcx { --cxcx-stage-h:min(calc((min(100vw,592px) - 20px) * 1.25),70svh); }
+  .cxcx { --cxcx-view-h:56.25cqw; --cxcx-manga-h:min(125cqw,70svh); }
   .cxcx-viewer { padding:10px; }
-  .cxvp-stage { width:100%; }
-  .cxcx-panel[data-service="bizanime"],.cxcx-panel[data-service="bizvideo"] { min-height:0; }
-  .cxcx-message { min-height:calc((min(100vw,592px) - 20px) * 9 / 16 + 76px); }
-  .cxvp-thumb { flex-basis:72%; }
-  .cxvp-strip { grid-template-columns:minmax(0,1fr); }
-  .cxvp-arrow { display:none; }
+  .cxcx-panel[data-service="manga"] { min-height:var(--cxcx-manga-h); }
+  .cxvp-arrow-prev { left:8px; }
+  .cxvp-arrow-next { right:8px; }
   .cxmr-zoom { position:static; }
   .cxmr-bar { gap:12px; }
   .cxcx-cards { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }

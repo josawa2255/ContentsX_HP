@@ -101,6 +101,19 @@ def rect(page, selector):
     return page.locator(selector).first.evaluate('e=>e.getBoundingClientRect().toJSON()')
 
 
+CUR = '.cxvp-stage[aria-hidden="false"]'  # the video in view
+
+
+def titles_of(page):
+    return page.locator('.cxvp-stage .cxvp-title').all_inner_texts()
+
+
+def scroll_track(page, index):
+    """Swipe / trackpad: scroll the video row sideways to the given video."""
+    page.locator('.cxvp-track').evaluate('(t, i)=>t.scrollTo({left:i*t.clientWidth,behavior:"instant"})', index)
+    page.wait_for_timeout(250)
+
+
 def switch(page, service):
     page.locator(f'[data-cxcx-service="{service}"]').click()
     page.wait_for_timeout(450)
@@ -127,7 +140,7 @@ with sync_playwright() as p:
         assert cards == ['ビズマンガ', 'ビズアニメ', 'ビズビデオ'], cards
         assert page.locator('[role="tab"][aria-selected="true"]').get_attribute('data-cxcx-service') == 'bizanime'
         assert page.locator('#cxcx-panel').get_attribute('data-service') == 'bizanime'
-        assert page.locator('.cxvp-thumb').count() == 3
+        assert page.locator('.cxvp-stage').count() == 3 and page.locator('.cxvp-thumb').count() == 0
         r = page.locator('.cxcx-card').evaluate_all('(n)=>n.map(e=>e.getBoundingClientRect().toJSON())')
         assert abs(r[0]['top'] - r[2]['top']) < 1 and r[1]['left'] > r[0]['right'], 'cards in one row'
         assert min(c['height'] for c in r) >= 44, 'cards are tappable'
@@ -144,9 +157,10 @@ with sync_playwright() as p:
             assert tops == sorted(tops), f'order at {width}px: {tops}'
         if width <= 592:
             assert abs(viewer['left']) < 1 and abs(viewer['right'] - width) < 1, f'SP viewer edge to edge at {width}px'
-        # Video stage keeps 16:9.
+        # The video uses the whole frame width at 16:9.
         stage = rect(page, '.cxvp-stage')
         assert abs(stage['width'] / stage['height'] - 16 / 9) < 0.02, stage
+        assert abs(stage['width'] - rect(page, '#cxcx-panel')['width']) < 1, stage
         # Manga: spread on wide frames, one page at a time on narrow ones (BizManga rule: PC >= 769).
         switch(page, 'manga')
         page.wait_for_selector('.cxmr.is-ready')
@@ -167,38 +181,49 @@ with sync_playwright() as p:
         report.append({'width': width, 'cards': cards, 'text_1_4x': 'pass'})
         page.close()
 
-    # Video player: no autoplay, embed rebuilt from the ID on play, previous video stops on switch.
+    # Video carousel: no autoplay, embed rebuilt from the ID on play, previous video stops when it
+    # leaves the view; videos change by scrolling sideways (no thumbnail strip).
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page)
     to_section(page)
     assert page.evaluate('window.__xss') is None
     assert page.locator('#creative-x img[src*="evil"], #creative-x img[src^="javascript"]').count() == 0
-    titles = page.locator('.cxvp-thumb-title').all_inner_texts()
+    assert page.locator('.cxvp-thumb, .cxvp-strip').count() == 0
+    titles = titles_of(page)
     assert titles == ['<img src=x onerror="window.__xss=1">アニメ1', 'アニメ2', 'アニメ3'], titles  # bad ID dropped, max 3
-    assert page.locator('.cxvp-title').inner_text() == titles[0]
-    assert page.locator('.cxvp-desc').inner_text() == '説明1'
-    assert page.locator('.cxvp-poster').get_attribute('src') == 'https://i.ytimg.com/vi/V9ZC16hTlZI/hqdefault.jpg'
+    assert page.locator('.cxvp-desc').first.inner_text() == '説明1'
+    track, stage = rect(page, '.cxvp-track'), rect(page, '.cxvp-stage')
+    assert abs(stage['width'] - track['width']) < 1, 'each video uses the whole frame width'
+    assert abs(stage['width'] - rect(page, '#cxcx-panel')['width']) < 1
+    assert page.locator(CUR).count() == 1 and page.locator(CUR).get_attribute('aria-label').startswith('1 / 3')
+    assert page.locator(CUR + ' .cxvp-poster').get_attribute('src') == 'https://i.ytimg.com/vi/V9ZC16hTlZI/hqdefault.jpg'
     assert page.locator('.cxvp-stage iframe').count() == 0, 'no autoplay on load'
-    assert page.locator('.cxvp-thumbs').get_attribute('role') == 'group' and page.locator('.cxvp-thumb').first.get_attribute('role') is None
-    page.locator('.cxvp-play').click()
+    assert page.locator('.cxvp-dot.is-active').count() == 1 and page.locator('.cxvp-arrow-prev').is_disabled()
+    page.locator(CUR + ' .cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').get_attribute('src') == 'https://www.youtube-nocookie.com/embed/V9ZC16hTlZI?autoplay=1&rel=0&playsinline=1'
     assert page.locator('.cxvp-stage iframe').get_attribute('title') == titles[0]
-    page.locator('.cxvp-thumb').nth(2).click()
+    # Scrolling sideways to another video stops the one that was playing.
+    scroll_track(page, 2)
     assert page.locator('.cxvp-stage iframe').count() == 0, 'previous video stops'
-    assert page.locator('.cxvp-thumb').nth(2).get_attribute('aria-current') == 'true'
-    assert page.locator('.cxvp-poster').get_attribute('src') == UP + 'drive-poster.png'
-    page.locator('.cxvp-play').click()
+    assert page.locator(CUR).get_attribute('aria-label').startswith('3 / 3')
+    assert page.locator('.cxvp-dot').nth(2).evaluate("e=>e.classList.contains('is-active')")
+    assert page.locator('.cxvp-arrow-next').is_disabled() and not page.locator('.cxvp-arrow-prev').is_disabled()
+    assert page.locator(CUR + ' .cxvp-poster').get_attribute('src') == UP + 'drive-poster.png'
+    page.locator(CUR + ' .cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').get_attribute('src') == 'https://drive.google.com/file/d/1kffZJKMAMB9rJGVKYxSgjbDs5UI99BTQ/preview'
-    page.locator('.cxvp-arrow-next').click()  # wraps to the first
-    assert page.locator('.cxvp-thumb').nth(0).get_attribute('aria-current') == 'true'
+    assert page.locator('.cxvp-dots').is_hidden(), 'dots step aside while a video plays'
+    # ‹ › buttons and ← → keys also move one video at a time.
     page.locator('.cxvp-arrow-prev').click()
-    assert page.locator('.cxvp-thumb').nth(2).get_attribute('aria-current') == 'true'
-    # Keyboard: arrows move focus along the thumbnails.
-    page.locator('.cxvp-thumb').nth(0).focus()
-    page.keyboard.press('ArrowRight')
-    assert page.evaluate("document.activeElement.classList.contains('cxvp-thumb')") and page.locator('.cxvp-thumb').nth(1).evaluate('e=>e===document.activeElement')
+    page.wait_for_timeout(700)
+    assert page.locator(CUR).get_attribute('aria-label').startswith('2 / 3')
+    assert page.locator('.cxvp-stage iframe').count() == 0
+    assert abs(page.locator('.cxvp-track').evaluate('t=>t.scrollLeft/t.clientWidth') - 1) < 0.02
+    page.locator('.cxvp-arrow-next').focus()
+    page.keyboard.press('ArrowLeft')
+    page.wait_for_timeout(700)
+    assert page.locator(CUR).get_attribute('aria-label').startswith('1 / 3')
     # Switching service while playing removes the embed and fades the panel (200ms).
-    page.locator('.cxvp-play').click()
+    page.locator(CUR + ' .cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').count() == 1
     h_anime = rect(page, '.cxcx-viewer')['height']
     page.locator('[data-cxcx-service="bizvideo"]').click()
@@ -207,11 +232,11 @@ with sync_playwright() as p:
     page.wait_for_timeout(450)
     assert not page.locator('#cxcx-panel').evaluate("e=>e.classList.contains('is-fading')")
     assert page.locator('#cxcx-panel').get_attribute('aria-labelledby') == 'cxcx-tab-bizvideo'
-    assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['ビデオ1', 'ビデオ2', 'ビデオ3']
+    assert titles_of(page) == ['ビデオ1', 'ビデオ2', 'ビデオ3']
     page.wait_for_timeout(300)
-    assert page.locator('.cxvp-poster').get_attribute('src') == 'https://i.ytimg.com/vi/DkmWuOSvCEY/hqdefault.jpg', 'grey maxres placeholder replaced'
+    assert page.locator(CUR + ' .cxvp-poster').get_attribute('src') == 'https://i.ytimg.com/vi/DkmWuOSvCEY/hqdefault.jpg', 'grey maxres placeholder replaced'
     h_video = rect(page, '.cxcx-viewer')['height']
-    page.locator('.cxvp-play').click()
+    page.locator(CUR + ' .cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').get_attribute('src').startswith('https://www.youtube-nocookie.com/embed/DkmWuOSvCEY?')
     # Tabs: arrow keys and Home/End move the selection and focus.
     page.locator('[data-cxcx-service="bizvideo"]').focus()
@@ -301,13 +326,17 @@ with sync_playwright() as p:
     assert page.locator('.cxmr-stage').evaluate("e=>e.classList.contains('is-vertical')")
     page.close()
 
-    # Laptops: the whole section (cards included) stays inside one screen below the fixed header.
-    for w, h in [(1470, 800), (1448, 1086), (1280, 720), (1536, 730), (1366, 650), (1920, 1080)]:
+    # Laptops: the whole section (viewer and cards) stays inside one screen below the fixed header;
+    # from 800px tall the video uses the whole frame width.
+    for w, h in [(1470, 800), (1280, 800), (1440, 900), (1448, 1086), (1920, 1080), (1280, 720), (1536, 730), (1366, 650)]:
         page = browser.new_page(viewport={'width': w, 'height': h})
         load(page)
         to_section(page)  # measure after the entrance animation (cards start 30px lower)
-        bottom = page.evaluate("(()=>{const s=document.querySelector('#creative-x');return Math.max(...[...s.querySelectorAll('.cxcx-card')].map(e=>e.getBoundingClientRect().bottom))-s.getBoundingClientRect().top})()")
-        assert bottom <= h - 64, (w, h, bottom)
+        box = page.evaluate("(()=>{const s=document.querySelector('#creative-x').getBoundingClientRect().top;const b=x=>Math.max(...[...document.querySelectorAll(x)].map(e=>e.getBoundingClientRect().bottom))-s;return {viewer:b('.cxcx-viewer'),cards:b('.cxcx-card')}})()")
+        assert box['viewer'] <= h - 64 and box['cards'] <= h - 64, (w, h, box)
+        if h >= 800:
+            stage = rect(page, '.cxvp-stage')
+            assert abs(stage['width'] / stage['height'] - 16 / 9) < 0.02, (w, h, stage)
         page.close()
 
     # PC snap includes Creative X.
@@ -324,10 +353,10 @@ with sync_playwright() as p:
     load(page, videos={'main': [], 'cases': CASES, 'playlists': PLAYLISTS})
     to_section(page)
     # BizAnime: its playlists first, then the existing single videos.
-    assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['IPキャラクター・オリジナル開発', 'I eye']
+    assert titles_of(page) == ['IPキャラクター・オリジナル開発', 'I eye']
     switch(page, 'bizvideo')
-    assert page.locator('.cxvp-thumb-title').all_inner_texts() == ['VLOG・旅行・ライフスタイルCM', 'シネマティック・ストーリーMV']
-    page.locator('.cxvp-play').click()
+    assert titles_of(page) == ['VLOG・旅行・ライフスタイルCM', 'シネマティック・ストーリーMV']
+    page.locator(CUR + ' .cxvp-play').click()
     assert page.locator('.cxvp-stage iframe').get_attribute('src') == 'https://www.youtube-nocookie.com/embed/videoseries?list=PLD2nZrEveSfI&autoplay=1&rel=0&playsinline=1'
     page.close()
 
@@ -393,4 +422,4 @@ with sync_playwright() as p:
     page.close()
     browser.close()
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
-print(f'PASS: {len(widths)} widths, tabs, video player, manga reader (PC/SP/vertical), safety, fit, snap, fallbacks, reduced-motion and JS-off.')
+print(f'PASS: {len(widths)} widths, tabs, video carousel, manga reader (PC/SP/vertical), safety, fit, snap, fallbacks, reduced-motion and JS-off.')
