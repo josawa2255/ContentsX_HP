@@ -95,6 +95,10 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 - WordPress API: `https://cms.contentsx.jp/wp-json/contentsx/v1`（wp-config.js）
 - DNS/ドメイン: お名前.com
 
+## SP・共通UIの原則（全担当必須）
+
+**[RESPONSIVE-UI-STANDARD.md](RESPONSIVE-UI-STANDARD.md)** がモバイル共通設計の正本。文字階層・余白・タップ領域・カード・画像の扱いは `css/brand-system-2026.css` の共通トークンとオプトインUIクラスを優先し、ページごとに同じ数値を再実装しない。変更時は `python3 tools/check-shared-ui.py` と320 / 375 / 390 / 430 / 768pxで検証する。全ページ共通フッターは `services/index.html` をソースとし、静的ページ・サービス生成ページ・コラムテンプレで一致させる。今進行中のHEROとHero→Aboutの変形JSは別担当のため、共通化PRから触らない。共通CSSが他ページへ波及する場合はPRで検証し、作業を分離する。
+
 ## CSS設計
 - メインサイト: `css/style.css`（共通）+ ページ別CSS。トップは `css/home-2026.css`（Hero→Aboutは `hero-about.css`、ABOUT / SERVICE / NEWS の共通背景とスナップは `home-sections.css`、Creative X は `home-creative-x.css`、Sales X は `home-sales-x.css`、TOPICS は `home-topics.css`、NEWS は `home-news.css`（行の描画は `wp-api.js` のトップ用分岐）。仕様は SPEC.md §3）、他ページは `recruit.css` 等を使用。
 - フッターは全ページ共通の `.cx-footer`（`css/site-footer.css`）。変更時は静的ページ・コラム記事テンプレ・`services/index.html` の3か所を揃える（SPEC.md §7.5）。
