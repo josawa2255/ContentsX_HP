@@ -1,7 +1,9 @@
-/* CxVideoPlayer — inline 16:9 player with a row of thumbnails (Issue #97). Shared by BizAnime and
-   BizVideo; only the data differs. Nothing plays until the visitor presses play (no autoplay on
-   load); the embed is then created in place (no popup). Choosing another video, switching service
-   or calling stop() removes the embed, so the previous video stops.
+/* CxVideoPlayer — inline 16:9 video carousel (Issue #97, carousel since Issue #102). Shared by
+   BizAnime and BizVideo; only the data differs. The videos sit side by side in one row that the
+   visitor scrolls sideways (swipe / trackpad / ‹ › buttons / ← → keys); each video uses the whole
+   width of the frame. Nothing plays until the visitor presses play (no autoplay on load); the embed
+   is then created in place (no popup). Scrolling to another video, switching service or calling
+   stop() removes the embed, so the previous video stops.
    items: [{ title, description, provider: youtube|youtube_playlist|drive|mp4, video_id, src, poster }]
    Embed URLs are rebuilt from validated IDs; nothing from the data is written as HTML.
    CxVideoPlayer.playable(items) returns the items that can be played (the caller decides what to
@@ -12,6 +14,7 @@
   var LIST_ID = /^[A-Za-z0-9_-]{10,64}$/;
   var DRIVE_ID = /^[A-Za-z0-9_-]{10,}$/;
   var IMAGE_HOSTS = ['i.ytimg.com', 'cms.contentsx.jp', 'contentsx.jp'];
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -65,53 +68,48 @@
   window.CxVideoPlayer = function (root, items, opts) {
     opts = opts || {};
     items = playable(items).slice(0, opts.max || 3);
+    var n = items.length;
     var current = 0;
+    var playing = -1;
     root.textContent = '';
     root.classList.add('cxvp');
-    if (!items.length) return { stop: function () {}, destroy: function () { root.textContent = ''; } };
+    if (!n) return { stop: function () {}, destroy: function () { root.textContent = ''; } };
 
-    var stage = el('div', 'cxvp-stage');
-    var strip = el('div', 'cxvp-strip');
-    var prevBtn = iconButton('cxvp-arrow cxvp-arrow-prev', '前の動画', '‹');
-    var thumbs = el('div', 'cxvp-thumbs');
-    thumbs.setAttribute('role', 'group');
-    thumbs.setAttribute('aria-label', '動画を選ぶ');
-    var nextBtn = iconButton('cxvp-arrow cxvp-arrow-next', '次の動画', '›');
-    strip.appendChild(prevBtn); strip.appendChild(thumbs); strip.appendChild(nextBtn);
-    root.appendChild(stage); root.appendChild(strip);
-
-    var thumbButtons = items.map(function (item, i) {
-      var b = el('button', 'cxvp-thumb');
-      b.type = 'button';
-      b.setAttribute('aria-label', (i + 1) + '本目: ' + (item.title || '動画'));
-      var media = el('span', 'cxvp-thumb-media');
-      var src = posterFor(item);
-      if (src) { var img = el('img'); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; poster(img, src); media.appendChild(img); }
-      b.appendChild(media);
-      var t = el('span', 'cxvp-thumb-title', item.title || '動画');
-      t.setAttribute('data-i18n-skip', '');
-      b.appendChild(t);
-      b.addEventListener('click', function () { select(i); });
-      b.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-          var to = Math.max(0, Math.min(items.length - 1, i + (e.key === 'ArrowRight' ? 1 : -1)));
-          thumbButtons[to].focus();
-          e.preventDefault();
-        }
-      });
-      thumbs.appendChild(b);
-      return b;
+    var track = el('div', 'cxvp-track');
+    track.setAttribute('role', 'group');
+    track.setAttribute('aria-label', n > 1 ? '動画（横にスクロールして切り替え）' : '動画');
+    root.appendChild(track);
+    var slides = items.map(function (item, i) {
+      var slide = el('div', 'cxvp-stage');
+      slide.setAttribute('role', 'group');
+      slide.setAttribute('aria-roledescription', 'スライド');
+      slide.setAttribute('aria-label', (i + 1) + ' / ' + n + '：' + (item.title || '動画'));
+      track.appendChild(slide);
+      return slide;
     });
+    var prevBtn = null, nextBtn = null, dots = [];
+    if (n > 1) {
+      prevBtn = iconButton('cxvp-arrow cxvp-arrow-prev', '前の動画', '‹');
+      nextBtn = iconButton('cxvp-arrow cxvp-arrow-next', '次の動画', '›');
+      prevBtn.addEventListener('click', function () { go(current - 1); });
+      nextBtn.addEventListener('click', function () { go(current + 1); });
+      var dotBox = el('div', 'cxvp-dots');
+      dotBox.setAttribute('aria-hidden', 'true');
+      dots = items.map(function () { var d = el('span', 'cxvp-dot'); dotBox.appendChild(d); return d; });
+      root.appendChild(prevBtn); root.appendChild(nextBtn); root.appendChild(dotBox);
+    }
 
-    function showPoster(item) {
+    function showPoster(i) {
+      var item = items[i], stage = slides[i];
       stage.textContent = '';
       stage.classList.remove('is-playing', 'is-loading', 'is-error');
       var src = posterFor(item);
       if (src) {
         var img = el('img', 'cxvp-poster');
         img.alt = ''; img.decoding = 'async';
-        poster(img, src);
+        if (i > 0) img.loading = 'lazy';
         img.addEventListener('error', function () { img.remove(); });
+        poster(img, src);
         stage.appendChild(img);
       }
       var cap = el('div', 'cxvp-caption');
@@ -130,12 +128,22 @@
       var ring = el('span', 'cxvp-play-ring');
       ring.setAttribute('aria-hidden', 'true');
       play.appendChild(ring);
-      play.addEventListener('click', function () { start(item); });
+      play.addEventListener('click', function () { if (i !== current) go(i); start(i); });
       stage.appendChild(play);
     }
-    function start(item) {
-      var e = embedFor(item);
+    function stop() {
+      if (playing < 0) return;
+      var was = playing;
+      playing = -1;
+      root.classList.remove('is-playing');
+      showPoster(was);
+    }
+    function start(i) {
+      var item = items[i], e = embedFor(item), stage = slides[i];
       if (!e) return;
+      stop();
+      playing = i;
+      root.classList.add('is-playing');
       stage.textContent = '';
       stage.classList.add('is-playing', 'is-loading');
       var spinner = el('div', 'cxvp-loading', '読み込み中…');
@@ -166,27 +174,45 @@
         spinner.textContent = '動画を再生できませんでした。時間をおいて、もう一度お試しください。';
       }
     }
-    function select(i) {
-      current = (i + items.length) % items.length;
-      thumbButtons.forEach(function (b, k) {
-        b.classList.toggle('is-active', k === current);
-        if (k === current) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
-      });
-      showPoster(items[current]);
-      var tb = thumbButtons[current];
-      // Centre the chosen thumbnail inside the strip (measured against the strip, not its offset parent).
-      var shift = tb.getBoundingClientRect().left - thumbs.getBoundingClientRect().left;
-      thumbs.scrollTo({ left: thumbs.scrollLeft + shift - (thumbs.clientWidth - tb.offsetWidth) / 2, behavior: 'smooth' });
-      prevBtn.disabled = items.length < 2;
-      nextBtn.disabled = items.length < 2;
+    /** Mark slide i as the one in view; leaving a playing video stops it. */
+    function settle(i) {
+      i = Math.max(0, Math.min(n - 1, i));
+      if (i !== current && playing >= 0 && playing !== i) stop();
+      current = i;
+      slides.forEach(function (s, k) { s.setAttribute('aria-hidden', String(k !== i)); s.inert = k !== i; });
+      dots.forEach(function (d, k) { d.classList.toggle('is-active', k === i); });
+      if (prevBtn) { prevBtn.disabled = i === 0; nextBtn.disabled = i === n - 1; }
     }
-    prevBtn.addEventListener('click', function () { select(current - 1); });
-    nextBtn.addEventListener('click', function () { select(current + 1); });
-    select(0);
+    function go(i) {
+      i = Math.max(0, Math.min(n - 1, i));
+      track.scrollTo({ left: i * track.clientWidth, behavior: reduced.matches ? 'auto' : 'smooth' });
+      settle(i);
+    }
+    // Swipes and trackpad scrolling: the slide whose centre is in view becomes current.
+    var frame = 0;
+    track.addEventListener('scroll', function () {
+      if (frame) return;
+      frame = requestAnimationFrame(function () {
+        frame = 0;
+        var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        if (i !== current) settle(i);
+      });
+    }, { passive: true });
+    root.addEventListener('keydown', function (e) {
+      if (n < 2 || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+      e.preventDefault();
+      go(current + (e.key === 'ArrowRight' ? 1 : -1));
+    });
+    // Keep the current video aligned when the frame changes size.
+    var onResize = function () { track.scrollLeft = current * track.clientWidth; };
+    window.addEventListener('resize', onResize, { passive: true });
+
+    items.forEach(function (_, i) { showPoster(i); });
+    settle(0);
 
     return {
-      stop: function () { if (stage.classList.contains('is-playing')) showPoster(items[current]); },
-      destroy: function () { root.textContent = ''; }
+      stop: stop,
+      destroy: function () { window.removeEventListener('resize', onResize); if (frame) cancelAnimationFrame(frame); root.textContent = ''; }
     };
   };
   window.CxVideoPlayer.playable = playable;
