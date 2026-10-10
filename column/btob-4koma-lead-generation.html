@@ -148,7 +148,7 @@
   <header class="header" id="header">
     <div class="header-inner">
       <a href="/" class="logo">
-        <img width="180" height="36" src="/material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+        <img width="1022" height="192" src="/material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
       </a>
       <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
       <div class="header-right">
