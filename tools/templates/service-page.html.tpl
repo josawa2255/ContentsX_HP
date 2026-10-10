@@ -44,7 +44,6 @@
 {{HEADER}}
 <main class="cxs-page" id="main">
 {{BODY}}
-  <section id="cxCtaMount" data-cx-page-cta></section>
 </main>
 {{FOOTER}}
 <div class="dl-modal-overlay" id="dlModal">
@@ -57,7 +56,6 @@
 <script src="/js/i18n.js" defer></script>
 <script src="/js/nav.js" defer></script>
 <script src="/js/tracking.js" defer></script>
-<script src="/js/cta.js" defer></script>
 <script src="/js/dl-modal.js" defer></script>
 <script src="/js/services-ui.js" defer></script>
 <script src="/js/service-media.js" defer></script>

@@ -206,6 +206,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 3.0 サービスページ生成（Issue #20）
 
 - `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、旧個別URLの転送ページ7件、共通デザイントークンCSS、サイトマップを生成する。`href` は旧URL、`destination` は現在の遷移先で、生成ページは後者を使う。個別詳細ページは公開しない。サイトマップには一覧と事業群2ページだけを載せる。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- 一覧の最下部はページ専用CTA「LET'S TALK」（`.cxsd-contact`）1つだけ。「まずは相談する」（`/contact`）と「資料ダウンロード」（`.js-dl-trigger`、`js/dl-modal.js` の案内モーダル。記入済みならPDFを直接ダウンロード）を並べる（2026-10-10、Issue #107。以前は共通CTA `cta.js` も続けて出て2つ重なっていた）。生成ページは `cta.js` を読み込まない。
 - 一覧は `tools/templates/service-list.html.tpl` と `css/service-directory-2026.css` で生成する。冒頭の重複ヒーローと事業カードを置かず、Creative X の写真・紹介から始める。Creative X → Sales Xの順に、画像左・濃紺の説明右の事業紹介、1文の概要を添えたサービスカードを置く。事業紹介の写真は装飾画像とし、各事業ページへの遷移は説明側のCTA1個に絞る。最初のCreative X見出しを一覧のH1とする。領域間の帯は見出しで、クリックできるリンクにはしない。PCのホバー/キーボードフォーカスで補足文を表示し、タッチ端末は常時見える1文を残す。公式サイトがある静止画カードは画像・見出し・CTAを同じ公開先へ向ける。動画カードのポスターはページ内再生で、ビズアニメの見出しとCTAのみ公式サイトへ進む。
 - 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップのヘッダー構成が変わっても、生成時はトップから抽出しない。全ページのサービス導線は実在するURLへ向ける。フッターは全ページ共通（§7.5）。
 - サービスカードはPCのhover/focusで補足文を示し、スマホでは1文の概要を常時表示する。JSなしでも概要は読める。ビズAIO・ビズカルテは準備中、公開済みサービスは公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後にページ内で再生する。
@@ -258,7 +259,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
-| `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（6ページで共有） |
+| `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（会社概要・採用の2ページ。サービス一覧は2026-10-10にページ専用CTAへ統合） |
 | `js/nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 | 全ページ（defer） |
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
 | `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
@@ -397,7 +398,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 構成: 左＝ロゴ＋小さなリンク2段（会社概要・私たちについて・ニュース・採用情報・お問い合わせ／よくあるご質問・プライバシーポリシー・利用規約・Chrome 拡張機能）、右＝Sales X・Creative X のサービス一覧2列（外部サイトへのリンクは左上に角の印＋別タブ）、下＝`© 2026 Contents X Inc.`。住所・会社名の文字表記は置かない（会社概要・構造化データに記載）。
 - 768px以下は縦積み。リンクの高さは44px以上。各リンクに `data-ja` / `data-en`。
 - 上部の小さなお問い合わせ導線 `.cx-footer__contact`（Issue #94）: 「まずはご相談ください／利用するサービスが決まっていなくても構いません。」＋白枠の「お問い合わせ」ボタン（`/contact`）。濃紺の面はそのまま、下に区切り線。768px以下は縦積みでボタン全幅。
-- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要・採用・サービス一覧／`service-page.html.tpl`）、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
+- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要・採用）、サービス一覧の `.cxsd-contact`（`service-list.html.tpl`）、FAQの `.faq-cta`、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
 - **変更するときは3か所を同じ内容にする**: 静的ページ全部（`<footer class="cx-footer">` を一括置換）、`tools/templates/c-column.html.tpl`（コラム記事の生成元）、`services/index.html`（`tools/build-services.py` がサービスページへ複製）。置換後に `python3 tools/build-services.py --check` で差分がないことを確認する。
 - サービス名・遷移先は `data/services.json` と `js/nav.js` に合わせる（サービスを増減したらフッターも直す）。
 
@@ -568,7 +569,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 
 ## 15. よくある落とし穴（Gotchas）
 
-1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば6ページ全てに反映される（手動コピペ禁止）
+1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば共通CTAを使う全ページ（会社概要・採用）に反映される（手動コピペ禁止）
 2. **モバイルでハンバーガー押せない** → §7.1 のチェックリスト
 3. **新作情報に漫画事例を出したい** → 2026-08-05以降は`cx_show_new_contentsx`が未設定でも表示される（明示的に`0`を入れた作品だけ除外）。表示件数は`added`降順で最大10件（`script.js` `MAX_NEW_WORKS`）。**画面が更新されない場合**: `js/wp-api.js` `loadNewWorks()`完了時に発火する`wp-new-works-ready`イベントを`js/script.js`側で購読して`buildNewWorksCards()`を再実行する構成（2026-08-31修正、[BUGS.md #052](../BUGS.md)）。この購読が無いと`wp-data-ready`（`/works`取得完了時のみ発火）のタイミングでフォールバック`js/data/new-works.js`のまま描画が固定されてしまう
 4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に（2026-04-16修正: 静的 `WORKS_DETAIL_DATA` には `show_hero_site` が無いので初回描画は全作品表示。`wp-data-ready` で `buildHeroCarousel()` を再実行してフィルターを効かせている。サムネ差し替えのみだとCMS設定が反映されない）
