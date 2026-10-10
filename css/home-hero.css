@@ -27,44 +27,36 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
 .cxhv-card--business { left:3%; top:14%; z-index:2; width:40%; aspect-ratio:840 / 1061; rotate:11deg; }
 .cxhv-card--system { left:39%; top:49%; z-index:3; width:38%; aspect-ratio:.86; rotate:-12deg; }
 .cxhv-card--system img { object-position:50% 0; }
-.cxhv-card--creative { left:47%; top:3%; z-index:1; width:52%; overflow:hidden; background:#0b1838; rotate:9deg; }
+.cxhv-card--creative { left:47%; top:3%; z-index:1; width:52%; rotate:9deg; }
 /* Arrow badge: cards 2/3 are links (Creative uses a play icon instead). */
 .cxhv-go { position:absolute; right:14px; bottom:14px; display:grid; place-items:center; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.92); color:var(--cxhv-ink); font-size:18px; box-shadow:0 6px 16px rgba(13,27,62,.16); transition:translate .25s ease; }
 
-/* Creative card: video area (16:9) + caption bar. Nothing is laid over a playing YouTube player. */
-.cxhv-screen { position:relative; aspect-ratio:16 / 9; overflow:hidden; background:#0b1838; }
-.cxhv-thumb { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.cxhv-player { position:absolute; inset:0; }
+/* Creative card: only the videos' pictures, in a row that scrolls sideways (no text, no YouTube UI).
+   The YouTube player is created inside the picture only once the card is opened (js/home-hero.js). */
+.cxhv-card--creative { background:transparent; box-shadow:none; }
+.cxhv-track { display:flex; aspect-ratio:16 / 9; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; scrollbar-width:none; border-radius:14px; background:#0b1838; box-shadow:0 26px 60px rgba(30,58,120,.2),0 4px 14px rgba(30,58,120,.08); }
+.cxhv-track::-webkit-scrollbar { display:none; }
+.cxhv-slide { position:relative; flex:0 0 100%; overflow:hidden; scroll-snap-align:center; scroll-snap-stop:always; }
+.cxhv-slide-btn { display:block; width:100%; height:100%; padding:0; border:0; background:#0b1838; cursor:zoom-in; }
+.cxhv-slide-btn img { display:block; width:100%; height:100%; object-fit:cover; }
+.cxhv-slide.has-player .cxhv-slide-btn { visibility:hidden; }
+.cxhv-player { position:absolute; inset:0; background:#000; }
 .cxhv-player iframe { display:block; width:100%; height:100%; border:0; }
-.cxhv-card--creative.has-player .cxhv-thumb,.cxhv-card--creative.has-player .cxhv-tap { display:none; }
-.cxhv-tap { position:absolute; inset:0; display:grid; place-items:center; padding:0; border:0; background:linear-gradient(180deg,rgba(11,24,56,0) 40%,rgba(11,24,56,.45)); cursor:pointer; }
-.cxhv-tap-ring { display:grid; place-items:center; width:clamp(44px,4vw,60px); aspect-ratio:1; border:2px solid #fff; border-radius:50%; background:rgba(11,24,56,.35); }
-.cxhv-tap-ring::before,.cxhv-expand-icon::before { content:''; margin-left:3px; border-style:solid; border-width:7px 0 7px 11px; border-color:transparent transparent transparent currentColor; }
-.cxhv-tap-ring { color:#fff; }
-.cxhv-caption { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:4px 12px; padding:clamp(10px,1vw,14px) clamp(12px,1.2vw,18px); }
-.cxhv-caption-title { margin:0; color:#fff; font-family:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',YuMincho,serif; font-size:clamp(13px,1.05vw,16px); font-weight:500; line-height:1.5; letter-spacing:.04em; }
-.cxhv-caption-sub { grid-row:2; margin:0; color:rgba(255,255,255,.66); font-family:Inter,Arial,sans-serif; font-size:9px; font-weight:600; letter-spacing:.2em; }
-.cxhv-expand,.cxhv-close,.cxhv-sound,.cxhv-pick { min-height:44px; border:1px solid rgba(255,255,255,.4); border-radius:999px; background:rgba(255,255,255,.08); color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
-.cxhv-expand { grid-row:1 / span 2; grid-column:2; display:inline-flex; align-items:center; gap:8px; padding:0 16px 0 12px; white-space:nowrap; }
-.cxhv-expand-icon { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:#fff; color:#0b1838; }
-.cxhv-expand-icon::before { margin-left:2px; border-width:5px 0 5px 8px; }
-.cxhv-close { grid-row:1 / span 2; grid-column:2; width:44px; padding:0; font-size:22px; line-height:1; }
-.cxhv-close[hidden],.cxhv-expand[hidden],.cxhv-controls[hidden] { display:none; }
-.cxhv-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0 clamp(12px,1.2vw,18px) clamp(12px,1.2vw,16px); }
-.cxhv-picker { display:flex; flex:1; flex-wrap:wrap; gap:8px; min-width:0; }
-.cxhv-pick { display:inline-flex; align-items:center; gap:8px; max-width:100%; padding:0 14px 0 6px; }
-.cxhv-pick b { display:grid; place-items:center; width:30px; height:30px; flex:none; border-radius:50%; background:rgba(255,255,255,.14); font-family:Inter,Arial,sans-serif; font-size:13px; }
-.cxhv-pick span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.cxhv-pick[aria-pressed="true"] { border-color:#fff; background:#fff; color:#0b1838; }
-.cxhv-pick[aria-pressed="true"] b { background:#0b1838; color:#fff; }
-.cxhv-sound { padding:0 16px; }
-.cxhv-sound[aria-pressed="true"] { background:#fff; color:#0b1838; }
-.cxhv-status { margin:0; padding:0 18px; color:#dbe4f3; font-size:13px; }
+/* ‹ › × appear only while open, outside the picture (nothing is laid over the player). */
+.cxhv-nav,.cxhv-close { position:absolute; display:grid; place-items:center; width:44px; height:44px; padding:0; border:1px solid rgba(13,27,62,.14); border-radius:50%; background:rgba(255,255,255,.94); color:var(--cxhv-ink); font:inherit; font-size:24px; line-height:1; cursor:pointer; box-shadow:0 8px 20px rgba(13,27,62,.14); }
+.cxhv-nav[hidden],.cxhv-close[hidden] { display:none; }
+.cxhv-nav:disabled { opacity:.35; cursor:default; }
+.cxhv-nav span:first-child,.cxhv-close span:first-child { margin-top:-2px; }
+.cxhv-nav--prev { top:50%; left:-60px; margin-top:-22px; }
+.cxhv-nav--next { top:50%; right:-60px; margin-top:-22px; }
+.cxhv-close { top:-56px; right:0; font-size:22px; }
+.cxhv-status { position:absolute; inset:0; z-index:1; display:grid; place-items:center; margin:0; padding:20px; border-radius:14px; background:rgba(11,24,56,.86); color:#dbe4f3; font-size:13px; text-align:center; }
 .cxhv-status:empty { display:none; }
-.cxhv-status:not(:empty) { padding-bottom:14px; }
 
 /* Expanded (PC): js/home-hero.js sets left/top/width; the card straightens and the others step back. */
-.cxhv-card--creative.is-expanded { z-index:5; rotate:0deg; animation:none; box-shadow:0 40px 90px rgba(13,27,62,.32); }
+.cxhv-card--creative.is-expanded { z-index:5; rotate:0deg; animation:none; }
+.cxhv-card--creative.is-expanded .cxhv-track { box-shadow:0 40px 90px rgba(13,27,62,.32); }
+.cxhv-card--creative.is-expanded .cxhv-slide-btn { cursor:default; }
 .cxhv-stage.is-expanded .cxhv-card:not(.is-expanded) { opacity:.28; scale:.95; pointer-events:none; }
 .cxhv-stage.is-expanded ~ .cxhv-words { opacity:0; }
 
@@ -77,11 +69,12 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
 .cxhv-scroll::before { content:''; width:1px; height:clamp(48px,8svh,80px); background:linear-gradient(#7d8aa8,rgba(125,138,168,.2)); }
 .cxhv-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
-.cxhv-card:focus-visible,.cxhv-expand:focus-visible,.cxhv-close:focus-visible,.cxhv-tap:focus-visible,.cxhv-pick:focus-visible,.cxhv-sound:focus-visible { outline:3px solid #2f6bff; outline-offset:3px; }
+.cxhv-card:focus-visible,.cxhv-slide-btn:focus-visible,.cxhv-nav:focus-visible,.cxhv-close:focus-visible { outline:3px solid #2f6bff; outline-offset:3px; }
 @media (hover:hover) {
   a.cxhv-card:hover { scale:1.025; box-shadow:0 34px 70px rgba(30,58,120,.24); }
   a.cxhv-card:hover .cxhv-go { translate:3px 0; }
-  .cxhv-expand:hover,.cxhv-pick:not([aria-pressed="true"]):hover,.cxhv-close:hover { background:rgba(255,255,255,.18); }
+  .cxhv-card--creative:not(.is-expanded):hover .cxhv-track { box-shadow:0 34px 70px rgba(30,58,120,.26); }
+  .cxhv-nav:not(:disabled):hover,.cxhv-close:hover { background:#fff; }
 }
 /* Gentle float (cards drift a few px); never while expanded or with reduced motion. */
 @media (prefers-reduced-motion:no-preference) {
@@ -90,6 +83,9 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
   .cxhv-card--system { animation-duration:10s; animation-delay:-6s; }
   @keyframes cxhv-float { 0%,100% { translate:0 0; } 50% { translate:0 -8px; } }
   .cxhv-card:hover,.cxhv-card:focus-within { animation-play-state:paused; }
+  /* The picture in view zooms in slowly so the card never looks frozen. */
+  .cxhv-slide.is-current .cxhv-slide-btn img { animation:cxhv-zoom 9s ease-out both; }
+  @keyframes cxhv-zoom { from { scale:1; } to { scale:1.08; } }
   /* Load-in: `backwards` only, so the scroll hand-off (opacity/translate variables) owns the end state. */
   .cxh-motion-ready .cxhv-copy { animation:cxhv-in .85s .1s backwards cubic-bezier(.16,1,.3,1); }
   .cxh-motion-ready .cxhv-stage { animation:cxhv-in 1s .3s backwards cubic-bezier(.16,1,.3,1); }
@@ -110,6 +106,12 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
   .cxhv-stage.is-open { aspect-ratio:auto; }
   .cxhv-stage.is-open .cxhv-card:not(.is-expanded) { display:none; }
   .cxhv-card--creative.is-expanded { position:relative; left:auto; top:auto; width:100%; }
+  /* Tablet/SP: ‹ › on the left and × on the right, in a row under the picture. */
+  .cxhv-card--creative.is-expanded { padding-bottom:56px; }
+  .cxhv-card--creative.is-expanded .cxhv-nav,.cxhv-card--creative.is-expanded .cxhv-close { top:auto; bottom:0; margin-top:0; }
+  .cxhv-card--creative.is-expanded .cxhv-nav--prev { left:0; }
+  .cxhv-card--creative.is-expanded .cxhv-nav--next { left:56px; right:auto; }
+  .cxhv-card--creative.is-expanded .cxhv-close { right:0; }
 }
 @media (max-width:768px) {
   .cxhv-inner { padding:clamp(28px,8vw,48px) 20px 80px; }
@@ -125,13 +127,6 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
   .cxhv-card--creative { left:52%; top:0; width:45%; rotate:8deg; }
   .cxhv-card--business { left:2%; top:23%; width:50%; rotate:9deg; }
   .cxhv-card--system { left:44%; top:54%; width:50%; rotate:-11deg; }
-  .cxhv-caption { grid-template-columns:minmax(0,1fr); padding:8px 10px 10px; }
-  .cxhv-caption-title { font-size:12px; }
-  .cxhv-caption-sub { display:none; }
-  .cxhv-expand { grid-row:auto; grid-column:1; justify-content:center; width:100%; padding:0 10px; font-size:12px; }
-  .cxhv-card--creative.is-expanded .cxhv-caption { grid-template-columns:minmax(0,1fr) auto; padding:12px 14px; }
-  .cxhv-card--creative.is-expanded .cxhv-caption-title { font-size:14px; }
-  .cxhv-card--creative.is-expanded .cxhv-close { grid-column:2; grid-row:1; }
   .cxhv-go { width:34px; height:34px; right:10px; bottom:10px; font-size:16px; }
   .cxhv-scroll { left:20px; bottom:18px; }
   .cxhv-bg { background-position:68% 100%; background-size:auto 58%; }

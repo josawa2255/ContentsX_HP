@@ -1,23 +1,21 @@
-/* HERO Creative card (Issue #108): previews the three Creative videos and opens a larger player.
-   - Videos: VIDEOS below, in this order, by YouTube ID only (playlist parameters are ignored).
-   - PC (≥1101px, hover-capable, no reduced motion): after the page has loaded and while the card is
-     at least half visible in the Hero, a muted preview starts and moves to the next video every
-     PREVIEW_MS. The preview only runs when the player box is at least 200×200px (YouTube minimum).
-   - 「拡大して見る」: PC moves the card to the centre of the Hero's right half at about 1.5× (smaller
-     if it would not fit), with player controls, 1/2/3 buttons and a sound button; the other cards
-     step back. Tablet/SP open the player in place across the card area. Esc / × closes it.
-   - Leaving the Hero (scrolling on, js/hero-about.js), hiding the tab or opening another video stops
-     the player. Only one player exists at a time.
-   YouTube is embedded with the official IFrame Player API on youtube-nocookie.com. Its own logo and
-   links stay visible (YouTube terms): nothing is laid over or blocks the player. */
+/* HERO Creative card (Issue #108; picture-only card since Issue #114).
+   - The card shows only the videos' pictures (YouTube thumbnails): no text, icons or YouTube UI.
+     The three pictures sit in one row that scrolls sideways (swipe / trackpad); on PC the next one
+     comes in every ADVANCE_MS while the card is in view (paused on hover, while open, with reduced
+     motion). The picture in view slowly zooms in (CSS).
+   - Pressing a picture opens the video: PC moves the card to the centre of the Hero's right half at
+     about 1.5× (smaller if it would not fit) with ‹ › and × outside the picture; tablet/SP open it in
+     place across the card area with ‹ › × below. Only then is the YouTube player loaded, with sound
+     (falls back to muted when the browser blocks it) and YouTube's own controls. Scrolling sideways,
+     ‹ › or ← → move to the other videos; Esc / × closes.
+   - Leaving the Hero (scrolling on, js/hero-about.js), hiding the tab or closing stops the player.
+     Only one player exists at a time.
+   Videos are the [data-cxhv-slide] elements in index.html (YouTube ID + title), in that order.
+   YouTube is embedded with the official IFrame Player API on youtube-nocookie.com; its own logo and
+   links are visible while a video is open (YouTube terms): nothing is laid over the player. */
 (function () {
   'use strict';
-  var VIDEOS = [
-    { id: 'zKvRR8xT_zY', title: 'どれが原宿？' },
-    { id: 'IAgFqlvSUfE', title: 'High Speed Battle' },
-    { id: 'OYgeXiPByBg', title: 'ニャンポッシブル' }
-  ];
-  var PREVIEW_MS = 8000;
+  var ADVANCE_MS = 7000;
   var API_TIMEOUT = 10000;
   var SCALE = 1.5;
 
@@ -25,32 +23,27 @@
   var card = document.querySelector('[data-cxhv-creative]');
   var stage = document.querySelector('[data-cxhv-stage]');
   if (!hero || !card || !stage) return;
-  var mount = card.querySelector('[data-cxhv-player]');
-  var thumb = card.querySelector('[data-cxhv-thumb]');
-  var openers = Array.prototype.slice.call(card.querySelectorAll('[data-cxhv-open]'));
-  var expandBtn = card.querySelector('.cxhv-expand');
+  var track = card.querySelector('[data-cxhv-track]');
+  var slides = Array.prototype.slice.call(card.querySelectorAll('[data-cxhv-slide]'));
+  var prevBtn = card.querySelector('[data-cxhv-prev]');
+  var nextBtn = card.querySelector('[data-cxhv-next]');
   var closeBtn = card.querySelector('[data-cxhv-close]');
-  var controls = card.querySelector('[data-cxhv-controls]');
-  var picker = card.querySelector('[data-cxhv-picker]');
-  var soundBtn = card.querySelector('[data-cxhv-sound]');
   var status = card.querySelector('[data-cxhv-status]');
-  var transition = document.querySelector('.cxha-transition');
+  if (!track || !slides.length) return;
 
   var pc = window.matchMedia('(min-width: 1101px) and (hover: hover)');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var state = { index: 0, mode: 'idle', player: null, timer: 0, visible: false, heroActive: true, loaded: document.readyState === 'complete', muted: true, opener: null };
-
+  var state = { index: 0, open: false, player: null, playerIndex: -1, timer: 0, visible: false, heroActive: true, hover: false, token: null };
   var TEXT = {
-    ja: { play: '動画を再生する', fail: '動画を読み込めませんでした。時間をおいて、もう一度お試しください。', soundOn: '音を出す', soundOff: '音を消す' },
-    en: { play: 'Play the videos', fail: 'The video could not be loaded. Please try again later.', soundOn: 'Sound on', soundOff: 'Mute' }
+    ja: { fail: '動画を読み込めませんでした。時間をおいて、もう一度お試しください。' },
+    en: { fail: 'The video could not be loaded. Please try again later.' }
   };
   function t(key) {
     var lang = window.i18n && window.i18n.getLang ? window.i18n.getLang() : 'ja';
     return (TEXT[lang] || TEXT.ja)[key];
   }
-  function thumbFor(i) { return 'https://i.ytimg.com/vi/' + VIDEOS[i].id + '/hqdefault.jpg'; }
 
-  /* ---------- YouTube IFrame API (loaded only when a player is needed) ---------- */
+  /* ---------- YouTube IFrame API (loaded only when a video is opened) ---------- */
   var apiPromise = null;
   function loadApi() {
     if (apiPromise) return apiPromise;
@@ -73,190 +66,182 @@
     return apiPromise;
   }
   function destroyPlayer() {
-    clearInterval(state.timer);
-    state.timer = 0;
+    state.token = null;
     if (state.player && state.player.destroy) { try { state.player.destroy(); } catch (e) { /* already gone */ } }
     state.player = null;
-    mount.textContent = '';
-    card.classList.remove('has-player');
+    state.playerIndex = -1;
+    slides.forEach(function (s) {
+      var holder = s.querySelector('.cxhv-player');
+      if (holder) holder.remove();
+      s.classList.remove('has-player');
+    });
+    status.textContent = '';
   }
-  function createPlayer(withControls, startSeconds) {
+  function mountPlayer(i) {
+    if (state.playerIndex === i && state.player) return;
     destroyPlayer();
+    var slide = slides[i];
     var holder = document.createElement('div');
-    mount.appendChild(holder);
+    holder.className = 'cxhv-player';
+    var target = document.createElement('div');
+    holder.appendChild(target);
+    slide.appendChild(holder);
+    slide.classList.add('has-player');
+    state.playerIndex = i;
     var token = {};
     state.token = token;
-    return loadApi().then(function (YT) {
-      if (state.token !== token) return null;
-      return new Promise(function (resolve) {
-        var player = new YT.Player(holder, {
-          host: 'https://www.youtube-nocookie.com',
-          videoId: VIDEOS[state.index].id,
-          width: '100%', height: '100%',
-          playerVars: {
-            autoplay: 1, mute: 1, playsinline: 1, rel: 0, enablejsapi: 1, origin: location.origin,
-            controls: withControls ? 1 : 0, disablekb: withControls ? 0 : 1, iv_load_policy: 3,
-            start: Math.max(0, Math.floor(startSeconds || 0))
+    loadApi().then(function (YT) {
+      if (state.token !== token) return;
+      state.player = new YT.Player(target, {
+        host: 'https://www.youtube-nocookie.com',
+        videoId: slide.getAttribute('data-video'),
+        width: '100%', height: '100%',
+        playerVars: { autoplay: 1, mute: 0, controls: 1, playsinline: 1, rel: 0, enablejsapi: 1, origin: location.origin, iv_load_policy: 3 },
+        events: {
+          onReady: function (e) {
+            if (state.token !== token) return;
+            var frame = e.target.getIframe && e.target.getIframe();
+            if (frame) frame.title = 'Creative 動画: ' + slide.getAttribute('data-title');
+            e.target.playVideo();
           },
-          events: {
-            onReady: function (e) {
-              e.target.mute();
-              e.target.playVideo();
-              card.classList.add('has-player');
-              var frame = e.target.getIframe && e.target.getIframe();
-              if (frame) frame.title = 'Creative 動画: ' + VIDEOS[state.index].title;
-              resolve(player);
-            },
-            onStateChange: function (e) {
-              // A finished preview moves on; the larger player stays on the chosen video.
-              if (e.data === 0 && state.mode === 'preview') next();
-            },
-            onAutoplayBlocked: function () { if (state.mode === 'preview') stopPreview(); },
-            onError: function () {
-              if (state.mode === 'preview') { next(); return; }
-              status.textContent = t('fail');
-            }
-          }
-        });
-        state.player = player;
+          // Sound needs the browser's permission; without it the video still starts, muted.
+          onAutoplayBlocked: function (e) { if (state.token === token) { e.target.mute(); e.target.playVideo(); } },
+          onError: function () { if (state.token === token) failed(); }
+        }
       });
-    }).catch(function () {
-      if (state.token !== token) return null;
-      destroyPlayer();
-      if (state.mode !== 'preview' && state.mode !== 'idle') status.textContent = t('fail');
-      return null;
-    });
+    }).catch(function () { if (state.token === token) failed(); });
   }
-  function setVideo(i) {
-    state.index = (i + VIDEOS.length) % VIDEOS.length;
-    thumb.src = thumbFor(state.index);
-    if (state.player && state.player.loadVideoById) {
-      state.player.loadVideoById(VIDEOS[state.index].id);
-      var frame = state.player.getIframe && state.player.getIframe();
-      if (frame) frame.title = 'Creative 動画: ' + VIDEOS[state.index].title;
-    }
-    Array.prototype.forEach.call(picker.children, function (b, k) { b.setAttribute('aria-pressed', String(k === state.index)); });
-  }
-  function next() { setVideo(state.index + 1); }
-
-  /* ---------- preview (PC) ---------- */
-  function previewAllowed() {
-    if (!pc.matches || reduced.matches || !state.loaded || document.hidden) return false;
-    if (!state.visible || !state.heroActive || state.mode !== 'idle') return false;
-    var screen = card.querySelector('.cxhv-screen');
-    return screen.offsetWidth >= 200 && screen.offsetHeight >= 200;
-  }
-  function startPreview() {
-    if (!previewAllowed()) return;
-    state.mode = 'preview';
-    createPlayer(false, 0).then(function (player) {
-      if (!player || state.mode !== 'preview') return;
-      clearInterval(state.timer);
-      state.timer = setInterval(next, PREVIEW_MS);
-    });
-  }
-  function stopPreview() {
-    if (state.mode !== 'preview') return;
+  function failed() {
     destroyPlayer();
-    state.mode = 'idle';
+    status.textContent = t('fail');
+  }
+
+  /* ---------- the row of pictures ---------- */
+  function width() { return track.clientWidth || 1; }
+  function mark(i) {
+    state.index = i;
+    slides.forEach(function (s, k) {
+      var on = k === i;
+      // Re-adding the class restarts the slow zoom on the picture that came into view.
+      if (on && !s.classList.contains('is-current')) { void s.offsetWidth; }
+      s.classList.toggle('is-current', on);
+      s.setAttribute('aria-hidden', String(!on));
+      s.querySelector('.cxhv-slide-btn').tabIndex = on ? 0 : -1;
+    });
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === slides.length - 1;
+  }
+  function go(i, instant) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    track.scrollTo({ left: i * width(), behavior: instant || reduced.matches ? 'auto' : 'smooth' });
+    mark(i);
+    if (state.open) settleSoon();
+  }
+  // While open, the player follows the picture in view once the row stops moving.
+  var settleTimer = 0;
+  function settleSoon() {
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(function () { if (state.open) mountPlayer(state.index); }, 220);
+  }
+  var frame = 0;
+  track.addEventListener('scroll', function () {
+    if (frame) return;
+    frame = requestAnimationFrame(function () {
+      frame = 0;
+      var i = Math.round(track.scrollLeft / width());
+      if (i !== state.index) mark(i);
+      if (state.open) settleSoon();
+    });
+  }, { passive: true });
+
+  /* ---------- automatic advance (PC, card at rest) ---------- */
+  function advanceAllowed() {
+    return pc.matches && !reduced.matches && !document.hidden && state.visible && state.heroActive && !state.open && !state.hover;
   }
   function update() {
-    if (state.mode === 'preview' && !(state.visible && state.heroActive && !document.hidden && pc.matches && !reduced.matches)) stopPreview();
-    else if (state.mode === 'idle') startPreview();
+    clearInterval(state.timer);
+    state.timer = 0;
+    if (advanceAllowed()) {
+      state.timer = setInterval(function () {
+        if (!advanceAllowed()) return;
+        go(state.index + 1 < slides.length ? state.index + 1 : 0);
+      }, ADVANCE_MS);
+    }
   }
 
-  /* ---------- expanded player ---------- */
-  function buildPicker() {
-    picker.textContent = '';
-    VIDEOS.forEach(function (v, i) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'cxhv-pick';
-      b.setAttribute('aria-pressed', String(i === state.index));
-      var n = document.createElement('b'); n.textContent = String(i + 1);
-      var s = document.createElement('span'); s.textContent = v.title; s.setAttribute('data-i18n-skip', '');
-      b.appendChild(n); b.appendChild(s);
-      b.addEventListener('click', function () { status.textContent = ''; setVideo(i); });
-      picker.appendChild(b);
-    });
-  }
+  /* ---------- open / close ---------- */
   function placeExpanded() {
-    // Centre of the Hero's right half, about 1.5× wider, shrunk if it would not fit there.
+    // Centre of the Hero's right half, about 1.5× wider, leaving room for ‹ › and × outside.
     var heroBox = hero.getBoundingClientRect();
     var stageBox = stage.getBoundingClientRect();
-    var base = parseFloat(card.dataset.baseWidth);
-    var half = heroBox.width / 2;
-    // The stage may be scaled by the scroll hand-off; positions are in its unscaled space.
     var k = stageBox.width / stage.offsetWidth || 1;
-    var width = Math.min(base * SCALE, half - 48);
-    // Caption and 1/2/3 buttons wrap differently at the new width: measure them there, without animating.
-    var screen = card.querySelector('.cxhv-screen');
-    var keep = { transition: card.style.transition, width: card.style.width };
-    card.style.transition = 'none';
-    card.style.width = (width / k) + 'px';
-    var chrome = (card.offsetHeight - screen.offsetHeight) * k;
-    card.style.width = keep.width;
-    void card.offsetWidth;
-    card.style.transition = keep.transition;
-    width = Math.min(width, (heroBox.height - 48 - chrome) * 16 / 9);
-    var height = width * 9 / 16 + chrome;
-    var left = heroBox.left + half + (half - width) / 2 - stageBox.left;
-    var top = heroBox.top + (heroBox.height - height) / 2 - stageBox.top;
-    card.style.left = (left / k) + 'px';
-    card.style.top = (top / k) + 'px';
-    card.style.width = (width / k) + 'px';
+    var half = heroBox.width / 2;
+    var w = Math.min(parseFloat(card.dataset.baseWidth) * SCALE, half - 2 * 64, (heroBox.height - 2 * 72) * 16 / 9);
+    var h = w * 9 / 16;
+    card.style.left = ((heroBox.left + half + (half - w) / 2 - stageBox.left) / k) + 'px';
+    card.style.top = ((heroBox.top + (heroBox.height - h) / 2 - stageBox.top) / k) + 'px';
+    card.style.width = (w / k) + 'px';
   }
-  function open(event) {
-    if (state.mode === 'open') return;
-    state.opener = event && event.currentTarget;
-    var time = state.mode === 'preview' && state.player && state.player.getCurrentTime ? state.player.getCurrentTime() : 0;
-    clearInterval(state.timer);
-    state.mode = 'open';
-    status.textContent = '';
-    buildPicker();
-    controls.hidden = false;
-    closeBtn.hidden = false;
-    expandBtn.hidden = true;
-    expandBtn.setAttribute('aria-expanded', 'true');
+  function open(i) {
+    if (state.open) { go(i); return; }
+    state.open = true;
+    update();
     card.dataset.baseWidth = String(card.offsetWidth);
+    // Tablet/SP open in place: keep the card area's height so the page below does not jump
+    // (a shorter Hero would also look like the visitor had scrolled on).
+    if (!pc.matches) stage.style.minHeight = stage.offsetHeight + 'px';
     card.classList.add('is-expanded');
     stage.classList.add('is-expanded', 'is-open');
+    prevBtn.hidden = nextBtn.hidden = closeBtn.hidden = false;
     Array.prototype.forEach.call(stage.querySelectorAll('a.cxhv-card'), function (a) { a.inert = true; });
     if (pc.matches) placeExpanded();
-    setSound(true);
-    createPlayer(true, time);
+    mark(i);
+    track.scrollLeft = i * width();
+    mountPlayer(i);
     closeBtn.focus({ preventScroll: true });
   }
   function close(restoreFocus) {
-    if (state.mode !== 'open') return;
+    if (!state.open) return;
+    state.open = false;
+    clearTimeout(settleTimer);
     destroyPlayer();
-    state.mode = 'idle';
-    controls.hidden = true;
-    closeBtn.hidden = true;
-    expandBtn.hidden = false;
-    expandBtn.setAttribute('aria-expanded', 'false');
-    status.textContent = '';
+    prevBtn.hidden = nextBtn.hidden = closeBtn.hidden = true;
     card.style.left = card.style.top = card.style.width = '';
+    stage.style.minHeight = '';
     card.classList.remove('is-expanded');
     stage.classList.remove('is-expanded', 'is-open');
     Array.prototype.forEach.call(stage.querySelectorAll('a.cxhv-card'), function (a) { a.inert = false; });
-    if (restoreFocus) (state.opener && state.opener.offsetParent ? state.opener : expandBtn).focus({ preventScroll: true });
-    // Let the card travel back before a new preview starts.
-    setTimeout(update, reduced.matches ? 0 : 600);
-  }
-  function setSound(muted) {
-    state.muted = muted;
-    soundBtn.setAttribute('aria-pressed', String(!muted));
-    soundBtn.firstElementChild.textContent = muted ? t('soundOn') : t('soundOff');
-    if (state.player && state.player.mute) { if (muted) state.player.mute(); else state.player.unMute(); }
+    if (restoreFocus) slides[state.index].querySelector('.cxhv-slide-btn').focus({ preventScroll: true });
+    update();
   }
 
   /* ---------- events ---------- */
-  openers.forEach(function (b) { b.addEventListener('click', open); });
+  slides.forEach(function (s, i) {
+    s.querySelector('.cxhv-slide-btn').addEventListener('click', function () { open(i); });
+  });
+  prevBtn.addEventListener('click', function () { go(state.index - 1); });
+  nextBtn.addEventListener('click', function () { go(state.index + 1); });
   closeBtn.addEventListener('click', function () { close(true); });
-  soundBtn.addEventListener('click', function () { setSound(!state.muted); });
-  card.addEventListener('keydown', function (e) { if (e.key === 'Escape' && state.mode === 'open') { e.stopPropagation(); close(true); } });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && state.mode === 'open') close(true); });
+  // ← → move between videos: on the card at rest, and anywhere while a video is open
+  // (a ‹ › button that becomes disabled at the end drops the focus out of the card).
+  function arrows(e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    e.preventDefault();
+    go(state.index + (e.key === 'ArrowRight' ? 1 : -1));
+  }
+  card.addEventListener('keydown', function (e) { if (!state.open) arrows(e); });
+  document.addEventListener('keydown', function (e) {
+    if (!state.open) return;
+    if (e.key === 'Escape') close(true);
+    else arrows(e);
+  });
+  card.addEventListener('pointerenter', function () { state.hover = true; update(); });
+  card.addEventListener('pointerleave', function () { state.hover = false; update(); });
+  // The row keeps the picture in view aligned when its width changes (opening, closing, resizing).
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(function () { track.scrollLeft = state.index * width(); }).observe(track);
+  }
   // Card 3 scrolls to Sales X on this page.
   Array.prototype.forEach.call(stage.querySelectorAll('[data-cxhv-scroll]'), function (a) {
     a.addEventListener('click', function (e) {
@@ -282,28 +267,15 @@
     update();
   });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden && state.mode === 'open' && state.player && state.player.pauseVideo) state.player.pauseVideo();
+    if (document.hidden && state.player && state.player.pauseVideo) state.player.pauseVideo();
     update();
   });
-  window.addEventListener('pageshow', update);
   window.addEventListener('resize', function () {
-    if (state.mode === 'open' && pc.matches) placeExpanded();
-    else if (state.mode === 'open') card.style.left = card.style.top = card.style.width = '';
-    update();
+    if (state.open && pc.matches) placeExpanded();
+    else if (state.open) card.style.left = card.style.top = card.style.width = '';
   }, { passive: true });
-  document.addEventListener('i18n-lang-changed', function () {
-    card.querySelector('.cxhv-tap').setAttribute('aria-label', t('play'));
-    setSound(state.muted);
-  });
   pc.addEventListener('change', function () { close(false); update(); });
   reduced.addEventListener('change', update);
-  if (!state.loaded) {
-    window.addEventListener('load', function () {
-      state.loaded = true;
-      // Give the first paint and the rest of the page room before YouTube loads.
-      (window.requestIdleCallback || function (fn) { return setTimeout(fn, 600); })(update, { timeout: 2500 });
-    }, { once: true });
-  } else {
-    update();
-  }
+  mark(0);
+  update();
 })();
