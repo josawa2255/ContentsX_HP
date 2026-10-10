@@ -87,23 +87,28 @@
 .ax-contact-button { display: inline-flex; align-items: center; justify-content: center; gap: 33px; flex: none; min-width: 230px; min-height: 58px; padding: 12px 26px; background: var(--cx-color-creative); color: #fff; font-weight: 700; font-size: 16px; }
 .ax-contact-button:hover { color: #fff; background: #d9460e; }
 
-@media (max-width: 800px) {
-  .ax-shell { width: min(100% - 32px, 640px); }
-  .ax-hero { min-height: 0; padding-top: 64px; }
+@media (max-width: 1024px) {
+  .ax-shell { width: min(100% - 40px, 720px); }
+  .ax-hero { min-height: 0; padding: 64px 0 32px; }
   .ax-hero-grid, .ax-panel-grid, .ax-purpose-cards, .ax-message-grid { grid-template-columns: minmax(0,1fr); }
-  .ax-hero-grid { gap: 0; }
+  .ax-hero-grid { min-height: 0; gap: 0; }
   .ax-hero-copy { padding: 47px 4px 15px; }
   .ax-kicker { margin-bottom: 13px; font-size: 14px; }
-  .ax-hero h1 { font-size: clamp(31px,8.9vw,57px); line-height: 1.28; margin-bottom: 16px; }
-  .ax-hero-lead { font-size: clamp(13px,3.4vw,17px); }
+  .ax-hero h1 { font-size: clamp(28px,8.5vw,52px); line-height: 1.4; margin-bottom: 20px; }
+  .ax-hero h1 span, .ax-philosophy h2 span { line-break: strict; text-wrap: balance; overflow-wrap: anywhere; }
+  .ax-hero-lead { font-size: clamp(16px,1rem + .15vw,17px); }
   .ax-hero-visual { min-height: clamp(255px,82vw,470px); }
   .ax-x { width: min(87%,420px); }
   .ax-hero-aside { right: 2%; top: 50%; font-size: 8px; }
-  .ax-panel-copy { padding: 24px 4px 25px; }
+  .ax-panel { padding: 32px 0 0; }
+  .ax-panel .ax-panel-grid { min-height: 0; }
+  .ax-panel-copy { padding: 0 4px 28px; }
+  .ax-panel-copy p, .ax-purpose-card p:last-child, .ax-value-card p,
+  .ax-message-copy p, .ax-contact p { font-size: clamp(16px,1rem + .15vw,17px); }
   .ax-panel-copy h2 { font-size: clamp(25px,7vw,42px); }
-  .ax-philosophy .ax-panel-copy h2 { font-size: clamp(31px,8vw,51px); }
-  .ax-section-label { gap: 16px; margin-bottom: 14px; font-size: 13px; }
-  .ax-section-label h2 { font-size: 13px; }
+  .ax-philosophy .ax-panel-copy h2 { font-size: clamp(28px,8vw,48px); }
+  .ax-section-label { gap: 16px; margin-bottom: 18px; font-size: 14px; }
+  .ax-section-label h2 { font-size: 14px; }
   .ax-num { font-size: clamp(26px,7vw,34px); }
   .ax-photo { height: clamp(190px,56vw,350px); }
   .ax-office { margin: 0 0 18px; }
@@ -116,27 +121,30 @@
   .ax-purpose-card { min-height: 0; padding: 22px 25px; }
   .ax-purpose-card h3 { font-size: clamp(24px,6.6vw,34px); margin-bottom: 18px; }
   .ax-values { padding: 32px 0; }
-  .ax-values-intro { margin-left: 46px; margin-bottom: 26px; font-size: 13px; }
+  .ax-values-intro { margin-left: 0; margin-bottom: 26px; font-size: 15px; }
   .ax-value-grid { display: block; }
   .ax-value-card, .ax-value-card:first-child, .ax-value-card:last-child { padding: 20px 0 22px; border: 0; border-top: 1px solid var(--cx-color-border); }
   .ax-value-card:first-child { border-top: 0; }
   .ax-value-head { min-height: 0; gap: 14px; margin-bottom: 11px; }
+  .ax-value-head h3 { min-width: 0; overflow-wrap: anywhere; }
   .ax-value-card h3 { font-size: clamp(20px,5.6vw,28px); }
-  .ax-value-card p { margin-bottom: 15px; font-size: 13px; }
+  .ax-value-card p { margin-bottom: 20px; }
   .ax-value-card img { aspect-ratio: 16/9; }
   .ax-message { padding: 32px 0; }
   .ax-message-grid { gap: 22px; }
   .ax-message-copy { padding: 0 4px; }
   .ax-message-copy h2 { font-size: clamp(27px,7vw,39px); margin-bottom: 17px; }
-  .ax-message-copy p { font-size: 13px; }
-  .ax-signature { font-size: 12px; justify-content: space-between; }
+  .ax-signature { font-size: 14px; justify-content: flex-start; flex-wrap: wrap; }
   .ax-portrait { width: min(100%,460px); height: clamp(360px,105vw,550px); min-height: 0; justify-self: center; }
   .ax-contact { padding: 32px 0; }
   .ax-contact::after { font-size: 310px; top: -40px; right: -60px; }
   .ax-contact-inner { flex-direction: column; align-items: flex-start; }
+  .ax-contact-inner > div { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
   .ax-contact h2 { font-size: clamp(28px,7.6vw,41px); }
-  .ax-contact p { font-size: 13px; }
   .ax-contact-button { min-height: 50px; min-width: 210px; font-size: 14px; }
+  @supports not (word-break: auto-phrase) {
+    .ax-page main :is(h1,h2,h3,p), .ax-hero h1 span, .ax-philosophy h2 span { word-break: normal; }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
