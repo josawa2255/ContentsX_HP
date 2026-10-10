@@ -1,4 +1,4 @@
-"""Browser checks for the Sales X section (Issue #67). Run against a loopback preview.
+"""Browser checks for the Sales X section (Issue #67, image + hover cards Issue #104). Run against a loopback preview.
 
 python3 tests/test_sales_x.py --url http://127.0.0.1:8765 --artifacts /tmp/cx-sales-qa
 External traffic except fonts is blocked.
@@ -15,10 +15,10 @@ args = parser.parse_args()
 out = Path(args.artifacts)
 out.mkdir(parents=True, exist_ok=True)
 widths = [320, 375, 390, 412, 448, 480, 481, 640, 767, 768, 769, 1024, 1100, 1101, 1280, 1440, 1920]
-CARDS = [('bizform', 'ビズフォーム', 'https://bizform.contentsx.jp/'),
-         ('bizrecruit', 'ビズ採用', 'https://ichioshi.contentsx.jp/'),
-         ('bizaio', 'ビズAIO', '/services/#bizaio'),
-         ('bizkarte', 'ビズカルテ', '/services/#bizkarte')]
+CARDS = [('bizform', 'ビズフォーム', 'https://bizform.contentsx.jp/', '新規開拓代行', 'sales-x-bizform.webp'),
+         ('bizrecruit', 'ビズ採用', 'https://ichioshi.contentsx.jp/', '採用支援', 'sales-x-bizrecruit-v2.webp'),
+         ('bizaio', 'ビズAIO', '/services/#bizaio', 'AI検索最適化', 'sales-x-bizaio.webp'),
+         ('bizkarte', 'ビズカルテ', '/services/#bizkarte', '次世代AI CRM', 'sales-x-bizkarte-v2.webp')]
 
 
 def load(page):
@@ -51,17 +51,32 @@ with sync_playwright() as p:
         assert page.locator('#sales-x > .cxsb-backdrop').evaluate('e=>getComputedStyle(e).position') == 'fixed'
         assert page.locator('#sales-x').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
         assert page.locator('#creative-x').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        # Issue #83/#85: duplicate blocks are gone and SERVICE is hidden; Sales X runs straight into TOPICS.
+        assert page.locator('.cxh-concept, .cxh-pillars, #flow').count() == 0
+        assert page.locator('#sales-x').evaluate("e=>getComputedStyle(e,'::after').display") == 'none'
+        assert page.locator('#about').evaluate('e=>e.hidden && getComputedStyle(e).display === "none"')
+        assert page.locator('#topics').evaluate("e=>getComputedStyle(e,'::before').display") == 'none'
+        for href in ['/services/sales-x/', '/services/creative-x/']:
+            assert page.locator(f'main a[href="{href}"]').count() >= 1, href
         to_section(page)
         assert page.locator('#sales-x > .cxsb-label').inner_text().strip() == 'SALES X'
+        assert page.locator('.cxsx-kicker').inner_text().strip().lower() == 'sales x'
         cards = page.locator('.cxsx-card')
         assert cards.count() == 4
-        for i, (mod, name, href) in enumerate(CARDS):
+        for i, (mod, name, href, label, img) in enumerate(CARDS):
             card = cards.nth(i)
             assert mod in card.get_attribute('class') and card.get_attribute('href') == href
             assert card.locator('.cxsx-name').inner_text() == name
+            assert card.locator('.cxsx-eyebrow').inner_text() == label
+            assert card.locator('img').get_attribute('src').endswith(img)
             assert card.locator('img').evaluate('i=>i.complete && i.naturalWidth > 0')
-            # Name, description and CTA are HTML text, not part of the image.
-            assert card.locator('.cxsx-desc').inner_text().strip() and card.locator('.cxsx-cta').inner_text().strip()
+            # Name, short line, extra line and CTA are HTML text, not part of the image.
+            assert card.locator('.cxsx-desc').inner_text().strip()
+            assert card.locator('.cxsx-detail').text_content().strip()
+            assert card.locator('.cxsx-hover .cxsx-cta').text_content().strip().startswith('詳しく見る')
+            # The image is the lead: it sits above the text and is at least as wide as the text panel.
+            m, b = card.locator('.cxsx-media').bounding_box(), card.locator('.cxsx-body').bounding_box()
+            assert m['y'] + m['height'] <= b['y'] + 1 and m['height'] >= 100, (width, m)
         r = rects(page)
         sizes = {(round(x['width']), round(x['height'])) for x in r}
         if width > 768:
@@ -77,8 +92,12 @@ with sync_playwright() as p:
             assert all(r[i + 1]['top'] >= r[i]['bottom'] for i in range(3)), 'SP cards must stack'
         radii = set(page.locator('.cxsx-card').evaluate_all('(n)=>n.map(e=>getComputedStyle(e).borderRadius)'))
         assert radii == {'16px'}, radii
+        if width <= 768:
+            # SP: whole 16:9 images, nothing cropped.
+            m = page.locator('.cxsx-media').first.bounding_box()
+            assert abs(m['width'] / m['height'] - 16 / 9) < 0.02, m
         # Body/UI text expansion (Android scaling); the SALES X label is ornamental and fixed.
-        page.locator('#sales-x h2,#sales-x .cxsx-lead,#sales-x .cxsx-eyebrow,#sales-x .cxsx-name,#sales-x .cxsx-desc,#sales-x .cxsx-cta').evaluate_all(
+        page.locator('#sales-x h2,#sales-x .cxsx-kicker,#sales-x .cxsx-lead,#sales-x .cxsx-eyebrow,#sales-x .cxsx-name,#sales-x .cxsx-desc,#sales-x .cxsx-detail,#sales-x .cxsx-cta').evaluate_all(
             '(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Overflow with 1.4x text at {width}px'
@@ -90,16 +109,30 @@ with sync_playwright() as p:
         report.append({'width': width, 'sizes': sorted(sizes), 'text_1_4x': 'pass'})
         page.close()
 
-    # PC: the four cards fit in one 1440×900 screen; hover zooms the image and moves the arrow.
+    # PC: the four cards fit in one 1440×900 screen. At rest a card shows image, label, name and the
+    # short line; hover (or keyboard focus) lays the navy overlay with the extra line and「詳しく見る →」.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page)
     to_section(page)
     assert rects(page)[3]['bottom'] <= 900
     card = page.locator('.cxsx-card').nth(2)
+    assert card.locator('.cxsx-hover').evaluate('e=>getComputedStyle(e).opacity') == '0'
+    assert card.locator('.cxsx-cta--touch').is_hidden()
     card.hover()
     page.wait_for_timeout(450)
-    assert card.locator('img').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1.03, 0, 0, 1.03, 0, 0)'
-    assert card.locator('.cxsx-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
+    assert card.locator('.cxsx-hover').evaluate('e=>getComputedStyle(e).opacity') == '1'
+    assert card.locator('img').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1.04, 0, 0, 1.04, 0, 0)'
+    assert card.locator('.cxsx-hover .cxsx-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
+    # The overlay text is readable: white on navy, inside the image area.
+    o, m = card.locator('.cxsx-hover').bounding_box(), card.locator('.cxsx-media').bounding_box()
+    assert o == m, (o, m)
+    assert card.locator('.cxsx-detail').evaluate('e=>e.scrollHeight <= e.parentElement.clientHeight')
+    page.mouse.move(5, 5)
+    page.wait_for_timeout(450)
+    page.locator('.cxsx-card').nth(0).focus()
+    page.keyboard.press('Tab')
+    page.wait_for_timeout(450)
+    assert page.locator('.cxsx-card').nth(1).locator('.cxsx-hover').evaluate('e=>getComputedStyle(e).opacity') == '1', 'keyboard focus shows the overlay'
     # The whole card is the link.
     box = card.bounding_box()
     hit = page.evaluate('([x,y])=>document.elementFromPoint(x,y).closest("a")?.getAttribute("href")', [box['x'] + 12, box['y'] + 12])
@@ -109,6 +142,16 @@ with sync_playwright() as p:
     page.evaluate('(y)=>window.scrollTo({top:y,behavior:"instant"})', target - 120)
     page.wait_for_timeout(1500)
     assert abs(page.evaluate('scrollY') - target) <= 2, (page.evaluate('scrollY'), target)
+    page.close()
+
+    # Touch devices (no hover): no overlay; the short line and「詳しく見る →」are always visible.
+    page = browser.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
+    load(page)
+    to_section(page)
+    for i in range(4):
+        card = page.locator('.cxsx-card').nth(i)
+        assert card.locator('.cxsx-hover').is_hidden() and card.locator('.cxsx-cta--touch').is_visible()
+        assert card.locator('.cxsx-desc').is_visible()
     page.close()
 
     # Reduced motion and JS off: everything visible.
@@ -124,4 +167,4 @@ with sync_playwright() as p:
     page.close()
     browser.close()
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
-print(f'PASS: {len(widths)} widths, 2x2 / stacked layout, links, HTML text over images, hover, whole-card link, snap, reduced-motion and JS-off.')
+print(f'PASS: {len(widths)} widths, 2x2 / stacked layout, links, labels, images, hover/focus overlay, touch CTA, whole-card link, snap, reduced-motion and JS-off.')

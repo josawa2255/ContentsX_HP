@@ -1,12 +1,13 @@
-"""Browser regression checks. Run against a loopback preview; external traffic is blocked except font resources.
+"""Hero → ABOUT hand-off checks (Issue #59; fade hand-off since Issue #108). Run against a loopback preview;
+external traffic is blocked except font resources.
 
-python3 tests/test_hero_about.py --url http://127.0.0.1:8765 --baseline http://127.0.0.1:8766 --artifacts /tmp/cx-about-qa
-Requires Playwright (Chromium) and Pillow. The baseline comparison is optional.
+python3 tests/test_hero_about.py --url http://127.0.0.1:8765 --artifacts /tmp/cx-about-qa
+The Hero itself is checked by tests/test_hero.py. `--baseline` is accepted for old commands and ignored
+(the Hero was redesigned in Issue #108, so a pixel comparison with main no longer applies).
 """
 import argparse
 import json
 from pathlib import Path
-from PIL import Image, ImageChops, ImageStat
 from playwright.sync_api import sync_playwright
 
 parser = argparse.ArgumentParser()
@@ -53,40 +54,33 @@ with sync_playwright() as p:
         frame = page.locator('.cxha-hero-frame')
         assert frame.evaluate('(e)=>getComputedStyle(e).opacity') == '1'
         distance = page.locator('.cxha-transition').evaluate("e=>parseFloat(e.style.getPropertyValue('--cxha-distance'))")
-        # Preserve the initial Hero rendering at PC and phone widths.
-        if args.baseline and width in [390, 1440]:
-            initial = out / f'{width}-hero-after.png'
-            page.screenshot(path=str(initial), animations="disabled")
-            baseline = browser.new_page(viewport=page.viewport_size, device_scale_factor=1)
-            load(baseline, args.baseline)
-            before = out / f'{width}-hero-before.png'
-            baseline.screenshot(path=str(before), animations="disabled")
-            crop_height = min(page.viewport_size['height'], page.locator('#hero').evaluate('(e)=>Math.floor(e.getBoundingClientRect().bottom)'))
-            crop = (0, 0, width, crop_height)
-            diff = ImageChops.difference(Image.open(initial).convert('RGB').crop(crop), Image.open(before).convert('RGB').crop(crop))
-            # Compositing can change shadow-edge rounding; geometry must match exactly.
-            stats = ImageStat.Stat(diff)
-            assert max(stats.mean) < 0.02 and all(maximum <= 16 for _, maximum in stats.extrema), f'Initial Hero changed at {width}px'
-            for selector in ['#hero', '.cxh-hero-copy', '.cxh-hero h1', '.cxh-hero-note']:
-                assert page.locator(selector).evaluate('(e)=>e.getBoundingClientRect().toJSON()') == baseline.locator(selector).evaluate('(e)=>e.getBoundingClientRect().toJSON()')
-            baseline.close()
+        # A Hero taller than the screen scrolls first (--cxha-overflow), then the hand-off runs.
+        overflow = page.locator('.cxha-transition').evaluate("e=>parseFloat(e.style.getPropertyValue('--cxha-overflow'))")
+        scroll(page, overflow)
+        assert frame.evaluate('(e)=>getComputedStyle(e).opacity') == '1' and page.locator('.cxhv-copy').evaluate('(e)=>getComputedStyle(e).opacity') == '1'
+        scale_seen = []
         for progress in [0.3, 0.55, 0.8, 1]:
-            scroll(page, distance * progress)
+            scroll(page, overflow + distance * progress)
             assert_layout(page)
+            # The cards shrink a little and recede upwards while the Hero fades.
+            scale_seen.append(float(page.locator('.cxhv-stage').evaluate('(e)=>getComputedStyle(e).scale')))
             if width in [320, 390, 768, 1024, 1440, 1920]:
                 page.screenshot(path=str(out / f'{width}-progress-{progress}.png'))
         assert float(frame.evaluate('(e)=>getComputedStyle(e).opacity')) == 0
+        assert scale_seen == sorted(scale_seen, reverse=True) and scale_seen[-1] < .9, scale_seen
+        # No empty band: ABOUT fills the screen below the header when the hand-off ends.
+        assert page.locator('.cxha-about').evaluate('(e)=>e.getBoundingClientRect().top') <= 64 + 1
         assert frame.evaluate('(e)=>e.inert && e.getAttribute("aria-hidden") === "true"')
         assert page.locator('.cxha-office').evaluate('(e)=>getComputedStyle(e).opacity') == '1'
         # Native input remains available beyond the pinned stage.
-        scroll(page, distance + 600)
-        assert page.evaluate('scrollY') > distance
+        scroll(page, overflow + distance + 600)
+        assert page.evaluate('scrollY') > overflow + distance
         scroll(page, 0)
         assert frame.evaluate('(e)=>!e.inert && getComputedStyle(e).opacity === "1"')
         # Body/UI text expansion; ornamental wordmark intentionally stays fixed.
         page.locator('.cxha-copy h2,.cxha-description,.cxha-value h3,.cxha-value p').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(100)
-        scroll(page, distance)
+        scroll(page, overflow + distance)
         assert_layout(page)
         if width <= 768:
             assert page.locator('.cxha-office').evaluate('(e)=>e.getBoundingClientRect().top') >= page.locator('.cxha-copy').evaluate('(e)=>e.getBoundingClientRect().bottom') - 1
@@ -116,7 +110,7 @@ with sync_playwright() as p:
     # Links in the original Hero still navigate; Home returns to the full Hero.
     page = browser.new_page(viewport={'width':1440,'height':900})
     load(page, args.url)
-    page.locator('.cxh-hero-actions a[href="/contact"]').click()
+    page.locator('.cxhv-actions a[href="/contact"]').click()
     page.wait_for_url('**/contact')
     page.go_back(wait_until='networkidle')
     page.wait_for_timeout(100)
@@ -136,4 +130,4 @@ with sync_playwright() as p:
     page.close()
     browser.close()
 (out/'results.json').write_text(json.dumps(report,indent=2))
-print(f'PASS: {len(widths)} widths, Hero pixel comparison, 1.4x text, anchors, links, translation, reduced-motion toggle and JS-off.')
+print(f'PASS: {len(widths)} widths, scroll-before-hand-off, fade hand-off (cards shrink/recede), 1.4x text, anchors, links, translation, reduced-motion toggle and JS-off.')

@@ -1,0 +1,62 @@
+/* NEWS (top) — a place to check information: readability and scanning first, little motion.
+   Shared backdrop from home-sections.css. Rows come from WordPress via js/wp-api.js (home branch);
+   the four rows in index.html are the JS-off / API-failure fallback. */
+/* NEWS is the last section before the navy footer (Issue #94): the bottom space is taller than the
+   white edge fade, so the list stays clear of it and the page turns fully white before the footer. */
+.cxh-home .news-section.cxsb-section { padding:clamp(96px,10svh,160px) 0 clamp(136px,11vw,184px); border-bottom:0; }
+.cxh-home .news-section.cxsb-section>.container { position:relative; z-index:1; width:min(100% - 80px,1250px); max-width:none; padding-inline:0; }
+.cxnw-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* "View all" sits at the top right, directly above the list it belongs to. */
+.cxnw-head { display:flex; justify-content:flex-end; margin:0 0 12px; }
+.cxh-home .cxnw-more { display:inline-flex; align-items:center; gap:10px; min-height:44px; padding:0 4px; color:#07143b; font-size:14px; font-weight:700; letter-spacing:.04em; text-decoration:none; }
+.cxnw-more-arrow { font-size:18px; line-height:1; transition:transform .2s ease; }
+
+/* One light card holding the rows. */
+/* grid-auto-rows:1fr makes every row as tall as the tallest one (e.g. a three-line title on SP). */
+.cxnw-list { display:grid; grid-auto-rows:1fr; margin:0; padding:0; list-style:none; overflow:hidden; border:1px solid rgba(217,228,242,.55); border-radius:16px; background:rgba(255,255,255,.88); box-shadow:0 4px 16px rgba(17,52,104,.035); }
+.cxnw-item { display:flex; min-width:0; }
+.cxnw-item>.cxnw-row { flex:1; min-width:0; }
+/* Separator drawn inside the row so every row keeps exactly the same box height. */
+.cxnw-item+.cxnw-item>.cxnw-row { box-shadow:inset 0 1px 0 #e8eef6; }
+
+/* Row: thumbnail / category / date / title / arrow — same height, same thumbnail ratio. */
+.cxnw-row { display:grid; grid-template-columns:120px 92px 96px minmax(0,1fr) 24px; align-items:center; column-gap:clamp(16px,1.8vw,28px); min-height:116px; padding:20px clamp(18px,2.2vw,32px); color:#07143b; text-decoration:none; transition:background-color .2s ease; }
+.cxnw-thumb { display:block; width:120px; aspect-ratio:8 / 5; overflow:hidden; border-radius:6px; background:#f3f6fa; }
+.cxnw-thumb img { display:block; width:100%; height:100%; object-fit:contain; transition:transform .25s ease; }
+.cxnw-tag { justify-self:start; padding:3px 9px; border:1px solid #cfd9e8; border-radius:4px; color:#3a4864; font-size:11px; font-weight:700; letter-spacing:.06em; line-height:1.4; white-space:nowrap; }
+.cxnw-date { color:#6a7690; font-family:Inter,Arial,sans-serif; font-size:13px; letter-spacing:.04em; white-space:nowrap; }
+.cxnw-title { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; color:#07143b; font-size:16px; font-weight:700; line-height:1.65; word-break:auto-phrase; overflow-wrap:anywhere; }
+.cxnw-arrow { justify-self:end; color:#07143b; font-size:18px; line-height:1; transition:transform .2s ease; }
+.cxnw-row:focus-visible,.cxnw-more:focus-visible { outline:3px solid #005cff; outline-offset:-3px; }
+
+@media (hover:hover) {
+  a.cxnw-row:hover { background-color:rgba(37,99,235,.035); }
+  a.cxnw-row:hover .cxnw-arrow,.cxnw-more:hover .cxnw-more-arrow { transform:translateX(4px); }
+  a.cxnw-row:hover .cxnw-thumb img { transform:scale(1.02); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .cxnw-row,.cxnw-thumb img,.cxnw-arrow,.cxnw-more-arrow { transition:none; }
+}
+
+/* Tablet: date and category share one column above the title. */
+@media (max-width:1024px) {
+  .cxnw-row { grid-template-columns:112px auto minmax(0,1fr) 24px; grid-template-areas:"thumb tag date arrow" "thumb title title arrow"; row-gap:8px; }
+  .cxnw-thumb { grid-area:thumb; width:112px; }
+  .cxnw-tag { grid-area:tag; }
+  .cxnw-date { grid-area:date; }
+  .cxnw-title { grid-area:title; }
+  .cxnw-arrow { grid-area:arrow; }
+}
+/* SP: small thumbnail on the left, category and date above a title of up to three lines. */
+@media (max-width:768px) {
+  .cxh-home .news-section.cxsb-section { padding:clamp(80px,22vw,118px) 0 104px; }
+  .cxh-home .news-section.cxsb-section>.container { width:min(100% - 32px,560px); }
+  .cxnw-list { border-radius:12px; }
+  .cxnw-row { grid-template-columns:88px auto minmax(0,1fr) 16px; column-gap:12px; row-gap:6px; min-height:96px; padding:16px 14px; }
+  .cxnw-thumb { width:88px; align-self:start; }
+  .cxnw-tag { font-size:10px; padding:2px 7px; }
+  .cxnw-date { font-size:12px; }
+  .cxnw-title { -webkit-line-clamp:3; font-size:15px; line-height:1.6; }
+  .cxnw-arrow { font-size:16px; }
+}

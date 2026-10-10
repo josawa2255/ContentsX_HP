@@ -448,15 +448,13 @@ def extract_block(source: str, tag: str) -> str:
     return source[opening.start(): closing + len(tag) + 3]
 
 
-def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str, cta_mount: bool = True) -> str:
+def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str) -> str:
     canonical = f"{SITE}{path}"
     page = render_template("service-page.html.tpl", {
         "TITLE": esc(title), "DESCRIPTION": esc(description), "CANONICAL": esc(canonical),
         "JSON_LD": "\n  ".join(script_json(item) for item in json_ld),
         "HEADER": header, "FOOTER": footer, "BODY": body,
     })
-    if not cta_mount:
-        page = page.replace('  <section id="cxCtaMount"></section>\n', '')
     return page.replace("<!DOCTYPE html>", f"<!DOCTYPE html>\n{SIGNATURE}", 1)
 
 
@@ -483,8 +481,15 @@ def render_tokens(tokens: dict) -> str:
     for key, value in mapping.items():
         if not isinstance(value, str) or any(char in value for char in ";{}<>"):
             raise ValueError(f"unsafe design token: {key}")
+    # Colours and fonts alias the site-wide brand tokens (css/brand-system-2026.css), so the service
+    # pages and every other page share one source. The JSON value stays as the fallback.
+    brand = {"ink": "color-ink", "text": "color-body", "muted": "color-muted", "border": "color-border",
+             "background": "color-white", "surface": "color-surface", "sales": "color-sales",
+             "sales-soft": "color-sales-soft", "creative": "color-creative", "creative-soft": "color-creative-soft",
+             "font-ja": "font-ja", "font-latin": "font-latin"}
     lines = ["/* Generated from data/design-tokens.json; do not edit directly. */", ":root {"]
-    lines += [f"  --cxs-{key}: {value};" for key, value in mapping.items()]
+    lines += [f"  --cxs-{key}: var(--cx-{brand[key]}, {value});" if key in brand else f"  --cxs-{key}: {value};"
+              for key, value in mapping.items()]
     return "\n".join(lines + ["}", ""])
 
 
@@ -543,7 +548,7 @@ def build(check: bool = False) -> int:
             render_group_landing(group["id"], services),
             f"{group['name']}｜Contents X", f"{group['name']}。{group['summary']}", group_path,
             [breadcrumbs_json([("ホーム", SITE + "/"), ("サービス", SITE + "/services/"), (group["name"], SITE + group_path)])],
-            header, footer, cta_mount=False,
+            header, footer,
         )
     for service in services:
         # Preserve published URLs as tiny redirects; individual detail pages are retired.

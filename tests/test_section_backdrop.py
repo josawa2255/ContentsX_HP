@@ -16,8 +16,9 @@ args = parser.parse_args()
 out = Path(args.artifacts)
 out.mkdir(parents=True, exist_ok=True)
 widths = [320, 375, 390, 412, 448, 480, 481, 640, 767, 768, 769, 1024, 1025, 1280, 1440, 1920]
-SECTIONS = ['#home-about', '#about', '#news']
-LABELS = {'#home-about': 'ABOUT', '#about': 'SERVICE', '#news': 'NEWS'}
+# SERVICE (#about) is hidden since Issue #85; TOPICS carries the shared backdrop instead.
+SECTIONS = ['#home-about', '#topics', '#news']
+LABELS = {'#home-about': 'ABOUT', '#topics': 'TOPICS', '#news': 'NEWS'}
 
 
 def load(page, url):
@@ -40,6 +41,11 @@ def about_complete(page):
 def scroll(page, y, wait=900):
     page.evaluate('(y)=>window.scrollTo({top:y,behavior:"instant"})', y)
     page.wait_for_timeout(wait)
+
+
+def current_names(page):
+    """Section names currently drawn in the backdrops (Issue #89/#93): unique visible texts."""
+    return page.evaluate("[...new Set([...document.querySelectorAll('.cxsb-name')].filter(n=>n.getClientRects().length && parseFloat(getComputedStyle(n).opacity)>0.05).map(n=>n.textContent))]")
 
 
 def assert_sections(page, width):
@@ -73,26 +79,26 @@ with sync_playwright() as p:
         else:
             assert snap in ('none', ''), f'Snap must be off at {width}px: {snap}'
         # Each backdrop stays pinned to the viewport while its section scrolls.
-        for selector in ['#about', '#news']:
+        for selector in ['#topics', '#news']:
             scroll(page, top_of(page, selector) - 64, 1600)
-            assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
+            assert current_names(page) == [LABELS[selector]], (width, selector, current_names(page))
             scroll(page, top_of(page, selector) - 64 + 200, 300)
             assert page.locator(f'{selector} > .cxsb-backdrop').evaluate('e=>Math.abs(e.getBoundingClientRect().top)') < 1
         # The clip keeps the fixed layer out of neighbouring white sections.
         # Make the neighbouring section transparent: if the fixed layer leaked, the sky would show.
-        page.add_style_tag(content='#flow{background:none!important}')
-        scroll(page, top_of(page, '#flow') - 64 + 40)
-        shot = out / f'{width}-flow-clip.png'
+        page.add_style_tag(content='.cx-footer{background:none!important}')
+        scroll(page, top_of(page, '.cx-footer') - 64 + 40)
+        shot = out / f'{width}-company-clip.png'
         page.screenshot(path=str(shot))
-        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('#flow').getBoundingClientRect().top + 120)"))
+        y = int(page.evaluate("Math.min(innerHeight - 2, document.querySelector('.cx-footer').getBoundingClientRect().top + 120)"))
         pixel = Image.open(shot).convert('RGB').getpixel((2, y))
-        assert min(pixel) >= 248, f'Backdrop leaked into #flow at {width}px: {pixel}'
+        assert min(pixel) >= 248, f'Backdrop leaked into the footer at {width}px: {pixel}'
         if width in [390, 1440]:
             for selector in SECTIONS:
                 scroll(page, about_complete(page) if selector == '#home-about' else top_of(page, selector) - 64, 1500)
                 page.screenshot(path=str(out / f'{width}-{selector[1:]}.png'))
         # Body/UI text expansion (Android scaling); the ornamental labels stay fixed.
-        page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .news-link,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
+        page.locator('.cxsb-section h2,.cxsb-section p:not(.cxsb-label),.cxsb-section .cxnw-title,.cxsb-section small,.cxsb-section strong').evaluate_all('(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert_sections(page, width)
         if width <= 768:
@@ -106,15 +112,14 @@ with sync_playwright() as p:
     # PC snap: stopping just above a section edge settles on the section top (or ABOUT completion).
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)
-    for name, target in [('ABOUT', about_complete(page)), ('#about', top_of(page, '#about') - 64), ('#news', top_of(page, '#news') - 64)]:
+    for name, target in [('ABOUT', about_complete(page)), ('#topics', top_of(page, '#topics') - 64), ('#news', top_of(page, '#news') - 64)]:
         scroll(page, target - 120, 1500)
         assert abs(page.evaluate('scrollY') - target) <= 2, (name, page.evaluate('scrollY'), target)
     scroll(page, about_complete(page), 1500)
     assert page.locator('.cxha-office').evaluate('(e)=>getComputedStyle(e).opacity') == '1'
-    # Free scrolling in the middle of a tall section is not pulled back.
-    middle = top_of(page, '#about') - 64 + 700
-    scroll(page, middle, 1500)
-    assert abs(page.evaluate('scrollY') - middle) <= 2
+    # (The tall-section free-scroll check used SERVICE, the only section taller than a PC screen;
+    #  it is hidden since Issue #85.)
+    assert page.locator('#about').evaluate('e=>e.hidden && getComputedStyle(e).display === "none"')
     page.close()
 
     # ABOUT (Issue #63): Purpose / Company links and the two business cards use existing URLs.
@@ -153,23 +158,57 @@ with sync_playwright() as p:
             assert fit[key] <= h - 64, (w, h, key, fit)
         page.close()
 
-    # Hover feedback on news rows survives the entrance animation.
+    # NEWS rows (Issue #85 redesign): quiet hover — arrow 4px, no row movement.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, args.url)
     scroll(page, top_of(page, '#news') - 64, 1600)
-    row = page.locator('#news .news-item').first
+    row = page.locator('#news .cxnw-row').first
     row.hover()
-    page.wait_for_timeout(500)
-    assert 'matrix(1, 0, 0, 1, 4, 0)' == row.evaluate('e=>getComputedStyle(e).transform')
+    page.wait_for_timeout(400)
+    assert row.locator('.cxnw-arrow').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1, 0, 0, 1, 4, 0)'
+    assert row.evaluate('e=>getComputedStyle(e).transform') == 'none'
     page.close()
 
     # Reduced motion: everything visible without entrance motion.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page, args.url)
-    for selector in ['#about', '#news']:
-        assert page.locator(f'{selector} > .cxsb-label').evaluate('e=>getComputedStyle(e).opacity') == '1'
+    # Section names are fixed and only the current one shows (Issue #89/#93); with reduced motion it switches instantly.
+    for selector in ['#topics', '#news']:
+        scroll(page, top_of(page, selector) - 64, 100)
+        assert current_names(page) == [LABELS[selector]], (selector, current_names(page))
     assert page.locator('#news .news-list').evaluate('e=>getComputedStyle(e).opacity') == '1'
     page.close()
+
+    # Fixed section names (Issue #89, timing #93): drawn in every backdrop at one fixed screen position;
+    # the current one is the section under a line 40% down the screen, so it appears early when scrolling
+    # down and stays a little when scrolling back up. Never cut by a boundary (all backdrops agree).
+    for w, h in [(1440, 900), (390, 844)]:
+        page = browser.new_page(viewport={'width': w, 'height': h})
+        load(page, args.url)
+        page.add_style_tag(content='html{scroll-snap-type:none!important;scroll-behavior:auto!important}')
+        assert page.evaluate("document.documentElement.classList.contains('cxsb-fixed-labels')")
+        assert page.locator('.cxsb-section > .cxsb-label:visible').count() == 0
+        def shown():
+            page.wait_for_timeout(450)
+            names = current_names(page)
+            tops = page.evaluate("[...new Set([...document.querySelectorAll('.cxsb-name.is-current')].filter(n=>n.getClientRects().length).map(n=>Math.round(n.getBoundingClientRect().top)))]")
+            return names, tops
+        order = [('#creative-x', 'CREATIVE X'), ('#sales-x', 'SALES X'), ('#topics', 'TOPICS'), ('#news', 'NEWS')]
+        for i, (selector, name) in enumerate(order):
+            top = top_of(page, selector) - 64
+            scroll(page, top + 40, 50)
+            first = shown()
+            assert first[0] == [name] and len(first[1]) == 1, (w, selector, first)
+            scroll(page, top + 140, 50)
+            assert shown() == first, ('name must stay fixed on screen', w, selector, first)
+            # Scrolling back up a little (the section top 30% down the screen) keeps the name.
+            scroll(page, top + 64 - int(h * 0.3), 50)
+            assert shown()[0] == [name], (w, selector, 'should persist when scrolling back up a little')
+            # Further up (section top 50% down the screen) the previous section's name returns.
+            if i:
+                scroll(page, top + 64 - int(h * 0.5), 50)
+                assert shown()[0] == [order[i - 1][1]], (w, selector, shown())
+        page.close()
 
     # JS off: backdrop, labels and content render in normal order.
     page = browser.new_page(viewport={'width': 390, 'height': 844}, java_script_enabled=False)

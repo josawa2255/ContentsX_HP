@@ -1,4 +1,5 @@
-/* Hero → About. The default flow is also the JS-off/reduced-motion layout. */
+/* Hero → About (fade hand-off since Issue #108; js/hero-about.js). The default flow is also the
+   JS-off/reduced-motion layout. The Hero's cards read --cxha-cards-* in css/home-hero.css. */
 .cxha-transition { --cxha-z-hero:2; --cxha-z-copy:3; --cxha-header:64px; background:#fff; }
 .cxha-stage { position:relative; isolation:isolate; }
 .cxha-hero-frame { position:relative; transform-origin:0 0; }
@@ -12,7 +13,8 @@
 .cxha-about h2 { margin:0; color:#07143b; font-size:clamp(26px,2.2vw,44px); font-weight:900; line-height:1.45; letter-spacing:-.03em; word-break:normal; overflow-wrap:anywhere; text-wrap:pretty; }
 .cxha-description { max-width:30em; margin:clamp(16px,1.6vw,26px) 0 0; color:#172549; font-size:clamp(14px,1.05vw,17px); line-height:1.95; text-wrap:pretty; }
 .cxha-office { display:block; position:relative; overflow:hidden; aspect-ratio:2 / 1; border-radius:12px; background:#edf7fc; box-shadow:0 22px 50px rgba(17,52,104,.14); }
-.cxha-office img { display:block; width:100%; height:100%; object-fit:cover; object-position:42% 40%; }
+/* Team photo (4:3) in a 2:1 frame: keep the back row's heads and the front row's faces. */
+.cxha-office img { display:block; width:100%; height:100%; object-fit:cover; object-position:50% 35%; }
 
 .cxha-links { position:relative; z-index:var(--cxha-z-copy); display:grid; gap:clamp(12px,1.2vw,18px); }
 .cxha-link { position:relative; display:flex; flex-direction:column; justify-content:flex-end; min-height:clamp(170px,14.6vw,290px); padding:clamp(16px,1.5vw,26px); overflow:hidden; isolation:isolate; border-radius:12px; color:#07143b; box-shadow:0 18px 44px rgba(17,52,104,.13); transition:box-shadow .2s ease; }
@@ -55,15 +57,16 @@
 
 @media (prefers-reduced-motion:no-preference) {
   .cxha-transition.cxha-ready { height:calc(var(--cxha-scene-height) + var(--cxha-distance)); }
-  .cxha-ready .cxha-stage { position:sticky; top:var(--cxha-header); min-height:var(--cxha-scene-height); }
-  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); transform:var(--cxha-hero-transform,none); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
-  .cxha-ready .cxh-hero-inner { opacity:var(--cxha-copy-opacity,1); }
+  /* flow-root: ABOUT's top margin (--cxha-overflow) must not collapse through the stage and push the Hero down. */
+  .cxha-ready .cxha-stage { position:sticky; top:calc(var(--cxha-header) - var(--cxha-overflow,0px)); display:flow-root; min-height:var(--cxha-scene-height); }
+  .cxha-ready .cxha-hero-frame { position:absolute; top:0; left:0; width:100%; z-index:var(--cxha-z-hero); opacity:var(--cxha-hero-opacity,1); will-change:var(--cxha-compositing,auto); overflow:clip; }
+  .cxha-ready .cxhv-copy,.cxha-ready .cxhv-words,.cxha-ready .cxhv-mark,.cxha-ready .cxhv-scroll { opacity:var(--cxha-copy-opacity,1); }
+  .cxha-ready .cxhv-stage { will-change:var(--cxha-compositing,auto); }
   .cxha-ready .cxha-about { pointer-events:var(--cxha-about-pointer,none); }
-  .cxha-ready .cxh-hero-wash { opacity:var(--cxha-copy-opacity,1); }
   .cxha-ready .cxha-wordmark { opacity:var(--cxha-wordmark,0); }
   .cxha-ready [data-cxha-step] { opacity:var(--cxha-step,0); transform:translateY(calc((1 - var(--cxha-step,0)) * 14px)); }
-  .cxha-ready .cxha-office { opacity:var(--cxha-office,0); }
-  .cxha-ready .cxha-about { display:flex; flex-direction:column; justify-content:center; min-height:var(--cxha-about-min,auto); }
+  .cxha-ready .cxha-office { opacity:var(--cxha-office,0); scale:calc(.96 + .04 * var(--cxha-office,0)); }
+  .cxha-ready .cxha-about { display:flex; flex-direction:column; justify-content:center; min-height:var(--cxha-about-min,auto); margin-top:var(--cxha-overflow,0px); }
   .cxha-ready .cxha-main,.cxha-ready .cxha-values { width:100%; }
 }
 @media (prefers-reduced-motion:reduce) {
@@ -84,7 +87,7 @@
   .cxha-about h2 { font-size:clamp(26px,7vw,38px); line-height:1.5; }
   .cxha-description { margin-top:16px; font-size:clamp(14px,3.8vw,16px); line-height:1.9; }
   .cxha-office { aspect-ratio:4 / 3; }
-  .cxha-office img { object-position:34% center; }
+  .cxha-office img { object-position:center; }
   .cxha-links { gap:12px; }
   .cxha-link { min-height:clamp(150px,40vw,210px); }
   .cxha-link strong { font-size:clamp(16px,4.6vw,19px); }

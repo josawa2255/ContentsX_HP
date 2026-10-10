@@ -32,18 +32,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/brand-system-2026.css">
   <link rel="stylesheet" href="/css/web-system-tokens.css">
   <link rel="stylesheet" href="/css/web-system.css">
   <link rel="stylesheet" href="/css/service-landing-2026.css">
   <link rel="stylesheet" href="/css/service-directory-2026.css">
   <link rel="stylesheet" href="/css/dl-modal.css">
   {{JSON_LD}}
+  <link rel="stylesheet" href="/css/site-footer.css">
 </head>
 <body class="cxs-services" data-theme="neutral">
 {{HEADER}}
 <main class="cxs-page" id="main">
 {{BODY}}
-  <section id="cxCtaMount"></section>
 </main>
 {{FOOTER}}
 <div class="dl-modal-overlay" id="dlModal">
@@ -56,7 +57,6 @@
 <script src="/js/i18n.js" defer></script>
 <script src="/js/nav.js" defer></script>
 <script src="/js/tracking.js" defer></script>
-<script src="/js/cta.js" defer></script>
 <script src="/js/dl-modal.js" defer></script>
 <script src="/js/services-ui.js" defer></script>
 <script src="/js/service-media.js" defer></script>

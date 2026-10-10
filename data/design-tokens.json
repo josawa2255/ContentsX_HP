@@ -1,15 +1,15 @@
 {
   "colors": {
-    "ink": "#06143D",
-    "text": "#14234A",
-    "muted": "#6D7890",
-    "border": "#DFE6F1",
-    "background": "#FFFFFF",
-    "surface": "#F8FBFF",
-    "sales": "#1677FF",
-    "salesSoft": "#EAF3FF",
-    "creative": "#FF5A1F",
-    "creativeSoft": "#FFF1EA"
+    "ink": "#07143b",
+    "text": "#172549",
+    "muted": "#52627e",
+    "border": "#d9e4f2",
+    "background": "#ffffff",
+    "surface": "#f5f9ff",
+    "sales": "#005bfa",
+    "salesSoft": "#eaf3ff",
+    "creative": "#fa4d12",
+    "creativeSoft": "#fff3ec"
   },
   "layout": {
     "containerMax": "1280px",

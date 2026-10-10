@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News、相談CTA。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
+| トップ | `index.html` | i18n.js, wp-api.js, home-2026.js | 2026年9月版。X字の都市ビジュアル、Sales X / Creative X、支援の流れ、サービス、会社紹介、既存News（写真付きの相談CTAは2026-10-08に撤去し、共通フッター上部の小さな導線に置き換え）。CSSは `css/home-2026.css`。ヘッダーは一時撤去 |
 | サービス一覧 | `services/index.html` | i18n.js, nav.js, service-media.js | Creative X / Sales Xの事業紹介とサービス一覧。動画はページ内再生 |
 | Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
 | 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
@@ -28,7 +28,7 @@
 | ニュース詳細 | `news-detail.html` | wp-config.js + インラインJS | |
 | コラム一覧 | `column.html` | i18n.js, nav.js, column.js | Featured + カテゴリチップフィルタ + カードグリッド。`tools/build-c-columns.py` が WP API (`?site=contentx`) からカード・カテゴリ・ItemList JSON-LD・Featured を自動注入（`<!-- BUILD:COLUMN_GRID -->` マーカー間） |
 | コラム個別 | `column/{slug}.html` | (静的) | `tools/build-c-columns.py` で生成。`/column/` は `column/index.html` の meta refresh で `/column` へリダイレクト |
-| Chrome 拡張機能一覧 | `extensions/index.html` | i18n.js, nav.js | `/extensions/`。拡張機能ごとにカードを追加できる一覧。トップのフッターから導線を設置 |
+| Chrome 拡張機能一覧 | `extensions/index.html` | i18n.js, nav.js | `/extensions/`。拡張機能ごとにカードを追加できる一覧。全ページ共通フッター（§7.5）から導線を設置 |
 | TabLabo 紹介 | `extensions/tablabo/index.html` | i18n.js, nav.js | `/extensions/tablabo/`。機能・画面・料金・法人導入の案内 |
 | TabLabo ポリシー・規約 | `extensions/tablabo/privacy.html`・`extensions/tablabo/terms.html` | i18n.js, nav.js | 拡張子なしURL。本文は日本語の正本を保持し、自動翻訳の対象外 |
 | TabLabo AIアクセス許可 | `extensions/tablabo/oauth/consent/index.html` | 提供HTML内のJS・supabase-js | `/extensions/tablabo/oauth/consent/`。共通UIと計測タグを入れない独立画面。noindex |
@@ -71,7 +71,10 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ## 3. トップページ 2026年9月版 ⭐
 
 - デザイン基準: `/Users/hirasawa4323/Documents/contentX/デザイン案画像/会社HP/TOP確定/分析出力 1〜14.png`。奇数=PC、偶数=SP、番号順=ページ上から下。トップも他ページと同じ共通ヘッダーを使用し、固定ヘッダーの高さ分だけヒーローを下げる。お知らせセクションのマークアップと `wp-api.js` による更新は維持。
-- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・サービス一覧・Newsは共通背景） → Creative X → Sales X → コンセプト → Sales X / Creative X → 売上が生まれるまでの流れ → サービス一覧 → TOPICS → Contents Xとは → News → 相談CTA → フッター。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 構成: Hero → About（Heroからスクロール連動で接続。ABOUT・Creative X・Sales X・TOPICS・Newsは共通背景。ABOUT〜NEWS は継ぎ目なく連続） → Creative X → Sales X →（サービス一覧＝非表示中）→ TOPICS → News → フッター（写真付きの相談CTA `.cxh-contact` は Issue #94 で撤去。NEWSは最後のセクションなので下の余白を白フェードより広く取り、白になりきってから濃紺のフッターへ切り替える）。旧ロゴカルーセル・新作情報・制作事例モーダル・旧Hero OPはトップから撤去。
+- 2026-10-07（Issue #83）: コンセプト（Sales X × Creative X = Contents X）・Sales X / Creative X の2枚カード・「売上が生まれるまでの流れ」を削除。ABOUT / Creative X / Sales X と内容が重なり、共通背景を白いブロックで途切れさせていたため。サービス同士のつながり（接点 → 価値 → 顧客情報）はサービス一覧ページ `/services/` で伝える。`css/home-2026.css` の `.cxh-concept` / `.cxh-pillar*` / `.cxh-mark` / `.cxh-flow*` の指定は未使用のまま残っている（戻す場合に備えて削除していない）。
+- 2026-10-07（Issue #85）: サービス一覧（SERVICE、`#about`「2つの事業で、企業の成長を支えます。」）を `hidden` 属性で一時非表示（マークアップは `TEMP-HIDDEN SERVICE` コメント付きで残置）。Creative X / Sales X と内容が重なるため。後で「Contents X のまとめ」セクションとして作り直す予定。戻すときは `hidden` を外す（Sales X → SERVICE → TOPICS の `cxsb-join-*` はそのまま使える）。下層9ページの下部メニュー「サービス」は `./#about` から `/services/` に付け替えた。「制作スタジオ・IP開発（YOAKE STUDIO）」は現在トップに出ていない。
+- 2026-10-07（Issue #85）: 会社紹介「Contents Xとは？ 法人の営業と売上づくりを支援する会社です。」（`#company-intro`）を削除。ABOUT の会社説明・Purpose（/about）・Company（/company）と重なるため。TOPICS → NEWS を共通背景で継ぎ目なくつなぐ。
 - 白・無彩色を土台に、画像内の青とオレンジをSales X / Creative Xの識別色として使用。旧マゼンタテーマはトップとサービスページで使わない（`body[data-theme="neutral"]`）。その他のページのテーマは変更しない。
 - 共通ヘッダーの「お問い合わせ」は通常時に淡いグレー地・濃紺文字、ホバーとキーボードフォーカス時に濃紺地・白文字で常に可読にする。言語切替の JP / EN ボタンは一時非表示（`css/style.css` の `.header-lang-switch`）とし、`i18n.js` / `nav.js` の言語切替ロジックと読込順は維持する。
 - 共通ヘッダーの「ホーム」は単独リンクとし、ホバーやスマホメニューで「ニュース」「新作情報」の子メニューを表示しない。トップ内では `#hero` へ、その他のページでは `/` へ遷移する。「サービス」は `/services/` への親リンクとし、PCではホバー・キーボードフォーカスで Sales X / Creative X、その各項目のホバー・フォーカスで各サービスの二段メニューを表示。Sales X / Creative X 自体も紹介ページへ直接遷移できる。スマホのドロワーでは各事業のサービスリンクを常時表示する。「企業案内」の子メニューは維持する。
@@ -83,19 +86,36 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム・ビズマンガ・ビズアニメ・ビズ採用は公開先へ直リンク。ビズビデオは一覧内の動画カード、準備中のビズAIO・ビズカルテは一覧内の該当カードへ。Sales X / Creative Xの紹介は `/services/sales-x/` と `/services/creative-x/` に向ける。
 - 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。トップを含む全ページで `i18n.js` → `nav.js` の読込順を維持。共通ヘッダーは1280px以下でドロワーに切り替え、文字拡大時のナビ重なりも避ける。トップは固定ヘッダーの下からヒーローを開始する。
 
+### HERO（2026-10-10 刷新、Issue #108）
+
+- 基準: 平澤さん支給のハンドオフ `ContentsX_TOP_HERO_Interactive_Handoff_20261010`（PC/SPの確定モック・素材・動画ID）。モック画像を貼らず、文字・ボタン・3カード・装飾をHTML/CSS/JSで組む。ヘッダーとABOUT以下は変えない。
+- 構成（PC 1101px以上）: 白地＋薄い青/オレンジの幾何学背景（`material/home-2026/hero/hero-bg.webp`）。左に小見出し `BUSINESS × CREATIVE`・メインコピー「企業の価値を、売上に変える。」（明朝体、DESIGN-SYSTEM-2026.md のHERO例外）・説明「法人の営業と売上づくりを、仕組みとクリエイティブで支援します。」・ボタン「お問い合わせ」（`/contact`）「サービスを見る」（`/services/`）。右に傾いた3カード。装飾として `PEOPLE / IDEAS / SYSTEMS / GROWTH`・`CONTENTS X INC.`・`SCROLL`（読み上げ対象外）。HEROは画面の高さ−ヘッダー（最低520px）で、PC 1366×650〜1920×1080 でコピー・ボタン・3カードが1画面に収まり、カードはコピーに重ならない。
+- 1100px以下: コピー → ボタン → カードの箱（768px以下は縦長）。SPのカード配置はモックどおり、Creativeが右上・事業が左・仕組みが右下。
+- 以前のHEROの「Sales X × Creative X」「2026.09」右下の一文「日本の中にある価値を、世の中に出し切る。」は削除。ボタン「まずは相談する」は「お問い合わせ」に変更。旧HEROの街の画像 `material/home-2026/hero.jpg` はトップでは使っていない（ファイルは残置）。
+- カード2「事業を、次のステージへ。」→ `/about`、カード3「仕組みで、成果をつくる。」→ トップの `#sales-x` へなめらかにスクロール。**どちらも暫定**で、行き先は `index.html` の各 `<a>` の `href` を1か所変えるだけ。画像（`hero-card-business.webp` / `hero-card-system.webp`）は支給素材の焼き込みの角丸・白い縁を、文字にかからない範囲で切り落としたもの。画像内の文字は二重に重ねず、同じ文言を読み上げ用テキストとして持つ。右下の矢印でリンクと分かるようにする。
+- カード1（Creative、2026-10-10 平澤さん指示で「動画の絵だけ」に変更・Issue #114）: カードにはYouTubeの表示（題名・アイコン・ロゴ・リンク）を一切出さず、3本の動画の絵（YouTubeのサムネイル画像）を横一列に並べる。左上には、他の2枚のカード画像の文字に合わせた見出し「クリエイティブで、ビジネスを動かす。」（明朝体の濃紺、線と小さな `CREATIVE FOR BUSINESS`。SPは見出しだけ）を、どの絵の上でも読める半透明の白い小さな板に載せる。開いてYouTubeを再生している間は消す（プレイヤーの上に重ねない）。並びは `index.html` の `[data-cxhv-slide]`（動画ID・題名）の順＝「どれが原宿？」`zKvRR8xT_zY` → 「High Speed Battle」`IAgFqlvSUfE` → 「ニャンポッシブル」`OYgeXiPByBg`（動画ID単位で、プレイリスト指定は使わない）。
+  - ふだん: 横スクロール（スマホはスワイプ、PCはトラックパッド）で絵を切り替える。見えている絵はゆっくり少し拡大する。
+  - PCの動くプレビュー（2026-10-10 平澤さん決定。bizmanga.contentsx.jp/bizanime の右側と同じ方式）: ページの読み込みが終わり、カードが見えていてHEROが場面のあいだ、見えている絵の裏でYouTubeを音なし・操作バーなし・ループで流す。再生が始まってから5秒間はYouTubeの題名などが出るので絵を上に残し、その後絵を薄くして動画を見せる。動画の部分は指し示せない・押せない（`pointer-events:none`）ので、マウスを乗せてもYouTubeの表示は戻らず、押すとカードが開く。10秒ごとに次の動画へ（マウスを乗せている間は進まない）。スマホ・タブレット・動きの軽減・タブ非表示・HEROを離れたときは絵のまま（スマホとタブレットは通信量と電池のため）。⚠️ YouTubeの規約が禁じる「公式の表示を隠す・押せなくする・上に重ねる」やり方で、YouTube側に埋め込みを止められる可能性があることを承知のうえで採用（法律ではなく利用規約の問題）。止められた場合もカードは絵のまま崩れない。
+  - 絵を押すと開く: PCはカードがまっすぐになりながらHEROの右半分の中央へ動いて約1.5倍に広がり（右半分に収まらないときは縮める）、絵の外の左右に ‹ ›、右上に × を出す。タブレット・SPはカードの箱の中で横幅いっぱいに開き、‹ › × は絵の下（他の2枚は隠すが、箱の高さは保つのでページが跳ねない）。開くと操作バー付きのYouTubeプレイヤーで、プレビューの続きから音付きで再生する（ブラウザーが音付き再生を止めたときは音なしで始め、YouTubeの操作バーで音を出せる）。開いたまま横スクロール・‹ ›・←→キーで他の動画へ移ると、止まった位置の動画を再生する。×・Escで閉じると元の位置に戻り、フォーカスは絵へ戻る。他の2枚は薄く・少し小さくなり操作できない。
+  - 共通: プレイヤーは常に1つ。HEROをスクロールで離れる（閉じる）・タブを隠す（一時停止）と止める。
+- YouTube: 公式の IFrame Player API（`https://www.youtube.com/iframe_api`、PCは読み込み後、それ以外は開いたときに読み込む）で `youtube-nocookie.com` に埋め込む（`playsinline`・`rel=0`・`origin`・`enablejsapi`、操作バーあり）。読み込めないときは「動画を読み込めませんでした」と表示し、画面は崩れない。開いている間は、YouTube側のロゴ・題名・チャンネル名などの公式の表示とリンクが出る（開いているプレイヤーの上には何も重ねない）。ふだんのカード（PCのプレビュー含む）には出ない。`index.html` のCSPの `script-src` に `https://www.youtube.com` を追加した。
+- 書体: メインコピーとCreativeカードの見出しだけ `Noto Serif JP` 500（Google Fonts の `text=` で使う文字だけ読み込む）。
+- CSSは `css/home-hero.css`、JSは `js/home-hero.js`。検証は `python3 tests/test_hero.py --url <loopback preview> --artifacts <output>`（YouTube APIは記録用の代役に置換。19幅の文言・リンク・カードがHERO内・PCで1画面・コピーと重ならない・文字1.4倍、カードにYouTubeの表示が出ないこと、PCのプレビュー（音なし・操作バーなし・ループ・押せない・5秒後に絵が消える・10秒送り）、横スクロール、開いた位置（右半分の中央）と大きさ（1.5倍）・プレビューの続きから音付き再生・‹ ›と横スクロールで動画が移ること・自動送り停止・Esc・フォーカス、スクロールで閉じること、カード2/3の遷移、動きの軽減、YouTube不可、SP 375/390/430のタップ再生と「HEROの下端を見るまでフェードしない」こと、JS無効）。実際のYouTubeでの再生は手元のブラウザで確認（開く・音付き再生・横スクロールで切替・閉じる）。
+
 ### Hero直下のAboutと接続演出（Issue #59）
 
-- `index.html` の既存Heroはマークアップ・初期デザインを維持し、`.cxha-transition` / `.cxha-stage` / `.cxha-hero-frame` で包む。直後に `#home-about` を置く。既存のサービス用 `#about` と会社案内URL `/about` は維持する。
+- `index.html` のHeroを `.cxha-transition` / `.cxha-stage` / `.cxha-hero-frame` で包む（Heroの中身は2026-10-10に刷新、上の「HERO」）。直後に `#home-about` を置く。既存のサービス用 `#about` と会社案内URL `/about` は維持する。
 - ABOUTの内容・レイアウトは Issue #63 で刷新（下の「ABOUTの構成（Issue #63）」）。この節は Hero→ABOUT の接続演出の仕様。
 - ユーザー提供のオフィス素材 `material/home-2026/about-office-pc.webp`（1672×941）は、#63 以降 Purpose / Company カードの画像（別crop）として使う。スマホ用の縦長版 `about-office-mobile.webp` は #63 で不要になり削除。オフィスはイメージ画像であり、実際の所在地写真として扱わない。遷移参考画像は実装素材には含めない。
-- 専用の `css/hero-about.css` / `js/hero-about.js` を使用。ネイティブスクロールとstickyで、画面高の1.15倍（480〜1000px）のスクロール区間に追従する。Hero全体を中央へ縮小し、余白を開く→巨大文字→見出し→本文→メインビジュアル→Purpose / Company→事業カードの順に表示する（`js/hero-about.js` の `timings`）。Heroのコピーは先に薄くし、Xを含む背景は後半まで残してメインビジュアルとクロスフェードする。PCでは画像位置へ、スマホでは中央線を維持して主に縦へつなぐ。
+- 専用の `css/hero-about.css` / `js/hero-about.js` を使用。ネイティブスクロールとstickyで、PCは画面高の1.0倍・SPは0.85倍（どちらも420〜900px）のスクロール区間に追従する。HEROが画面より高いとき（タブレット・SP）は、まずHEROを普通にスクロールさせ、HEROの下端が画面に入ってから固定と演出を始める（`--cxha-overflow`。カードを見る前に消えない）。
+- 動き（2026-10-10、Issue #108でフェード接続に変更。以前の「Heroが縮んで写真に重なる」演出は、HEROが白地になり意味がなくなったため廃止）: Heroの文字が区間の4〜30%で薄くなり、3カードは4〜62%でわずかに縮み（100→88%）上へ下がりながら22〜60%で消える。HERO全体（背景を含む）は32〜64%で溶け、下からABOUTが現れる（見出し34〜60%→本文→写真46〜76%で96→100%に広がる→Purpose / Company→事業カード）。ABOUTは演出中も画面いっぱいの高さを持つので、途中で空白は出ない。PC/SPの値は `js/hero-about.js` の `PC` / `SP`。HEROが場面でなくなった（区間の20%を超えた）ことを `cxha:hero` イベントで知らせ、HEROの動画を止める。
 - 描画は受動的なscroll監視とrequestAnimationFrameでまとめる。wheel/touchのキャンセルやスクロールロックを行わない。逆スクロールでも同じ量に戻り、サイズ変更・文字拡大・フォント読込・i18n切替・履歴復帰時には実寸から再計算する。非表示のAboutがHeroのCTAを遮らないよう初期はpointer-eventsを無効にする。薄くなったHeroのリンクはinertでクリック・フォーカスを抑え、完了後にaria-hiddenにする。
 - `#home-about` への直接アクセスは演出完了位置へ、既存ナビの `#hero` は縮小前の先頭へ戻す。通常のアンカー操作・戻る/進むで表示状態が食い違わないようにする。
 - JS無効時と `prefers-reduced-motion: reduce` ではHero→Aboutを通常フローで全表示し、sticky・縮小・フェードを使わない。設定の実行中変更にも追従する。i18n.js → nav.jsの既存読込順は維持する。
 
 ### ABOUT / SERVICE / NEWS の共通背景（Issue #61）
 
-- 対象は `#home-about`（ABOUT）、`#about`（サービス一覧＝SERVICE）、`#news`（NEWS）の3つ。各セクションに `.cxsb-section` を付け、間のコンセプト・Sales X / Creative X・流れ・会社紹介・相談CTAは従来どおり白系の背景のまま残す。
+- 対象は `#home-about`（ABOUT）、`#about`（サービス一覧＝SERVICE）、`#news`（NEWS）の3つ。各セクションに `.cxsb-section` を付け、間のコンセプト・Sales X / Creative X・流れ・会社紹介は従来どおり白系の背景のまま残す。
 - 背景はハンドオフ（ContentsX_About_Handoff）の `02_common_bg_pc` / `03_common_bg_sp`（= #59 のオフィス画像）に、ぼかし（PC 15px・SP 16px相当）と明るさ調整を焼き込んだもの。`material/home-2026/section-bg-pc.webp`（1672×941）と `section-bg-mobile.webp`（941×1672）を、768px以下または縦長画面（縦横比3:4以下）で切り替える。CSSの `filter: blur` はスクロール中の描画負荷が高いため使わない。実在のオフィス写真としては扱わない。
 - 各セクション先頭の `.cxsb-backdrop` を `position:fixed` で画面全体に置き、セクション側の `clip-path:inset(0)` で切り抜く。背景は動かず、カード・見出しだけが上を流れる（`background-attachment:fixed` は iOS で効かないため使わない）。白いベールで濃紺文字の可読性を保ち、上下端は白へフェードして隣の白いセクションへつなぐ。
 - 各セクション上部に大きく薄い英字 `.cxsb-label`（ABOUT / SERVICE / NEWS、`aria-hidden`・`data-i18n-skip`・`text-size-adjust:100%`）。ABOUTは #59 の巨大文字 `.cxha-wordmark` の文言を「CONTENTS X」から「ABOUT」へ変更して流用し、表示タイミングは #59 のスクロール連動のまま。
@@ -106,7 +126,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### ABOUTの構成（Issue #63）
 
 - 基準: ハンドオフ `ContentsX_About_Handoff/00_reference_about.png`。画面を1枚画像にせず、背景・画像・文字・カードをHTML/CSSで分ける。ヘッダーは共通ヘッダーのまま。
-- PC（1101px以上）: 左に見出し「コンテンツで、企業の可能性をひらく。」と本文、中央に大きなメインビジュアル `.cxha-office`（`material/home-2026/about-main-visual.webp`、1672×941、2:1で表示）、右に Purpose 導線（「コンテンツの力で、社会にもっといい未来を。」OUR PURPOSE → `/about`）と Company 導線（「私たちについて」COMPANY → `/company`）。下段は半透明の白い帯に「価値を生み出す、2つの力。」の導入文と、Sales X（→ `/services/sales-x/`）/ Creative X（→ `/services/creative-x/`）の2カード。Contents Xカードは置かない。カードのXは Sales X が青、Creative X がオレンジ。
+- PC（1101px以上）: 左に見出し「コンテンツで、企業の可能性をひらく。」と本文、中央に大きなメインビジュアル `.cxha-office`（2026-10-09 から社員の集合写真 `material/home-2026/about-team-photo.webp`、2000×1500。PCは2:1の枠で後列の頭と前列の顔が入る位置〈`object-position: 50% 35%`〉、768px以下は4:3で全体を表示。旧画像 `about-main-visual.webp` は戻す場合に備えて残置）、右に Purpose 導線（「コンテンツの力で、社会にもっといい未来を。」OUR PURPOSE → `/about`）と Company 導線（「私たちについて」COMPANY → `/company`）。下段は半透明の白い帯に「価値を生み出す、2つの力。」の導入文と、Sales X（→ `/services/sales-x/`）/ Creative X（→ `/services/creative-x/`）の2カード。Contents Xカードは置かない。カードのXは Sales X が青、Creative X がオレンジ。
 - Purpose / Company カードは新しい画像を増やさず、`about-office-pc.webp` を `background-size` / `background-position` で別の範囲に切り出し、Purpose は白、Company は濃紺のグラデーションを重ねる。
 - 769〜1100px: 見出し・本文を上段の全幅、メインビジュアルとPurpose / Companyを2列、導入文を全幅にして事業カードを2列。
 - 768px以下: ABOUT → 見出し/本文 → メインビジュアル（4:3）→ Purpose → Company → Sales X → Creative X の1カラム。導入文はスマホでは出さない。横移動や強いstickyは使わない（#59の縮小演出は中央線のまま縦方向）。
@@ -115,40 +135,45 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 登場は #59 のスクロール連動の中で、見出し→メインビジュアル→導線カード→事業カードの順に軽くfade-up。`prefers-reduced-motion: reduce` とJS無効時は全表示し、hoverの変化も止める。
 - CSSは `css/hero-about.css`、背景とスナップは `css/home-sections.css`（#61）。検証は `tests/test_hero_about.py`（#59の演出・Hero比較）と `tests/test_section_backdrop.py`（リンク先4件、事業カード2枚、SPの並び順、hover）。
 
-### Creative X セクション（Issue #65）
+### Creative X セクション（Issue #65、ビューワー化 Issue #97、動画の横スクロール化 Issue #102）
 
-- 位置: ABOUT（`.cxha-transition`）の直後、`#creative-x`。確定デザインは 2026-10-04 改訂版（ダウンロードの「ChatGPT 画像 2026年10月4日 18_34_20.png」。初版 10/03 の右上作品カード3枚と導入文の帯は廃止）。画面を1枚画像にせずHTML/CSS/JSで組む。
+- 位置: ABOUT（`.cxha-transition`）の直後、`#creative-x`。デザインは 2026-10-04 改訂版を土台に、2026-10-08（Issue #97）で右上の PICK UP を「メインビューワー」に置き換えた。画面を1枚画像にせずHTML/CSS/JSで組む。
 - 背景: ABOUTの共通背景（`.cxsb-section`）をそのまま継続。ABOUTに `.cxsb-join-next`、Creative Xに `.cxsb-join-prev` を付け、境目の白いフェードを出さず1枚の景色として続ける。上部に薄い大きな `CREATIVE X`。PCのスナップ対象。
-- PC（1101px以上）: 上段は左に「Creative X ——」・見出し「想いを、伝わるカタチに。」・説明・青いボタン「Creative X について →」（`/services/creative-x/`）、右に PICK UP（1枚表示。PICK UP ラベル・作品名・一文、右下に丸い再生ボタン「作品を見る」）。下段は左に「OUR WORKS ——」「作品で見る Creative X」・説明・前後ボタンと点（PICK UP の切替）、右にビズマンガ / ビズアニメ / ビズビデオの3カード（画像・色付きのサービス名・一文・丸い矢印）。最下部に区切り線と「IDEAS INTO IMPACT」（装飾）。769〜1100px は上段・下段とも縦に積み、カードは3列。
-- SP（768px以下）: 見出し・説明・ボタン → PICK UP（指で左右にスワイプでも切替）→ OUR WORKS と前後ボタン → 3カード縦並び。端末モック・外側の背景は出さない。
-- カード: 画像はサイト内素材 `material/web-system/service-hover/{bizmanga,bizanime,bizvideo}.webp`（デザインと同じ）。名前の色はビズマンガ `#ef5a17`・ビズアニメ `#2563eb`・ビズビデオ `#7c3aed`。行き先は WordPress から決まる（下記）。表記はサイト全体と同じ「ビズビデオ」（デザイン画像の「ビズビデオ」は 2026-10-07 平澤さん指示で「ビズビデオ」に統一）。
+- しくみ: 下の3カード（ビズマンガ / ビズアニメ / ビズビデオ）がタブで、上のメインビューワー1枠の中身を切り替える。初期表示はビズアニメ。HTML上のカードは各サービスへのリンク（ビズ書庫 / ビズアニメ公式 / `/services/#bizvideo`）で、JSがタブに変える。JSが動けば普通のクリックではページ移動・ポップアップはせず、Ctrl/⌘クリックは各サービスを新しいタブで開ける。切替は約200msのフェード（動き軽減時は即時）、切替時は再生中の動画を止め、マンガは1ページ目・拡大なしに戻す。タブはスペースキー・矢印キー・Home/End でも操作できる（`role="tab"` / `tabpanel` はJSが付ける）。
+- PC（1101px以上）: 上段は左に「Creative X ——」・見出し「想いを、伝わるカタチに。」・説明・青いボタン「Creative X について →」（`/services/creative-x/`）、右にメインビューワー（濃紺の枠）。下段は左に「OUR WORKS ——」「作品で見る Creative X」・説明、右に3カード（画像・色付きのサービス名・一文・丸い矢印。選択中は枠線とサービス色の丸）。最下部に区切り線と「IDEAS INTO IMPACT」。ビューワーの高さはサービスを切り替えても変わらない。
+- 1100px以下: 1列で「見出し・説明・ボタン → OUR WORKS → 3カード（横3列）→ ビューワー」。カードをビューワーの上に置き、ビューワーの高さが変わっても押したカードが動かないようにする。768px以下はカードを画像＋名前だけの小さなタブにし、592px以下はビューワーを画面の端から端まで広げる。
+- ビズマンガ（`js/cx-manga-reader.js`）: ページ内で読めるマンガビューワー。BizManga の読み方の規則を写している（BizManga のJSは読み込まず、BizManga 側は変更しない）。右綴じで、PC（769px以上）は見開き [1,2],[3,4]… の若い番号が右、最終ページが奇数なら左に `/material/manga/thanks_v02.webp`。768px以下は1ページずつ。`view_type` が `vertical_only` / `vertical`、または1ページ目の縦横比が1.8超なら縦スクロール表示。1ページ目が読み込めないときは BizManga と同じく「縦読みではない」として表示を続ける。判定は BizManga の `bm-view-type.js` を読み込まずに写している（別サイトのため）ので、BizManga 側の判定を変えたら `js/cx-manga-reader.js` も合わせる。「次へ」は左・「前へ」は右、←キー＝次・→キー＝前、スワイプは左へ＝次。ページ番号表示、拡大ボタン（2倍・スクロールで移動）。ページは切り取らない（`object-fit: contain`）。PCではページを枠の高さいっぱいに使い、ボタン類は左右の余白に重ねる。
+- ビズアニメ / ビズビデオ（`js/cx-video-player.js`）: 共通の動画プレイヤー。各3本を横一列に並べ、横スクロール（SPは指でスワイプ、PCはトラックパッド・左右端の ‹ › ボタン・←→キー）で1本ずつ切り替える（2026-10-09 平澤さん指示で下のサムネイル列は廃止）。動画は枠の横幅いっぱいに16:9で表示し、上部の点で何本目かを示す（再生中は隠す）。最初はポスター・タイトル・説明と再生ボタンだけで、押すとその場で埋め込みを作って再生（自動再生しない）。別の動画へスクロール・別サービスを選ぶと埋め込みを外して止める。読み込み中・再生できないときは文字で知らせる。高画質サムネイル（maxresdefault）が無い動画は YouTube の灰色の代わり画像になるため、標準サイズ（hqdefault）に切り替える。
 - データ（`js/home-creative-x.js`、`WP_CONFIG.apiBase` 経由）:
-  - 動画: `GET /bizanime-videos` の `playlists`（WPプラグインの「ビズアニメ・ビズビデオ動画」＞ CREATIVE X プレイリスト。表示ONのみ・管理画面の並び順）。先頭3件が PICK UP（点が3つ）、種別ごとの先頭がビズアニメ / ビズビデオカードのサンプル動画。プレイリスト未登録の間は、ビズアニメは既存の `cases`（単体動画）で代用し、ビズビデオカードは静的リンクのまま。
-  - マンガ: `GET /works?site=contentsx`（既存の「ContentsX新作情報に表示」＝掲載可否、`cx_sort_order`＝表示順）の先頭がビズマンガカードの行き先。クリックは BizManga の試し読み `https://bizmanga.contentsx.jp/biz-library?manga={id}`。
-  - YouTube のURLはフロントに書かない。プレイリストIDを検証してから埋め込みURL（`youtube-nocookie.com/embed/videoseries?list=`）を組み立て、APIの `embed` は使わない。画像は `cms.contentsx.jp` / `i.ytimg.com` の https のみ。文字は textContent で入れ、HTMLとして解釈しない。
-- 高さ: PC は余白・見出し・ボタン・PICK UP・カード画像を画面の高さ（`svh`）でも縮め、1366×650〜1920×1080 でカードまで1画面に収まる（1470×800・1280×720 では「IDEAS INTO IMPACT」まで収まる）。
-- 動画はモーダル（`<dialog>`）で再生し、閉じるとiframeを外して停止。Ctrl/⌘クリック等は YouTube を新しいタブで開ける。PCのhoverはボタンが2px上・矢印4px、画像1.03倍、カードの丸い矢印4px右。SPはタップのみ。
-- JS無効・WP取得失敗時は `index.html` の静的な表示（I eye のポスターと既存ページへのリンク、前後ボタンは非表示）が残る。動き軽減時はトランジションを止める。
-- CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。17幅、カード3枚の並び、XSS・不正URL、点・前後ボタン、モーダル、hover、ノートPC6サイズで1画面、スナップ、プレイリスト未登録時、取得失敗時、動き軽減、JS無効）。
-- WP側は別リポジトリ `contentsx-wp-plugin` の `contentsx-cms/bizanime-videos.php`（2026-10-03 本番反映・正本 main に取り込み済み）。
+  - 動画: `GET /bizanime-videos` の `viewer`（WPプラグイン「ビズアニメ・ビズビデオ動画」＞「CREATIVE X ビューワー動画」。種別・タイトル・説明・URL・ポスター・表示ON/OFF・並び順）。種別ごとに再生できるものを先頭から3本。ビューワー動画が未登録の種別は、ビズアニメは `playlists` のビズアニメ分 → 既存の `cases`（単体動画）、ビズビデオは `playlists` のビズビデオ分で代用する。
+  - マンガ: `GET /works?site=contentsx`（「ContentsX新作情報に表示」＝掲載可否、`cx_sort_order`＝表示順）のうち、ページ画像（`gallery`）を持つ先頭の作品。
+  - 埋め込みURLはフロントで検証済みIDから組み立てる（YouTube は `youtube-nocookie.com/embed/{id}`、プレイリストは `embed/videoseries?list=`、Google ドライブは `drive.google.com/file/d/{id}/preview`、mp4 は `<video>`）。APIの `embed` は使わない。画像は `cms.contentsx.jp` / `contentsx.jp` / `i.ytimg.com` の https とサイト内パスのみ。文字は textContent で入れ、HTMLとして解釈しない。
+- 大きさ: ビューワー内の高さはビューワーの横幅から決める（コンテナ単位。`--cxcx-view-h` = 横幅×9/16。上限はPCが画面の高さ−340px、タブレット・SPが画面の高さ−140px）。動画は横幅いっぱい、マンガの枠も同じ高さなので、切り替えても枠の高さは変わらない。SPのマンガは縦長（横幅×1.25、画面の高さの70%まで）。高さ860px以下のPCは上の余白とカード画像を低くする。ノートPC（1366×650〜1920×1080）ではカードまで1画面に収まり、高さ800px以上なら動画は枠の横幅いっぱい。それより低い画面では高さの上限で動画が少し小さくなる（YouTube側で左右に黒帯）。
+- 状態: データ取得中は「読み込み中…」。取得に失敗したら「動画（漫画）を読み込めませんでした」、データが無ければ「準備中です」と出し、どちらも各サービスへのリンクを添える（動画とマンガは別々に判定）。JS無効・WP設定が無効のときは `index.html` の静的な表示（I eye のポスターとビズアニメへのリンク、3カードは各サービスへのリンク）が残る。
+- CSSは `css/home-creative-x.css`、検証は `python3 tests/test_creative_x.py --url <loopback preview> --artifacts <output>`（WP応答と画像をフィクスチャに置換。19幅の並び・横はみ出し・文字1.4倍、タブ操作・キーボード、動画の非自動再生・停止・埋め込みURL・XSS・不正URL、マンガの見開き順・サンクスページ・キー操作・拡大・リセット・SPスワイプ・縦読み、切替でビューワーの高さが変わらない、動画の横スクロール・‹ ›・←→とスクロールで前の動画が止まること、ノートPC8サイズでカードまで1画面・高さ800px以上は動画が横幅いっぱい、スナップ、ビューワー動画未登録時、取得中・取得失敗時、動き軽減、JS無効）。
+- WP側は別リポジトリ `contentsx-wp-plugin` の `contentsx-cms/bizanime-videos.php`（プレイリストは 2026-10-03 本番反映。ビューワー動画の欄・REST `viewer` は Issue #97 で追加）。
 
-### Sales X セクション（Issue #67）
+### Sales X セクション（Issue #67、画像＋ホバー型カード Issue #104）
 
 - 位置: Creative X の直後、`#sales-x`。共通背景を継続し、Creative X に `.cxsb-join-next`、Sales X に `.cxsb-join-prev` を付けて継ぎ目を出さない。上部に薄い大きな `SALES X`。PCのスナップ対象。
-- PC（1101px以上）: 左に見出し「新しい接点を、売上につなげる。」・説明・「Sales Xについて見る」（`/services/sales-x/`）、右に4サービスを2列×2行。1440×900で4枚が1画面に収まる高さ。769〜1100px は説明が上・カードは2×2。768px以下は4枚を縦並び。
-- カード: 同じ大きさ・角丸16px。画像（`material/home-2026/sales-x-*.webp`、1448×1086、ユーザー提供のイメージ画像）はビジュアル素材としてだけ使い、カテゴリ・サービス名・説明・CTAは画像の下端に重ねた白いパネルにHTMLで書く。カード全体がリンク。
+- 左: 小見出し「Sales X ——」・見出し「新しい接点を、売上につなげる。」・説明（3行に区切る。768px以下は改行を外して自然に折り返す）・「Sales Xについて見る →」（`/services/sales-x/`）。
+- 右: 4サービスを2列×2行（769〜1100px は説明が上・カードは2×2、768px以下は縦1列）。カードは同じ大きさ・角丸16px・同じ影で、カード全体がリンク。
+- カード（2026-10-09 平澤さん指定の「B案：画像＋ホバー型」）: 上に画像（主役）、画像の下端にサービス色の線、その下にラベル（サービス色の小さな札）・サービス名・短い説明（2行。改行は外し、文節単位で折り返す）。
+  - PCのホバー／キーボードのフォーカス: 画像の上に濃紺のオーバーレイを重ね、補足説明と「詳しく見る →」を出す。カードは3px浮き、画像は1.04倍、矢印は4px右。
+  - ホバーできない端末（スマホ・タブレットのタッチ）と768px以下: オーバーレイは出さず、短い説明の下に「詳しく見る →」を常に出す。
+- 画像（`material/home-2026/`、1672×941・16:9、平澤さん支給）: 768px以下とタブレットは16:9のまま全体を見せる。PCは画面の高さに合わせて高さを決め（`clamp(100px, 50svh − 214px, 300px)`）、16:9より横長になる分は画像ごとの `object-position` で主題を残す。
 
-| カード | 色（線・文字） | 遷移先 | 画像 |
-|---|---|---|---|
-| ビズフォーム（新規開拓代行） | 青 `#1265e8` / `#0d4fb8`（ビズフォームサイトのブランド色） | https://bizform.contentsx.jp/ | `material/service-2026/bizform-research-v2.webp`（暫定・下記） |
-| ビズ採用（採用支援） | ピンク `#ec2d87` / `#c0186b`（ビズ採用サイトの `--rx-accent`） | https://ichioshi.contentsx.jp/ | `sales-x-bizrecruit.webp` |
-| ビズAIO（AI検索最適化） | 紫 `#7c4dff` / `#5b30d6` | `/services/#bizaio` | `material/service-2026/bizaio-search-v2.webp`（暫定・下記） |
-| ビズカルテ（次世代AI CRM） | オレンジ `#f26a1b` / `#b4470b` | `/services/#bizkarte` | `sales-x-bizkarte.webp` |
+| カード | ラベル | 色（線・文字） | 遷移先 | 画像 |
+|---|---|---|---|---|
+| ビズフォーム | 新規開拓代行 | 青 `#1265e8` / `#0d4fb8` | https://bizform.contentsx.jp/ | `sales-x-bizform.webp`（企業調査→個別文面→送信の青い画面） |
+| ビズ採用 | 採用支援 | ピンク `#ec2d87` / `#c0186b` | https://ichioshi.contentsx.jp/ | `sales-x-bizrecruit-v2.webp`（採用広報・動画・SNSのコラージュ） |
+| ビズAIO | AI検索最適化 | 紫〜青のグラデーション / `#5b30d6` | `/services/#bizaio` | `sales-x-bizaio.webp`（AI検索の画面と結果） |
+| ビズカルテ | 次世代AI CRM | オレンジ `#f26a1b` / `#b4470b` | `/services/#bizkarte` | `sales-x-bizkarte-v2.webp`（オレンジ系のCRMダッシュボード） |
 
-- 高さ（2026-10-04）: PC（1101px以上）はカード画像の高さを画面の高さ（`svh`）に合わせ（21:9 → `clamp(88px,15.5svh,200px)`）、余白も縮めて、1366×650〜1920×1080で4枚が1画面に収まる。
-- 画像の暫定差し替え（2026-10-07 平澤さん判断）: 提供画像のうちビズフォーム（実在企業のロゴが送信先として描かれていた）とビズAIO（実在メディアの架空記事の引用・根拠のない「導入企業1,000社以上」・BizAIOをCRMと説明）は公開せず、サービス一覧で使っている既存画像に差し替えた。作り直した画像が届いたら `material/home-2026/sales-x-bizform.webp` / `sales-x-bizaio.webp` として追加し、`index.html` の該当2枚の `src` と `width/height` を戻す。
-- 文字色は白地でWCAGのコントラスト4.5:1以上になる濃い色を使い、鮮やかな色は線と画像側に使う。PCのhoverは画像1.03倍・矢印4px右、表示時は既存の `data-cxh-reveal` で軽いfade-up（2〜4枚目は0.08秒ずつ遅らせる）。新しいJSは追加しない。
-- CSSは `css/home-sales-x.css`、検証は `python3 tests/test_sales_x.py --url <loopback preview> --artifacts <output>`（17幅、2×2・縦並び・同じ大きさ、リンク先、文字がHTMLであること、hover、カード全体のリンク、スナップ、動き軽減、JS無効）。
+- 文言（短い説明／補足）: ビズフォーム「企業ごとに調べて、書いて、送る。新規開拓の実務を一気通貫で代行します。」／「企業調査・個別文面の作成から、問い合わせフォーム送信・レポートまで対応。新規開拓を、もっと軽く。」、ビズ採用「SNS・コンテンツ制作・広告で、「知ってもらう → 好きになってもらう → 応募される」流れをつくります。」／「採用漫画・動画・インタビュー・広告運用を組み合わせ、会社の魅力が伝わる採用導線を設計します。」、ビズAIO「ChatGPT・Gemini・PerplexityなどのAI検索で、見つかる・選ばれる状態をつくります。」／「AI時代に最適化した情報設計・コンテンツ整備で、検索流入と商談機会の最大化を支援します。」、ビズカルテ「顧客・商談・活動をひとつに管理。AIが次に連絡すべき相手やアクションを提案します。」／「営業活動を可視化・整理し、顧客対応から成果創出までをAX化するCRMです。」。英語版は `data-en`。
+- 高さ: PC（1101px以上）は1366×650〜1920×1080で4枚が1画面に収まる。
+- 以前のトップ用画像 `sales-x-bizrecruit.webp` / `sales-x-bizkarte.webp` はどこからも参照されなくなったが、戻す場合に備えて残置（BizManga からの参照もなし）。暫定で使っていた `bizform-research-v2.webp` / `bizaio-search-v2.webp` はサービス一覧・Sales X紹介ページで引き続き使用。
+- CSSは `css/home-sales-x.css`、検証は `python3 tests/test_sales_x.py --url <loopback preview> --artifacts <output>`（17幅の並び・横はみ出し・文字1.4倍、ラベル・画像・リンク、画像が文字より上、SPは16:9、ホバーとキーボードのフォーカスで重ねる表示、タッチ端末では「詳しく見る」を常時表示、カード全体がリンク、スナップ、動き軽減、JS無効）。共通背景のテスト `tests/test_section_backdrop.py` がノートPC6サイズで1画面に収まることを見る。
 
 ### TOPICS セクション（Issue #76）
 
@@ -160,13 +185,33 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
 - TOPICSはNEWSと別のセクション。代表メッセージ本文は独立ページ `/message` へ接続（§14参照）。
 - WPプラグインのアップロード前確認（2026-10-07）: TOPICSの `contentsx-topics.php` と `contentsx-cms.php` の読み込み行はプラグインのmainに取り込み済み。お名前.comへ `contentsx-cms.php` をアップロードする前に、必ずプラグイン側の最新mainを取り込み、TOPICSの読み込み行と参照先ファイルがそろっていることを確認する。古い作業ブランチのファイルで上書きしない。アップロード対象PHPは `php -l` で構文チェックする。
+- 項目の追加・変更（2026-10-08 追記）: WP管理画面「Contents X ＞ TOPICS」で行う。REST の `POST /contentsx/v1/topics`（要 edit_posts）でもできるが、**一覧を丸ごと置き換える**仕様で、公開の GET は表示ONの項目しか返さない。GET の結果に足して POST すると、管理画面で表示OFFにしている項目が消えるので、表示OFFの項目が無いことを確かめてから使う。VIDEO の画像はYouTubeのURLから自動で補われるので、保存し直すときは空のまま送る。
+- 反映の遅れ: `cms.contentsx.jp` の nginx が API応答を最大10分キャッシュする（`s-maxage=600`）。`Vary: Origin` のため、ブラウザからの取得（Origin付き）は curl 等とは別のキャッシュになり、curl で新しい値が見えてもトップの表示は最大10分古いまま。確認は時間を置くか、`Origin: https://contentsx.jp` を付けた取得で行う。
 - CSSは `css/home-topics.css`、検証は `python3 tests/test_topics.py --url <loopback preview> --artifacts <output>`（WP応答をフィクスチャに置換。15幅、位置と背景、カードの項目、リンク、hover、矢印、不正データ、取得失敗時、ノートPCで1画面、スナップ、動き軽減、JS無効）。
+
+### NEWS セクション（2026-10-07 ブラッシュアップ・Issue #85）
+
+- 方針: 情報を確認する場所なので、演出は控えて読みやすさ・一覧性を優先。目指す形は「巨大な薄い NEWS ＋ 右上の一覧リンク ＋ シンプルな4件の一覧」。共通背景は TOPICS から継ぎ目なく続く（`.cxsb-join-prev`）。
+- 見出し: 巨大な薄い `NEWS`（`.cxsb-label`）は残し、黒文字の「News」は表示しない（読み上げ用に `#cxnw-title`「ニュース」を視覚的に隠して残す）。「一覧を見る →」（`/news`、常に表示）は一覧の右上。
+- 一覧: 最新4件（`wp-api.js` の `NEWS_HOME_LIMIT = 4`）。白い大枠は枠線・影を弱めた半透明。行は「サムネイル / カテゴリ / 日付 / タイトル / 矢印」の順で、行全体が1つのリンク（`a.cxnw-row`）。全行同じ高さ（`grid-auto-rows:1fr`、区切り線は行の内側に描く）、サムネイルは全行同じ 8:5 の枠に `contain`（WPの crop 指定がある画像は cover＋中心位置）。タイトルは濃紺・太字で最も強く、日付はやや薄く、カテゴリは小さな枠付きラベル。PC は横一列（2行まで）、1024px以下はサムネイル右に「カテゴリ・日付」→タイトル、768px以下はサムネイル88px・タイトル3行まで・行の高さ96px以上。
+- 動き: 一覧全体が画面に入ったときに軽く fade-up（`data-cxh-reveal`）するだけ。hover は行の背景がごく薄く変わり、矢印が4px右、サムネイル1.02倍。行ごとの時間差アニメーションと行の横移動は廃止。
+- 描画: `js/wp-api.js` の `loadNews()` が、トップ（`body` に `data-page-news` が無いとき）だけ上の行を描く。`/news` ページは従来の描画のまま。WP の `url` は http(s) か `/` 始まりだけリンクにし、それ以外は詳細ページ `/news-detail?id=` へ。`index.html` の4件は JS無効・取得失敗時の表示（2026-10-07 時点の最新4件）。
+- CSS は `css/home-news.css`（旧 NEWS 指定は `home-sections.css` から削除）。検証は `python3 tests/test_news.py --url <拡張子なしURL対応のプレビュー> --artifacts <output>`（16幅、4行同じ高さ・同じサムネイル、表示順、文字の強弱、右上リンク、SPの並び、hover、不正データ、取得失敗・JS無効、/news が従来どおり）。
+
+### 大きな半透明のセクション名を画面に固定（Issue #89 / タイミング改善 #93）
+
+- ABOUT / CREATIVE X / SALES X / TOPICS / NEWS の大きな半透明文字を、背景の景色と同じく画面に固定する（ヘッダー下 `64px + clamp(10px,1.6vw,26px)`、480px以下は 56px 基準）。
+- 仕組み（#93）: `js/home-section-labels.js` が各セクションの名前を**すべての背景（`.cxsb-backdrop`）の中に** `.cxsb-names > .cxsb-name` として描き、`html.cxsb-fixed-labels` を付けて元の `.cxsb-label` を隠す。どの背景にも同じ名前が同じ位置に出るので、セクションの境目をまたいでも文字が切れない。
+- 切り替え: 画面の**上から40%の線**を含むセクションの名前を出す（2026-10-08 平澤さん「もっと早く出したい・少し戻っても残してほしい」）。下にスクロールすると次のセクションの上端がこの線を越えた時点で切り替わり、少し上に戻っても上端がこの線より下がるまでは今の名前が残る。切り替えは0.2秒のフェード。ABOUT は Hero → ABOUT の演出（`--cxha-wordmark`）に合わせて現れる。
+- JS無効時は元の `.cxsb-label` がセクションと一緒に流れる。動き軽減時はフェードなし。CSS は `css/home-sections.css`。
+- 検証: `tests/test_section_backdrop.py`（PC・スマホで、各セクションの名前が1つ・スクロールしても同じ位置・上端が画面の30%まで戻っても残る・50%まで戻ると前の名前に戻る）。
 
 ### 3.0 サービスページ生成（Issue #20）
 
-- `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、旧個別URLの転送ページ7件、共通デザイントークンCSS、サイトマップを生成する。`href` は旧URL、`destination` は現在の遷移先で、生成ページは後者を使う。個別詳細ページは公開しない。サイトマップには一覧と事業群2ページだけを載せる。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- `data/services.json`、`data/service-groups.json`、`data/design-tokens.json` を正本とし、`tools/build-services.py` が `/services/`、事業群2ページ、旧個別URLの転送ページ7件、共通デザイントークンCSS、サイトマップを生成する。トークンCSS `css/web-system-tokens.css` の色とフォントは、サイト共通の正本 `css/brand-system-2026.css` の変数の別名として出力する（例 `--cxs-ink: var(--cx-color-ink, #07143b)`。JSONの値は予備で、正本と同じ値にそろえる。2026-10-10、Issue #107）。サービスページは正本をトークンCSSより先に読み込む。`href` は旧URL、`destination` は現在の遷移先で、生成ページは後者を使う。個別詳細ページは公開しない。サイトマップには一覧と事業群2ページだけを載せる。トップは独立デザインで生成マーカーを持たないため、ビルドはトップを上書きしない。
+- 一覧の最下部はページ専用CTA「LET'S TALK」（`.cxsd-contact`）1つだけ。「まずは相談する」（`/contact`）と「資料ダウンロード」（`.js-dl-trigger`、`js/dl-modal.js` の案内モーダル。記入済みならPDFを直接ダウンロード）を並べる（2026-10-10、Issue #107。以前は共通CTA `cta.js` も続けて出て2つ重なっていた）。生成ページは `cta.js` を読み込まない。
 - 一覧は `tools/templates/service-list.html.tpl` と `css/service-directory-2026.css` で生成する。冒頭の重複ヒーローと事業カードを置かず、Creative X の写真・紹介から始める。Creative X → Sales Xの順に、画像左・濃紺の説明右の事業紹介、1文の概要を添えたサービスカードを置く。事業紹介の写真は装飾画像とし、各事業ページへの遷移は説明側のCTA1個に絞る。最初のCreative X見出しを一覧のH1とする。領域間の帯は見出しで、クリックできるリンクにはしない。PCのホバー/キーボードフォーカスで補足文を表示し、タッチ端末は常時見える1文を残す。公式サイトがある静止画カードは画像・見出し・CTAを同じ公開先へ向ける。動画カードのポスターはページ内再生で、ビズアニメの見出しとCTAのみ公式サイトへ進む。
-- 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップのヘッダー構成が変わっても、生成時はトップから抽出しない。全ページのサービス導線とフッターの新作情報は実在するURLへ向ける。
+- 生成するサービスページのヘッダー・フッターは `services/index.html` を正本とする。トップのヘッダー構成が変わっても、生成時はトップから抽出しない。全ページのサービス導線は実在するURLへ向ける。フッターは全ページ共通（§7.5）。
 - サービスカードはPCのhover/focusで補足文を示し、スマホでは1文の概要を常時表示する。JSなしでも概要は読める。ビズAIO・ビズカルテは準備中、公開済みサービスは公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後にページ内で再生する。
 - サービス生成は `python3 tools/build-services.py --check` と `python3 -m unittest discover -s tests -p test_build_services.py` で確認する。Pagesワークフローも同じ生成処理とテストを実行する。
 - Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` から生成する。白・濃紺を土台に、Sales Xの青 `#005bfa` とCreative Xのオレンジ `#fa4d12` を使う。ヒーロー・相談CTAの画像は背景と境界をつなげ、スマホでは本文の下に置く。Creative Xのヒーローは `creative-hero-v2.webp`、Sales Xは `sales-hero-v2.webp`。Creative Xの「夜明けスタジオ」は表示しない。Sales Xのビズフォーム画像は実際の業務内容に沿った `bizform-research-v2.webp` を使う。
@@ -217,7 +262,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
-| `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（6ページで共有） |
+| `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（会社概要・採用の2ページ。サービス一覧は2026-10-10にページ専用CTAへ統合） |
 | `js/nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 | 全ページ（defer） |
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
 | `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
@@ -349,6 +394,16 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ホーム | 企業案内 ▾ (Contents Xについて / トップメッセージ / 会社概要 / 役員紹介 / 主要関連会社) | コラム | 採用情報 | お問い合わせ
 ```
 - ⚠️ 「強み」は一時削除中（BizManga特化のため）→ 他事業展開後に全面刷新してメニュー復帰予定
+
+### 7.5 共通フッター（2026-10-08 統一、Issue #87）
+- 全ページ同じHTML・同じCSS（`.cx-footer`、`css/site-footer.css`）。各ページの `</head>` 直前で最後に読み込み、旧フッター（`.footer` / `.ax-footer` / `.cxh-footer`）のCSSとは干渉させない。旧フッターのCSSは未使用のまま残っている。
+- 参考: レバレジーズ株式会社のコーポレートサイトのフッター。濃紺（`--cx-color-ink` #07143b）の面に白抜きロゴ。
+- 構成: 左＝ロゴ＋小さなリンク2段（会社概要・私たちについて・ニュース・採用情報・お問い合わせ／よくあるご質問・プライバシーポリシー・利用規約・Chrome 拡張機能）、右＝Sales X・Creative X のサービス一覧2列（外部サイトへのリンクは左上に角の印＋別タブ）、下＝`© 2026 Contents X Inc.`。住所・会社名の文字表記は置かない（会社概要・構造化データに記載）。
+- 768px以下は縦積み。リンクの高さは44px以上。各リンクに `data-ja` / `data-en`。
+- 上部の小さなお問い合わせ導線 `.cx-footer__contact`（Issue #94）: 「まずはご相談ください／利用するサービスが決まっていなくても構いません。」＋白枠の「お問い合わせ」ボタン（`/contact`）。濃紺の面はそのまま、下に区切り線。768px以下は縦積みでボタン全幅。
+- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要・採用）、サービス一覧の `.cxsd-contact`（`service-list.html.tpl`）、FAQの `.faq-cta`、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
+- **変更するときは3か所を同じ内容にする**: 静的ページ全部（`<footer class="cx-footer">` を一括置換）、`tools/templates/c-column.html.tpl`（コラム記事の生成元）、`services/index.html`（`tools/build-services.py` がサービスページへ複製）。置換後に `python3 tools/build-services.py --check` で差分がないことを確認する。
+- サービス名・遷移先は `data/services.json` と `js/nav.js` に合わせる（サービスを増減したらフッターも直す）。
 
 ## 7.4 コラム機能（2026-05-08 新設）
 - 個別記事は WP CMS → `tools/build-c-columns.py` → `column/{slug}.html` で静的生成（既存）
@@ -517,7 +572,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 
 ## 15. よくある落とし穴（Gotchas）
 
-1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば6ページ全てに反映される（手動コピペ禁止）
+1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば共通CTAを使う全ページ（会社概要・採用）に反映される（手動コピペ禁止）
 2. **モバイルでハンバーガー押せない** → §7.1 のチェックリスト
 3. **新作情報に漫画事例を出したい** → 2026-08-05以降は`cx_show_new_contentsx`が未設定でも表示される（明示的に`0`を入れた作品だけ除外）。表示件数は`added`降順で最大10件（`script.js` `MAX_NEW_WORKS`）。**画面が更新されない場合**: `js/wp-api.js` `loadNewWorks()`完了時に発火する`wp-new-works-ready`イベントを`js/script.js`側で購読して`buildNewWorksCards()`を再実行する構成（2026-08-31修正、[BUGS.md #052](../BUGS.md)）。この購読が無いと`wp-data-ready`（`/works`取得完了時のみ発火）のタイミングでフォールバック`js/data/new-works.js`のまま描画が固定されてしまう
 4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に（2026-04-16修正: 静的 `WORKS_DETAIL_DATA` には `show_hero_site` が無いので初回描画は全作品表示。`wp-data-ready` で `buildHeroCarousel()` を再実行してフィルターを効かせている。サムネ差し替えのみだとCMS設定が反映されない）

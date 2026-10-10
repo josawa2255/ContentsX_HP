@@ -104,7 +104,7 @@
 <meta content="#ffffff" name="theme-color"/>
 <link href="https://contentsx.jp/feed.xml" rel="alternate" title="ContentsX RSS" type="application/rss+xml"/>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/><link href="/css/style.css" rel="stylesheet"/><link href="/css/sitewide-cohesion.css" rel="stylesheet"/><link href="/css/about-2026.css" rel="stylesheet"/><link href="/css/message-2026.css" rel="stylesheet"/><link as="image" href="/material/images/message-2026/portrait-original.webp" rel="preload"/></head>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/><link href="/css/style.css" rel="stylesheet"/><link href="/css/sitewide-cohesion.css" rel="stylesheet"/><link href="/css/about-2026.css" rel="stylesheet"/><link href="/css/message-2026.css" rel="stylesheet"/><link as="image" href="/material/images/message-2026/portrait-original.webp" rel="preload"/><link rel="stylesheet" href="/css/site-footer.css"></head>
 <body class="cx-sitewide cm-page">
 <a class="cm-skip" href="#main-content">本文へ進む</a>
 <header class="header" id="header"><div class="header-inner">
@@ -162,7 +162,54 @@
     </div>
   </nav>
 </main>
-<footer class="footer ax-footer"><div class="ax-shell ax-footer-main"><a class="ax-footer-logo" href="/"><img alt="Contents X" height="192" src="/material/images/logo/ContentsX.webp" width="1022"/></a><nav aria-label="フッターナビゲーション"><a data-en="Company" data-ja="会社概要" href="/company">会社概要</a><a data-en="About Us" data-ja="私たちについて" href="/about">私たちについて</a><a data-en="Services" data-ja="事業内容" href="/services/">事業内容</a><a data-en="News" data-ja="ニュース" href="/news">ニュース</a><a data-en="Careers" data-ja="採用" href="/recruit">採用</a></nav></div><div class="ax-shell ax-footer-bottom"><div><a data-en="Privacy Policy" data-ja="プライバシーポリシー" href="/privacy">プライバシーポリシー</a><a data-en="Terms" data-ja="利用規約" href="/terms">利用規約</a></div><small>© 2026 Contents X Inc.</small></div></footer>
+<footer class="cx-footer">
+    <div class="cx-footer__inner">
+      <div class="cx-footer__contact">
+        <p class="cx-footer__contact-text"><strong data-ja="まずはご相談ください" data-en="Let's talk">まずはご相談ください</strong><span data-ja="利用するサービスが決まっていなくても構いません。" data-en="You do not need to choose a service first.">利用するサービスが決まっていなくても構いません。</span></p>
+        <a class="cx-footer__contact-link" href="/contact"><span data-ja="お問い合わせ" data-en="Contact us">お問い合わせ</span><span class="cx-footer__contact-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="cx-footer__main">
+        <div class="cx-footer__brand">
+          <a href="/" class="cx-footer__logo" aria-label="Contents X ホーム"><img src="/material/images/logo/ContentsX.webp" width="1022" height="192" alt="Contents X" loading="lazy" decoding="async"></a>
+          <nav class="cx-footer__nav" aria-label="フッターナビゲーション">
+            <ul class="cx-footer__links">
+              <li><a href="/company" data-ja="会社概要" data-en="Company">会社概要</a></li>
+              <li><a href="/about" data-ja="私たちについて" data-en="About Us">私たちについて</a></li>
+              <li><a href="/news" data-ja="ニュース" data-en="News">ニュース</a></li>
+              <li><a href="/recruit" data-ja="採用情報" data-en="Recruit">採用情報</a></li>
+              <li><a href="/contact" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a></li>
+            </ul>
+            <ul class="cx-footer__links cx-footer__links--sub">
+              <li><a href="/faq" data-ja="よくあるご質問" data-en="FAQ">よくあるご質問</a></li>
+              <li><a href="/privacy" data-ja="プライバシーポリシー" data-en="Privacy Policy">プライバシーポリシー</a></li>
+              <li><a href="/terms" data-ja="利用規約" data-en="Terms">利用規約</a></li>
+              <li><a href="/extensions/" data-ja="Chrome 拡張機能" data-en="Chrome Extensions">Chrome 拡張機能</a></li>
+            </ul>
+          </nav>
+        </div>
+        <nav class="cx-footer__services" aria-label="サービス">
+          <div class="cx-footer__group">
+            <a href="/services/sales-x/" class="cx-footer__group-title">Sales X</a>
+            <ul>
+              <li><a href="https://bizform.contentsx.jp/" class="is-external" target="_blank" rel="noopener" data-ja="ビズフォーム" data-en="BizForm">ビズフォーム</a></li>
+              <li><a href="/services/#bizaio" data-ja="ビズAIO" data-en="BizAIO">ビズAIO</a></li>
+              <li><a href="/services/#bizkarte" data-ja="ビズカルテ" data-en="BizKarte">ビズカルテ</a></li>
+              <li><a href="https://ichioshi.contentsx.jp/service.html" class="is-external" target="_blank" rel="noopener" data-ja="ビズ採用" data-en="BizRecruit">ビズ採用</a></li>
+            </ul>
+          </div>
+          <div class="cx-footer__group">
+            <a href="/services/creative-x/" class="cx-footer__group-title">Creative X</a>
+            <ul>
+              <li><a href="https://bizmanga.contentsx.jp/" class="is-external" target="_blank" rel="noopener" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</a></li>
+              <li><a href="https://bizmanga.contentsx.jp/bizanime" class="is-external" target="_blank" rel="noopener" data-ja="ビズアニメ" data-en="BizAnime">ビズアニメ</a></li>
+              <li><a href="/services/#bizvideo" data-ja="ビズビデオ" data-en="BizVideo">ビズビデオ</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <small class="cx-footer__copy">&copy; 2026 Contents X Inc.</small>
+    </div>
+  </footer>
 <script src="/js/i18n.js" defer></script>
 <script src="/js/nav.js" defer></script>
 <script src="/js/message-2026.js" defer></script>
