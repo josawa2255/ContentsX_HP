@@ -86,13 +86,6 @@
 .ax-contact p { font-size: 15px; }
 .ax-contact-button { display: inline-flex; align-items: center; justify-content: center; gap: 33px; flex: none; min-width: 230px; min-height: 58px; padding: 12px 26px; background: var(--cx-color-creative); color: #fff; font-weight: 700; font-size: 16px; }
 .ax-contact-button:hover { color: #fff; background: #d9460e; }
-.ax-footer { padding: 27px 0 17px; background: #fff; }
-.ax-footer-main, .ax-footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.ax-footer-logo img { display: block; width: 190px; height: auto; }
-.ax-footer nav, .ax-footer-bottom > div { display: flex; flex-wrap: wrap; gap: clamp(14px,2vw,30px); }
-.ax-footer a { color: var(--cx-color-ink); font-size: 13px; font-weight: 700; }
-.ax-footer-bottom { margin-top: 25px; padding-top: 18px; border-top: 1px solid var(--cx-color-border); }
-.ax-footer-bottom a, .ax-footer-bottom small { color: var(--cx-color-muted); font-size: 11px; }
 
 @media (max-width: 800px) {
   .ax-shell { width: min(100% - 32px, 640px); }
@@ -140,14 +133,10 @@
   .ax-portrait { width: min(100%,460px); height: clamp(360px,105vw,550px); min-height: 0; justify-self: center; }
   .ax-contact { padding: 32px 0; }
   .ax-contact::after { font-size: 310px; top: -40px; right: -60px; }
-  .ax-contact-inner, .ax-footer-main, .ax-footer-bottom { flex-direction: column; align-items: flex-start; }
+  .ax-contact-inner { flex-direction: column; align-items: flex-start; }
   .ax-contact h2 { font-size: clamp(28px,7.6vw,41px); }
   .ax-contact p { font-size: 13px; }
   .ax-contact-button { min-height: 50px; min-width: 210px; font-size: 14px; }
-  .ax-footer-main { gap: 17px; }
-  .ax-footer-logo img { width: 160px; }
-  .ax-footer nav { gap: 13px 18px; }
-  .ax-footer-bottom { margin-top: 20px; gap: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

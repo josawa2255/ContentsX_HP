@@ -35,10 +35,8 @@ body.cx-sitewide :is(.rc-hero-heading, .rc-number-value, .rc-section-label,
 
 body.cx-sitewide .container { max-width: var(--cx-shell); padding-inline: clamp(20px, 4vw, 40px); }
 body.cx-sitewide .header { border-bottom-color: var(--border); }
-body.cx-sitewide .nav-link,
-body.cx-sitewide .footer-links a { color: var(--text-secondary); }
-body.cx-sitewide .nav-link:hover,
-body.cx-sitewide .footer-links a:hover { color: var(--accent); }
+body.cx-sitewide .nav-link { color: var(--text-secondary); }
+body.cx-sitewide .nav-link:hover { color: var(--accent); }
 body.cx-sitewide .footer { border-top-color: var(--border); background: var(--cx-color-white); }
 body.cx-sitewide :is(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 body.cx-sitewide :is(.section-label, .cx-col-hero-eyebrow, .rc-section-label, .ab-section-label, .ot-section-num) {
@@ -60,44 +58,11 @@ body.cx-sitewide :is(.btn-primary, .faq-cta-btn):not(:hover) { background: var(-
 body.cx-sitewide :is(.btn-primary, .faq-cta-btn):hover { background: var(--accent); border-color: var(--accent); color: var(--cx-color-white); }
 
 /* Company story pages retain their editorial layouts while sharing the palette. */
-body.cx-sitewide.ab-page {
-  --ab-bg-alt: var(--cx-color-surface);
-  --ab-line: var(--cx-color-border);
-  --ab-text: var(--cx-color-ink);
-  --ab-text-mid: var(--cx-color-body);
-  --ab-text-sub: var(--cx-color-muted);
-  --ab-accent: var(--cx-color-sales);
-  --ab-accent-soft: rgba(0, 91, 250, .07);
-}
-body.cx-sitewide .ab-hero {
-  background: radial-gradient(ellipse at 80% 25%, rgba(0, 91, 250, .10), transparent 58%), #fff;
-}
-body.cx-sitewide .ab-section { padding-block: clamp(72px, 8vw, 112px); }
-body.cx-sitewide .ab-section--alt { background: var(--bg-light); }
-body.cx-sitewide .ab-hero-title,
-body.cx-sitewide .ab-section-jp { font-family: var(--cx-font-ja); letter-spacing: -.04em; }
-body.cx-sitewide .ab-hero-title { font-size: var(--cx-type-page); }
-body.cx-sitewide .ab-section-jp { font-size: var(--cx-type-section); line-height: 1.35; }
 
-body.cx-sitewide.ot-page {
-  --ot-off-white: var(--cx-color-surface);
-  --ot-warm-gray: #eef5ff;
-  --ot-line: var(--cx-color-border);
-  --ot-text-primary: var(--cx-color-ink);
-  --ot-text-body: var(--cx-color-body);
-  --ot-text-light: var(--cx-color-muted);
-  --ot-accent: var(--cx-color-creative-text);
-  --ot-accent-soft: rgba(250, 77, 18, .08);
-}
-body.cx-sitewide .ot-hero {
-  background: radial-gradient(ellipse at 78% 42%, rgba(250, 77, 18, .17), transparent 58%), #f8fbff;
-}
 body.cx-sitewide .ot-section,
 body.cx-sitewide .ot-section-alt { padding-block: clamp(72px, 9vw, 120px); }
-body.cx-sitewide .ot-hero h1,
 body.cx-sitewide .ot-section h2,
 body.cx-sitewide .ot-section-alt h2 { font-family: var(--cx-font-ja); letter-spacing: -.035em; }
-body.cx-sitewide .ot-hero h1 { font-size: var(--cx-type-page); line-height: 1.35; }
 
 /* Listing, FAQ, contact and legal content. */
 body.cx-sitewide .cx-col-hero { background: linear-gradient(110deg, #f0f7ff, #fff 68%); border-color: var(--border); }
@@ -205,13 +170,6 @@ body.cx-sitewide .cx-col-card img {
     clip-path: inset(0 0 0 0);
     transition: clip-path 1.05s cubic-bezier(.77, 0, .18, 1);
   }
-  body.cx-sitewide .ab-hero-eyebrow,
-  body.cx-sitewide .ot-hero-label { animation-duration: .7s; animation-delay: .08s; animation-timing-function: var(--cx-motion-ease); }
-  body.cx-sitewide .ab-hero-title,
-  body.cx-sitewide .ot-hero h1 { animation-duration: .8s; animation-delay: .18s; animation-timing-function: var(--cx-motion-ease); }
-  body.cx-sitewide .ab-hero-sub,
-  body.cx-sitewide .ot-hero-sub { animation-duration: .8s; animation-delay: .3s; animation-timing-function: var(--cx-motion-ease); }
-  body.cx-sitewide .ot-hero-line { animation-duration: .8s; animation-delay: .45s; }
 }
 
 @keyframes cx-sitewide-title-in {
@@ -221,8 +179,6 @@ body.cx-sitewide .cx-col-card img {
 
 @media (max-width: 768px) {
   body.cx-sitewide .container { padding-inline: 20px; }
-  body.cx-sitewide .ab-section { padding-inline: 20px; }
-  body.cx-sitewide .ab-section-jp { font-size: clamp(28px, 7vw, 46px); }
   body.cx-sitewide :is(.section-title, .news-page-heading, .partners-title, .leadership-hero-title) { font-size: clamp(30px, 7.2vw, 46px); }
   body.cx-sitewide.cx-col-page .cx-col-body { padding-inline: 20px; }
 }
