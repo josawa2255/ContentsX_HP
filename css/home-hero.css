@@ -1,0 +1,138 @@
+/* HERO (2026-10-10 design, Issue #108). White base with a pale blue/orange geometric backdrop;
+   copy on the left, three tilted cards on the right (PC) or below the copy (tablet/SP).
+   Card 1 plays the Creative videos (js/home-hero.js); cards 2/3 are links.
+   The scroll hand-off to ABOUT (js/hero-about.js) drives --cxha-* variables used at the end. */
+.cxhv { --cxhv-ink:#0d1b3e; --cxhv-muted:#8c99b8; --cxhv-h:max(520px,calc(100svh - var(--cxha-header,64px)));
+  position:relative; isolation:isolate; min-height:var(--cxhv-h); padding:0; overflow:clip; background:#fbfcfe; color:var(--cxhv-ink); }
+.cxhv-bg { position:absolute; inset:0; z-index:-1; background:url('/material/home-2026/hero/hero-bg.webp') 100% 50% / cover no-repeat; }
+.cxhv-inner { position:relative; display:flex; align-items:center; max-width:1600px; min-height:var(--cxhv-h); margin-inline:auto; padding:clamp(32px,5svh,72px) clamp(32px,4.4vw,72px); }
+.cxhv-copy { position:relative; z-index:4; width:min(42%,640px); }
+.cxhv-kicker { margin:0; color:var(--cxhv-muted); font-family:Inter,Arial,sans-serif; font-size:clamp(12px,.95vw,15px); font-weight:600; letter-spacing:.16em; }
+/* HERO-only exception in DESIGN-SYSTEM-2026.md: the main copy is set in a Mincho face. */
+.cxhv-title { margin:clamp(14px,2svh,24px) 0 0; color:var(--cxhv-ink); font-family:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',YuMincho,serif; font-size:clamp(40px,min(4.4vw,8.4svh),78px); font-weight:500; line-height:1.38; letter-spacing:.02em; white-space:nowrap; }
+html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-height:1.2; white-space:normal; }
+.cxhv-lead { margin:clamp(14px,2.4svh,28px) 0 0; color:#2a3654; font-size:clamp(14px,1.12vw,17px); line-height:1.9; letter-spacing:.04em; }
+.cxhv-sp-br { display:none; }
+.cxhv-actions { display:flex; flex-wrap:wrap; gap:14px; margin-top:clamp(20px,3.4svh,40px); }
+.cxhv-actions .cxh-button { min-width:186px; box-shadow:0 10px 24px rgba(13,27,62,.1); }
+.cxhv-actions .cxh-button-outline { border-color:rgba(13,27,62,.14); background:rgba(255,255,255,.88); }
+
+/* Cards stage: a fixed-shape box; cards sit on percentages so the composition scales as one. */
+.cxhv-stage { --cxhv-sw:min(54vw,900px,calc(var(--cxhv-h) * .94 * 1.1));
+  position:absolute; right:clamp(16px,3vw,56px); top:calc(50% - var(--cxhv-sw) / 2.2); z-index:2; width:var(--cxhv-sw); height:calc(var(--cxhv-sw) / 1.1);
+  scale:var(--cxha-cards-scale,1); translate:0 var(--cxha-cards-shift,0px); opacity:var(--cxha-cards-opacity,1); transform-origin:50% 40%; }
+.cxhv-card { position:absolute; display:block; border-radius:14px; background:#fff; color:#fff; box-shadow:0 26px 60px rgba(30,58,120,.18),0 4px 14px rgba(30,58,120,.08);
+  transition:left .55s cubic-bezier(.2,.8,.2,1),top .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),rotate .55s cubic-bezier(.2,.8,.2,1),scale .35s ease,opacity .35s ease,box-shadow .3s ease; }
+.cxhv-card img { display:block; width:100%; height:100%; border-radius:inherit; object-fit:cover; }
+.cxhv-card--business { left:3%; top:14%; z-index:2; width:40%; aspect-ratio:840 / 1061; rotate:11deg; }
+.cxhv-card--system { left:39%; top:49%; z-index:3; width:38%; aspect-ratio:.86; rotate:-12deg; }
+.cxhv-card--system img { object-position:50% 0; }
+.cxhv-card--creative { left:47%; top:3%; z-index:1; width:52%; overflow:hidden; background:#0b1838; rotate:9deg; }
+/* Arrow badge: cards 2/3 are links (Creative uses a play icon instead). */
+.cxhv-go { position:absolute; right:14px; bottom:14px; display:grid; place-items:center; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.92); color:var(--cxhv-ink); font-size:18px; box-shadow:0 6px 16px rgba(13,27,62,.16); transition:translate .25s ease; }
+
+/* Creative card: video area (16:9) + caption bar. Nothing is laid over a playing YouTube player. */
+.cxhv-screen { position:relative; aspect-ratio:16 / 9; overflow:hidden; background:#0b1838; }
+.cxhv-thumb { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.cxhv-player { position:absolute; inset:0; }
+.cxhv-player iframe { display:block; width:100%; height:100%; border:0; }
+.cxhv-card--creative.has-player .cxhv-thumb,.cxhv-card--creative.has-player .cxhv-tap { display:none; }
+.cxhv-tap { position:absolute; inset:0; display:grid; place-items:center; padding:0; border:0; background:linear-gradient(180deg,rgba(11,24,56,0) 40%,rgba(11,24,56,.45)); cursor:pointer; }
+.cxhv-tap-ring { display:grid; place-items:center; width:clamp(44px,4vw,60px); aspect-ratio:1; border:2px solid #fff; border-radius:50%; background:rgba(11,24,56,.35); }
+.cxhv-tap-ring::before,.cxhv-expand-icon::before { content:''; margin-left:3px; border-style:solid; border-width:7px 0 7px 11px; border-color:transparent transparent transparent currentColor; }
+.cxhv-tap-ring { color:#fff; }
+.cxhv-caption { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:4px 12px; padding:clamp(10px,1vw,14px) clamp(12px,1.2vw,18px); }
+.cxhv-caption-title { margin:0; color:#fff; font-family:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',YuMincho,serif; font-size:clamp(13px,1.05vw,16px); font-weight:500; line-height:1.5; letter-spacing:.04em; }
+.cxhv-caption-sub { grid-row:2; margin:0; color:rgba(255,255,255,.66); font-family:Inter,Arial,sans-serif; font-size:9px; font-weight:600; letter-spacing:.2em; }
+.cxhv-expand,.cxhv-close,.cxhv-sound,.cxhv-pick { min-height:44px; border:1px solid rgba(255,255,255,.4); border-radius:999px; background:rgba(255,255,255,.08); color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+.cxhv-expand { grid-row:1 / span 2; grid-column:2; display:inline-flex; align-items:center; gap:8px; padding:0 16px 0 12px; white-space:nowrap; }
+.cxhv-expand-icon { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:#fff; color:#0b1838; }
+.cxhv-expand-icon::before { margin-left:2px; border-width:5px 0 5px 8px; }
+.cxhv-close { grid-row:1 / span 2; grid-column:2; width:44px; padding:0; font-size:22px; line-height:1; }
+.cxhv-close[hidden],.cxhv-expand[hidden],.cxhv-controls[hidden] { display:none; }
+.cxhv-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0 clamp(12px,1.2vw,18px) clamp(12px,1.2vw,16px); }
+.cxhv-picker { display:flex; flex:1; flex-wrap:wrap; gap:8px; min-width:0; }
+.cxhv-pick { display:inline-flex; align-items:center; gap:8px; max-width:100%; padding:0 14px 0 6px; }
+.cxhv-pick b { display:grid; place-items:center; width:30px; height:30px; flex:none; border-radius:50%; background:rgba(255,255,255,.14); font-family:Inter,Arial,sans-serif; font-size:13px; }
+.cxhv-pick span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cxhv-pick[aria-pressed="true"] { border-color:#fff; background:#fff; color:#0b1838; }
+.cxhv-pick[aria-pressed="true"] b { background:#0b1838; color:#fff; }
+.cxhv-sound { padding:0 16px; }
+.cxhv-sound[aria-pressed="true"] { background:#fff; color:#0b1838; }
+.cxhv-status { margin:0; padding:0 18px; color:#dbe4f3; font-size:13px; }
+.cxhv-status:empty { display:none; }
+.cxhv-status:not(:empty) { padding-bottom:14px; }
+
+/* Expanded (PC): js/home-hero.js sets left/top/width; the card straightens and the others step back. */
+.cxhv-card--creative.is-expanded { z-index:5; rotate:0deg; animation:none; box-shadow:0 40px 90px rgba(13,27,62,.32); }
+.cxhv-stage.is-expanded .cxhv-card:not(.is-expanded) { opacity:.28; scale:.95; pointer-events:none; }
+.cxhv-stage.is-expanded ~ .cxhv-words { opacity:0; }
+
+/* Decoration from the design (not content). */
+.cxhv-words { position:absolute; right:clamp(16px,2.4vw,40px); top:62%; z-index:1; display:grid; gap:4px; margin:0; padding:14px 0 0; list-style:none; color:#7d8aa8; font-family:Inter,Arial,sans-serif; font-size:9px; font-weight:600; letter-spacing:.2em; transition:opacity .3s ease; }
+.cxhv-words::before { content:''; position:absolute; top:0; left:0; width:34px; height:1px; background:currentColor; opacity:.6; }
+.cxhv-mark { position:absolute; right:clamp(24px,3.4vw,56px); bottom:clamp(16px,3svh,32px); z-index:1; display:flex; align-items:center; gap:16px; margin:0; color:#7d8aa8; font-family:Inter,Arial,sans-serif; font-size:10px; font-weight:600; letter-spacing:.2em; }
+.cxhv-mark::before { content:''; width:56px; height:1px; background:currentColor; opacity:.6; }
+.cxhv-scroll { position:absolute; left:clamp(24px,3.4vw,56px); bottom:clamp(16px,3svh,32px); z-index:1; display:flex; align-items:flex-end; gap:22px; margin:0; color:#7d8aa8; font-family:Inter,Arial,sans-serif; font-size:10px; font-weight:600; letter-spacing:.2em; }
+.cxhv-scroll::before { content:''; width:1px; height:clamp(48px,8svh,80px); background:linear-gradient(#7d8aa8,rgba(125,138,168,.2)); }
+.cxhv-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+.cxhv-card:focus-visible,.cxhv-expand:focus-visible,.cxhv-close:focus-visible,.cxhv-tap:focus-visible,.cxhv-pick:focus-visible,.cxhv-sound:focus-visible { outline:3px solid #2f6bff; outline-offset:3px; }
+@media (hover:hover) {
+  a.cxhv-card:hover { scale:1.025; box-shadow:0 34px 70px rgba(30,58,120,.24); }
+  a.cxhv-card:hover .cxhv-go { translate:3px 0; }
+  .cxhv-expand:hover,.cxhv-pick:not([aria-pressed="true"]):hover,.cxhv-close:hover { background:rgba(255,255,255,.18); }
+}
+/* Gentle float (cards drift a few px); never while expanded or with reduced motion. */
+@media (prefers-reduced-motion:no-preference) {
+  .cxhv-card { animation:cxhv-float 8s ease-in-out infinite; }
+  .cxhv-card--business { animation-duration:9s; animation-delay:-3s; }
+  .cxhv-card--system { animation-duration:10s; animation-delay:-6s; }
+  @keyframes cxhv-float { 0%,100% { translate:0 0; } 50% { translate:0 -8px; } }
+  .cxhv-card:hover,.cxhv-card:focus-within { animation-play-state:paused; }
+  /* Load-in: `backwards` only, so the scroll hand-off (opacity/translate variables) owns the end state. */
+  .cxh-motion-ready .cxhv-copy { animation:cxhv-in .85s .1s backwards cubic-bezier(.16,1,.3,1); }
+  .cxh-motion-ready .cxhv-stage { animation:cxhv-in 1s .3s backwards cubic-bezier(.16,1,.3,1); }
+  @keyframes cxhv-in { from { opacity:0; translate:0 24px; } }
+}
+@media (prefers-reduced-motion:reduce) {
+  .cxhv-card,.cxhv-go,.cxhv-words { transition:none; }
+}
+
+/* Tablet & SP: copy first, then the cards in their own box below (no FLIP; the video opens in place). */
+@media (max-width:1100px) {
+  .cxhv { --cxhv-h:auto; }
+  .cxhv-inner { display:block; padding:clamp(40px,7vw,64px) clamp(20px,5vw,48px) clamp(64px,10vw,96px); }
+  .cxhv-copy { width:auto; max-width:640px; }
+  .cxhv-stage { --cxhv-sw:min(100%,720px); position:relative; right:auto; top:auto; height:auto; aspect-ratio:1.1; margin:clamp(28px,5vw,48px) auto 0; }
+  .cxhv-words,.cxhv-mark { display:none; }
+  .cxhv-bg { background-position:72% 100%; background-size:auto 72%; }
+  .cxhv-stage.is-open { aspect-ratio:auto; }
+  .cxhv-stage.is-open .cxhv-card:not(.is-expanded) { display:none; }
+  .cxhv-card--creative.is-expanded { position:relative; left:auto; top:auto; width:100%; }
+}
+@media (max-width:768px) {
+  .cxhv-inner { padding:clamp(28px,8vw,48px) 20px 80px; }
+  .cxhv-title { font-size:clamp(34px,10.6vw,52px); line-height:1.42; }
+  html[lang="en"] .cxhv-title { font-size:clamp(30px,8.6vw,44px); }
+  .cxhv-lead { font-size:clamp(14px,3.9vw,16px); }
+  .cxhv-sp-br { display:inline; }
+  .cxhv-actions { display:grid; gap:12px; max-width:360px; }
+  .cxhv-actions .cxh-button { width:100%; justify-content:center; position:relative; }
+  .cxhv-actions .cxh-button span:last-child { position:absolute; right:24px; }
+  /* Taller box on phones: Creative top-right, business left, system bottom-right (as in the SP design). */
+  .cxhv-stage { --cxhv-sw:min(100%,480px); aspect-ratio:.82; margin-top:clamp(20px,6vw,36px); }
+  .cxhv-card--creative { left:52%; top:0; width:45%; rotate:8deg; }
+  .cxhv-card--business { left:2%; top:23%; width:50%; rotate:9deg; }
+  .cxhv-card--system { left:44%; top:54%; width:50%; rotate:-11deg; }
+  .cxhv-caption { grid-template-columns:minmax(0,1fr); padding:8px 10px 10px; }
+  .cxhv-caption-title { font-size:12px; }
+  .cxhv-caption-sub { display:none; }
+  .cxhv-expand { grid-row:auto; grid-column:1; justify-content:center; width:100%; padding:0 10px; font-size:12px; }
+  .cxhv-card--creative.is-expanded .cxhv-caption { grid-template-columns:minmax(0,1fr) auto; padding:12px 14px; }
+  .cxhv-card--creative.is-expanded .cxhv-caption-title { font-size:14px; }
+  .cxhv-card--creative.is-expanded .cxhv-close { grid-column:2; grid-row:1; }
+  .cxhv-go { width:34px; height:34px; right:10px; bottom:10px; font-size:16px; }
+  .cxhv-scroll { left:20px; bottom:18px; }
+  .cxhv-bg { background-position:68% 100%; background-size:auto 58%; }
+}
