@@ -1,8 +1,13 @@
 /* HERO Creative card (Issue #108; picture-only card since Issue #114).
-   - The card shows only the videos' pictures (YouTube thumbnails): no text, icons or YouTube UI.
-     The three pictures sit in one row that scrolls sideways (swipe / trackpad); on PC the next one
-     comes in every ADVANCE_MS while the card is in view (paused on hover, while open, with reduced
-     motion). The picture in view slowly zooms in (CSS).
+   - The card shows the videos' pictures (YouTube thumbnails) and its own line; the three pictures
+     sit in one row that scrolls sideways (swipe / trackpad). The picture in view slowly zooms in.
+   - PC moving preview (2026-10-10, same method as bizmanga.contentsx.jp/bizanime, chosen by the site
+     owner knowing it hides YouTube's own overlay): once the page has loaded and while the card is in
+     view, a muted, looping, control-less YouTube player starts behind the picture in view. The
+     picture stays on top for REVEAL_MS (YouTube shows its title at start-up) and then fades out.
+     The player cannot be pointed at or clicked (so YouTube's overlay never returns); a click opens
+     the card. The next video comes in every PREVIEW_ADVANCE_MS (paused on hover). Phones/tablets,
+     reduced motion, a hidden tab or a Hero scrolled away keep the still pictures.
    - Pressing a picture opens the video: PC moves the card to the centre of the Hero's right half at
      about 1.5× (smaller if it would not fit) with ‹ › and × outside the picture; tablet/SP open it in
      place across the card area with ‹ › × below. Only then is the YouTube player loaded, with sound
@@ -11,11 +16,13 @@
    - Leaving the Hero (scrolling on, js/hero-about.js), hiding the tab or closing stops the player.
      Only one player exists at a time.
    Videos are the [data-cxhv-slide] elements in index.html (YouTube ID + title), in that order.
-   YouTube is embedded with the official IFrame Player API on youtube-nocookie.com; its own logo and
-   links are visible while a video is open (YouTube terms): nothing is laid over the player. */
+   YouTube is embedded with the official IFrame Player API on youtube-nocookie.com. While a video is
+   open its own controls, logo and links are visible and nothing is laid over it. */
 (function () {
   'use strict';
   var ADVANCE_MS = 7000;
+  var PREVIEW_ADVANCE_MS = 10000;
+  var REVEAL_MS = 5000;
   var API_TIMEOUT = 10000;
   var SCALE = 1.5;
 
@@ -33,7 +40,8 @@
 
   var pc = window.matchMedia('(min-width: 1101px) and (hover: hover)');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var state = { index: 0, open: false, player: null, playerIndex: -1, timer: 0, visible: false, heroActive: true, hover: false, token: null };
+  var state = { index: 0, open: false, player: null, playerIndex: -1, timer: 0, visible: false, heroActive: true, hover: false, token: null, loaded: document.readyState === 'complete' };
+  var preview = { player: null, index: -1, token: null, revealTimer: 0 };
   var TEXT = {
     ja: { fail: '動画を読み込めませんでした。時間をおいて、もう一度お試しください。' },
     en: { fail: 'The video could not be loaded. Please try again later.' }
@@ -77,7 +85,7 @@
     });
     status.textContent = '';
   }
-  function mountPlayer(i) {
+  function mountPlayer(i, startSeconds) {
     if (state.playerIndex === i && state.player) return;
     destroyPlayer();
     var slide = slides[i];
@@ -96,7 +104,7 @@
         host: 'https://www.youtube-nocookie.com',
         videoId: slide.getAttribute('data-video'),
         width: '100%', height: '100%',
-        playerVars: { autoplay: 1, mute: 0, controls: 1, playsinline: 1, rel: 0, enablejsapi: 1, origin: location.origin, iv_load_policy: 3 },
+        playerVars: { autoplay: 1, mute: 0, controls: 1, playsinline: 1, rel: 0, enablejsapi: 1, origin: location.origin, iv_load_policy: 3, start: Math.max(0, Math.floor(startSeconds || 0)) },
         events: {
           onReady: function (e) {
             if (state.token !== token) return;
@@ -114,6 +122,65 @@
   function failed() {
     destroyPlayer();
     status.textContent = t('fail');
+  }
+
+  /* ---------- PC moving preview (behind the picture, see the header) ---------- */
+  function previewAllowed() {
+    return pc.matches && !reduced.matches && state.loaded && !document.hidden && state.visible && state.heroActive && !state.open;
+  }
+  function destroyPreview() {
+    preview.token = null;
+    clearTimeout(preview.revealTimer);
+    preview.revealTimer = 0;
+    if (preview.player && preview.player.destroy) { try { preview.player.destroy(); } catch (e) { /* already gone */ } }
+    preview.player = null;
+    preview.index = -1;
+    slides.forEach(function (s) {
+      var holder = s.querySelector('.cxhv-preview');
+      if (holder) holder.remove();
+      s.classList.remove('has-preview', 'is-revealed');
+    });
+  }
+  function mountPreview(i) {
+    if (preview.index === i && preview.player) return;
+    destroyPreview();
+    var slide = slides[i];
+    var id = slide.getAttribute('data-video');
+    var holder = document.createElement('div');
+    holder.className = 'cxhv-player cxhv-preview';
+    holder.setAttribute('aria-hidden', 'true');
+    var target = document.createElement('div');
+    holder.appendChild(target);
+    slide.insertBefore(holder, slide.firstChild);
+    slide.classList.add('has-preview');
+    preview.index = i;
+    var token = {};
+    preview.token = token;
+    loadApi().then(function (YT) {
+      if (preview.token !== token) return;
+      preview.player = new YT.Player(target, {
+        host: 'https://www.youtube-nocookie.com',
+        videoId: id,
+        width: '100%', height: '100%',
+        playerVars: { autoplay: 1, mute: 1, controls: 0, loop: 1, playlist: id, playsinline: 1, rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0, enablejsapi: 1, origin: location.origin },
+        events: {
+          onReady: function (e) {
+            if (preview.token !== token) return;
+            var frame = e.target.getIframe && e.target.getIframe();
+            if (frame) { frame.tabIndex = -1; frame.title = 'Creative 動画（プレビュー）'; }
+            e.target.mute();
+            e.target.playVideo();
+          },
+          onStateChange: function (e) {
+            // Playing: keep the picture on top until YouTube's start-up title has gone, then fade it.
+            if (e.data !== 1 || preview.token !== token || preview.revealTimer || slide.classList.contains('is-revealed')) return;
+            preview.revealTimer = setTimeout(function () { if (preview.token === token) slide.classList.add('is-revealed'); }, REVEAL_MS);
+          },
+          onAutoplayBlocked: function () { if (preview.token === token) destroyPreview(); },
+          onError: function () { if (preview.token === token) destroyPreview(); }
+        }
+      });
+    }).catch(function () { if (preview.token === token) destroyPreview(); });
   }
 
   /* ---------- the row of pictures ---------- */
@@ -135,13 +202,16 @@
     i = Math.max(0, Math.min(slides.length - 1, i));
     track.scrollTo({ left: i * width(), behavior: instant || reduced.matches ? 'auto' : 'smooth' });
     mark(i);
-    if (state.open) settleSoon();
+    settleSoon();
   }
-  // While open, the player follows the picture in view once the row stops moving.
+  // The player (open) or preview (at rest) follows the picture in view once the row stops moving.
   var settleTimer = 0;
   function settleSoon() {
     clearTimeout(settleTimer);
-    settleTimer = setTimeout(function () { if (state.open) mountPlayer(state.index); }, 220);
+    settleTimer = setTimeout(function () {
+      if (state.open) mountPlayer(state.index);
+      else if (previewAllowed()) mountPreview(state.index);
+    }, 300);
   }
   var frame = 0;
   track.addEventListener('scroll', function () {
@@ -150,7 +220,7 @@
       frame = 0;
       var i = Math.round(track.scrollLeft / width());
       if (i !== state.index) mark(i);
-      if (state.open) settleSoon();
+      if (state.open || preview.index !== -1 || previewAllowed()) settleSoon();
     });
   }, { passive: true });
 
@@ -161,11 +231,13 @@
   function update() {
     clearInterval(state.timer);
     state.timer = 0;
+    if (previewAllowed()) mountPreview(state.index);
+    else destroyPreview();
     if (advanceAllowed()) {
       state.timer = setInterval(function () {
         if (!advanceAllowed()) return;
         go(state.index + 1 < slides.length ? state.index + 1 : 0);
-      }, ADVANCE_MS);
+      }, previewAllowed() ? PREVIEW_ADVANCE_MS : ADVANCE_MS);
     }
   }
 
@@ -184,6 +256,7 @@
   }
   function open(i) {
     if (state.open) { go(i); return; }
+    var from = preview.index === i && preview.player && preview.player.getCurrentTime ? preview.player.getCurrentTime() : 0;
     state.open = true;
     update();
     card.dataset.baseWidth = String(card.offsetWidth);
@@ -197,7 +270,7 @@
     if (pc.matches) placeExpanded();
     mark(i);
     track.scrollLeft = i * width();
-    mountPlayer(i);
+    mountPlayer(i, from);
     closeBtn.focus({ preventScroll: true });
   }
   function close(restoreFocus) {
@@ -277,5 +350,11 @@
   pc.addEventListener('change', function () { close(false); update(); });
   reduced.addEventListener('change', update);
   mark(0);
+  if (!state.loaded) {
+    window.addEventListener('load', function () {
+      // Give the first paint and the rest of the page room before YouTube loads.
+      (window.requestIdleCallback || function (fn) { return setTimeout(fn, 600); })(function () { state.loaded = true; update(); }, { timeout: 2500 });
+    }, { once: true });
+  }
   update();
 })();

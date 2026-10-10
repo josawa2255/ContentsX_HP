@@ -42,7 +42,7 @@ window.YT = { Player: function (el, opts) {
   this.getCurrentTime = function () { return 3; };
   this.getIframe = function () { return f; };
   this.destroy = function () { __yt.calls.push('destroy'); f.remove(); };
-  setTimeout(function () { opts.events.onReady({ target: self }); }, 30);
+  setTimeout(function () { opts.events.onReady({ target: self }); if (opts.events.onStateChange) opts.events.onStateChange({ target: self, data: 1 }); }, 30);
 } };
 window.onYouTubeIframeAPIReady && window.onYouTubeIframeAPIReady();
 """
@@ -105,11 +105,24 @@ with sync_playwright() as p:
         assert '事業を、次のステージへ。' in page.locator('.cxhv-card--business').inner_text()
         assert '仕組みで、成果をつくる。' in page.locator('.cxhv-card--system').inner_text()
         assert page.locator('.cxhv-card--business img').get_attribute('alt') == ''
-        # Creative card at rest: only the three pictures; no text, no YouTube player or script.
+        # Creative card at rest: the three pictures and its own line; YouTube only as the PC preview.
         assert page.locator('.cxhv-card--creative [data-cxhv-slide] img').count() == 3
-        assert page.locator('.cxhv-card--creative').evaluate('e=>e.innerText.trim()') == ''
-        assert page.locator('#hero iframe').count() == 0 and created(page) == []
-        assert page.evaluate("!document.querySelector('script[src*=\"iframe_api\"]')")
+        card_text = page.locator('.cxhv-card--creative').evaluate('e=>e.innerText.replace(/\\s+/g,"")')
+        assert card_text in ('クリエイティブで、ビジネスを動かす。CREATIVEFORBUSINESS', 'クリエイティブで、ビジネスを動かす。'), card_text
+        assert 'Noto Serif JP' in page.locator('.cxhv-creative-title').evaluate('e=>getComputedStyle(e).fontFamily')
+        line = rect(page, '.cxhv-creative-copy')
+        track_box = rect(page, '[data-cxhv-track]')
+        assert line['left'] >= track_box['left'] - 30 and line['top'] >= track_box['top'] - 30, (line, track_box)
+        if width >= 1101:
+            # PC: one muted, control-less, looping preview behind the picture; it can't be pointed at.
+            page.wait_for_timeout(1500)
+            made = created(page)
+            assert len(made) == 1 and made[0]['vars']['controls'] == 0 and made[0]['vars']['mute'] == 1, made
+            assert made[0]['vars']['loop'] == 1 and made[0]['vars']['playlist'] == made[0]['videoId']
+            assert page.locator('.cxhv-preview').evaluate('e=>getComputedStyle(e).pointerEvents') == 'none'
+        else:
+            assert page.locator('#hero iframe').count() == 0 and created(page) == []
+            assert page.evaluate("!document.querySelector('script[src*=\"iframe_api\"]')")
         hero = rect(page, '#hero')
         boxes = [rect(page, s) for s in CARDS]
         for s, b in zip(CARDS, boxes):
@@ -131,7 +144,7 @@ with sync_playwright() as p:
             assert min(b['top'] for b in boxes) >= copy_boxes[2]['bottom'] - 20, (width, boxes, copy_boxes[2])
             assert copy_boxes[2]['bottom'] <= height, f'CTAs below the first screen at {width}px'
         # Body/UI text expansion (Android scaling).
-        page.locator('#cxh-hero-title,.cxhv-lead,.cxhv-actions a').evaluate_all(
+        page.locator('#cxh-hero-title,.cxhv-lead,.cxhv-actions a,.cxhv-creative-title').evaluate_all(
             '(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Overflow with 1.4x text at {width}px'
@@ -143,19 +156,29 @@ with sync_playwright() as p:
         report.append({'width': width, 'layout': 'pass'})
         page.close()
 
-    # PC: the pictures move on every 7s while the card is in view; YouTube is not loaded at rest.
+    # PC: after load a muted preview plays behind the picture, which fades once YouTube's start-up
+    # title has gone (5s); the next video comes in every 10s; sideways scrolling also moves on.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page)
     cur = "[...document.querySelectorAll('[data-cxhv-slide]')].findIndex(s=>s.classList.contains('is-current'))"
-    assert page.evaluate(cur) == 0
-    page.wait_for_timeout(7400)
-    assert page.evaluate(cur) == 1 and created(page) == []
-    # Sideways scrolling also changes the picture.
+    assert page.evaluate(cur) == 0 and created(page)[0]['videoId'] == IDS[0]
+    slide0 = page.locator('[data-cxhv-slide]').nth(0)
+    assert slide0.evaluate("e=>!e.classList.contains('is-revealed')") and slide0.locator('img').evaluate('e=>getComputedStyle(e).opacity') == '1'
+    page.wait_for_timeout(5600)
+    assert slide0.evaluate("e=>e.classList.contains('is-revealed')")
+    assert slide0.locator('img').evaluate('e=>getComputedStyle(e).opacity') == '0'
+    # A click lands on the card (the picture's button), never on the YouTube player.
+    s0 = rect(page, '.cxhv-slide.is-current')
+    assert page.evaluate('([x,y])=>!!document.elementFromPoint(x,y).closest(".cxhv-slide-btn")', [s0['left'] + s0['width'] / 2, s0['top'] + s0['height'] / 2])
+    page.wait_for_timeout(5000)
+    assert page.evaluate(cur) == 1
+    page.wait_for_timeout(600)
+    assert created(page)[-1]['videoId'] == IDS[1] and page.locator('#hero iframe').count() == 1
     page.locator('[data-cxhv-track]').evaluate('t=>t.scrollTo({left:2*t.clientWidth,behavior:"instant"})')
-    page.wait_for_timeout(300)
-    assert page.evaluate(cur) == 2
+    page.wait_for_timeout(700)
+    assert page.evaluate(cur) == 2 and created(page)[-1]['videoId'] == IDS[2] and page.locator('#hero iframe').count() == 1
     page.locator('[data-cxhv-track]').evaluate('t=>t.scrollTo({left:t.clientWidth,behavior:"instant"})')
-    page.wait_for_timeout(300)
+    page.wait_for_timeout(800)
     # Pressing the picture opens it: centre of the Hero's right half, about 1.5× wider, with sound.
     card = page.locator('.cxhv-card--creative')
     base = card.evaluate('e=>e.offsetWidth')
@@ -166,11 +189,13 @@ with sync_playwright() as p:
     assert abs((box['top'] + box['bottom']) / 2 - (hero['top'] + hero['height'] / 2)) < 4, (box, hero)
     assert abs(card.evaluate('e=>e.offsetWidth') / base - 1.5) < .03 or box['right'] <= hero['right'] - 60
     assert box['left'] >= hero['left'] + hero['width'] / 2 - 1, 'stays in the right half'
-    made = created(page)
-    assert len(made) == 1 and made[0]['videoId'] == IDS[1], made
-    assert made[0]['vars']['mute'] == 0 and made[0]['vars']['controls'] == 1 and made[0]['host'] == 'https://www.youtube-nocookie.com'
-    assert page.locator('#hero iframe').count() == 1, 'one player at a time'
+    made = page.evaluate('[...__yt.created].reverse().find(p=>p.vars.controls===1)')
+    assert made and made['videoId'] == IDS[1], made
+    assert made['vars']['mute'] == 0 and made['host'] == 'https://www.youtube-nocookie.com'
+    assert made['vars']['start'] == 3, 'continues from the preview'
+    assert page.locator('#hero iframe').count() == 1 and page.locator('.cxhv-preview').count() == 0, 'one player at a time'
     assert page.evaluate("document.activeElement.classList.contains('cxhv-close')")
+    assert page.locator('.cxhv-creative-copy').is_hidden(), 'the card line never covers the player'
     assert page.locator('.cxhv-card--business').evaluate('e=>e.inert && getComputedStyle(e).opacity < .5')
     assert rect(page, '.cxhv-copy')['right'] <= box['left'], 'copy stays visible'
     # ‹ › and × sit outside the picture; nothing is laid over the player.
@@ -195,8 +220,10 @@ with sync_playwright() as p:
     page.screenshot(path=str(out / '1440-expanded.png'))
     page.keyboard.press('Escape')
     page.wait_for_timeout(900)
-    assert page.locator('#hero iframe').count() == 0 and page.locator('.cxhv-close').is_hidden()
+    assert page.locator('.cxhv-player:not(.cxhv-preview)').count() == 0 and page.locator('.cxhv-close').is_hidden()
     assert page.evaluate("document.activeElement.classList.contains('cxhv-slide-btn')")
+    page.wait_for_timeout(500)
+    assert page.locator('.cxhv-preview').count() == 1, 'the preview resumes after closing'
     assert not page.locator('.cxhv-card--business').evaluate('e=>e.inert')
     back = rect(page, '[data-cxhv-track]')
     assert back['width'] < box['width'] - 50, 'card went back'
