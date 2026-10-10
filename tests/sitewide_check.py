@@ -104,16 +104,23 @@ def diff(a_path, b_path, out_path):
     a, b = Image.open(a_path).convert('RGB'), Image.open(b_path).convert('RGB')
     if a.size != b.size:
         return {'changed': True, 'level': 'changed', 'size': [list(a.size), list(b.size)], 'ratio': 1.0}
-    raw = ImageChops.difference(a, b).convert('L').point(lambda v: 255 if v > 24 else 0)
+    def strongest_channel(img_a, img_b):
+        r, g, bl = ImageChops.difference(img_a, img_b).split()
+        return ImageChops.lighter(ImageChops.lighter(r, g), bl)
+    raw = strongest_channel(a, b).point(lambda v: 255 if v > 2 else 0)
     box = raw.getbbox()
     if not box:
         return {'changed': False, 'level': 'same', 'ratio': 0.0}
-    # Glyph edges can render a pixel differently between two identical loads. A 1px blur removes that
-    # jitter; anything that survives it (or a large area) is a real change.
-    soft = ImageChops.difference(a.filter(ImageFilter.BoxBlur(1)), b.filter(ImageFilter.BoxBlur(1))).convert('L')
-    real = soft.point(lambda v: 255 if v > 40 else 0).histogram()[255]
+    # Glyph edges can render a pixel differently between two identical loads (sharp jitter that sits on
+    # outlines). Real changes are either sharp and survive a 1px blur, or a colour change on a flat fill
+    # (background, band, button) away from any outline, e.g. #06143D -> #07143b. Jitter fails both.
+    sharp = ImageChops.difference(a.filter(ImageFilter.BoxBlur(1)), b.filter(ImageFilter.BoxBlur(1))).convert('L')
+    sharp_px = sharp.point(lambda v: 255 if v > 40 else 0).histogram()[255]
+    outlines = ImageChops.lighter(a.convert('L').filter(ImageFilter.FIND_EDGES), b.convert('L').filter(ImageFilter.FIND_EDGES))
+    outlines = outlines.point(lambda v: 255 if v > 6 else 0).filter(ImageFilter.MaxFilter(5))
+    flat_px = ImageChops.subtract(strongest_channel(a, b).point(lambda v: 255 if v > 1 else 0), outlines).histogram()[255]
     ratio = raw.histogram()[255] / (a.size[0] * a.size[1])
-    level = 'changed' if real >= 20 else 'noise'
+    level = 'changed' if sharp_px >= 20 or flat_px >= 50 else 'noise'
     overlay = b.copy()
     overlay.paste(Image.new('RGB', b.size, (255, 0, 64)), mask=raw)
     overlay.save(out_path)
