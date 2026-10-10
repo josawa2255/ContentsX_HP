@@ -76,3 +76,9 @@ html.cxsb-fixed-labels .cxsb-section > .cxsb-label { display:none; }
 @media (prefers-reduced-motion:reduce) {
   .cxsb-name { transition:none; }
 }
+
+/* SP readability polish for ABOUT content only; Hero and its scroll transition are untouched. */
+@media (max-width:480px) {
+  .cxha-about .cxha-link { min-height:clamp(138px,36vw,165px); }
+  .cxha-about .cxha-value h3 { font-size:clamp(26px,6.8vw,31px); }
+}

@@ -70,13 +70,14 @@
 /* SP: copy first, then four cards in one column; images stay 16:9 so nothing is cut off. */
 @media (max-width:768px) {
   .cxsx { padding:clamp(80px,21vw,116px) 16px 56px; }
-  .cxsx-inner { gap:24px; max-width:560px; }
-  .cxsx h2 { font-size:clamp(28px,7.4vw,40px); }
+  .cxsx-inner { gap:20px; max-width:560px; }
+  .cxsx h2 { font-size:clamp(27px,7vw,36px); }
   .cxsx-lead { font-size:clamp(14px,3.8vw,16px); }
   .cxsx-lead br { display:none; }
-  .cxsx-grid { grid-template-columns:minmax(0,1fr); grid-auto-rows:auto; gap:16px; }
+  .cxsx-grid { grid-template-columns:minmax(0,1fr); grid-auto-rows:auto; gap:12px; }
   .cxsx-name { font-size:clamp(21px,6vw,25px); }
   .cxsx-desc,.cxsx-cta { font-size:14px; }
+  .cxsx-body { padding:12px 14px 14px; }
 }
 
 /* PC: the four cards fit one laptop screen — image height follows the screen height (wider than

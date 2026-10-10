@@ -157,6 +157,11 @@ body:has([data-cx-page-cta]) .cx-footer__contact { display: none; }
   .cx-footer__contact-text { flex-direction: column; gap: 4px; }
   .cx-footer .cx-footer__contact-link { width: 100%; }
   .cx-footer__nav { margin-top: 28px; gap: 4px; }
+  .cx-footer__contact-text span { font-size: 14px; }
+  .cx-footer__links a,
+  .cx-footer__group a { font-size: 14px; letter-spacing: .02em; }
+  .cx-footer__links--sub a { font-size: 13px; }
+  .cx-footer__group .cx-footer__group-title { font-size: 13px; }
   .cx-footer__links { gap: 0 24px; }
   .cx-footer__links a,
   .cx-footer__group a { min-height: 44px; }
