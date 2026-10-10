@@ -392,6 +392,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 6. **`.header` に `isolation: isolate`** + `.header-right` に `position: relative; z-index: 10`
 7. **320px (iPhone SE) まで想定**
 8. メニューの開閉とリンク選択後の閉鎖は `js/nav.js` のみが担当する。`js/script.js` に同じ `#hamburger` / `#nav` のハンドラを置くと1回のタップで開閉が相殺される（会社概要・ニュース・ニュース詳細でスマホのメニューが開かなかった。2026-10-11 修正、Issue #17）。
+9. `.header` に `backdrop-filter` / `transform` / `filter` があると、中の `position:fixed` のドロワーの基準がヘッダーになり、タブレット幅（769〜1280px）でメニューが88pxに押し込められる（BUGS #063）。メニュー表示中（`body.nav-locked`）はヘッダーのぼかしを外す。
 
 ### 7.2 ドロップダウン仕様
 - PC: hover で展開
