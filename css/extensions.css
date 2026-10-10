@@ -1,7 +1,5 @@
 /* Chrome extensions: shared corporate tokens, with TabLabo's product accent. */
 .ext-site { --z-hamburger: 10000; }
-.ext-site .footer-links { gap: 8px; }
-.ext-site .footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .ext-page { --ext-purple: #4f46e5; padding-top: 100px; }
 .ext-shell { max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px, 4vw, 64px); }
 .ext-page :is(h1,h2,h3,[id]) { scroll-margin-top: 110px; }

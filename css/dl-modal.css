@@ -55,14 +55,3 @@
 }
 
 /* 資料DLボタン（ダーク版） */
-.dl-btn-dark {
-  background: var(--text-primary);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-.dl-btn-dark:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
