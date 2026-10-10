@@ -1,6 +1,6 @@
 /* Shared Contents X service UI. All rules are scoped to the new system. */
 body.cxs-services {
-  --accent: #07143b;
+  --accent: var(--cx-color-ink);
   --accent-light: rgba(7, 20, 59, .06);
   --accent-rgb: 7, 20, 59;
 }
@@ -47,7 +47,7 @@ body.cxs-services {
 .cxs-icon-button:focus-visible { position: relative; z-index: 3; background: #fff; }
 .cxs-icon-button .cxs-icon { width: 20px; height: 20px; }
 .cxs-card__more { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; padding: clamp(22px,2.4vw,30px); background: var(--cxs-card-overlay); color: #fff; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .2s ease, visibility .2s ease, transform .2s ease; }
-.cxs-card--coming-soon .cxs-card__more { background:linear-gradient(135deg,#06183f,#005bfa); }
+.cxs-card--coming-soon .cxs-card__more { background:linear-gradient(135deg,#06183f,var(--cx-color-sales)); }
 .cxs-card--coming-soon:focus-within .cxs-card__more { opacity:1; visibility:visible; transform:none; }
 .cxs-card__photo { position: absolute; inset: 0; z-index: 0; background-position: center; background-size: cover; opacity: .18; filter: saturate(.8); transform: scale(1.02); pointer-events: none; }
 .cxs-card__more > :not(.cxs-card__photo) { position: relative; z-index: 1; }
