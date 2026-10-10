@@ -47,7 +47,7 @@
 .cxsd-card:focus-within .cxsd-card__overlay{opacity:1;visibility:visible;transform:none}
 .cxsd-card--playing .cxsd-card__overlay{display:none}
 .cxsd-card__body{display:flex;flex:1;flex-direction:column;align-items:flex-start;min-height:185px;padding:clamp(19px,2vw,26px)}
-.cxsd-card__label{display:flex;gap:11px;color:var(--cxsd-accent);font:800 .73rem/1.4 Inter,sans-serif;letter-spacing:.08em}
+.cxsd-card__label{display:flex;gap:11px;color:var(--cxsd-accent);font:800 var(--cx-type-label,.75rem)/1.4 Inter,sans-serif;letter-spacing:.08em}
 .cxsd-card__label span+span::before{content:"/";padding-right:11px;color:#a2afc2}
 .cxsd-card h3{margin-top:10px;color:var(--cx-color-ink);font-size:clamp(1.18rem,1.5vw,1.5rem);line-height:1.4;font-weight:900}
 .cxsd-card h3 a{color:inherit}

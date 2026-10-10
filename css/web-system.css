@@ -63,6 +63,7 @@ body.cxs-services {
 .cxs-page-hero { padding-block: 36px 84px; background: url('/material/web-system/bg-x-blue.png') no-repeat right center / auto 100%, linear-gradient(120deg,#fff 35%,var(--cxs-sales-soft)); }
 .cxs-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; color: var(--cxs-muted); font-size: .78rem; }
 .cxs-breadcrumbs li + li::before { content: "/"; padding-right: 8px; color: #a8b2c5; }
+.cxs-breadcrumbs a { display: inline-flex; align-items: center; min-height: 44px; }
 .cxs-breadcrumbs a:hover { color: var(--cxs-sales); text-decoration: underline; }
 .cxs-page-hero .cxs-eyebrow { margin-top: 70px; }
 .cxs-page-hero h1 { max-width: 930px; color: var(--cxs-ink); font-size: var(--cxs-font-h1); line-height: 1.22; letter-spacing: -.055em; margin-top: 18px; }

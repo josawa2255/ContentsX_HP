@@ -67,7 +67,7 @@
   display: block;
 }
 .cx-col-featured-label {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.16em;
   color: var(--accent);
   font-weight: 700;
@@ -83,7 +83,7 @@
 }
 .cx-col-featured-cat {
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   padding: 4px 10px;
   background: var(--bg-white);
   color: var(--text-primary);
