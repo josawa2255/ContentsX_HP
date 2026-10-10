@@ -167,24 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateActiveNav();
 
 
-  // ===== ハンバーガーメニュー =====
-  const hamburger = document.getElementById('hamburger');
-  const nav = document.getElementById('nav');
-
-  hamburger.addEventListener('click', () => {
-    nav.classList.toggle('open');
-    hamburger.classList.toggle('active');
-  });
-
-  // ナビリンククリックでメニューを閉じる
-  nav.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      nav.classList.remove('open');
-      hamburger.classList.remove('active');
-    });
-  });
-
-
   // ===== ヘッダースクロールエフェクト =====
   // CSSクラストグルでforced layout回避
   const header = document.getElementById('header');
