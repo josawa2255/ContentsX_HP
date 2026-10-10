@@ -88,6 +88,9 @@ html[lang="en"] .cm-hero h1 { font-size: clamp(1.75rem, 2.6vw, 2.625rem); line-h
   .cm-scene-row { grid-template-columns: 1fr; gap: 40px; }
   .cm-scene { grid-column: auto; grid-row: auto; }
   .cm-team { grid-column: auto; grid-row: auto; max-width: 720px; margin-inline: auto; }
+  @supports not (word-break: auto-phrase) {
+    .cm-page .cm-chapter > p { word-break: normal; }
+  }
 }
 @media (max-width: 768px) {
   .cm-page main { padding-top: 72px; }
