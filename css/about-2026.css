@@ -136,7 +136,7 @@
   .ax-message-copy { padding: 0 4px; }
   .ax-message-copy h2 { font-size: clamp(27px,7vw,39px); margin-bottom: 17px; }
   .ax-message-copy p { font-size: 13px; }
-  .ax-signature { font-size: 11px; justify-content: space-between; }
+  .ax-signature { font-size: 12px; justify-content: space-between; }
   .ax-portrait { width: min(100%,460px); height: clamp(360px,105vw,550px); min-height: 0; justify-self: center; }
   .ax-contact { padding: 32px 0; }
   .ax-contact::after { font-size: 310px; top: -40px; right: -60px; }

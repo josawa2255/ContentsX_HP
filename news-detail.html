@@ -104,7 +104,8 @@
       font-weight: 600;
       color: var(--accent);
       text-decoration: none;
-      margin-bottom: 32px;
+      min-height: 44px;
+      margin: -10px 0 22px;
       transition: opacity 0.3s;
     }
     .news-detail-back:hover {
@@ -250,13 +251,13 @@
   <!-- ===== ニュース詳細 ===== -->
   <section class="news-detail-section" id="newsDetail">
     <div class="container">
-      <a href="./#news" class="news-detail-back" data-ja="← ニュース一覧に戻る" data-en="← Back to News">← ニュース一覧に戻る</a>
+      <a href="/#news" class="news-detail-back" data-ja="← ニュース一覧に戻る" data-en="← Back to News">← ニュース一覧に戻る</a>
 
       <div id="newsDetailLoading" class="news-detail-loading">読み込み中...</div>
 
       <div id="newsDetailError" class="news-detail-error" style="display:none;">
         <p data-ja="ニュースが見つかりませんでした。" data-en="News article not found.">ニュースが見つかりませんでした。</p>
-        <a href="./#news" class="news-detail-back" data-ja="ニュース一覧へ" data-en="Go to News">ニュース一覧へ</a>
+        <a href="/#news" class="news-detail-back" data-ja="ニュース一覧へ" data-en="Go to News">ニュース一覧へ</a>
       </div>
 
       <article id="newsDetailArticle" style="display:none;">
