@@ -105,6 +105,11 @@ with sync_playwright() as p:
         assert '事業を、次のステージへ。' in page.locator('.cxhv-card--business').inner_text()
         assert '仕組みで、成果をつくる。' in page.locator('.cxhv-card--system').inner_text()
         assert page.locator('.cxhv-card--business img').get_attribute('alt') == ''
+        # Creative card at rest: only the three pictures; no text, no YouTube player or script.
+        assert page.locator('.cxhv-card--creative [data-cxhv-slide] img').count() == 3
+        assert page.locator('.cxhv-card--creative').evaluate('e=>e.innerText.trim()') == ''
+        assert page.locator('#hero iframe').count() == 0 and created(page) == []
+        assert page.evaluate("!document.querySelector('script[src*=\"iframe_api\"]')")
         hero = rect(page, '#hero')
         boxes = [rect(page, s) for s in CARDS]
         for s, b in zip(CARDS, boxes):
@@ -126,7 +131,7 @@ with sync_playwright() as p:
             assert min(b['top'] for b in boxes) >= copy_boxes[2]['bottom'] - 20, (width, boxes, copy_boxes[2])
             assert copy_boxes[2]['bottom'] <= height, f'CTAs below the first screen at {width}px'
         # Body/UI text expansion (Android scaling).
-        page.locator('#cxh-hero-title,.cxhv-lead,.cxhv-actions a,.cxhv-caption-title,.cxhv-expand').evaluate_all(
+        page.locator('#cxh-hero-title,.cxhv-lead,.cxhv-actions a').evaluate_all(
             '(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Overflow with 1.4x text at {width}px'
@@ -138,70 +143,70 @@ with sync_playwright() as p:
         report.append({'width': width, 'layout': 'pass'})
         page.close()
 
-    # PC: the preview starts muted after load (one player, no controls), then moves on every 8s.
+    # PC: the pictures move on every 7s while the card is in view; YouTube is not loaded at rest.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
-    load(page, wait=3500)
-    made = created(page)
-    assert len(made) == 1 and made[0]['videoId'] == IDS[0], made
-    assert made[0]['vars']['mute'] == 1 and made[0]['vars']['controls'] == 0 and made[0]['vars']['playsinline'] == 1
-    assert made[0]['host'] == 'https://www.youtube-nocookie.com'
-    assert page.locator('.cxhv-player iframe').count() == 1
-    page.wait_for_timeout(8300)
-    assert 'load:' + IDS[1] in calls(page), calls(page)
-    # Nothing is laid over the playing player.
-    screen = rect(page, '.cxhv-screen')
-    hit = page.evaluate('([x,y])=>document.elementFromPoint(x,y).tagName', [screen['left'] + screen['width'] / 2, screen['top'] + screen['height'] / 2])
-    assert hit == 'IFRAME', hit
-    # 「拡大して見る」: centre of the Hero's right half, about 1.5× wider, controls on, others step back.
+    load(page)
+    cur = "[...document.querySelectorAll('[data-cxhv-slide]')].findIndex(s=>s.classList.contains('is-current'))"
+    assert page.evaluate(cur) == 0
+    page.wait_for_timeout(7400)
+    assert page.evaluate(cur) == 1 and created(page) == []
+    # Sideways scrolling also changes the picture.
+    page.locator('[data-cxhv-track]').evaluate('t=>t.scrollTo({left:2*t.clientWidth,behavior:"instant"})')
+    page.wait_for_timeout(300)
+    assert page.evaluate(cur) == 2
+    page.locator('[data-cxhv-track]').evaluate('t=>t.scrollTo({left:t.clientWidth,behavior:"instant"})')
+    page.wait_for_timeout(300)
+    # Pressing the picture opens it: centre of the Hero's right half, about 1.5× wider, with sound.
     card = page.locator('.cxhv-card--creative')
     base = card.evaluate('e=>e.offsetWidth')
-    page.locator('.cxhv-expand').click(force=True)
+    page.locator('.cxhv-slide.is-current .cxhv-slide-btn').click(force=True)
     page.wait_for_timeout(900)
-    box, hero = rect(page, '.cxhv-card--creative'), rect(page, '#hero')
+    box, hero = rect(page, '[data-cxhv-track]'), rect(page, '#hero')
     assert abs((box['left'] + box['right']) / 2 - (hero['left'] + hero['width'] * .75)) < 4, (box, hero)
     assert abs((box['top'] + box['bottom']) / 2 - (hero['top'] + hero['height'] / 2)) < 4, (box, hero)
-    assert abs(card.evaluate('e=>e.offsetWidth') / base - 1.5) < .03 or box['right'] <= hero['right'] - 20
+    assert abs(card.evaluate('e=>e.offsetWidth') / base - 1.5) < .03 or box['right'] <= hero['right'] - 60
     assert box['left'] >= hero['left'] + hero['width'] / 2 - 1, 'stays in the right half'
-    assert created(page)[-1]['vars']['controls'] == 1 and created(page)[-1]['vars']['mute'] == 1
-    assert page.locator('.cxhv-player iframe').count() == 1, 'one player at a time'
-    assert page.locator('.cxhv-expand').get_attribute('aria-expanded') == 'true'
+    made = created(page)
+    assert len(made) == 1 and made[0]['videoId'] == IDS[1], made
+    assert made[0]['vars']['mute'] == 0 and made[0]['vars']['controls'] == 1 and made[0]['host'] == 'https://www.youtube-nocookie.com'
+    assert page.locator('#hero iframe').count() == 1, 'one player at a time'
     assert page.evaluate("document.activeElement.classList.contains('cxhv-close')")
     assert page.locator('.cxhv-card--business').evaluate('e=>e.inert && getComputedStyle(e).opacity < .5')
     assert rect(page, '.cxhv-copy')['right'] <= box['left'], 'copy stays visible'
-    picks = page.locator('.cxhv-pick')
-    # The larger player continues the video the preview was showing (by now the 2nd).
-    assert picks.count() == 3 and picks.nth(1).get_attribute('aria-pressed') == 'true'
-    assert created(page)[-1]['videoId'] == IDS[1] and created(page)[-1]['vars']['start'] == 3
-    picks.nth(2).click()
-    assert 'load:' + IDS[2] in calls(page) and picks.nth(2).get_attribute('aria-pressed') == 'true'
-    n_before = len([c for c in calls(page) if c.startswith('load:')])
-    page.wait_for_timeout(8300)
-    assert len([c for c in calls(page) if c.startswith('load:')]) == n_before, 'no automatic switching while open'
-    page.locator('.cxhv-sound').click()
-    assert 'unMute' in calls(page) and page.locator('.cxhv-sound').get_attribute('aria-pressed') == 'true'
+    # ‹ › and × sit outside the picture; nothing is laid over the player.
+    for s in ['.cxhv-nav--prev', '.cxhv-nav--next', '.cxhv-close']:
+        assert not overlap(rect(page, s), box), s
+    mid = page.evaluate('([x,y])=>document.elementFromPoint(x,y).tagName', [(box['left'] + box['right']) / 2, (box['top'] + box['bottom']) / 2])
+    assert mid == 'IFRAME', mid
+    # Moving to another video plays that one (the row settles, then the player follows).
+    page.locator('.cxhv-nav--next').click()
+    page.wait_for_timeout(1200)
+    assert page.evaluate(cur) == 2 and created(page)[-1]['videoId'] == IDS[2] and page.locator('#hero iframe').count() == 1
+    assert page.locator('.cxhv-nav--next').is_disabled()
+    page.locator('[data-cxhv-track]').evaluate('t=>t.scrollTo({left:0,behavior:"instant"})')
+    page.wait_for_timeout(800)
+    assert page.evaluate(cur) == 0 and created(page)[-1]['videoId'] == IDS[0]
+    page.keyboard.press('ArrowRight')
+    page.wait_for_timeout(1200)
+    assert page.evaluate(cur) == 1 and created(page)[-1]['videoId'] == IDS[1]
+    n_before = page.evaluate(cur)
+    page.wait_for_timeout(7400)
+    assert page.evaluate(cur) == n_before, 'no automatic advance while open'
     page.screenshot(path=str(out / '1440-expanded.png'))
     page.keyboard.press('Escape')
     page.wait_for_timeout(900)
-    assert page.locator('.cxhv-expand').get_attribute('aria-expanded') == 'false'
-    assert page.evaluate("document.activeElement.classList.contains('cxhv-expand')")
-    assert page.locator('[data-cxhv-controls]').is_hidden()
+    assert page.locator('#hero iframe').count() == 0 and page.locator('.cxhv-close').is_hidden()
+    assert page.evaluate("document.activeElement.classList.contains('cxhv-slide-btn')")
     assert not page.locator('.cxhv-card--business').evaluate('e=>e.inert')
-    back = rect(page, '.cxhv-card--creative')
-    assert abs(back['left'] - (hero['left'] + hero['width'] * .75 - box['width'] / 2)) > 20, 'card went back'
-    # Leaving the Hero stops the player; coming back starts one preview again.
+    back = rect(page, '[data-cxhv-track]')
+    assert back['width'] < box['width'] - 50, 'card went back'
+    # Opening, then scrolling on through the hand-off closes it.
     distance = page.locator('.cxha-transition').evaluate("e=>parseFloat(e.style.getPropertyValue('--cxha-distance'))")
-    page.evaluate('(y)=>window.scrollTo({top:y,behavior:"instant"})', distance * .5)
-    page.wait_for_timeout(700)
-    assert page.locator('.cxhv-player iframe').count() == 0
-    page.evaluate('window.scrollTo({top:0,behavior:"instant"})')
-    page.wait_for_timeout(1200)
-    assert page.locator('.cxhv-player iframe').count() == 1
-    # Opening, then scrolling away closes the larger player as well.
-    page.locator('.cxhv-expand').click(force=True)
+    page.locator('.cxhv-slide.is-current .cxhv-slide-btn').click(force=True)
     page.wait_for_timeout(600)
     page.evaluate('(y)=>window.scrollTo({top:y,behavior:"instant"})', distance * .5)
     page.wait_for_timeout(700)
-    assert page.locator('.cxhv-expand').get_attribute('aria-expanded') == 'false' and page.locator('.cxhv-player iframe').count() == 0
+    assert page.locator('#hero iframe').count() == 0 and page.locator('.cxhv-close').is_hidden()
     page.close()
 
     # Card 3 scrolls to Sales X on the page; card 2 opens /about.
@@ -217,31 +222,34 @@ with sync_playwright() as p:
     page.wait_for_url('**/about')
     page.close()
 
-    # Reduced motion: no autoplay, no float; the larger player still opens on request.
+    # Reduced motion: no automatic advance, no float, no zoom; the video still opens on request.
     page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     load(page, wait=3000)
-    assert created(page) == []
+    page.wait_for_timeout(7400)
+    assert page.evaluate("[...document.querySelectorAll('[data-cxhv-slide]')].findIndex(s=>s.classList.contains('is-current'))") == 0
     assert page.locator('.cxhv-card--business').evaluate('e=>getComputedStyle(e).animationName') == 'none'
-    page.locator('.cxhv-expand').click()
+    assert page.locator('.cxhv-slide.is-current img').evaluate('e=>getComputedStyle(e).animationName') == 'none'
+    page.locator('.cxhv-slide.is-current .cxhv-slide-btn').click()
     page.wait_for_timeout(400)
     assert len(created(page)) == 1 and created(page)[0]['vars']['controls'] == 1
     page.close()
 
-    # YouTube unavailable: the thumbnail stays, opening says so, the page is intact.
+    # YouTube unavailable: opening says so, the page is intact.
     page = browser.new_page(viewport={'width': 1440, 'height': 900})
     load(page, api=False, wait=3000)
-    assert page.locator('.cxhv-player iframe').count() == 0 and page.locator('.cxhv-thumb').is_visible()
-    page.locator('.cxhv-expand').click(force=True)
+    assert page.locator('#hero iframe').count() == 0 and page.locator('.cxhv-slide.is-current img').is_visible()
+    page.locator('.cxhv-slide.is-current .cxhv-slide-btn').click(force=True)
     page.wait_for_timeout(800)
     assert '読み込めませんでした' in page.locator('[data-cxhv-status]').inner_text()
     assert page.evaluate('document.body.scrollWidth <= innerWidth')
     page.close()
 
-    # SP: no autoplay; a tap opens the player across the card area; the Hero scrolls before the hand-off.
+    # SP: pictures only; a tap opens the video across the card area (the page does not jump);
+    # the Hero scrolls before the hand-off.
     for w, h in [(375, 812), (390, 844), (430, 932)]:
         page = browser.new_page(viewport={'width': w, 'height': h}, is_mobile=True, has_touch=True)
         load(page, wait=3000)
-        assert created(page) == [], 'no autoplay on phones'
+        assert created(page) == [] and page.locator('#hero iframe').count() == 0
         assert rect(page, '.cxhv-actions')['bottom'] <= h, 'CTAs in the first screen'
         overflow = page.locator('.cxha-transition').evaluate("e=>parseFloat(e.style.getPropertyValue('--cxha-overflow'))")
         hero_bottom = rect(page, '#hero')['bottom'] + page.evaluate('scrollY')
@@ -253,17 +261,25 @@ with sync_playwright() as p:
         for s in CARDS:
             b = rect(page, s)
             assert b['bottom'] <= h + 1 and b['top'] >= 0, (w, s, b)
-        page.locator('.cxhv-tap').tap(force=True)
+        stage_h = rect(page, '.cxhv-stage')['height']
+        y0 = page.evaluate('scrollY')
+        page.locator('.cxhv-slide.is-current .cxhv-slide-btn').tap(force=True)
         page.wait_for_timeout(600)
         made = created(page)
-        assert len(made) == 1 and made[0]['vars']['controls'] == 1
-        box, stage = rect(page, '.cxhv-card--creative'), rect(page, '.cxhv-stage')
+        assert len(made) == 1 and made[0]['vars']['controls'] == 1 and made[0]['vars']['mute'] == 0
+        box, stage = rect(page, '[data-cxhv-track]'), rect(page, '.cxhv-stage')
         assert abs(box['width'] - stage['width']) < 1 and page.locator('.cxhv-card--business').is_hidden()
+        assert abs(stage['height'] - stage_h) < 1 and page.evaluate('scrollY') == y0, 'page does not jump'
         assert page.evaluate('document.body.scrollWidth <= innerWidth')
-        assert all(page.locator('.cxhv-pick').nth(i).evaluate('e=>e.getBoundingClientRect().height>=44') for i in range(3))
+        for s in ['.cxhv-nav--prev', '.cxhv-nav--next', '.cxhv-close']:
+            b = rect(page, s)
+            assert b['height'] >= 44 and b['top'] >= box['bottom'] - 1, (s, b, box)
+        page.locator('.cxhv-nav--next').tap()
+        page.wait_for_timeout(1200)
+        assert created(page)[-1]['videoId'] == IDS[1]
         page.locator('.cxhv-card--creative').scroll_into_view_if_needed()
         page.wait_for_timeout(300)
-        assert page.locator('.cxhv-expand').get_attribute('aria-expanded') == 'true', 'scrolling to the player keeps it open'
+        assert page.locator('#hero iframe').count() == 1, 'scrolling to the player keeps it open'
         if w == 390:
             page.screenshot(path=str(out / '390-open.png'))
         page.locator('[data-cxhv-close]').tap()
@@ -280,4 +296,4 @@ with sync_playwright() as p:
     page.close()
     browser.close()
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
-print(f'PASS: {len(widths)} widths (copy, links, cards in the Hero, 1.4x text), PC preview/expand/1-2-3/sound/Esc/leave, card links, reduced motion, YouTube unavailable, SP tap/scroll-before-hand-off, JS-off.')
+print(f'PASS: {len(widths)} widths (copy, links, cards in the Hero, picture-only Creative card, 1.4x text), PC 7s advance/sideways scroll/open with sound/‹ › ← → /Esc/leave, card links, reduced motion, YouTube unavailable, SP tap/scroll-before-hand-off, JS-off.')
