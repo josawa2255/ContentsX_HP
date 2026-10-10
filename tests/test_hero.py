@@ -105,9 +105,14 @@ with sync_playwright() as p:
         assert '事業を、次のステージへ。' in page.locator('.cxhv-card--business').inner_text()
         assert '仕組みで、成果をつくる。' in page.locator('.cxhv-card--system').inner_text()
         assert page.locator('.cxhv-card--business img').get_attribute('alt') == ''
-        # Creative card at rest: only the three pictures; no text, no YouTube player or script.
+        # Creative card at rest: the three pictures and its own line only; no YouTube player or script.
         assert page.locator('.cxhv-card--creative [data-cxhv-slide] img').count() == 3
-        assert page.locator('.cxhv-card--creative').evaluate('e=>e.innerText.trim()') == ''
+        card_text = page.locator('.cxhv-card--creative').evaluate('e=>e.innerText.replace(/\\s+/g,"")')
+        assert card_text in ('クリエイティブで、ビジネスを動かす。CREATIVEFORBUSINESS', 'クリエイティブで、ビジネスを動かす。'), card_text
+        assert 'Noto Serif JP' in page.locator('.cxhv-creative-title').evaluate('e=>getComputedStyle(e).fontFamily')
+        line = rect(page, '.cxhv-creative-copy')
+        track_box = rect(page, '[data-cxhv-track]')
+        assert line['left'] >= track_box['left'] - 30 and line['top'] >= track_box['top'] - 30, (line, track_box)
         assert page.locator('#hero iframe').count() == 0 and created(page) == []
         assert page.evaluate("!document.querySelector('script[src*=\"iframe_api\"]')")
         hero = rect(page, '#hero')
@@ -131,7 +136,7 @@ with sync_playwright() as p:
             assert min(b['top'] for b in boxes) >= copy_boxes[2]['bottom'] - 20, (width, boxes, copy_boxes[2])
             assert copy_boxes[2]['bottom'] <= height, f'CTAs below the first screen at {width}px'
         # Body/UI text expansion (Android scaling).
-        page.locator('#cxh-hero-title,.cxhv-lead,.cxhv-actions a').evaluate_all(
+        page.locator('#cxh-hero-title,.cxhv-lead,.cxhv-actions a,.cxhv-creative-title').evaluate_all(
             '(nodes)=>nodes.forEach(e=>e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*1.4)+"px")')
         page.wait_for_timeout(150)
         assert page.evaluate('document.body.scrollWidth <= innerWidth'), f'Overflow with 1.4x text at {width}px'
@@ -171,6 +176,7 @@ with sync_playwright() as p:
     assert made[0]['vars']['mute'] == 0 and made[0]['vars']['controls'] == 1 and made[0]['host'] == 'https://www.youtube-nocookie.com'
     assert page.locator('#hero iframe').count() == 1, 'one player at a time'
     assert page.evaluate("document.activeElement.classList.contains('cxhv-close')")
+    assert page.locator('.cxhv-creative-copy').is_hidden(), 'the card line never covers the player'
     assert page.locator('.cxhv-card--business').evaluate('e=>e.inert && getComputedStyle(e).opacity < .5')
     assert rect(page, '.cxhv-copy')['right'] <= box['left'], 'copy stays visible'
     # ‹ › and × sit outside the picture; nothing is laid over the player.
