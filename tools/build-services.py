@@ -483,8 +483,15 @@ def render_tokens(tokens: dict) -> str:
     for key, value in mapping.items():
         if not isinstance(value, str) or any(char in value for char in ";{}<>"):
             raise ValueError(f"unsafe design token: {key}")
+    # Colours and fonts alias the site-wide brand tokens (css/brand-system-2026.css), so the service
+    # pages and every other page share one source. The JSON value stays as the fallback.
+    brand = {"ink": "color-ink", "text": "color-body", "muted": "color-muted", "border": "color-border",
+             "background": "color-white", "surface": "color-surface", "sales": "color-sales",
+             "sales-soft": "color-sales-soft", "creative": "color-creative", "creative-soft": "color-creative-soft",
+             "font-ja": "font-ja", "font-latin": "font-latin"}
     lines = ["/* Generated from data/design-tokens.json; do not edit directly. */", ":root {"]
-    lines += [f"  --cxs-{key}: {value};" for key, value in mapping.items()]
+    lines += [f"  --cxs-{key}: var(--cx-{brand[key]}, {value});" if key in brand else f"  --cxs-{key}: {value};"
+              for key, value in mapping.items()]
     return "\n".join(lines + ["}", ""])
 
 
