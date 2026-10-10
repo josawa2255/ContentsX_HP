@@ -448,15 +448,13 @@ def extract_block(source: str, tag: str) -> str:
     return source[opening.start(): closing + len(tag) + 3]
 
 
-def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str, cta_mount: bool = True) -> str:
+def render_page(body: str, title: str, description: str, path: str, json_ld: list[dict], header: str, footer: str) -> str:
     canonical = f"{SITE}{path}"
     page = render_template("service-page.html.tpl", {
         "TITLE": esc(title), "DESCRIPTION": esc(description), "CANONICAL": esc(canonical),
         "JSON_LD": "\n  ".join(script_json(item) for item in json_ld),
         "HEADER": header, "FOOTER": footer, "BODY": body,
     })
-    if not cta_mount:
-        page = page.replace('  <section id="cxCtaMount" data-cx-page-cta></section>\n', '')
     return page.replace("<!DOCTYPE html>", f"<!DOCTYPE html>\n{SIGNATURE}", 1)
 
 
@@ -543,7 +541,7 @@ def build(check: bool = False) -> int:
             render_group_landing(group["id"], services),
             f"{group['name']}｜Contents X", f"{group['name']}。{group['summary']}", group_path,
             [breadcrumbs_json([("ホーム", SITE + "/"), ("サービス", SITE + "/services/"), (group["name"], SITE + group_path)])],
-            header, footer, cta_mount=False,
+            header, footer,
         )
     for service in services:
         # Preserve published URLs as tiny redirects; individual detail pages are retired.
