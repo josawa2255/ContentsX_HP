@@ -49,14 +49,15 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
 .cxhv-slide.is-revealed .cxhv-slide-btn img { opacity:0; }
 .cxhv-player { position:absolute; inset:0; background:#000; }
 .cxhv-player iframe { display:block; width:100%; height:100%; border:0; }
-/* The card's line, set like the copy baked into cards 2/3 (navy Mincho, rule + small English) on a
-   small frosted panel at the top left, so it reads over any picture. Hidden while the card is open:
-   nothing ever covers the YouTube player. */
-.cxhv-creative-copy { position:absolute; top:7%; left:5%; z-index:2; padding:clamp(10px,1vw,16px) clamp(12px,1.3vw,20px); border-radius:10px; background:rgba(255,255,255,.84); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:var(--cxhv-ink); box-shadow:0 8px 24px rgba(13,27,62,.16); pointer-events:none; }
-.cxhv-creative-title { margin:0; font-family:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',YuMincho,serif; font-size:clamp(13px,1.25vw,20px); font-weight:500; line-height:1.5; letter-spacing:.05em; }
-.cxhv-creative-sub { display:flex; flex-direction:column; gap:6px; margin:8px 0 0; color:#6d7a97; font-family:Inter,Arial,sans-serif; font-size:clamp(7px,.55vw,9px); font-weight:600; letter-spacing:.22em; }
-.cxhv-creative-sub::before { content:''; width:24px; height:1px; background:currentColor; opacity:.8; }
-.cxhv-card--creative.is-expanded .cxhv-creative-copy { display:none; }
+/* The card's line, set like the copy baked into cards 2/3 (Mincho, rule + small English), in white
+   straight on the picture/video, at the bottom left with a soft shade from below so it stays
+   readable and clear of the videos' own titles (2026-10-11: no inner panel). Hidden while open. */
+.cxhv-card--creative::before { content:''; position:absolute; inset:0; z-index:2; border-radius:14px; background:linear-gradient(0deg,rgba(7,20,59,.82) 0%,rgba(7,20,59,.5) 30%,rgba(7,20,59,0) 58%); pointer-events:none; }
+.cxhv-creative-copy { position:absolute; bottom:9%; left:7%; z-index:3; color:#fff; pointer-events:none; text-shadow:0 1px 2px rgba(7,20,59,.5),0 4px 18px rgba(7,20,59,.55); }
+.cxhv-creative-title { margin:0; font-family:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',YuMincho,serif; font-size:clamp(14px,1.4vw,22px); font-weight:500; line-height:1.5; letter-spacing:.06em; }
+.cxhv-creative-sub { display:flex; flex-direction:column; gap:7px; margin:10px 0 0; font-family:Inter,Arial,sans-serif; font-size:clamp(7px,.58vw,9px); font-weight:600; letter-spacing:.22em; opacity:.88; }
+.cxhv-creative-sub::before { content:''; width:26px; height:1px; background:currentColor; opacity:.8; }
+.cxhv-card--creative.is-expanded::before,.cxhv-card--creative.is-expanded .cxhv-creative-copy { display:none; }
 
 /* ‹ › × appear only while open, outside the picture (nothing is laid over the player). */
 .cxhv-nav,.cxhv-close { position:absolute; display:grid; place-items:center; width:44px; height:44px; padding:0; border:1px solid rgba(13,27,62,.14); border-radius:50%; background:rgba(255,255,255,.94); color:var(--cxhv-ink); font:inherit; font-size:24px; line-height:1; cursor:pointer; box-shadow:0 8px 20px rgba(13,27,62,.14); }
@@ -144,8 +145,8 @@ html[lang="en"] .cxhv-title { font-size:clamp(34px,min(3.6vw,7svh),62px); line-h
   .cxhv-card--business { left:2%; top:23%; width:50%; rotate:9deg; }
   .cxhv-card--system { left:44%; top:54%; width:50%; rotate:-11deg; }
   .cxhv-go { width:34px; height:34px; right:10px; bottom:10px; font-size:16px; }
-  .cxhv-creative-copy { padding:7px 9px; border-radius:7px; }
-  .cxhv-creative-title { font-size:clamp(10px,2.9vw,12px); line-height:1.45; }
+  .cxhv-creative-copy { bottom:8%; left:6%; }
+  .cxhv-creative-title { font-size:clamp(11px,3.1vw,13px); line-height:1.45; }
   .cxhv-creative-sub { display:none; }
   .cxhv-scroll { left:20px; bottom:18px; }
   .cxhv-bg { background-position:68% 100%; background-size:auto 58%; }
