@@ -57,7 +57,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 | 役員紹介（非表示） | leadership.html | `/about#message` へ転送 |
 | 関連会社（非表示） | partners.html | `/company` へ転送 |
 | 私たちの思い（旧URL） | our-thoughts.html | `/about#message` へ転送 |
-| 採用情報 | recruit.html | recruit.js, dl-modal.js |
+| 採用情報 | recruit.html | recruit.js, wp-config.js, home-topics.js, dl-modal.js, sitewide-motion.js（構成と演出は SPEC.md §9） |
 | お問い合わせ | contact.html | contact.js |
 | ニュース一覧 | news.html | wp-config.js, wp-api.js, script.js |
 | ニュース詳細 | news-detail.html | wp-config.js + インラインJS |
@@ -83,9 +83,11 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 - タイトル+カテゴリタグ: `.work-detail-title-row` でflexbox横並び（BizMangaと同仕様）
 
 ## 採用ページ（recruit.html）
-- 募集職種カード選択 → セクション背景画像切替（recruit.js `switchPosBg()`）
-- 「詳細を見る」→ 独立セクション `rc-detail-section` に分離済み（背景画像が透けない）
-- 「応募する」→ contact.htmlへ遷移（position パラメータ付き）
+- ヒーローは白基調＋Xコラージュ、Xが書き順（＼→／）で描かれる（SPEC.md §9.0）。⚠️ 画像差し替え時は SVG の帯の座標と線の長さを測り直す
+- 構成: HERO → 募集職種 → 選考 → エントリー → TOPICS（トップと共通）。日差しの演出は HERO→募集職種の切り替えだけで、他のセクションに繰り返さない（SPEC.md §9.1〜9.6）
+- ⚠️ 募集職種〜エントリーの背景は `.rc-stage__bg` の1枚（sticky）を共有する。セクションごとに背景画像を足さない（SPEC.md §9.1）
+- 職種カード「詳細を見る」→ カード一覧の直下にその職種の募集要項だけを開く。応募は `/contact?position=…`（CRMには送られない。⚠️ エントリーのボタンも `?position=` を外さない）
+- ⚠️ 未確定: エンジニアの募集要項・応募先（`TODO(#127)`、枠はHTMLコメントで用意済み）、選考フローの正式な文言（デザイン上の仮案。公開前に照合）
 
 <!-- 漫画ビューアは独立BizMangaサイト (bizmanga.contentsx.jp) に移行済み。
      旧 bizmanga/js/works.js は 2026-05-12 に削除。 -->
