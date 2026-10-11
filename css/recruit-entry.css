@@ -1,7 +1,7 @@
 /* ============================================
    採用エントリー（/recruit/entry）
    入力欄・ボタンの基本は共通の css/form.css と style.css（.cb-submit）。ここはこのページの配置と、
-   共通に無い部品（応募区分の選択・同意のチェック・任意の表示・補足文・完了表示）だけ。
+   共通に無い部品（プルダウン・同意のチェック・任意の表示・補足文・完了表示）だけ。
    色・文字は brand-system-2026.css のトークン（sitewide-cohesion.css 経由）に揃える。
    ============================================ */
 .rce-main {
@@ -98,31 +98,6 @@
   cursor: pointer;
 }
 
-/* 応募区分: 押しやすい大きめの選択肢（ラジオボタン） */
-.rce-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
-.rce-fieldset > legend { margin-bottom: 6px; padding: 0; }
-.rce-choices { display: flex; flex-wrap: wrap; gap: 10px; }
-.rce-choice {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 20px 0 16px;
-  border: 1.5px solid var(--cx-color-border, #d9e4f2);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--cx-color-ink, #07143b);
-  font-size: .9375rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: border-color var(--cx-motion-fast, .18s) ease, background-color var(--cx-motion-fast, .18s) ease;
-}
-.rce-choice input { width: 18px; height: 18px; margin: 0; accent-color: var(--cx-color-sales, #005bfa); }
-.rce-choice:has(input:checked) { border-color: var(--cx-color-sales, #005bfa); background: var(--cx-color-sales-soft, #eaf3ff); }
-.rce-choice:has(input:focus-visible) { outline: 3px solid rgba(0, 91, 250, .35); outline-offset: 2px; }
-.rce-error { margin: 8px 0 0; color: #c53030; font-size: .8125rem; font-weight: 700; }
-
 /* 同意のチェック */
 .rce-check {
   display: flex;
@@ -165,7 +140,6 @@
 
 @media (max-width: 640px) {
   .rce-row { grid-template-columns: minmax(0, 1fr); }
-  .rce-choices { display: grid; grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 480px) {
   /* form.css は480px以下で入力欄の文字を14pxにするが、iPhone は16px未満だと入力時に画面を拡大してしまうので、このページは16pxに保つ */
