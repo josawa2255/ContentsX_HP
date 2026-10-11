@@ -20,8 +20,7 @@
   var cx = window.cxForm;
   var thanks = document.getElementById('recruitEntryThanks');
   var positionSelect = document.getElementById('position');
-  var typeError = document.getElementById('hiringTypeError');
-  var typeInputs = form.querySelectorAll('input[name="hiringType"]');
+  var typeSelect = document.getElementById('hiringType');
 
   // --- 希望職種の自動選択（?position=職種名）---
   // リストに無い職種名（旧リンクの文言など）は「その他・未定」にし、元の文字は本文の先頭に残す
@@ -36,26 +35,13 @@
   }
   // ?type=新卒 / 正社員（中途） / インターン で応募区分も選べる（採用ページ以外から案内するとき用）
   var requestedType = (cx.params.get('type') || '').trim();
-  Array.prototype.forEach.call(typeInputs, function (r) { if (r.value === requestedType) r.checked = true; });
+  if (Array.prototype.some.call(typeSelect.options, function (o) { return o.value && o.value === requestedType; })) {
+    typeSelect.value = requestedType;
+  }
 
   // --- 入力チェック ---
-  // ブラウザ標準の検査（required / email / url）に加え、空白だけの入力と応募区分の未選択を止める
-  var showTypeError = function (show) {
-    typeError.hidden = !show;
-    Array.prototype.forEach.call(typeInputs, function (r) { r.setAttribute('aria-invalid', String(show)); });
-    if (show) typeError.setAttribute('role', 'alert');
-  };
-  Array.prototype.forEach.call(typeInputs, function (r) {
-    r.addEventListener('change', function () { showTypeError(false); });
-  });
-
+  // ブラウザ標準の検査（応募区分・希望職種の未選択／required／email／url）に加え、空白だけの入力を止める
   var validate = function () {
-    var typeChecked = form.querySelector('input[name="hiringType"]:checked');
-    if (!typeChecked) {
-      showTypeError(true);
-      typeInputs[0].focus();
-      return false;
-    }
     if (!cx.requireTrimmed(document.getElementById('fullName'), 'お名前を入力してください', 'Please enter your name.')) return false;
     if (!cx.requireTrimmed(document.getElementById('message'), '志望動機・自己PR・ご質問を入力してください', 'Please enter a message.')) return false;
     if (!form.checkValidity()) {
@@ -87,7 +73,7 @@
     var submitBtn = form.querySelector('.form-submit');
     cx.setSending(submitBtn, true);
 
-    var hiringType = form.querySelector('input[name="hiringType"]:checked').value;
+    var hiringType = typeSelect.value;
     var position = positionSelect.value;
     var fullName = value('fullName');
     var affiliation = value('affiliation');
