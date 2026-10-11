@@ -62,28 +62,21 @@
     }, 300);
   }
 
-  // --- Hero nav pill click → scroll to positions & select card ---
-  var heroPills = document.querySelectorAll('.rc-hero-nav .rc-pill[data-pos]');
-  heroPills.forEach(function(pill) {
-    pill.addEventListener('click', function(e) {
-      e.preventDefault();
-      var pos = this.getAttribute('data-pos');
-      // Find matching card and click it
-      var matchCard = document.querySelector('.rc-pos-card[data-pos="' + pos + '"]');
-      if (matchCard) {
-        // Scroll to positions section first
-        setTimeout(function() {
-          var rect = posSection.getBoundingClientRect();
-          var offset = window.pageYOffset + rect.top - 70;
-          window.scrollTo({ top: offset, behavior: 'smooth' });
-          // Then simulate card click after scroll
-          setTimeout(function() {
-            matchCard.click();
-          }, 400);
-        }, 50);
-      }
-    });
-  });
+  // --- Hero: Xの書き順アニメーションは背景画像が届いてから始める ---
+  // 画像が未読込なら .is-waiting で描画を止め、読込後（または失敗・4秒経過）に外して再生する。
+  var xHero = document.querySelector('.rc-xhero');
+  var xHeroImg = xHero && xHero.querySelector('.rc-xhero__band');
+  if (xHeroImg) {
+    var probe = new Image();
+    probe.src = xHeroImg.getAttribute('href');
+    if (!probe.complete) {
+      xHero.classList.add('is-waiting');
+      var release = function() { xHero.classList.remove('is-waiting'); };
+      probe.addEventListener('load', release);
+      probe.addEventListener('error', release);
+      setTimeout(release, 4000);
+    }
+  }
 
   // --- Card Click ---
   cards.forEach(function(card) {

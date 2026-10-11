@@ -3,126 +3,249 @@
    rc- prefixed styles
    ============================================ */
 
-/* ---------- Hero：フルスクリーン ---------- */
-.rc-hero {
+/* ---------- Hero：白基調2カラム + Xコラージュ ----------
+   Xは書き順どおり「＼（左上→右下）」→「／（右上→左下）」の2画で描かれる。
+   仕組み: SVG内で背景画像を「Xを抜いた土台」と「帯2本」に分け、帯ごとに
+   太い線のマスクを stroke-dashoffset で端から端へ伸ばす（recruit.html の SVG 参照）。
+   画像の読込が遅いときは js/recruit.js が .is-waiting を付け、読込後に描き始める。 */
+.rc-xhero {
+  --rcx-ink: var(--cx-color-ink, #07143b);
+  --rcx-body: var(--cx-color-body, #172549);
+  --rcx-muted: var(--cx-color-muted, #52627e);
+  --rcx-blue: var(--cx-color-sales, #005bfa);
+  --rcx-blue-deep: #0047c7;
+  --rcx-blue-soft: var(--cx-color-sales-soft, #eaf3ff);
+  --rcx-orange: var(--cx-color-creative, #fa4d12);
+  --rcx-paper: #f7fbfe; /* 背景画像の白地に合わせた色 */
+  --rcx-gutter: clamp(20px, 4vw, 40px);
+  --rcx-draw: 1s;
+  --rcx-draw-ease: cubic-bezier(.4, 0, .2, 1);
   position: relative;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  height: 100vh;
-  height: 100dvh;
-  margin-top: 64px;
-  overflow: hidden;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  min-height: clamp(600px, calc(100svh - 64px), 900px);
+  margin-top: 64px;
+  padding: 0; /* style.css の section 共通余白を打ち消す */
+  overflow: hidden;
+  background: var(--rcx-paper);
+  isolation: isolate;
 }
-.rc-hero-bg {
+.rc-xhero__visual {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center 25%;
-  background-repeat: no-repeat;
   z-index: 0;
 }
-.rc-hero-overlay {
+.rc-xhero__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* 画像がコピーの下に入り込む幅でも文字を読みやすく保つ薄い白 */
+.rc-xhero__veil {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35);
   z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(247, 251, 254, .94) 0%, rgba(247, 251, 254, .82) 34%, rgba(247, 251, 254, 0) 56%);
 }
-
-/* 中央テキスト */
-.rc-hero-center {
+.rc-xhero__inner {
   position: relative;
   z-index: 2;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding-bottom: 160px;
-}
-.rc-hero-heading {
-  font-family: 'Sora', sans-serif;
-  font-size: 72px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: 4px;
-  line-height: 1;
-  margin: 0;
-}
-.rc-hero-sub {
-  font-size: 18px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.8);
-  letter-spacing: 6px;
-  margin-top: 16px;
-}
-
-/* カテゴリーナビ（ヒーロー下部） */
-.rc-hero-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  display: flex;
-  max-width: 1100px;
+  width: 100%;
+  max-width: var(--cx-shell, 1250px);
   margin: 0 auto;
-  padding: 0 48px 48px;
-  gap: 0;
+  padding: clamp(56px, 8vh, 96px) var(--rcx-gutter) clamp(96px, 13vh, 128px);
 }
-.rc-hero-nav-col {
-  flex: 1;
-  text-align: center;
-  padding: 0 20px;
+.rc-xhero__copy {
+  max-width: 34rem;
+  min-width: 0;
 }
-.rc-hero-nav-title {
-  font-size: 18px;
+.rc-xhero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 clamp(20px, 3vh, 28px);
+}
+.rc-xhero__eyebrow-en {
+  position: relative;
+  padding-left: 36px;
+  color: var(--rcx-blue);
+  font-family: var(--cx-font-latin, 'Inter', sans-serif);
+  font-size: .8125rem;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
+  letter-spacing: .32em;
+  line-height: 1;
 }
-.rc-hero-nav-line {
-  width: 32px;
+.rc-xhero__eyebrow-en::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 24px;
   height: 2px;
-  background: var(--accent);
-  margin: 0 auto 20px;
+  background: var(--rcx-orange);
 }
-.rc-hero-nav-btns {
+.rc-xhero__eyebrow-ja {
+  padding-left: 14px;
+  border-left: 1px solid var(--cx-color-border, #d9e4f2);
+  color: var(--rcx-muted);
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  line-height: 1;
+}
+.rc-xhero__title {
+  margin: 0;
+  color: var(--rcx-ink);
+  font-family: var(--cx-font-ja, 'Noto Sans JP', sans-serif);
+  font-size: clamp(2rem, 4.2vw + 1.2rem, 4.75rem);
+  font-weight: 900;
+  line-height: 1.16;
+  letter-spacing: -.02em;
+}
+.rc-xhero__title > span { display: block; }
+.rc-xhero__lead {
+  margin: clamp(20px, 3vh, 28px) 0 0;
+  color: var(--rcx-body);
+  font-size: clamp(1rem, .55vw + .8rem, 1.1875rem);
+  font-weight: 500;
+  line-height: 1.9;
+  /* 改行は <wbr> を入れた文節の切れ目だけ（文字拡大時に「を、」だけが落ちるのを防ぐ） */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+/* 「未来を、」「一緒に〜」の意味の切れ目でだけ折り返す */
+.rc-xhero__lead > span { display: inline-block; }
+.rc-xhero__actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  gap: 14px;
+  margin-top: clamp(32px, 5vh, 44px);
 }
-
-/* ピル型ボタン（CyberAgent風グリーン） */
-.rc-pill {
+.rc-xhero__btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 12px 28px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  justify-content: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 26px 0 32px;
+  border: 1.5px solid var(--rcx-blue);
+  border-radius: 999px;
+  font-size: .9375rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.3;
   text-decoration: none;
-  border-radius: 30px;
-  letter-spacing: 0.5px;
-  transition: transform 0.2s, box-shadow 0.2s, filter 0.15s;
-  white-space: nowrap;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
 }
-.rc-pill::after {
-  content: '▶';
-  font-size: 9px;
-  margin-left: 2px;
-  opacity: 0.7;
+.rc-xhero__btn--primary { background: var(--rcx-blue); color: #fff; }
+.rc-xhero__btn--secondary { background: #fff; color: var(--rcx-blue); }
+.rc-xhero__btn-arrow {
+  flex-shrink: 0;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
 }
-.rc-pill:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.45);
+@media (hover: hover) and (pointer: fine) {
+  .rc-xhero__btn--primary:hover { background: var(--rcx-blue-deep); border-color: var(--rcx-blue-deep); }
+  .rc-xhero__btn--secondary:hover { background: var(--rcx-blue-soft); }
+  .rc-xhero__btn:hover .rc-xhero__btn-arrow { transform: translateX(4px); }
+}
+.rc-xhero__btn--primary:active { background: var(--rcx-blue-deep); border-color: var(--rcx-blue-deep); }
+.rc-xhero__btn--secondary:active { background: var(--rcx-blue-soft); }
+.rc-xhero__btn:focus-visible .rc-xhero__btn-arrow { transform: translateX(4px); }
+/* 右下の補助コピー。写真の上でも読めるよう白い面に載せる */
+.rc-xhero__note {
+  position: absolute;
+  z-index: 2;
+  right: max(var(--rcx-gutter), calc((100% - var(--cx-shell, 1250px)) / 2 + var(--rcx-gutter)));
+  bottom: clamp(20px, 4vh, 36px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - var(--rcx-gutter) * 2);
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 24px rgba(7, 20, 59, .08);
+  color: var(--rcx-ink);
+  font-size: .8125rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+.rc-xhero__note > span { min-width: 0; }
+.rc-xhero__note::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rcx-orange);
+}
+
+/* 「募集職種を見る」で飛んだ先が固定ヘッダーの裏に入らないように */
+#positions { scroll-margin-top: 64px; }
+
+/* Xの書き順アニメーション（初回表示時に1回だけ） */
+.rc-xhero__stroke--1 { stroke-dasharray: 1355; }
+.rc-xhero__stroke--2 { stroke-dasharray: 1506; }
+@media (prefers-reduced-motion: no-preference) {
+  .rc-xhero:not(.is-waiting) .rc-xhero__stroke--1 { animation: rcxDraw1 var(--rcx-draw) var(--rcx-draw-ease) .1s both; }
+  .rc-xhero:not(.is-waiting) .rc-xhero__stroke--2 { animation: rcxDraw2 var(--rcx-draw) var(--rcx-draw-ease) .45s both; }
+  .rc-xhero:not(.is-waiting) .rc-xhero__band--1 { animation: rcxBandFade var(--rcx-draw) ease-out .1s both; }
+  .rc-xhero:not(.is-waiting) .rc-xhero__band--2 { animation: rcxBandFade var(--rcx-draw) ease-out .45s both; }
+  .rc-xhero:not(.is-waiting) .rc-xhero__note { animation: rcxNoteIn .7s ease-out 1.3s both; }
+  .rc-xhero.is-waiting .rc-xhero__stroke--1 { stroke-dashoffset: 1355; }
+  .rc-xhero.is-waiting .rc-xhero__stroke--2 { stroke-dashoffset: 1506; }
+  .rc-xhero.is-waiting .rc-xhero__note { opacity: 0; }
+}
+@keyframes rcxDraw1 { from { stroke-dashoffset: 1355; } to { stroke-dashoffset: 0; } }
+@keyframes rcxDraw2 { from { stroke-dashoffset: 1506; } to { stroke-dashoffset: 0; } }
+@keyframes rcxBandFade { from { opacity: .3; } to { opacity: 1; } }
+@keyframes rcxNoteIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 1023px) {
+  .rc-xhero__copy { max-width: 29rem; }
+  .rc-xhero__veil {
+    background: linear-gradient(90deg, rgba(247, 251, 254, .96) 0%, rgba(247, 251, 254, .88) 44%, rgba(247, 251, 254, 0) 68%);
+  }
+}
+/* スマホと縦長タブレット: コピーとボタンを先に、Xのビジュアルを下に回す
+   （縦長で全面背景にするとXが大きく切れてコピーと重なるため） */
+@media (max-width: 767px), (max-width: 1023px) and (orientation: portrait) {
+  .rc-xhero {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+  }
+  .rc-xhero__inner { order: 1; padding: 44px var(--rcx-gutter) 32px; }
+  .rc-xhero__copy { max-width: none; }
+  .rc-xhero__visual {
+    position: relative;
+    order: 2;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 1000 / 941;
+    max-height: 560px;
+  }
+  .rc-xhero__veil { display: none; }
+  .rc-xhero__btn { flex: 1 1 220px; }
+  .rc-xhero__note {
+    right: 16px;
+    bottom: 16px;
+    max-width: calc(100% - 32px);
+    border-radius: 18px;
+    font-size: .75rem;
+  }
+}
+@media (max-width: 480px) {
+  .rc-xhero { margin-top: 56px; }
 }
 
 /* ---------- Message Section ---------- */
@@ -599,34 +722,6 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
-  .rc-hero {
-    height: auto;
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-  .rc-hero-center {
-    padding: 120px 24px 40px;
-  }
-  .rc-hero-heading {
-    font-size: 44px;
-  }
-  .rc-hero-sub {
-    font-size: 14px;
-  }
-  .rc-hero-nav {
-    position: relative;
-    flex-direction: column;
-    gap: 28px;
-    padding: 32px 24px 40px;
-    background: rgba(0,0,0,0.25);
-  }
-  .rc-hero-nav-col {
-    padding: 0;
-  }
-  .rc-pill {
-    padding: 10px 22px;
-    font-size: 13px;
-  }
   .rc-positions-inner {
     padding: 60px 24px;
   }
@@ -690,20 +785,6 @@
 }
 
 @media (max-width: 480px) {
-  .rc-hero-heading {
-    font-size: 36px;
-  }
-  .rc-hero-sub {
-    font-size: 12px;
-    letter-spacing: 4px;
-  }
-  .rc-hero-nav {
-    padding: 24px 16px 32px;
-  }
-  .rc-pill {
-    padding: 8px 18px;
-    font-size: 12px;
-  }
   .rc-positions-inner {
     padding: 48px 20px;
   }

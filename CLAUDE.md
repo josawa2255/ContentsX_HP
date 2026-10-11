@@ -83,6 +83,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 - タイトル+カテゴリタグ: `.work-detail-title-row` でflexbox横並び（BizMangaと同仕様）
 
 ## 採用ページ（recruit.html）
+- ヒーローは白基調＋Xコラージュ、Xが書き順（＼→／）で描かれる（SPEC.md §9.0）。⚠️ 画像差し替え時は SVG の帯の座標と線の長さを測り直す
 - 募集職種カード選択 → セクション背景画像切替（recruit.js `switchPosBg()`）
 - 「詳細を見る」→ 独立セクション `rc-detail-section` に分離済み（背景画像が透けない）
 - 「応募する」→ contact.htmlへ遷移（position パラメータ付き）

@@ -169,6 +169,7 @@
   <link rel="icon" type="image/webp" href="material/images/logo/contentsx-icon.webp">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/recruit.css">
+  <link rel="preload" as="image" href="/material/images/recruit/recruit-hero-x-collage.webp" type="image/webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -208,41 +209,58 @@
     </div>
   </header>
 
-  <!-- ===== HERO：フルスクリーン CyberAgent風 ===== -->
-  <section class="rc-hero" id="rc-hero">
-    <div class="rc-hero-bg" style="background-image:url('material/images/recruit/hero.webp');"></div>
-    <div class="rc-hero-overlay"></div>
-    <div class="rc-hero-center cx-image-text--light">
-      <h1 class="rc-hero-heading">Careers</h1>
-      <p class="rc-hero-sub" data-ja="採用情報" data-en="Recruitment">採用情報</p>
+  <!-- ===== HERO：白基調2カラム + Xコラージュ（Xは書き順どおり＼→／の2画で描かれる） =====
+       Xの帯の座標は画像(1672x941)の実測値。画像を差し替えるときは polygon と描画線を測り直す。 -->
+  <section class="rc-xhero" id="rc-hero" aria-labelledby="rc-xhero-title">
+    <div class="rc-xhero__visual" aria-hidden="true">
+      <svg class="rc-xhero__svg" viewBox="0 0 1672 941" preserveAspectRatio="xMaxYMid slice" focusable="false">
+        <defs>
+          <!-- 土台: Xの帯2本を抜いた背景 -->
+          <mask id="rcxBaseMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1672" height="941">
+            <rect width="1672" height="941" fill="#fff"/>
+            <polygon points="700,0 985,0 1370,527 1662,941 1360,941" fill="#000"/>
+            <polygon points="1420,0 1830,0 1050,941 660,941" fill="#000"/>
+          </mask>
+          <!-- 帯の形（1画目＝＼ / 2画目＝／） -->
+          <clipPath id="rcxClip1"><polygon points="700,0 985,0 1370,527 1662,941 1360,941"/></clipPath>
+          <clipPath id="rcxClip2"><polygon points="1420,0 1830,0 1050,941 660,941"/></clipPath>
+          <!-- 帯を端から端へなぞる太い線。stroke-dashoffset を動かして描く -->
+          <mask id="rcxDraw1" maskUnits="userSpaceOnUse" x="-300" y="-300" width="2300" height="1550">
+            <path class="rc-xhero__stroke rc-xhero__stroke--1" d="M784.6 -81.5 L1568.9 1022.5" fill="none" stroke="#fff" stroke-width="320"/>
+          </mask>
+          <mask id="rcxDraw2" maskUnits="userSpaceOnUse" x="-300" y="-300" width="2300" height="1550">
+            <path class="rc-xhero__stroke rc-xhero__stroke--2" d="M1716.8 -112.2 L763.2 1053.2" fill="none" stroke="#fff" stroke-width="360"/>
+          </mask>
+        </defs>
+        <rect width="1672" height="941" fill="#f7fbfe"/>
+        <image href="/material/images/recruit/recruit-hero-x-collage.webp" width="1672" height="941" mask="url(#rcxBaseMask)"/>
+        <g clip-path="url(#rcxClip1)">
+          <image class="rc-xhero__band rc-xhero__band--1" href="/material/images/recruit/recruit-hero-x-collage.webp" width="1672" height="941" mask="url(#rcxDraw1)"/>
+        </g>
+        <g clip-path="url(#rcxClip2)">
+          <image class="rc-xhero__band rc-xhero__band--2" href="/material/images/recruit/recruit-hero-x-collage.webp" width="1672" height="941" mask="url(#rcxDraw2)"/>
+        </g>
+      </svg>
     </div>
-    <!-- カテゴリーナビ（ヒーロー下部） -->
-    <div class="rc-hero-nav">
-      <div class="rc-hero-nav-col">
-        <h2 class="rc-hero-nav-title" data-ja="募集職種" data-en="Open Positions">募集職種</h2>
-        <div class="rc-hero-nav-line"></div>
-        <div class="rc-hero-nav-btns">
-          <a href="#detail-manga" class="rc-pill cx-ui-action cx-ui-pill" data-pos="manga" data-ja="漫画家" data-en="Manga Artist">漫画家</a>
-          <a href="#detail-production" class="rc-pill cx-ui-action cx-ui-pill" data-pos="production" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</a>
-          <a href="#detail-sales" class="rc-pill cx-ui-action cx-ui-pill" data-pos="sales" data-ja="営業" data-en="Sales">営業</a>
-        </div>
-      </div>
-      <div class="rc-hero-nav-col">
-        <h2 class="rc-hero-nav-title" data-ja="会社を知る" data-en="About Us">会社を知る</h2>
-        <div class="rc-hero-nav-line"></div>
-        <div class="rc-hero-nav-btns">
-          <a href="company" class="rc-pill cx-ui-action cx-ui-pill" data-ja="会社概要" data-en="Company">会社概要</a>
-          <a href="about#message" class="rc-pill cx-ui-action cx-ui-pill" data-ja="私たちの思い" data-en="Our Thoughts">私たちの思い</a>
-        </div>
-      </div>
-      <div class="rc-hero-nav-col">
-        <h2 class="rc-hero-nav-title" data-ja="選考フロー" data-en="Selection Process">選考フロー</h2>
-        <div class="rc-hero-nav-line"></div>
-        <div class="rc-hero-nav-btns">
-          <a href="#flow" class="rc-pill cx-ui-action cx-ui-pill" data-ja="応募の流れ" data-en="Application Flow">応募の流れ</a>
+    <div class="rc-xhero__veil" aria-hidden="true"></div>
+    <div class="rc-xhero__inner">
+      <div class="rc-xhero__copy">
+        <p class="rc-xhero__eyebrow"><span class="rc-xhero__eyebrow-en">RECRUIT</span><span class="rc-xhero__eyebrow-ja" data-ja="採用情報" data-en="Careers">採用情報</span></p>
+        <h1 class="rc-xhero__title" id="rc-xhero-title" data-ja="<span>きっかけを、</span><span>つくる側へ。</span>" data-en="<span>Be the one</span><span>who sparks it.</span>"><span>きっかけを、</span><span>つくる側へ。</span></h1>
+        <p class="rc-xhero__lead" data-ja="<span>ビジネスと<wbr>クリエイティブの<wbr>未来を、</span><span>一緒に<wbr>つくっていこう。</span>" data-en="Let's shape the future of business and creativity, together."><span>ビジネスと<wbr>クリエイティブの<wbr>未来を、</span><span>一緒に<wbr>つくっていこう。</span></p>
+        <div class="rc-xhero__actions">
+          <a href="#positions" class="rc-xhero__btn rc-xhero__btn--primary cx-ui-action">
+            <span data-ja="募集職種を見る" data-en="View Open Positions">募集職種を見る</span>
+            <svg class="rc-xhero__btn-arrow" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="/about" class="rc-xhero__btn rc-xhero__btn--secondary cx-ui-action">
+            <span data-ja="会社を知る" data-en="About Us">会社を知る</span>
+            <svg class="rc-xhero__btn-arrow" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
       </div>
     </div>
+    <p class="rc-xhero__note" data-ja="<span>コンテンツで<wbr>社会に、<wbr>もっといい<wbr>きっかけを。</span>" data-en="<span>Better sparks for society, through content.</span>"><span>コンテンツで<wbr>社会に、<wbr>もっといい<wbr>きっかけを。</span></p>
   </section>
 
   <!-- ===== POSITIONS：募集職種 詳細 ===== -->
