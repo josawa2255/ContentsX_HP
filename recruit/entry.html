@@ -91,15 +91,15 @@
     </div>
 
     <form class="rce-form" id="recruitEntryForm" novalidate data-cx-page-cta>
-      <fieldset class="form-group rce-fieldset">
-        <legend class="form-label"><span data-ja="応募区分" data-en="Application type">応募区分</span> <span class="required" data-ja="必須" data-en="Required">必須</span></legend>
-        <div class="rce-choices">
-          <label class="rce-choice"><input type="radio" name="hiringType" value="新卒" required><span data-ja="新卒" data-en="New graduate">新卒</span></label>
-          <label class="rce-choice"><input type="radio" name="hiringType" value="正社員（中途）"><span data-ja="正社員（中途）" data-en="Full-time (experienced)">正社員（中途）</span></label>
-          <label class="rce-choice"><input type="radio" name="hiringType" value="インターン"><span data-ja="インターン" data-en="Internship">インターン</span></label>
-        </div>
-        <p class="rce-error" id="hiringTypeError" hidden data-ja="応募区分を選んでください" data-en="Please choose an application type.">応募区分を選んでください</p>
-      </fieldset>
+      <div class="form-group">
+        <label class="form-label" for="hiringType"><span data-ja="応募区分" data-en="Application type">応募区分</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+        <select class="form-input rce-select" id="hiringType" name="hiringType" required>
+          <option value="" data-ja="選択してください" data-en="Please select">選択してください</option>
+          <option value="新卒" data-ja="新卒" data-en="New graduate">新卒</option>
+          <option value="正社員（中途）" data-ja="正社員（中途）" data-en="Full-time (experienced)">正社員（中途）</option>
+          <option value="インターン" data-ja="インターン" data-en="Internship">インターン</option>
+        </select>
+      </div>
 
       <div class="form-group">
         <label class="form-label" for="position"><span data-ja="希望職種" data-en="Position">希望職種</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
