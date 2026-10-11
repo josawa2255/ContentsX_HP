@@ -199,6 +199,8 @@
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
   <link rel="stylesheet" href="/css/sitewide-cohesion.css">
   <link rel="stylesheet" href="/css/site-footer.css">
+  <link rel="stylesheet" href="/css/home-sections.css">
+  <link rel="stylesheet" href="/css/home-topics.css">
 </head>
 <body data-theme="magenta-hot" class="cx-sitewide">
   <header class="header" id="header">
@@ -263,46 +265,93 @@
     <p class="rc-xhero__note" data-ja="<span>コンテンツで<wbr>社会に、<wbr>もっといい<wbr>きっかけを。</span>" data-en="<span>Better sparks for society, through content.</span>"><span>コンテンツで<wbr>社会に、<wbr>もっといい<wbr>きっかけを。</span></p>
   </section>
 
-  <!-- ===== POSITIONS：募集職種 詳細 ===== -->
-  <section class="rc-positions" id="positions">
-    <div class="rc-positions-overlay"></div>
-    <div class="rc-positions-inner">
-      <div class="rc-section-label">Open Positions</div>
-      <h2 class="rc-section-title" data-ja="募集職種" data-en="Open Positions">募集職種</h2>
-      <p class="rc-positions-lead" data-ja="希望の職種をクリックしてください。" data-en="Please select your desired position.">希望の職種をクリックしてください。</p>
-      <div class="rc-pos-cards">
-        <div class="rc-pos-card cx-ui-card" data-pos="manga" id="detail-manga">
-          <div class="rc-pos-card-num">01</div>
-          <div class="rc-pos-card-title" data-ja="漫画家" data-en="Manga Artist">漫画家</div>
-          <div class="rc-pos-card-desc" data-ja="シナリオチェック・ネーム制作・赤ペン" data-en="Script review, storyboard creation, and editing">シナリオチェック・ネーム制作・赤ペン</div>
-          <div class="rc-pos-card-tags"><span data-ja="業務委託" data-en="Contract">業務委託</span><span data-ja="フルリモート" data-en="Fully Remote">フルリモート</span></div>
+  <!-- ===== OPEN POSITIONS：募集職種 =====
+       背景写真（.rc-op__bg）は静止。光の帯（.rc-op__light）と白いベール（.rc-op__veil）だけが、
+       HERO→募集職種のスクロール量に合わせて変化する（js/recruit.js。この演出はこのセクションだけ）。
+       職種を増やすときは .rc-op-item を複製し、募集要項（.rc-detail）と JSON-LD を揃える。 -->
+  <section class="rc-op" id="positions" aria-labelledby="rc-op-title">
+    <div class="rc-op__bg" aria-hidden="true"></div>
+    <div class="rc-op__veil" aria-hidden="true" data-rc-light-veil></div>
+    <div class="rc-op__light" aria-hidden="true" data-rc-light></div>
+    <div class="rc-op__inner">
+      <div class="rc-op__head">
+        <div class="rc-op__intro">
+          <p class="rc-eyebrow" data-i18n-skip>OPEN POSITIONS</p>
+          <h2 class="rc-op__title" id="rc-op-title" data-ja="<span>その一歩が、</span><span>新しい価値をつくる。</span>" data-en="<span>Every step</span><span>creates new value.</span>"><span>その一歩が、</span><span>新しい価値をつくる。</span></h2>
+          <p class="rc-op__lead" data-ja="<span>クリエイティブ、<wbr>ビジネス、<wbr>テクノロジー。</span><span>それぞれの力で、<wbr>コンテンツの未来を<wbr>一緒に<wbr>つくりませんか。</span>" data-en="Creative, business, technology. Let's build the future of content together, each with our own strengths."><span>クリエイティブ、<wbr>ビジネス、<wbr>テクノロジー。</span><span>それぞれの力で、<wbr>コンテンツの未来を<wbr>一緒に<wbr>つくりませんか。</span></p>
         </div>
-        <div class="rc-pos-card cx-ui-card" data-pos="production" id="detail-production">
-          <div class="rc-pos-card-num">02</div>
-          <div class="rc-pos-card-title" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</div>
-          <div class="rc-pos-card-desc" data-ja="ネームからの作画・品質管理" data-en="Artwork from storyboards and quality control">ネームからの作画・品質管理</div>
-          <div class="rc-pos-card-tags"><span data-ja="リモート可" data-en="Remote OK">リモート可</span><span data-ja="未経験歓迎" data-en="No Experience Needed">未経験歓迎</span></div>
-        </div>
-        <div class="rc-pos-card cx-ui-card" data-pos="sales" id="detail-sales">
-          <div class="rc-pos-card-num">03</div>
-          <div class="rc-pos-card-title" data-ja="営業" data-en="Sales">営業</div>
-          <div class="rc-pos-card-desc" data-ja="法人開拓・ソリューション提案" data-en="B2B development and solution proposals">法人開拓・ソリューション提案</div>
-          <div class="rc-pos-card-tags"><span data-ja="リモート可" data-en="Remote OK">リモート可</span><span data-ja="副業可" data-en="Side Job OK">副業可</span></div>
+        <div class="rc-op__motto" aria-hidden="true" data-i18n-skip>
+          <p>CONTENTS X<br>RECRUIT</p>
+          <p>CREATE<br>DELIVER<br>EXPAND</p>
         </div>
       </div>
-      <div class="rc-actions" id="rc-actions" style="display:none;">
-        <button class="rc-action-btn" data-action="apply" data-ja="応募する" data-en="Apply">応募する</button>
-        <button class="rc-action-btn rc-action-btn--outline" data-action="detail" data-ja="詳細を見る" data-en="View Details">詳細を見る</button>
-      </div>
-    </div>
-  </section>
+      <ul class="rc-op__list">
+        <li class="rc-op-item">
+          <a class="rc-op-card cx-ui-card" href="#detail-manga" data-req="manga" aria-controls="rc-req" aria-expanded="false">
+            <span class="rc-op-card__media">
+              <img src="/material/images/recruit/recruit-position-manga.webp" width="800" height="1000" alt="" loading="lazy" decoding="async">
+              <span class="rc-op-card__no" data-i18n-skip><span class="rc-op-card__num">01</span><span class="rc-op-card__label">CREATIVE</span></span>
+            </span>
+            <span class="rc-op-card__body">
+              <span class="rc-op-card__row">
+                <span class="rc-op-card__text">
+                  <h3 class="rc-op-card__title" data-ja="漫画家 / 漫画制作" data-en="Manga Artist / Production">漫画家 / 漫画制作</h3>
+                  <span class="rc-op-card__desc" data-ja="物語で、想いを動かす。" data-en="Move hearts through stories.">物語で、想いを動かす。</span>
+                </span>
+                <span class="rc-op-card__circle" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </span>
+              <!-- 採用区分（新卒・正社員・インターン等）が確定したら <span>正社員</span> のように入れる。空なら表示されない -->
+              <span class="rc-op-card__types" data-hiring-types></span>
+              <span class="rc-op-card__more"><span data-ja="募集要項を見る" data-en="View requirements">募集要項を見る</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </span>
+          </a>
+        </li>
+        <li class="rc-op-item">
+          <a class="rc-op-card cx-ui-card" href="#detail-sales" data-req="sales" aria-controls="rc-req" aria-expanded="false">
+            <span class="rc-op-card__media">
+              <img src="/material/images/recruit/recruit-position-sales.webp" width="800" height="1000" alt="" loading="lazy" decoding="async">
+              <span class="rc-op-card__no" data-i18n-skip><span class="rc-op-card__num">02</span><span class="rc-op-card__label">SALES</span></span>
+            </span>
+            <span class="rc-op-card__body">
+              <span class="rc-op-card__row">
+                <span class="rc-op-card__text">
+                  <h3 class="rc-op-card__title" data-ja="営業" data-en="Sales">営業</h3>
+                  <span class="rc-op-card__desc" data-ja="出会いから、新しい価値をつくる。" data-en="Create new value from every encounter.">出会いから、新しい価値をつくる。</span>
+                </span>
+                <span class="rc-op-card__circle" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </span>
+              <!-- 採用区分（新卒・正社員・インターン等）が確定したら <span>正社員</span> のように入れる。空なら表示されない -->
+              <span class="rc-op-card__types" data-hiring-types></span>
+              <span class="rc-op-card__more"><span data-ja="募集要項を見る" data-en="View requirements">募集要項を見る</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </span>
+          </a>
+        </li>
+        <li class="rc-op-item">
+          <a class="rc-op-card cx-ui-card" href="#detail-engineer" data-req="engineer" aria-controls="rc-req" aria-expanded="false">
+            <span class="rc-op-card__media">
+              <img src="/material/images/recruit/recruit-position-engineer.webp" width="800" height="1000" alt="" loading="lazy" decoding="async">
+              <span class="rc-op-card__no" data-i18n-skip><span class="rc-op-card__num">03</span><span class="rc-op-card__label">ENGINEERING</span></span>
+            </span>
+            <span class="rc-op-card__body">
+              <span class="rc-op-card__row">
+                <span class="rc-op-card__text">
+                  <h3 class="rc-op-card__title" data-ja="エンジニア" data-en="Engineer">エンジニア</h3>
+                  <span class="rc-op-card__desc" data-ja="技術で、可能性を広げる。" data-en="Expand possibilities with technology.">技術で、可能性を広げる。</span>
+                </span>
+                <span class="rc-op-card__circle" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </span>
+              <!-- 採用区分（新卒・正社員・インターン等）が確定したら <span>正社員</span> のように入れる。空なら表示されない -->
+              <span class="rc-op-card__types" data-hiring-types></span>
+              <span class="rc-op-card__more"><span data-ja="募集要項を見る" data-en="View requirements">募集要項を見る</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </span>
+          </a>
+        </li>
+      </ul>
 
-  <!-- ===== DETAIL：職種詳細（独立セクション） ===== -->
-  <section class="rc-detail-section" id="rc-detail-section">
-    <div class="rc-detail-section-inner">
-      <div class="rc-detail-area" id="rc-detail-area" style="display:none;">
-        <!-- 漫画家 -->
-        <div class="rc-detail" data-detail="manga">
+      <!-- 募集要項。JSが無いときは全件そのまま読める。JSがあるときはカードで選んだ職種だけを開く。
+           id は JSON-LD の url（/recruit#detail-xxx）と対応しているので変えない -->
+      <div class="rc-req" id="rc-req" data-rc-req>
+        <article class="rc-detail" id="detail-manga" data-group="manga" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="漫画家募集" data-en="Manga Artist Wanted">漫画家募集</h3>
           <div class="rc-detail-cat"><span data-ja="クリエイティブ" data-en="Creative">クリエイティブ</span></div>
           <div class="rc-detail-rows">
@@ -327,10 +376,9 @@
               <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="contact?position=%E6%BC%AB%E7%94%BB%E5%AE%B6" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
-        </div>
-        <!-- マンガ製作担当 -->
-        <div class="rc-detail" data-detail="production">
+          <a href="/contact?position=%E6%BC%AB%E7%94%BB%E5%AE%B6" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+        </article>
+        <article class="rc-detail" id="detail-production" data-group="manga" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="マンガ製作担当募集" data-en="Manga Producer Wanted">マンガ製作担当募集</h3>
           <div class="rc-detail-cat"><span data-ja="クリエイティブ" data-en="Creative">クリエイティブ</span></div>
           <div class="rc-detail-rows">
@@ -355,10 +403,9 @@
               <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="contact?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
-        </div>
-        <!-- 営業 -->
-        <div class="rc-detail" data-detail="sales">
+          <a href="/contact?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+        </article>
+        <article class="rc-detail" id="detail-sales" data-group="sales" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="営業募集" data-en="Sales Position">営業募集</h3>
           <div class="rc-detail-cat"><span data-ja="ビジネス" data-en="Business">ビジネス</span></div>
           <div class="rc-detail-rows">
@@ -383,70 +430,124 @@
               <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="contact?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
-        </div>
-      </div>
-      <div class="rc-apply-area" id="rc-apply-area" style="display:none;">
-        <h3 class="rc-apply-title" data-ja="応募・カジュアル面談" data-en="Apply / Casual Interview">応募・カジュアル面談</h3>
-        <p class="rc-apply-lead" data-ja="へのご応募・カジュアル面談のご希望は、以下よりご連絡ください。" data-en="To apply or request a casual interview, please contact us below."><span id="rc-apply-pos-name"></span>へのご応募・カジュアル面談のご希望は、以下よりご連絡ください。</p>
-        <a href="contact" class="rc-apply-btn" data-ja="お問い合わせフォームへ" data-en="Go to Contact Form">お問い合わせフォームへ</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== FLOW：応募の流れ ===== -->
-  <section class="rc-flow" id="flow">
-    <div class="rc-flow-inner">
-      <div class="rc-section-label">Flow</div>
-      <h2 class="rc-section-title" data-ja="応募から参画までの流れ" data-en="From Application to Joining">応募から参画までの流れ</h2>
-      <div class="rc-flow-timeline">
-        <div class="rc-flow-item">
-          <div class="rc-flow-marker"><span>01</span></div>
-          <div class="rc-flow-card">
-            <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title" data-ja="エントリー" data-en="Entry">エントリー</h3>
-              <span class="rc-flow-card-badge" data-ja="最短当日対応" data-en="Same-day Response">最短当日対応</span>
-            </div>
-            <p class="rc-flow-card-desc" data-ja="フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。" data-en="Apply via form or email. Please attach your portfolio or resume if available.">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</p>
-          </div>
-        </div>
-        <div class="rc-flow-item">
-          <div class="rc-flow-marker"><span>02</span></div>
-          <div class="rc-flow-card">
-            <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title" data-ja="カジュアル面談" data-en="Casual Interview">カジュアル面談</h3>
-              <span class="rc-flow-card-badge" data-ja="オンライン 30分" data-en="Online 30 min">オンライン 30分</span>
-            </div>
-            <p class="rc-flow-card-desc" data-ja="Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。" data-en="We'll discuss our business and work style over Google Meet. It's a casual conversation, not a formal interview.">Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。</p>
-          </div>
-        </div>
-        <div class="rc-flow-item">
-          <div class="rc-flow-marker"><span>03</span></div>
-          <div class="rc-flow-card">
-            <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title" data-ja="トライアル" data-en="Trial">トライアル</h3>
-              <span class="rc-flow-card-badge" data-ja="短期間" data-en="Short Term">短期間</span>
-            </div>
-            <p class="rc-flow-card-desc" data-ja="実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。" data-en="A short trial with real project-like tasks. Both sides confirm compatibility in skills and workflow.">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。</p>
-          </div>
-        </div>
-        <div class="rc-flow-item">
-          <div class="rc-flow-marker rc-flow-marker--last"><span>04</span></div>
-          <div class="rc-flow-card">
-            <div class="rc-flow-card-header">
-              <h3 class="rc-flow-card-title" data-ja="契約・参画" data-en="Contract & Join">契約・参画</h3>
-              <span class="rc-flow-card-badge rc-flow-card-badge--accent" data-ja="チーム合流" data-en="Join the Team">チーム合流</span>
-            </div>
-            <p class="rc-flow-card-desc" data-ja="業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。" data-en="Sign a contract and join the team. Project assignments begin immediately.">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</p>
-          </div>
-        </div>
+          <a href="/contact?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+        </article>
+        <!-- TODO(#127): エンジニアの募集要項・応募先が確定したら中身を差し替え、JSON-LD の JobPosting とエントリーのボタンも追加する -->
+        <article class="rc-detail" id="detail-engineer" data-group="engineer" data-hiring-types="">
+          <h3 class="rc-detail-title" data-ja="エンジニア" data-en="Engineer">エンジニア</h3>
+          <div class="rc-detail-cat"><span data-ja="テクノロジー" data-en="Technology">テクノロジー</span></div>
+          <p class="rc-detail-pending" data-ja="募集要項は現在準備中です。公開まで今しばらくお待ちください。" data-en="Requirements for this position are being prepared. Please check back soon.">募集要項は現在準備中です。公開まで今しばらくお待ちください。</p>
+        </article>
+        <button type="button" class="rc-req__close" data-rc-req-close hidden><span data-ja="募集要項を閉じる" data-en="Close">募集要項を閉じる</span></button>
       </div>
     </div>
   </section>
 
-  <!-- ===== CTA ===== -->
-  <section id="cxCtaMount" data-cx-page-cta></section>
-  <script src="js/cta.js" defer></script>
+  <!-- ===== SELECTION：選考の流れ（ステップをつなぐ線がスクロールに合わせて伸びる） =====
+       ⚠️ 手順の文言は旧ページの内容をそのまま移している。正式な選考フローが決まったら差し替える -->
+  <section class="rc-sel" id="flow" aria-labelledby="rc-sel-title">
+    <div class="rc-sel__inner">
+      <div class="rc-sel__head">
+        <p class="rc-eyebrow" data-i18n-skip>SELECTION</p>
+        <h2 class="rc-sel__title" id="rc-sel-title" data-ja="選考の流れ" data-en="Selection Process">選考の流れ</h2>
+        <p class="rc-sel__lead" data-ja="応募から参画までの流れです。" data-en="From application to joining the team.">応募から参画までの流れです。</p>
+      </div>
+      <div class="rc-sel__timeline" data-rc-flow>
+        <span class="rc-sel__track" aria-hidden="true"><span class="rc-sel__progress"></span></span>
+        <ol class="rc-sel__steps">
+          <li class="rc-sel__step">
+            <span class="rc-sel__marker" aria-hidden="true" data-i18n-skip>01</span>
+            <div class="rc-sel__card">
+              <div class="rc-sel__step-head"><h3 class="rc-sel__step-title" data-ja="エントリー" data-en="Entry">エントリー</h3><span class="rc-sel__step-badge" data-ja="最短当日対応" data-en="Same-day Response">最短当日対応</span></div>
+              <p class="rc-sel__step-desc" data-ja="フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。" data-en="Apply via form or email. Please attach your portfolio or resume if available.">フォームまたはメールでご応募ください。ポートフォリオや経歴がわかる資料があればご添付ください。</p>
+            </div>
+          </li>
+          <li class="rc-sel__step">
+            <span class="rc-sel__marker" aria-hidden="true" data-i18n-skip>02</span>
+            <div class="rc-sel__card">
+              <div class="rc-sel__step-head"><h3 class="rc-sel__step-title" data-ja="カジュアル面談" data-en="Casual Interview">カジュアル面談</h3><span class="rc-sel__step-badge" data-ja="オンライン 30分" data-en="Online 30 min">オンライン 30分</span></div>
+              <p class="rc-sel__step-desc" data-ja="Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。" data-en="We'll discuss our business and work style over Google Meet. It's a casual conversation, not a formal interview.">Google Meetで事業内容や働き方についてお互いに確認します。堅い面接ではなく、気軽にお話ししましょう。</p>
+            </div>
+          </li>
+          <li class="rc-sel__step">
+            <span class="rc-sel__marker" aria-hidden="true" data-i18n-skip>03</span>
+            <div class="rc-sel__card">
+              <div class="rc-sel__step-head"><h3 class="rc-sel__step-title" data-ja="トライアル" data-en="Trial">トライアル</h3><span class="rc-sel__step-badge" data-ja="短期間" data-en="Short Term">短期間</span></div>
+              <p class="rc-sel__step-desc" data-ja="実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。" data-en="A short trial with real project-like tasks. Both sides confirm compatibility in skills and workflow.">実際の案件に近い内容で短期トライアルを実施。スキルや進め方の相性をお互いに確認します。</p>
+            </div>
+          </li>
+          <li class="rc-sel__step">
+            <span class="rc-sel__marker" aria-hidden="true" data-i18n-skip>04</span>
+            <div class="rc-sel__card">
+              <div class="rc-sel__step-head"><h3 class="rc-sel__step-title" data-ja="契約・参画" data-en="Contract & Join">契約・参画</h3><span class="rc-sel__step-badge" data-ja="チーム合流" data-en="Join the Team">チーム合流</span></div>
+              <p class="rc-sel__step-desc" data-ja="業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。" data-en="Sign a contract and join the team. Project assignments begin immediately.">業務委託契約を締結し、チームに参画。案件へのアサインがスタートします。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ENTRY：エントリー（応募は職種名付きでお問い合わせフォームへ。?position= があると CRM には送られない） ===== -->
+  <section class="rc-entry" id="entry" aria-labelledby="rc-entry-title" data-cx-page-cta>
+    <div class="rc-entry__inner">
+      <p class="rc-eyebrow" data-i18n-skip>ENTRY</p>
+      <h2 class="rc-entry__title" id="rc-entry-title" data-ja="エントリー" data-en="Entry">エントリー</h2>
+      <p class="rc-entry__lead" data-ja="ご応募・カジュアル面談のご希望は、職種を選んでお問い合わせフォームからご連絡ください。" data-en="To apply or request a casual interview, choose a position and contact us through the form.">ご応募・カジュアル面談のご希望は、職種を選んでお問い合わせフォームからご連絡ください。</p>
+      <ul class="rc-entry__list">
+        <li><a class="rc-entry__btn cx-ui-action" href="/contact?position=%E6%BC%AB%E7%94%BB%E5%AE%B6"><span data-ja="漫画家に応募する" data-en="Apply as Manga Artist">漫画家に応募する</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+        <li><a class="rc-entry__btn cx-ui-action" href="/contact?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93"><span data-ja="マンガ製作担当に応募する" data-en="Apply as Manga Producer">マンガ製作担当に応募する</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+        <li><a class="rc-entry__btn cx-ui-action" href="/contact?position=%E5%96%B6%E6%A5%AD"><span data-ja="営業に応募する" data-en="Apply for Sales">営業に応募する</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
+      </ul>
+      <p class="rc-entry__note" data-ja="エンジニアの募集要項は準備中です。" data-en="Engineer requirements are being prepared.">エンジニアの募集要項は準備中です。</p>
+    </div>
+  </section>
+
+  <!-- ===== TOPICS：トップページと共通の部品（css/home-topics.css・js/home-topics.js・同じWordPressの記事）。
+       下の3件はJS無効・取得失敗時の表示で、index.html の同じ箇所と揃える ===== -->
+    <section class="cxtp cxsb-section" id="topics" aria-labelledby="cxtp-title" data-cxtp>
+      <div class="cxsb-backdrop" aria-hidden="true"></div>
+      <div class="cxsb-label" aria-hidden="true" data-cxh-reveal data-i18n-skip>TOPICS</div>
+      <div class="cxtp-inner">
+        <div class="cxtp-head" data-cxh-reveal>
+          <div>
+            <p class="cxtp-eyebrow" data-i18n-skip>TOPICS</p>
+            <h2 id="cxtp-title" data-ja="Contents X を、もっと知る。" data-en="Get to know Contents X.">Contents X を、もっと知る。</h2>
+          </div>
+          <div class="cxtp-nav" data-cxtp-nav hidden>
+            <button type="button" class="cxtp-arrow-btn" data-cxtp-prev aria-label="前のトピックス"><span aria-hidden="true">&#8249;</span></button>
+            <button type="button" class="cxtp-arrow-btn" data-cxtp-next aria-label="次のトピックス"><span aria-hidden="true">&#8250;</span></button>
+          </div>
+        </div>
+        <ul class="cxtp-list" data-cxtp-list aria-label="TOPICS" data-cxh-reveal>
+        <li><a class="cxtp-card" href="/message">
+          <span class="cxtp-thumb"><img src="/material/home-2026/topics/topics-message-kuromiya.webp" width="960" height="540" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxtp-body">
+            <span class="cxtp-meta"><span class="cxtp-type" data-i18n-skip>MESSAGE</span><time datetime="2026-09-29">2026.09.29</time><span class="cxtp-arrow" aria-hidden="true">→</span></span>
+            <span class="cxtp-title" data-i18n-skip>代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。</span>
+            <span class="cxtp-tags" data-i18n-skip><span>#代表メッセージ</span><span>#ContentsX</span></span>
+          </span>
+        </a></li>
+        <li><a class="cxtp-card" href="https://www.youtube.com/watch?v=w_O3iaQKduQ" target="_blank" rel="noopener">
+          <span class="cxtp-thumb"><img src="https://i.ytimg.com/vi/w_O3iaQKduQ/hqdefault.jpg" width="480" height="360" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxtp-body">
+            <span class="cxtp-meta"><span class="cxtp-type" data-i18n-skip>VIDEO</span><time datetime="2026-08-11">2026.08.11</time><span class="cxtp-arrow" aria-hidden="true">↗</span></span>
+            <span class="cxtp-title" data-i18n-skip>BtoB営業で“漫画”が商談を生む理由｜AI企業マクニカが語る新しいリード獲得戦略</span>
+            <span class="cxtp-tags" data-i18n-skip><span>#ビズマンガ</span><span>#導入事例</span></span><span class="cxtp-visually-hidden">（外部サイトが開きます）</span>
+          </span>
+        </a></li>
+        <li><a class="cxtp-card" href="https://prtimes.jp/main/html/rd/p/000000003.000182345.html" target="_blank" rel="noopener">
+          <span class="cxtp-thumb"><img src="/material/home-2026/topics/topics-press-kirinz.webp" width="888" height="500" alt="" loading="lazy" decoding="async"></span>
+          <span class="cxtp-body">
+            <span class="cxtp-meta"><span class="cxtp-type" data-i18n-skip>PRESS</span><time datetime="2026-08-31">2026.08.31</time><span class="cxtp-arrow" aria-hidden="true">↗</span></span>
+            <span class="cxtp-title" data-i18n-skip>ContentsX、株式会社KIRINZと共同創業AI時代のコンテンツIP事業を本格始動</span>
+            <span class="cxtp-tags" data-i18n-skip><span>#プレスリリース</span><span>#IP事業</span></span><span class="cxtp-visually-hidden">（外部サイトが開きます）</span>
+          </span>
+        </a></li>
+        </ul>
+      </div>
+    </section>
+
 
   <!-- 資料DLモーダル -->
   <div class="dl-modal-overlay" id="dlModal">
@@ -509,6 +610,8 @@
   <script src="js/nav.js" defer></script>
   <script src="js/tracking.js" defer></script>
   <script src="js/recruit.js" defer></script>
+  <script src="/js/wp-config.js" defer></script>
+  <script src="/js/home-topics.js" defer></script>
   <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script>

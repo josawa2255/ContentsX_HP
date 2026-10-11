@@ -22,7 +22,7 @@
 | 代表メッセージ | `message.html` | i18n.js, nav.js, message-2026.js | `/message`。指定された新原稿を全文掲載。PCは左コピー・右ポートレート、1024px以下はMESSAGE→コピー・署名→写真→本文。本体コードで管理する静的ページ。支給PC/SPハンドオフに沿う最大1280pxの構成、本文最大720px・4章見出し、実写真、サムネイル付き関連リンク。Heroと会議写真だけ軽いフェード、本文は常時表示 |
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
-| 採用情報 | `recruit.html` | recruit.js, cta.js, dl-modal.js | 募集職種カード選択 + 詳細セクション |
+| 採用情報 | `recruit.html` | recruit.js, wp-config.js, home-topics.js, dl-modal.js, sitewide-motion.js | HERO / 募集職種 / 選考 / エントリー / TOPICS（§9） |
 | お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
 | ニュース詳細 | `news-detail.html` | wp-config.js + インラインJS | |
@@ -192,6 +192,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - カード: サムネイル（16:9）/ 種別（英大文字、MESSAGE・VIDEO・PRESS・COLUMN・CASE など自由）/ 日付 / タイトル（2行まで）/ タグ（#付き）。PCは3枚横並び、4枚目以降は横に並び矢印で送る。hover は画像1.02倍・矢印3px右・タイトルを青に。カード全体がリンクで、サイト内は同じタブ（→）、外部（YouTube・PR TIMES等）は新しいタブ（↗、読み上げに「外部サイトが開きます」）。
 - データ（`js/home-topics.js`）: `GET /contentsx/v1/topics`（WPプラグイン「Contents X ＞ TOPICS」、`contentsx-cms/contentsx-topics.php`）。表示ONのみ、PICK UP を先頭に、あとは管理画面の並び順。リンクは `/` 始まりのサイト内パスか http(s)、画像は `cms.contentsx.jp` / `contentsx.jp` / `i.ytimg.com` の https かサイト内パスのみ、日付は実在する日付のみ表示。文字は textContent。
 - 初期3件（`index.html` に同じ内容を JS無効・取得失敗時の表示として記載）: MESSAGE 2026-09-29「代表メッセージ｜全国で見てきたあの光景を、一社ずつ変えていきたい。」→ `/message` / VIDEO 2026-08-11 マクニカ対談（YouTube `w_O3iaQKduQ`）/ PRESS 2026-08-31 KIRINZ との共同創業（PR TIMES）。サムネイルは `material/home-2026/topics/topics-message-kuromiya.webp`（代表写真を16:9に切り出し）、YouTube の自動サムネイル、`topics-press-kirinz.webp`（リリース画像の中段のコマを切り出し）。
+- 採用ページ（`/recruit`）でも同じ部品を使う（SPEC §9.6）。フォールバックの3件を変えたら recruit.html も揃える。
 - TOPICSはNEWSと別のセクション。代表メッセージ本文は独立ページ `/message` へ接続（§14参照）。
 - WPプラグインのアップロード前確認（2026-10-07）: TOPICSの `contentsx-topics.php` と `contentsx-cms.php` の読み込み行はプラグインのmainに取り込み済み。お名前.comへ `contentsx-cms.php` をアップロードする前に、必ずプラグイン側の最新mainを取り込み、TOPICSの読み込み行と参照先ファイルがそろっていることを確認する。古い作業ブランチのファイルで上書きしない。アップロード対象PHPは `php -l` で構文チェックする。
 - 項目の追加・変更（2026-10-08 追記）: WP管理画面「Contents X ＞ TOPICS」で行う。REST の `POST /contentsx/v1/topics`（要 edit_posts）でもできるが、**一覧を丸ごと置き換える**仕様で、公開の GET は表示ONの項目しか返さない。GET の結果に足して POST すると、管理画面で表示OFFにしている項目が消えるので、表示OFFの項目が無いことを確かめてから使う。VIDEO の画像はYouTubeのURLから自動で補われるので、保存し直すときは空のまま送る。
@@ -271,7 +272,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
-| `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（会社概要・採用の2ページ。サービス一覧は2026-10-10にページ専用CTAへ統合） |
+| `js/cta.js` | 共通CTAセクション生成 | `<section id="cxCtaMount"></section>` を置く（会社概要のみ。サービス一覧は2026-10-10、採用は2026-10-12にページ専用CTAへ統合） |
 | `js/nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 | 全ページ（defer） |
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
 | `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
@@ -411,7 +412,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 構成: 左＝ロゴ＋小さなリンク2段（会社概要・私たちについて・ニュース・採用情報・お問い合わせ／よくあるご質問・プライバシーポリシー・利用規約・Chrome 拡張機能）、右＝Sales X・Creative X のサービス一覧2列（外部サイトへのリンクは左上に角の印＋別タブ）、下＝`© 2026 Contents X Inc.`。住所・会社名の文字表記は置かない（会社概要・構造化データに記載）。
 - 768px以下は縦積み。リンクの高さは44px以上。各リンクに `data-ja` / `data-en`。
 - 上部の小さなお問い合わせ導線 `.cx-footer__contact`（Issue #94）: 「まずはご相談ください／利用するサービスが決まっていなくても構いません。」＋白枠の「お問い合わせ」ボタン（`/contact`）。濃紺の面はそのまま、下に区切り線。768px以下は縦積みでボタン全幅。
-- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要・採用）、サービス一覧の `.cxsd-contact`（`service-list.html.tpl`）、FAQの `.faq-cta`、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
+- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要）、採用のエントリー `.rc-entry`、サービス一覧の `.cxsd-contact`（`service-list.html.tpl`）、FAQの `.faq-cta`、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
 - **変更するときは3か所を同じ内容にする**: 静的ページ全部（`<footer class="cx-footer">` を一括置換）、`tools/templates/c-column.html.tpl`（コラム記事の生成元）、`services/index.html`（`tools/build-services.py` がサービスページへ複製）。置換後に `python3 tools/build-services.py --check` で差分がないことを確認する。
 - サービス名・遷移先は `data/services.json` と `js/nav.js` に合わせる（サービスを増減したらフッターも直す）。
 
@@ -444,14 +445,34 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - サブコピーと補助コピーは `<wbr>` を入れた文節の切れ目だけで改行（`word-break: keep-all`）。Android の文字拡大1.4倍・320px でも1文字だけ落ちないことを確認済み。
 - 旧ヒーロー（写真＋「Careers」＋職種・会社・選考フローのボタン群、`rc-hero*` / `rc-pill`）は撤去。旧画像 `material/images/recruit/hero.webp/.avif` はどこからも参照されなくなったが残置。
 
-### 9.1 ポジション選択演出
-- 3つの募集職種カード（漫画家 / マンガ製作担当 / 営業）
-- カード選択 → 背景画像切替 + アクションボタン表示
-- **背景**: `switchPosBg()` で positions セクション + detail セクション両方に同じ画像を適用
-- **PC（1024px+, hover可）**: `background-attachment: fixed` で2つのセクションがシームレスに繋がる
-- **モバイル（767px以下）**: 背景画像非表示（描画崩れ回避）
-- 「詳細を見る」→ 独立セクション `rc-detail-section` で表示（半透明カード + blur）
-- 「応募する」→ `contact.html?position={職種名}` へ遷移
+### 9.1 ページ構成とモーション（2026-10-12、#127）
+- 構成: HERO → 募集職種（`#positions`）→ 選考（`#flow`）→ エントリー（`#entry`）→ TOPICS（`#topics`、トップと共通）→ フッター。旧ページの「職種カード選択で背景が切り替わる演出」「応募する／詳細を見るのボタン列」「共通CTA（`cta.js`）」は撤去。
+- 方針: 特徴的な演出は要所だけ（HERO の X、HERO→募集職種の日差し）。ほかは `MOTION-UI-2026.md` の「1回だけ下から24px・0.75秒」。スクロールを止める・吸着させる処理は入れない。
+- 登場演出の仕組みは下層ページ共通の `js/sitewide-motion.js`（対象: `.rc-op__intro` `.rc-op-item` `.rc-sel__head` `.rc-sel__step` `.rc-entry__inner` `.cxtp-head` `.cxtp-list`）。職種カードは 0 / 0.14 / 0.28 秒の時間差（`css/recruit.css`）。
+- スクロール量で動くのは「日差し」と「選考の線」の2つだけで、監視は `js/recruit.js` の1か所（画面内のときだけ計算・passive・requestAnimationFrame）。毎フレーム書く CSS 変数は子要素のない要素に置く（`sitewide-motion.js` が style の変化を監視しているため）。
+- 動きを減らす設定・JS無効: どれも最終状態で表示（日差しは完成した背景、線は伸び切り、募集要項は全件表示）。
+- 旧カード背景画像 `material/images/recruit/{manga,production,sales}.webp/.avif` は参照されなくなったが残置（BizManga からの参照なし）。
+
+### 9.2 募集職種（`.rc-op`）
+- 見出し「OPEN POSITIONS」「その一歩が、新しい価値をつくる。」、リード「クリエイティブ、ビジネス、テクノロジー。それぞれの力で、コンテンツの未来を一緒につくりませんか。」、右上に飾りの英字（PCのみ）。
+- 職種カードは3枚（この表示名を保つ）: 01 漫画家 / 漫画制作（CREATIVE）／02 営業（SALES）／03 エンジニア（ENGINEERING）。画像は `material/images/recruit/recruit-position-{manga,sales,engineer}.webp`（800×1000、AI生成のイメージ素材なので alt は空＝装飾扱い。実在の社員・オフィスとして説明しない）。PC 3列、1023px以下は2列＋下段中央1枚、640px以下は1列。
+- カードは `#detail-xxx` へのリンク。JSがあるときはその職種の募集要項だけを開く（漫画家 / 漫画制作は「漫画家」「マンガ製作担当」の2件）。もう一度押すか「募集要項を閉じる」で閉じる。`/recruit#detail-sales` などの直リンクでも開く。
+- 採用区分（新卒・正社員・インターン等）は確定したらカードの `.rc-op-card__types` に `<span>正社員</span>` のように入れる（空なら非表示）。募集要項にも `data-hiring-types` を用意。⚠️ 確定していない条件・応募資格・報酬・雇用形態・応募先は書かない。
+- ⚠️ **エンジニアは募集要項・応募先が未確定**（`TODO(#127)`）。募集要項は「準備中」の文だけで、エントリーにもボタンを置いていない。確定したら募集要項・エントリーのボタン・JSON-LD の JobPosting を揃えて追加する。
+- **日差し（このセクションだけ）**: 背景写真 `recruit-positions-bg.webp`（スマホは `-sp`）は静止。その上の白いベール（`.rc-op__veil`）と光の帯（`.rc-op__light`、淡いブルーとオレンジのグラデーション）だけが、セクション上端が画面下端に入ってから画面の上から22%に来るまでのスクロール量（0→1、`--rcop-p`）で変化する。白が主体 → 写真が見え、光が右上から現れて左下へ72px滑りながら広がる（PCは光の届く範囲もマスクで右上→左下に広げる。スマホは不透明度と移動だけ）。光の不透明度は最大0.3（背景写真にも斜線があるため）。値の段差は `@property` の transition 0.45秒でならす。戻りスクロールは同じ式で逆に戻るだけなので点滅しない。カードの操作では再生されない。
+
+### 9.3 募集要項（`.rc-req` / `.rc-detail`）
+- id（`detail-manga` / `detail-production` / `detail-sales` / `detail-engineer`）は JSON-LD の `url` と対応しているので変えない。応募ボタンは `/contact?position=職種名`（お問い合わせフォームの本文に「【応募】職種名」が入り、CRMには送られない）。
+
+### 9.4 選考（`.rc-sel`）
+- 左に見出し、右に縦のステップ。ステップをつなぐ線（`.rc-sel__progress`）が、線の上端が画面の65%の高さを越えたところから伸び、下端が同じ高さで伸び切る。線が届いたステップの番号は青く塗られる。各ステップは1回だけ順に登場。
+- ⚠️ ステップの文言（エントリー／カジュアル面談／トライアル／契約・参画）は**旧ページの業務委託向けの内容をそのまま移している**。正式な選考フローが決まったら差し替える。
+
+### 9.5 エントリー（`.rc-entry`）
+- 職種別の応募ボタン（漫画家／マンガ製作担当／営業 → `/contact?position=…`）。ページ専用CTAなので `data-cx-page-cta` を付け、フッター上の営業向け相談導線は出さない。
+
+### 9.6 TOPICS（トップと共通）
+- `index.html` の TOPICS と同じマークアップ・`css/home-topics.css`・`js/home-topics.js`・`js/wp-config.js`・`css/home-sections.css`（共通背景）。記事はトップと同じ WordPress「Contents X ＞ TOPICS」。⚠️ JS無効・取得失敗時の3件は `index.html` と同じ内容に揃える。
 
 ## 10. お問い合わせボタン（送信ボタン）
 
@@ -593,7 +614,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 
 ## 15. よくある落とし穴（Gotchas）
 
-1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば共通CTAを使う全ページ（会社概要・採用）に反映される（手動コピペ禁止）
+1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば共通CTAを使う全ページ（現在は会社概要のみ）に反映される（手動コピペ禁止）
 2. **モバイルでハンバーガー押せない** → §7.1 のチェックリスト
 3. **新作情報に漫画事例を出したい** → 2026-08-05以降は`cx_show_new_contentsx`が未設定でも表示される（明示的に`0`を入れた作品だけ除外）。表示件数は`added`降順で最大10件（`script.js` `MAX_NEW_WORKS`）。**画面が更新されない場合**: `js/wp-api.js` `loadNewWorks()`完了時に発火する`wp-new-works-ready`イベントを`js/script.js`側で購読して`buildNewWorksCards()`を再実行する構成（2026-08-31修正、[BUGS.md #052](../BUGS.md)）。この購読が無いと`wp-data-ready`（`/works`取得完了時のみ発火）のタイミングでフォールバック`js/data/new-works.js`のまま描画が固定されてしまう
 4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に（2026-04-16修正: 静的 `WORKS_DETAIL_DATA` には `show_hero_site` が無いので初回描画は全作品表示。`wp-data-ready` で `buildHeroCarousel()` を再実行してフィルターを効かせている。サムネ差し替えのみだとCMS設定が反映されない）
