@@ -17,9 +17,15 @@
     gtag('config', 'G-B000C4JCCX');
     gtag('config', 'AW-18108125426');
   </script>
+  <!-- 採用応募は /recruit/entry（旧リンク /contact?position=職種 はそちらへ移す）。
+       法人お問い合わせの広告コンバージョンに採用の流入を数えないよう、計測より先に判定する -->
+  <script>
+    var cxIsRecruitLink = /[?&]position=/.test(location.search);
+    if (cxIsRecruitLink) location.replace('/recruit/entry' + location.search);
+  </script>
   <!-- Event snippet for お問合せフォーム到達 conversion page -->
   <script>
-    gtag('event', 'conversion', {'send_to': 'AW-18108125426/9tNKCNH49agcEPKh0LpD'});
+    if (!cxIsRecruitLink) gtag('event', 'conversion', {'send_to': 'AW-18108125426/9tNKCNH49agcEPKh0LpD'});
   </script>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
@@ -224,6 +230,7 @@
   <script src="js/i18n.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/tracking.js" defer></script>
+  <script src="/js/form-common.js" defer></script>
   <script src="js/contact.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>

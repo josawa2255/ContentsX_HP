@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <!-- 採用エントリー（/recruit/entry）。法人お問い合わせ（/contact）とは別のフォーム。
+       ⚠️ 法人向けの計測・連携は入れない: Google広告のお問い合わせコンバージョン、HubSpot の追跡スクリプト（フォームの自動収集）、
+       CRM 受信箱の貼り付けコード。採用の計測は GA4 のイベント recruit_entry_submit だけ（js/recruit-entry.js） -->
+  <!-- Google tag (gtag.js) - GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B000C4JCCX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-B000C4JCCX');
+  </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+  (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd1694xs70");
+  </script>
+  <title>採用エントリー｜Contents X 採用情報</title>
+  <meta name="description" content="Contents X（コンテンツエックス）の採用エントリーフォーム。新卒・正社員・インターンの応募はこちらから。">
+  <!-- 入力フォームだけのページなので検索結果には出さない（採用情報は /recruit を見てもらう） -->
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://contentsx.jp/recruit/entry">
+  <meta property="og:title" content="採用エントリー｜Contents X 採用情報">
+  <meta property="og:description" content="Contents X の採用エントリーフォーム。新卒・正社員・インターンの応募はこちらから。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://contentsx.jp/recruit/entry">
+  <meta property="og:site_name" content="ContentsX">
+  <meta property="og:image" content="https://contentsx.jp/material/images/og/og-recruit.webp">
+  <meta property="og:locale" content="ja_JP">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://contentsx.jp/" },
+    { "@type": "ListItem", "position": 2, "name": "採用情報", "item": "https://contentsx.jp/recruit" },
+    { "@type": "ListItem", "position": 3, "name": "採用エントリー", "item": "https://contentsx.jp/recruit/entry" }
+  ]
+}
+  </script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/webp" href="/material/images/logo/contentsx-icon.webp">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/form.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="/css/sitewide-cohesion.css">
+  <link rel="stylesheet" href="/css/site-footer.css">
+  <link rel="stylesheet" href="/css/recruit-entry.css">
+</head>
+<body data-theme="magenta-hot" class="cx-sitewide">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <img height="192" width="1022" src="/material/images/logo/ContentsX.webp" alt="ContentsX" class="logo-img">
+      </a>
+      <nav class="nav" id="nav"><!-- nav.js が生成 --></nav>
+      <div class="header-right">
+        <button class="hamburger" id="hamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 採用エントリー =====
+       入力欄の見た目は共通の css/form.css、送信の部品は js/form-common.js（お問い合わせと共用）。
+       希望職種は /recruit/entry?position=職種名 で自動選択（募集要項の「この募集に応募する」から来たとき）。
+       職種の選択肢は募集状況に合わせてこのリストを編集する（value は募集要項のリンクの position と同じ文字） -->
+  <main class="rce-main">
+    <nav class="rce-breadcrumb" aria-label="パンくずリスト">
+      <a href="/recruit" data-ja="採用情報" data-en="Careers">採用情報</a><span aria-hidden="true">/</span><span aria-current="page" data-ja="採用エントリー" data-en="Entry">採用エントリー</span>
+    </nav>
+    <div class="rce-head">
+      <p class="rce-eyebrow" data-i18n-skip>ENTRY</p>
+      <h1 class="rce-title" data-ja="採用エントリー" data-en="Job Application">採用エントリー</h1>
+      <p class="rce-lead" data-ja="<span>新卒・正社員・インターンの<wbr>応募フォームです。</span><span>内容を確認のうえ、<wbr>担当者より<wbr>メールでご連絡します。</span>" data-en="Application form for new graduates, full-time and internship positions. We will contact you by email after reviewing your application."><span>新卒・正社員・インターンの<wbr>応募フォームです。</span><span>内容を確認のうえ、<wbr>担当者より<wbr>メールでご連絡します。</span></p>
+      <p class="rce-note"><span data-ja="法人のお客様のご相談は" data-en="For business inquiries, please use the">法人のお客様のご相談は</span><a href="/contact" data-ja="お問い合わせフォーム" data-en="contact form">お問い合わせフォーム</a><span data-ja="へお願いします。" data-en=".">へお願いします。</span></p>
+    </div>
+
+    <form class="rce-form" id="recruitEntryForm" novalidate data-cx-page-cta>
+      <fieldset class="form-group rce-fieldset">
+        <legend class="form-label"><span data-ja="応募区分" data-en="Application type">応募区分</span> <span class="required" data-ja="必須" data-en="Required">必須</span></legend>
+        <div class="rce-choices">
+          <label class="rce-choice"><input type="radio" name="hiringType" value="新卒" required><span data-ja="新卒" data-en="New graduate">新卒</span></label>
+          <label class="rce-choice"><input type="radio" name="hiringType" value="正社員（中途）"><span data-ja="正社員（中途）" data-en="Full-time (experienced)">正社員（中途）</span></label>
+          <label class="rce-choice"><input type="radio" name="hiringType" value="インターン"><span data-ja="インターン" data-en="Internship">インターン</span></label>
+        </div>
+        <p class="rce-error" id="hiringTypeError" hidden data-ja="応募区分を選んでください" data-en="Please choose an application type.">応募区分を選んでください</p>
+      </fieldset>
+
+      <div class="form-group">
+        <label class="form-label" for="position"><span data-ja="希望職種" data-en="Position">希望職種</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+        <select class="form-input rce-select" id="position" name="position" required>
+          <option value="" data-ja="選択してください" data-en="Please select">選択してください</option>
+          <option value="漫画家" data-ja="漫画家" data-en="Manga Artist">漫画家</option>
+          <option value="マンガ製作担当" data-ja="マンガ製作担当" data-en="Manga Producer">マンガ製作担当</option>
+          <option value="営業" data-ja="営業" data-en="Sales">営業</option>
+          <option value="エンジニア" data-ja="エンジニア" data-en="Engineer">エンジニア</option>
+          <option value="その他・未定" data-ja="その他・未定（本文にご記入ください）" data-en="Other / Undecided (please describe below)">その他・未定（本文にご記入ください）</option>
+        </select>
+      </div>
+
+      <div class="rce-row">
+        <div class="form-group">
+          <label class="form-label" for="fullName"><span data-ja="お名前" data-en="Name">お名前</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <input class="form-input" type="text" id="fullName" name="fullName" autocomplete="name" placeholder="佐藤 太郎" data-ph-ja="佐藤 太郎" data-ph-en="Taro Sato" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="furigana"><span data-ja="ふりがな" data-en="Name (phonetic)">ふりがな</span> <span class="rce-optional" data-ja="任意" data-en="Optional">任意</span></label>
+          <input class="form-input" type="text" id="furigana" name="furigana" placeholder="さとう たろう" data-ph-ja="さとう たろう" data-ph-en="">
+        </div>
+      </div>
+
+      <div class="rce-row">
+        <div class="form-group">
+          <label class="form-label" for="email"><span data-ja="メールアドレス" data-en="Email">メールアドレス</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+          <input class="form-input" type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="example@mail.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="phone"><span data-ja="電話番号" data-en="Phone">電話番号</span> <span class="rce-optional" data-ja="任意" data-en="Optional">任意</span></label>
+          <input class="form-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="090-1234-5678">
+        </div>
+      </div>
+
+      <div class="rce-row">
+        <div class="form-group">
+          <label class="form-label" for="affiliation"><span data-ja="学校名・所属" data-en="School / Current employer">学校名・所属</span> <span class="rce-optional" data-ja="任意" data-en="Optional">任意</span></label>
+          <input class="form-input" type="text" id="affiliation" name="affiliation" placeholder="〇〇大学 〇〇学部／株式会社〇〇" data-ph-ja="〇〇大学 〇〇学部／株式会社〇〇" data-ph-en="University / Company">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="graduation"><span data-ja="卒業（予定）年月" data-en="Graduation (expected)">卒業（予定）年月</span> <span class="rce-optional" data-ja="任意" data-en="Optional">任意</span></label>
+          <input class="form-input" type="text" id="graduation" name="graduation" placeholder="2027年3月" data-ph-ja="2027年3月" data-ph-en="Mar 2027">
+          <p class="rce-hint" data-ja="新卒・インターンの方はご記入ください" data-en="For new graduates and interns">新卒・インターンの方はご記入ください</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="portfolio"><span data-ja="ポートフォリオ・経歴のURL" data-en="Portfolio / Resume URL">ポートフォリオ・経歴のURL</span> <span class="rce-optional" data-ja="任意" data-en="Optional">任意</span></label>
+        <input class="form-input" type="url" id="portfolio" name="portfolio" inputmode="url" placeholder="https://" pattern="https?://.+">
+        <p class="rce-hint" data-ja="作品・職務経歴書などを共有できるURL（Googleドライブ等）があればご記入ください" data-en="A link to your work or resume (e.g. Google Drive), if any">作品・職務経歴書などを共有できるURL（Googleドライブ等）があればご記入ください</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="message"><span data-ja="志望動機・自己PR・ご質問" data-en="Motivation / Self-introduction / Questions">志望動機・自己PR・ご質問</span> <span class="required" data-ja="必須" data-en="Required">必須</span></label>
+        <textarea class="form-textarea" id="message" name="message" placeholder="応募のきっかけや、これまでの経験、聞いてみたいことなどをご自由にお書きください" data-ph-ja="応募のきっかけや、これまでの経験、聞いてみたいことなどをご自由にお書きください" data-ph-en="Tell us why you are applying, your experience, or any questions" required></textarea>
+      </div>
+
+      <div class="form-group rce-consent">
+        <label class="rce-check"><input type="checkbox" id="consent" name="consent" required><span><a href="/privacy" target="_blank" rel="noopener" data-ja="プライバシーポリシー" data-en="Privacy Policy">プライバシーポリシー</a><span data-ja="に同意のうえ送信します" data-en=" — I agree and submit">に同意のうえ送信します</span></span></label>
+      </div>
+
+      <!-- ハニーポット（人には見えない欄。値が入っていたらボットとみなし、送らずに完了表示だけ出す） -->
+      <div aria-hidden="true" data-i18n-skip style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+        <label for="cxWebsite">Website (do not fill)</label>
+        <input type="text" id="cxWebsite" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="cb-submit form-submit rce-submit" aria-label="応募する">
+        <span class="cb-label" data-ja="応募する" data-en="Submit Application">応募する</span>
+        <span class="cb-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13"/>
+            <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+        </span>
+      </button>
+    </form>
+
+    <div class="rce-thanks" id="recruitEntryThanks" tabindex="-1" hidden>
+      <p class="rce-thanks__title" data-ja="ご応募ありがとうございます。" data-en="Thank you for applying.">ご応募ありがとうございます。</p>
+      <p class="rce-thanks__text" data-ja="内容を確認のうえ、担当者よりメールでご連絡いたします。" data-en="We will review your application and contact you by email.">内容を確認のうえ、担当者よりメールでご連絡いたします。</p>
+      <a class="rce-thanks__back" href="/recruit" data-ja="採用情報へ戻る" data-en="Back to Careers">採用情報へ戻る</a>
+    </div>
+  </main>
+
+  <!-- ===== フッター ===== -->
+  <footer class="cx-footer">
+    <div class="cx-footer__inner">
+      <div class="cx-footer__contact">
+        <p class="cx-footer__contact-text"><strong data-ja="まずはご相談ください" data-en="Let's talk">まずはご相談ください</strong><span data-ja="利用するサービスが決まっていなくても構いません。" data-en="You do not need to choose a service first.">利用するサービスが決まっていなくても構いません。</span></p>
+        <a class="cx-footer__contact-link" href="/contact"><span data-ja="お問い合わせ" data-en="Contact us">お問い合わせ</span><span class="cx-footer__contact-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="cx-footer__main">
+        <div class="cx-footer__brand">
+          <a href="/" class="cx-footer__logo" aria-label="Contents X ホーム"><img src="/material/images/logo/ContentsX.webp" width="1022" height="192" alt="Contents X" loading="lazy" decoding="async"></a>
+          <nav class="cx-footer__nav" aria-label="フッターナビゲーション">
+            <ul class="cx-footer__links">
+              <li><a href="/company" data-ja="会社概要" data-en="Company">会社概要</a></li>
+              <li><a href="/about" data-ja="私たちについて" data-en="About Us">私たちについて</a></li>
+              <li><a href="/news" data-ja="ニュース" data-en="News">ニュース</a></li>
+              <li><a href="/recruit" data-ja="採用情報" data-en="Recruit">採用情報</a></li>
+              <li><a href="/contact" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a></li>
+            </ul>
+            <ul class="cx-footer__links cx-footer__links--sub">
+              <li><a href="/faq" data-ja="よくあるご質問" data-en="FAQ">よくあるご質問</a></li>
+              <li><a href="/privacy" data-ja="プライバシーポリシー" data-en="Privacy Policy">プライバシーポリシー</a></li>
+              <li><a href="/terms" data-ja="利用規約" data-en="Terms">利用規約</a></li>
+              <li><a href="/extensions/" data-ja="Chrome 拡張機能" data-en="Chrome Extensions">Chrome 拡張機能</a></li>
+            </ul>
+          </nav>
+        </div>
+        <nav class="cx-footer__services" aria-label="サービス">
+          <div class="cx-footer__group">
+            <a href="/services/sales-x/" class="cx-footer__group-title">Sales X</a>
+            <ul>
+              <li><a href="https://bizform.contentsx.jp/" class="is-external" target="_blank" rel="noopener" data-ja="ビズフォーム" data-en="BizForm">ビズフォーム</a></li>
+              <li><a href="/services/#bizaio" data-ja="ビズAIO" data-en="BizAIO">ビズAIO</a></li>
+              <li><a href="/services/#bizkarte" data-ja="ビズカルテ" data-en="BizKarte">ビズカルテ</a></li>
+              <li><a href="https://ichioshi.contentsx.jp/service.html" class="is-external" target="_blank" rel="noopener" data-ja="ビズ採用" data-en="BizRecruit">ビズ採用</a></li>
+            </ul>
+          </div>
+          <div class="cx-footer__group">
+            <a href="/services/creative-x/" class="cx-footer__group-title">Creative X</a>
+            <ul>
+              <li><a href="https://bizmanga.contentsx.jp/" class="is-external" target="_blank" rel="noopener" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</a></li>
+              <li><a href="https://bizmanga.contentsx.jp/bizanime" class="is-external" target="_blank" rel="noopener" data-ja="ビズアニメ" data-en="BizAnime">ビズアニメ</a></li>
+              <li><a href="/services/#bizvideo" data-ja="ビズビデオ" data-en="BizVideo">ビズビデオ</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <small class="cx-footer__copy">&copy; 2026 Contents X Inc.</small>
+    </div>
+  </footer>
+
+  <script src="/js/i18n.js" defer></script>
+  <script src="/js/nav.js" defer></script>
+  <script src="/js/tracking.js" defer></script>
+  <script src="/js/form-common.js" defer></script>
+  <script src="/js/recruit-entry.js" defer></script>
+  <script src="/js/sitewide-motion.js" defer></script>
+</body>
+</html>

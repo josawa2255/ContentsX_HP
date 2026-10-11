@@ -1,19 +1,13 @@
-// URLパラメータ解析（流入元トラッキング + 自動入力）
-var CX_PARAMS = new URLSearchParams(window.location.search);
+// 法人向けお問い合わせ（/contact）。共通の部品は js/form-common.js（採用エントリーと共用）
+var CX_PARAMS = window.cxForm.params;
 
-// 採用ページからのposition自動入力
-(function() {
-  var position = CX_PARAMS.get('position');
-  if (position) {
-    var msgField = document.getElementById('message');
-    if (msgField) {
-      msgField.value = '【応募】' + position + '\n\n';
-    }
-  }
-})();
+// 採用応募は別フォーム（/recruit/entry）。旧リンク /contact?position=職種 で来たら、
+// 営業の問い合わせとして送られないよう、職種を付けたまま採用フォームへ移す
+if (CX_PARAMS.get('position')) {
+  window.location.replace('/recruit/entry?position=' + encodeURIComponent(CX_PARAMS.get('position')));
+}
 
-// HubSpot Forms API 送信
-var HUBSPOT_PORTAL_ID = '48367061';
+// HubSpot の送信先（B/C 共通の法人お問い合わせフォーム）
 var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
 // CRM（ビズカルテ）の受信箱へ写しを送る。送信は contact.html 末尾の貼り付けコード
@@ -52,26 +46,16 @@ function copyToCrm(form) {
   } catch (err) { console.warn('CRM inbound failed (ignored):', err); }
 }
 
-// 部署は HubSpot のフォーム側で必須（空だと送信が拒否される）。HTML の required は
-// 空白だけの入力を通すので、送信時に前後の空白を除いて空なら止める
+// 部署は HubSpot のフォーム側で必須（空だと送信が拒否される）。空白だけの入力も止める
 var departmentInput = document.getElementById('department');
-departmentInput.addEventListener('input', function () {
-  departmentInput.setCustomValidity('');
-});
 
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  if (!departmentInput.value.trim()) {
-    var isEn = window.i18n && typeof window.i18n.getLang === 'function' && window.i18n.getLang() === 'en';
-    departmentInput.setCustomValidity(isEn ? 'Please enter your department.' : '部署を入力してください');
-    departmentInput.reportValidity();
-    return;
-  }
+  if (!window.cxForm.requireTrimmed(departmentInput, '部署を入力してください', 'Please enter your department.')) return;
 
   var submitBtn = e.target.querySelector('.form-submit');
-  submitBtn.disabled = true;
-  submitBtn.classList.add('is-sending');
+  window.cxForm.setSending(submitBtn, true);
 
   var company = document.getElementById('company').value;
   var department = document.getElementById('department').value;
@@ -80,17 +64,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   var message = document.getElementById('message').value;
 
   // 流入元トラッキング情報をメッセージに付加
-  var tracking = [];
-  var utmSource   = CX_PARAMS.get('utm_source');
-  var utmMedium   = CX_PARAMS.get('utm_medium');
-  var utmCampaign = CX_PARAMS.get('utm_campaign');
-  var source      = CX_PARAMS.get('source');
-  if (utmSource)   tracking.push('流入元: ' + utmSource);
-  if (utmMedium)   tracking.push('媒体: ' + utmMedium);
-  if (utmCampaign) tracking.push('キャンペーン: ' + utmCampaign);
-  if (source)      tracking.push('参照ページ: ' + source);
-  var behaviorLog = typeof window.bmGetTrackingNote === 'function' ? window.bmGetTrackingNote() : '';
-  var trackingNote = tracking.length > 0 || behaviorLog ? '\n\n---\n[トラッキング]\n' + tracking.join('\n') + behaviorLog : '';
+  var trackingNote = window.cxForm.trackingNote();
 
   var fields = [
     { name: 'company',   value: company },
@@ -101,35 +75,11 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     { name: 'message',   value: message + trackingNote }
   ];
 
-  var payload = {
-    fields: fields,
-    context: {
-      pageUri: window.location.href,
-      pageName: document.title
-    }
-  };
-
   // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
-  // ただし採用応募（recruit.html から ?position= 付きで遷移）は営業リードではないため送らない。
-  var isRecruitApplication = !!CX_PARAMS.get('position');
-  if (!isRecruitApplication) copyToCrm(e.target);
+  // 採用応募は /recruit/entry に分けたので、ここに来るのは法人のお問い合わせだけ
+  copyToCrm(e.target);
 
-  var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
-    + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
-
-  fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(function(res) {
-    if (res.ok) {
-      return res.json();
-    }
-    return res.text().then(function(t) {
-      throw new Error(t);
-    });
-  })
+  window.cxForm.submitHubSpot(HUBSPOT_FORM_GUID, fields)
   .then(function() {
     // Google広告コンバージョン: お問合せフォーム送信完了サンクス
     if (typeof gtag === 'function') {
@@ -151,8 +101,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     form.style.display = 'none';
   })
   .catch(function(err) {
-    submitBtn.disabled = false;
-    submitBtn.classList.remove('is-sending');
+    window.cxForm.setSending(submitBtn, false);
     alert('送信に失敗しました。お手数ですが、もう一度お試しください。');
   });
 });

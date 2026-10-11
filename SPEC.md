@@ -23,7 +23,8 @@
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
 | 採用情報 | `recruit.html` | recruit.js, wp-config.js, home-topics.js, dl-modal.js, sitewide-motion.js | HERO / 募集職種 / 選考 / エントリー / TOPICS（§9） |
-| お問い合わせ | `contact.html` | contact.js | HubSpot Forms API + 送信ボタン演出 |
+| お問い合わせ | `contact.html` | form-common.js, contact.js | 法人向け。HubSpot Forms API + 送信ボタン演出 |
+| 採用エントリー | `recruit/entry.html`（`/recruit/entry`） | form-common.js, recruit-entry.js | 採用専用フォーム（§9.7）。noindex |
 | ニュース一覧 | `news.html` | wp-config.js, wp-api.js, script.js | |
 | ニュース詳細 | `news-detail.html` | wp-config.js + インラインJS | |
 | コラム一覧 | `column.html` | i18n.js, nav.js, column.js | Featured + カテゴリチップフィルタ + カードグリッド。`tools/build-c-columns.py` が WP API (`?site=contentx`) からカード・カテゴリ・ItemList JSON-LD・Featured を自動注入（`<!-- BUILD:COLUMN_GRID -->` マーカー間） |
@@ -68,7 +69,8 @@
 `?plan=light|standard|premium` — お問い合わせフォーム経由
 
 ### 2.2 採用ポジション事前選択
-`?position={職種名}` — contact.html で position フィールドに自動入力
+`?position={職種名}` — `/recruit/entry` で希望職種を自動選択（リストに無い文字は「その他・未定」＋本文の先頭に残す）。旧リンク `/contact?position=…` は `contact.html` の head で `/recruit/entry` へ転送（§9.7）
+`?type=新卒|正社員（中途）|インターン` — `/recruit/entry` で応募区分を自動選択
 
 ### 2.3 UTM / トラッキング
 `?utm_source=` `?utm_medium=` `?utm_campaign=` `?source=`
@@ -307,9 +309,9 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704`。⚠️ **部署（`busyo`）は HubSpot 側で必須**＝空だと送信が拒否される（B/C 共通フォーム）。`contact.html` の部署欄は `required`、加えて `js/contact.js` が送信時に前後の空白を除いて空なら `setCustomValidity` で止める（HTML の `required` は空白だけの入力を通すため。メッセージは日英切替に追従。2026-09-29） |
-| Contents X CRM（ビズカルテ） | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加・2026-09-29 **貼り付けコード方式**へ移行） | **貼り付けコード方式**: CRM の貼り付けコード `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を `contact.html` の `</body>` 直前で1行読み込む（`data-source-key`＝本サイトの公開キー・`data-auto="false"`・`data-honeypot="#cxWebsite"`・`async`）。`js/contact.js` の送信処理で、HubSpot送信の直前に `copyToCrm(form)` を1回呼ぶ（中身は `BizcarteInbound.sendForm(form)`。貼り付けコードは async なので、送信時にまだ読み込めていなければ `load` を待って送る。例外は外へ出さない。読み込み失敗・API 欠落はコンソールに警告を残す。貼り付けコードは `script[data-source-key]` で探すのでファイル名に依存しない）。受信箱の種類は `form_kind: "inquiry"`（お問い合わせ）。⚠️ **採用応募（`recruit.html` から `?position=` 付きで遷移）は呼ばない＝CRMに送らない**（営業リードのみをCRMに入れる方針。HubSpotには従来どおり全件届く）。項目は5つの入力欄の `data-crm-field`（company→`company_name`／department→`department`／fullName→`full_name`／email→`email`／message→`message`）で明示している。ハニーポット `#cxWebsite`（`data-i18n-skip`・`name="website"`＋`tabindex="-1"`）は値が入るとCRM側が黙って破棄する。送信先は `/api/inbound/s/<公開キー>`。公開キーは**秘密ではない**（ブラウザに出る前提）。CRM側は**登録済みの送信元ドメインだけ**を受け付ける＝本番ドメイン `https://contentsx.jp` 以外（localhost 等）からの送信は拒否される（HPの受付には影響なし）。連投制限は送信元ごとに10分5件。`data-auto="false"` は必須（外すと入力チェックで止まった送信まで拾う）。**トークンの管理は不要**（旧方式の `CRM_TOKEN`／CRM側 `INBOUND_SECRET` の同期ルールは廃止）。CSP は `script-src` に `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を**ファイル単位で**追加（`connect-src 'self' https: wss:` は既に CRM への送信を許しているので変更なし）。SRI（`integrity`）は**付けない**（CRM 側が同じファイル名のまま互換更新するため、付けると更新のたびに読み込みが止まり CRM にだけ届かなくなる。ルート docs/operations/SECURITY.md に例外として記録）。⚠️ **CRM のドメインを変えるときは、`contact.html` の script の `src` と CSP の `script-src` の2か所を直す**。**CRM 送信は応答を待たず例外も外へ出さないため、失敗しても HubSpot 送信・完了表示・Google広告CVは従来どおり動く**。CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・担当者・活動が作られる。⚠️ 2026-09-24 の CRM の組織分離から旧経路（`/api/inbound/web` への並行 POST）は 404 になり、この間 HubSpot には届き CRM には届いていなかった（BUGS #056） |
+| Contents X CRM（ビズカルテ） | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加・2026-09-29 **貼り付けコード方式**へ移行） | **貼り付けコード方式**: CRM の貼り付けコード `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を `contact.html` の `</body>` 直前で1行読み込む（`data-source-key`＝本サイトの公開キー・`data-auto="false"`・`data-honeypot="#cxWebsite"`・`async`）。`js/contact.js` の送信処理で、HubSpot送信の直前に `copyToCrm(form)` を1回呼ぶ（中身は `BizcarteInbound.sendForm(form)`。貼り付けコードは async なので、送信時にまだ読み込めていなければ `load` を待って送る。例外は外へ出さない。読み込み失敗・API 欠落はコンソールに警告を残す。貼り付けコードは `script[data-source-key]` で探すのでファイル名に依存しない）。受信箱の種類は `form_kind: "inquiry"`（お問い合わせ）。⚠️ **採用応募は別フォーム `/recruit/entry`（§9.7）で、CRMの貼り付けコードを読み込まない＝CRMに送らない**（営業リードのみをCRMに入れる方針）。`contact.html` に来るのは法人のお問い合わせだけなので、`copyToCrm` は毎回呼ぶ（旧 `?position=` リンクは head で採用フォームへ転送）。項目は5つの入力欄の `data-crm-field`（company→`company_name`／department→`department`／fullName→`full_name`／email→`email`／message→`message`）で明示している。ハニーポット `#cxWebsite`（`data-i18n-skip`・`name="website"`＋`tabindex="-1"`）は値が入るとCRM側が黙って破棄する。送信先は `/api/inbound/s/<公開キー>`。公開キーは**秘密ではない**（ブラウザに出る前提）。CRM側は**登録済みの送信元ドメインだけ**を受け付ける＝本番ドメイン `https://contentsx.jp` 以外（localhost 等）からの送信は拒否される（HPの受付には影響なし）。連投制限は送信元ごとに10分5件。`data-auto="false"` は必須（外すと入力チェックで止まった送信まで拾う）。**トークンの管理は不要**（旧方式の `CRM_TOKEN`／CRM側 `INBOUND_SECRET` の同期ルールは廃止）。CSP は `script-src` に `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を**ファイル単位で**追加（`connect-src 'self' https: wss:` は既に CRM への送信を許しているので変更なし）。SRI（`integrity`）は**付けない**（CRM 側が同じファイル名のまま互換更新するため、付けると更新のたびに読み込みが止まり CRM にだけ届かなくなる。ルート docs/operations/SECURITY.md に例外として記録）。⚠️ **CRM のドメインを変えるときは、`contact.html` の script の `src` と CSP の `script-src` の2か所を直す**。**CRM 送信は応答を待たず例外も外へ出さないため、失敗しても HubSpot 送信・完了表示・Google広告CVは従来どおり動く**。CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・担当者・活動が作られる。⚠️ 2026-09-24 の CRM の組織分離から旧経路（`/api/inbound/web` への並行 POST）は 404 になり、この間 HubSpot には届き CRM には届いていなかった（BUGS #056） |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-B000C4JCCX`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
-| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = `js/contact.js` の HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正、B/C共通） |
+| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = `js/contact.js` の HubSpot送信成功 `.then()` 内で発火。⚠️ 採用の応募はどちらにも数えない（`/recruit/entry` は AW の config も CV も置かず、GA4 イベント `recruit_entry_submit` だけ。旧 `/contact?position=` リンクは①の前に転送して発火させない）（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正、B/C共通） |
 | WordPress REST API | 漫画事例 / ニュース | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | GitHub Pages | ホスティング | `contentsx.jp` (CNAME) |
 
@@ -413,7 +415,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 構成: 左＝ロゴ＋小さなリンク2段（会社概要・私たちについて・ニュース・採用情報・お問い合わせ／よくあるご質問・プライバシーポリシー・利用規約・Chrome 拡張機能）、右＝Sales X・Creative X のサービス一覧2列（外部サイトへのリンクは左上に角の印＋別タブ）、下＝`© 2026 Contents X Inc.`。住所・会社名の文字表記は置かない（会社概要・構造化データに記載）。
 - 768px以下は縦積み。リンクの高さは44px以上。各リンクに `data-ja` / `data-en`。
 - 上部の小さなお問い合わせ導線 `.cx-footer__contact`（Issue #94）: 「まずはご相談ください／利用するサービスが決まっていなくても構いません。」＋白枠の「お問い合わせ」ボタン（`/contact`）。濃紺の面はそのまま、下に区切り線。768px以下は縦積みでボタン全幅。
-- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要）、採用のエントリー `.rc-entry`、サービス一覧の `.cxsd-contact`（`service-list.html.tpl`）、FAQの `.faq-cta`、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
+- **専用CTAがあるページでは導線を出さない**: そのページのCTAセクション（またはお問い合わせフォーム）に `data-cx-page-cta` を付けると、`body:has([data-cx-page-cta])` で導線が消える。現在の付与先: 共通CTA `#cxCtaMount`（会社概要）、採用のエントリー `.rc-entry`、採用エントリーフォーム `#recruitEntryForm`、サービス一覧の `.cxsd-contact`（`service-list.html.tpl`）、FAQの `.faq-cta`、私たちについての `.ax-contact`、Sales X / Creative X の `.cxg-contact`（`service-group-*.html.tpl`）、拡張機能の `.ext-cta`、お問い合わせの `#contactForm`。下層ページに専用CTAを新設したら同じ属性を付ける。
 - **変更するときは3か所を同じ内容にする**: 静的ページ全部（`<footer class="cx-footer">` を一括置換）、`tools/templates/c-column.html.tpl`（コラム記事の生成元）、`services/index.html`（`tools/build-services.py` がサービスページへ複製）。置換後に `python3 tools/build-services.py --check` で差分がないことを確認する。
 - サービス名・遷移先は `data/services.json` と `js/nav.js` に合わせる（サービスを増減したらフッターも直す）。
 
@@ -443,7 +445,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - `prefers-reduced-motion: reduce` では動かさず最初から全体を表示。
 - ⚠️ **画像を差し替えるときは、SVG の `polygon`（帯の形・2箇所ずつ）と描画線 `path` の座標、CSS の `stroke-dasharray`（1画目 1355／2画目 1506＝線の長さ）を測り直す**。帯の形の境界が写真の端にぴったり重なると、描画前に細い線のノイズが出る（境界は写真の外側の白地に置く）。
 - レイアウト: PC と横長タブレットは画像を全面に敷き（右寄せ `xMaxYMid slice`）、左に薄い白のグラデーション（`.rc-xhero__veil`）。**767px 以下と、1023px 以下の縦長画面**はコピー→ボタン→画像の縦積み（縦長で全面にするとXが大きく切れてコピーと重なるため）。
-- 899px以下は §9.7 のコンパクトな縦積みを優先する。
+- 899px以下は §9.8 のコンパクトな縦積みを優先する。
 - サブコピーと補助コピーは `<wbr>` を入れた文節の切れ目だけで改行（`word-break: keep-all`）。Android の文字拡大1.4倍・320px でも1文字だけ落ちないことを確認済み。
 - 旧ヒーロー（写真＋「Careers」＋職種・会社・選考フローのボタン群、`rc-hero*` / `rc-pill`）は撤去。旧画像 `material/images/recruit/hero.webp/.avif` はどこからも参照されなくなったが残置。
 
@@ -466,7 +468,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - **日差し（このセクションだけ）**: 背景写真 `recruit-positions-bg.webp`（スマホは `-sp`）は静止。その上の白いベール（`.rc-op__veil`）と光の帯（`.rc-op__light`、淡いブルーとオレンジのグラデーション）だけが、セクション上端が画面下端に入ってから画面の上から22%に来るまでのスクロール量（0→1、`--rcop-p`）で変化する。白が主体 → 写真が見え、光が右上から現れて左下へ72px滑りながら広がる（PCは光の届く範囲もマスクで右上→左下に広げる。スマホは不透明度と移動だけ）。光の不透明度は最大0.3（背景写真にも斜線があるため）。値の段差は `@property` の transition 0.45秒でならす。戻りスクロールは同じ式で逆に戻るだけなので点滅しない。カードの操作では再生されない。
 
 ### 9.3 募集要項（`.rc-req` / `.rc-detail`）
-- id（`detail-manga` / `detail-production` / `detail-sales` / `detail-engineer`）は JSON-LD の `url` と対応しているので変えない。応募ボタンは `/contact?position=職種名`（お問い合わせフォームの本文に「【応募】職種名」が入り、CRMには送られない）。
+- id（`detail-manga` / `detail-production` / `detail-sales` / `detail-engineer`）は JSON-LD の `url` と対応しているので変えない。応募ボタン「この募集に応募する」は採用専用フォーム `/recruit/entry?position=職種名`（希望職種が選ばれた状態で開く。§9.7）。
 
 ### 9.4 選考（`.rc-sel`、PROCESS）
 - 見出し: `PROCESS`／「選考について」／リード「お互いをよく知るための、シンプルで透明性の高いプロセスです。あなたの想いとこれまでの経験を、ぜひ聞かせてください。」。右に手書き風のサブコピー「一緒に、これからのコンテンツをつくろう。」（`.rc-sel__note`、Google Fonts の Zen Kurenaido を `text=` で使う文字だけ読み込み。⚠️ 文言を変えたら `<head>` のフォントURLの `text=` も変える）。
@@ -476,7 +478,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 
 ### 9.5 エントリー（`.rc-entry`）
 - 半透明の白い横長パネル（`.rc-entry__inner`）。左に `ENTRY`／「エントリーはこちら」／「少しでも興味を持っていただけたら、まずは気軽にご応募ください。あなたからのご連絡をお待ちしています。」／ボタン「採用に応募する →」。右に青い紙飛行機と細い軌跡（インラインSVG）。軌跡はパネルの登場に合わせて1回だけ描かれ、紙飛行機は描き終わりに現れる（ループしない）。899px以下は1カラム。紙飛行機はパネル右上の88px幅の装飾とし、文章の前に専用の高さを取らない。ボタンは全幅（#129）。
-- ボタンの行き先は `/contact?position=採用（希望職種は本文にご記入ください）`（フォーム本文に「【応募】…」が入る）。⚠️ **`?position=` を外さない**。無いと採用応募が営業の問い合わせとして CRM に入る（`js/contact.js`）。職種別の応募は募集要項の「この募集に応募する」。ボタンの反応は共通の `.cx-ui-action`（ホバー・フォーカスで上に2px、矢印が4px右へ）。
+- ボタンの行き先は採用専用フォーム `/recruit/entry`（§9.7）。法人お問い合わせ `/contact` には向けない。職種別の応募は募集要項の「この募集に応募する」（`?position=職種名` 付き）。ボタンの反応は共通の `.cx-ui-action`（ホバー・フォーカスで上に2px、矢印が4px右へ）。
+
 - ページ専用CTAなので `data-cx-page-cta` を付け、フッター上の営業向け相談導線は出さない。
 
 ### 9.6 TOPICS（トップと共通）
@@ -484,7 +487,16 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 採用ページ側の調整は `css/recruit.css` に限定する: TOPICS 上端のグラデーションを共通背景の最後と同じ淡い青（#f2f7fd）から始め、`top: -1px` で、上端が小数ピクセルのときに固定背景（`.cxsb-backdrop`）が線のように覗くのを防ぐ。トップ用のファイルは変更しない。カードに `position: relative` を指定し、画面外カード内の読み上げ用テキストがページ全体の横幅を広げる不具合を防ぐ（#129）。
 - ローカル（localhost）では WordPress の CORS で記事が取れず、フォールバックの3件が出る（本番ドメインでは取得できる）。
 
-### 9.7 スマホの情報量・読みやすさ（2026-10-12、#129）
+### 9.7 採用エントリーフォーム（`/recruit/entry`、2026-10-12、#128）
+- **法人のお問い合わせ（`/contact`）と採用の応募は別のフォーム**。採用ページの「採用に応募する」と募集要項の「この募集に応募する」はここへ来る。旧リンク `/contact?position=…` は `contact.html` の `<head>` で、広告計測より先に `/recruit/entry`（パラメータはそのまま）へ転送する。
+- ファイル: `recruit/entry.html`・`css/recruit-entry.css`・`js/recruit-entry.js`。入力欄の見た目は共通の `css/form.css`／`.cb-submit`、送信の部品（空白だけの入力の検査・流入元の付記・HubSpot 送信・二重送信防止）は `js/form-common.js`（`window.cxForm`、お問い合わせと共用）。GitHub Pages は `/recruit` に `recruit.html`、`/recruit/entry` に `recruit/entry.html` を返す（`/column` と `column/` の並存で本番確認済み）。⚠️ このページの `href`／`src` は必ず `/` 始まり。
+- 項目（新卒・正社員・インターン共通。募集状況に依存しない）: 応募区分（新卒／正社員（中途）／インターン、必須）・希望職種（漫画家／マンガ製作担当／営業／エンジニア／その他・未定、必須。⚠️ 募集職種を増減したら `recruit/entry.html` の選択肢と募集要項のリンクの `position` を揃える）・お名前（必須）・ふりがな・メール（必須）・電話・学校名・所属・卒業（予定）年月・ポートフォリオ／経歴のURL・志望動機／自己PR／ご質問（必須）・プライバシーポリシーへの同意（必須）・ハニーポット `#cxWebsite`（値があれば送らずに完了表示だけ）。ファイル添付は無し（URLで受ける）。
+- **営業と混ざらないための決まり**: CRM（ビズカルテ）の貼り付けコードを読み込まない／送らない。Google広告のお問い合わせコンバージョン（到達・送信完了）を出さない。HubSpot の追跡スクリプト（フォームの自動収集）を読み込まない。計測は GA4 のイベント `recruit_entry_submit`（`hiring_type`・`position`）だけ。`noindex, follow`（フォームだけのページのため、sitemap にも載せない）。
+- ⚠️ **送信先は暫定**: 採用専用の受付先がまだ無いため、今までの採用応募と同じ HubSpot の B/C 共通お問い合わせフォーム（`b6da14d0-…`）に送っている（`js/recruit-entry.js` 先頭の `RECRUIT_HUBSPOT_FORM_GUID`）。受け取った側で見分けられるよう、本文の先頭を「【採用応募】区分／職種」にして全項目を項目名つきで並べ、部署（`busyo`、フォーム側で必須）に「採用応募（区分）」、会社名（`company`）に学校名・所属（空なら「（個人）採用応募」）を入れる。**HubSpot の通知先は法人お問い合わせと同じになり、連絡先も同じポータルに作られる**。採用専用のフォーム（GUID）と通知先が決まったら、この1行を差し替え、ここと §6 を直す。
+- 完了表示はページ内（「ご応募ありがとうございます。」＋採用情報へ戻る）。資料DLの案内や `cx_form_submitted` の保存はしない（法人向けの仕組みのため）。
+- 入力欄は480px以下でも16px（form.css は14pxにするが、iPhone は16px未満だと入力時に画面を拡大するため）。タップ領域は応募区分・職種・送信とも48px以上。
+
+### 9.8 スマホの情報量・読みやすさ（2026-10-12、#129）
 - 対象は899px以下（スマホ〜小型タブレット）。見出しは `clamp()` の連続スケール。冒頭の上下余白を縮め、主要CTA「募集職種を見る」は全幅、「会社を知る」は44px以上のテキストリンクにする。X画像は全体を保って最大320px幅に収め、画像上の補助コピーを非表示にする。
 - 職種一覧は写真付きの横長カード。固定高を使わず、英語・文字拡大に応じて伸びる。写真は独立した列、文字は `min-width:0` で縮められる。カード全体がタップ対象。
 - 募集要項・職種説明・選考・エントリーの本文は16px以上。要項はラベル→本文の縦並び。本文には `text-size-adjust` による文字拡大抑制を入れない。
@@ -492,6 +504,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 選考の手書きサブコピーはスマホで非表示。4ステップの説明は維持し、間隔を20pxにする。エントリーは装飾のための専用行をなくし、CTAまでの距離を短くする。
 - Safari系でも選考カードの説明が枠からはみ出さないよう、`.rc-sel__text` は幅100%・`minmax(0,1fr)` を指定する。
 - 募集条件・応募先・記事データは既存の内容を使う。スマホ専用の短縮文章は作らない。
+
 
 ## 10. お問い合わせボタン（送信ボタン）
 

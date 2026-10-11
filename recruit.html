@@ -384,7 +384,7 @@
               <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="/contact?position=%E6%BC%AB%E7%94%BB%E5%AE%B6" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+          <a href="/recruit/entry?position=%E6%BC%AB%E7%94%BB%E5%AE%B6" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </article>
         <article class="rc-detail" id="detail-production" data-group="manga" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="マンガ製作担当募集" data-en="Manga Producer Wanted">マンガ製作担当募集</h3>
@@ -411,7 +411,7 @@
               <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="/contact?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+          <a href="/recruit/entry?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </article>
         <article class="rc-detail" id="detail-sales" data-group="sales" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="営業募集" data-en="Sales Position">営業募集</h3>
@@ -438,10 +438,10 @@
               <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
             </div>
           </div>
-          <a href="/contact?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+          <a href="/recruit/entry?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </article>
         <!-- TODO(#127): エンジニアの募集要項・応募先が確定したら、下のコメントの枠に中身を入れて準備中の文を消し、
-             「この募集に応募する」（/contact?position=エンジニア）と JSON-LD の JobPosting も追加する。未確定の条件は書かない -->
+             「この募集に応募する」（/recruit/entry?position=エンジニア）と JSON-LD の JobPosting も追加する。未確定の条件は書かない -->
         <article class="rc-detail" id="detail-engineer" data-group="engineer" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="エンジニア" data-en="Engineer">エンジニア</h3>
           <div class="rc-detail-cat"><span data-ja="テクノロジー" data-en="Technology">テクノロジー</span></div>
@@ -454,7 +454,7 @@
             <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div><div class="rc-detail-val"></div></div>
             <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div><div class="rc-detail-val"></div></div>
           </div>
-          <a href="/contact?position=%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+          <a href="/recruit/entry?position=%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
           -->
         </article>
         <button type="button" class="rc-req__close" data-rc-req-close hidden><span data-ja="募集要項を閉じる" data-en="Close">募集要項を閉じる</span></button>
@@ -522,8 +522,8 @@
   </section>
 
   <!-- ===== ENTRY：エントリー =====
-       応募はお問い合わせフォームへ（?position= を付けるとフォーム本文に「【応募】…」が入り、CRM には送られない。
-       付けないと営業の問い合わせとしてCRMに入るので、必ず付ける）。職種別の応募は募集要項の「この募集に応募する」。
+       応募は採用専用フォーム /recruit/entry へ（法人お問い合わせ /contact とは別。CRM の営業リードには入らない）。
+       職種別の応募は募集要項の「この募集に応募する」（/recruit/entry?position=職種名 で希望職種が選ばれた状態になる）。
        紙飛行機はインラインSVG。軌跡はパネルが表示されたときに1回だけ描かれる（ループしない） -->
   <section class="rc-entry" id="entry" aria-labelledby="rc-entry-title" data-cx-page-cta>
     <div class="rc-entry__wrap">
@@ -532,7 +532,7 @@
           <p class="rc-eyebrow" data-i18n-skip>ENTRY</p>
           <h2 class="rc-entry__title" id="rc-entry-title" data-ja="エントリーはこちら" data-en="Apply Here">エントリーはこちら</h2>
           <p class="rc-entry__lead" data-ja="<span>少しでも<wbr>興味を<wbr>持っていただけたら、<wbr>まずは<wbr>気軽に<wbr>ご応募ください。</span><span>あなたからの<wbr>ご連絡を<wbr>お待ちしています。</span>" data-en="If you're even a little interested, feel free to apply. We look forward to hearing from you."><span>少しでも<wbr>興味を<wbr>持っていただけたら、<wbr>まずは<wbr>気軽に<wbr>ご応募ください。</span><span>あなたからの<wbr>ご連絡を<wbr>お待ちしています。</span></p>
-          <a class="rc-entry__btn cx-ui-action" href="/contact?position=%E6%8E%A1%E7%94%A8%EF%BC%88%E5%B8%8C%E6%9C%9B%E8%81%B7%E7%A8%AE%E3%81%AF%E6%9C%AC%E6%96%87%E3%81%AB%E3%81%94%E8%A8%98%E5%85%A5%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%EF%BC%89"><span data-ja="採用に応募する" data-en="Apply now">採用に応募する</span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="rc-entry__btn cx-ui-action" href="/recruit/entry"><span data-ja="採用に応募する" data-en="Apply now">採用に応募する</span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
         <svg class="rc-entry__plane" viewBox="0 0 360 220" aria-hidden="true" focusable="false">
           <path class="rc-entry__trail" pathLength="1" d="M8 206 C 70 214 112 170 150 150 S 228 128 262 96" fill="none"/>
