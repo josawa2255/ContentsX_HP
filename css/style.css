@@ -137,6 +137,14 @@ a { text-decoration: none; color: inherit; transition: color 0.3s ease, opacity 
     backdrop-filter: none;
   }
 }
+/* A backdrop-filter makes the header the containing block of position:fixed children, which squeezed the
+   tablet drawer (769-1280px) into the header's height. While the menu is open (nav.js sets body.nav-locked)
+   the blur is dropped so the drawer is fixed to the viewport again; it returns when the menu closes. */
+body.nav-locked .header {
+  background: rgba(255, 255, 255, 0.97);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 .header-right { position: relative; z-index: 10 !important; }
 
 .header-inner {
