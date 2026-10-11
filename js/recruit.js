@@ -38,11 +38,11 @@
   var cards = document.querySelectorAll('.rc-op-card[data-req]');
   if (req && cards.length) {
     var details = req.querySelectorAll('.rc-detail');
-    var closeBtn = req.querySelector('[data-rc-req-close]');
+    var closeBtns = req.querySelectorAll('[data-rc-req-close]');
     var status = document.querySelector('[data-rc-req-status]');
     var openGroup = null;
     req.classList.add('is-enhanced');
-    if (closeBtn) closeBtn.hidden = false;
+    closeBtns.forEach(function(btn) { btn.hidden = false; });
 
     var isJa = function() { return !(window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en'); };
     var cardTitle = function(group) {
@@ -68,7 +68,14 @@
       setOpen(null);
       announce(isJa() ? name + 'の募集要項を閉じました' : 'Closed the ' + name + ' requirements');
       if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
-      if (card && focusCard) { card.focus({ preventScroll: true }); scrollToEl(card); }
+      // Safariはクリック中に閉じたボタンのフォーカスを後からbodyへ戻すことがある。
+      // 閉じた表示が確定した次フレームで、選択元へ戻す。
+      if (card && focusCard) {
+        window.requestAnimationFrame(function() {
+          card.focus({ preventScroll: true });
+          scrollToEl(card);
+        });
+      }
     };
 
     cards.forEach(function(card) {
@@ -81,7 +88,7 @@
         var first = req.querySelector('.rc-detail.is-open');
         if (first) {
           if (history.replaceState) history.replaceState(null, '', '#' + first.id);
-          scrollToEl(first);
+          scrollToEl(window.matchMedia('(max-width: 899px)').matches ? req : first);
         }
       });
       // リンクを「開閉ボタン」として使っているので、Space でも押せるようにする
@@ -89,7 +96,7 @@
         if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); this.click(); }
       });
     });
-    if (closeBtn) closeBtn.addEventListener('click', function() { close(true); });
+    closeBtns.forEach(function(btn) { btn.addEventListener('click', function() { close(true); }); });
     req.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && openGroup) close(true);
     });
