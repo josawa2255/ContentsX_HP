@@ -56,6 +56,12 @@
       if (!force && top >= 88 && top <= window.innerHeight * 0.6) return;
       el.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
     };
+    // WebKitは短時間の履歴更新回数を制限する。URL更新ができなくても開閉を続ける。
+    var replaceLocation = function(url) {
+      if (!history.replaceState) return;
+      try { history.replaceState(null, '', url); }
+      catch (e) { /* URLは補助状態。募集要項の表示・フォーカス復帰を優先する。 */ }
+    };
     var setOpen = function(group) {
       openGroup = group;
       req.classList.toggle('is-open', !!group);
@@ -67,14 +73,10 @@
       var name = cardTitle(openGroup);
       setOpen(null);
       announce(isJa() ? name + 'の募集要項を閉じました' : 'Closed the ' + name + ' requirements');
-      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
-      // Safariはクリック中に閉じたボタンのフォーカスを後からbodyへ戻すことがある。
-      // 閉じた表示が確定した次フレームで、選択元へ戻す。
+      replaceLocation(location.pathname + location.search);
       if (card && focusCard) {
-        window.requestAnimationFrame(function() {
-          card.focus({ preventScroll: true });
-          scrollToEl(card);
-        });
+        scrollToEl(card);
+        card.focus({ preventScroll: true });
       }
     };
 
@@ -87,7 +89,7 @@
         announce(isJa() ? cardTitle(group) + 'の募集要項を開きました' : 'Opened the ' + cardTitle(group) + ' requirements');
         var first = req.querySelector('.rc-detail.is-open');
         if (first) {
-          if (history.replaceState) history.replaceState(null, '', '#' + first.id);
+          replaceLocation('#' + first.id);
           scrollToEl(window.matchMedia('(max-width: 899px)').matches ? req : first);
         }
       });
