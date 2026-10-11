@@ -1,23 +1,38 @@
 /* Fixed section names (Issue #89 / #93). Copies the section names into every backdrop and marks the
    name of the section under a line 40% down the screen as current. CSS fixes them to the screen and
    fades between them (0.2s). Without JS the names scroll with their sections as before.
-   Passive scroll + requestAnimationFrame, no scroll locking. */
+   Passive scroll + requestAnimationFrame, no scroll locking.
+   Shared with /recruit (#135): sections that sit on one shared background instead of their own
+   .cxsb-backdrop opt in with data-cxsb-name="NAME" and draw into the closest [data-cxsb-names-host]
+   (the recruit page's sticky .rc-stage__bg). Pages without these attributes behave exactly as before. */
 (function () {
   'use strict';
   var LINE = 0.4; // share of the screen height where the current section is read
-  var sections = Array.prototype.slice.call(document.querySelectorAll('.cxsb-section'))
-    .filter(function (s) { return s.id && s.querySelector(':scope > .cxsb-label') && s.querySelector(':scope > .cxsb-backdrop'); });
-  if (!sections.length) return;
-  var names = sections.map(function (s) {
-    return { id: s.id, text: s.querySelector(':scope > .cxsb-label').textContent.trim() };
+  var entries = [];
+  Array.prototype.forEach.call(document.querySelectorAll('.cxsb-section, [data-cxsb-name]'), function (s) {
+    if (!s.id) return;
+    var own = s.querySelector(':scope > .cxsb-label');
+    var backdrop = s.querySelector(':scope > .cxsb-backdrop');
+    if (own && backdrop) {
+      entries.push({ el: s, id: s.id, text: own.textContent.trim(), host: backdrop });
+    } else if (s.hasAttribute('data-cxsb-name')) {
+      var host = s.closest('[data-cxsb-names-host-scope]');
+      host = host && host.querySelector('[data-cxsb-names-host]');
+      if (host) entries.push({ el: s, id: s.id, text: s.getAttribute('data-cxsb-name'), host: host });
+    }
   });
+  if (!entries.length) return;
+  var sections = entries.map(function (e) { return e.el; });
+  var hosts = [];
+  entries.forEach(function (e) { if (hosts.indexOf(e.host) === -1) hosts.push(e.host); });
+
   var spans = [];
-  sections.forEach(function (s) {
+  hosts.forEach(function (host) {
     var layer = document.createElement('div');
     layer.className = 'cxsb-names';
     layer.setAttribute('aria-hidden', 'true');
     layer.setAttribute('data-i18n-skip', '');
-    names.forEach(function (n) {
+    entries.forEach(function (n) {
       var span = document.createElement('span');
       span.className = 'cxsb-name';
       span.setAttribute('data-for', n.id);
@@ -25,7 +40,7 @@
       layer.appendChild(span);
       spans.push(span);
     });
-    s.querySelector(':scope > .cxsb-backdrop').appendChild(layer);
+    host.appendChild(layer);
   });
   document.documentElement.classList.add('cxsb-fixed-labels');
 
