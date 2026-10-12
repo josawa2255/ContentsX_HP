@@ -213,7 +213,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 大きな半透明のセクション名を画面に固定（Issue #89 / タイミング改善 #93）
 
 - ABOUT / CREATIVE X / SALES X / TOPICS / NEWS の大きな半透明文字を、背景の景色と同じく画面に固定する（ヘッダー下 `64px + clamp(10px,1.6vw,26px)`、480px以下は 56px 基準）。
-- 仕組み（#93）: `js/home-section-labels.js` が各セクションの名前を**すべての背景（`.cxsb-backdrop`）の中に** `.cxsb-names > .cxsb-name` として描き、`html.cxsb-fixed-labels` を付けて元の `.cxsb-label` を隠す。どの背景にも同じ名前が同じ位置に出るので、セクションの境目をまたいでも文字が切れない。
+- 仕組み（#93）: `js/home-section-labels.js` が各セクションの名前を**すべての背景（`.cxsb-backdrop`）の中に** `.cxsb-names > .cxsb-name` として描き、`html.cxsb-fixed-labels` を付けて元の `.cxsb-label` を隠す。採用ページでも共用（#135）: 共通背景の上に並ぶセクションは `data-cxsb-name="名前"` を付け、`[data-cxsb-names-host-scope]` の中の `[data-cxsb-names-host]`（採用ページの `.rc-stage__bg`）に描く。この属性が無いページ（トップ）の動きは変わらない。どの背景にも同じ名前が同じ位置に出るので、セクションの境目をまたいでも文字が切れない。
 - 切り替え: 画面の**上から40%の線**を含むセクションの名前を出す（2026-10-08 平澤さん「もっと早く出したい・少し戻っても残してほしい」）。下にスクロールすると次のセクションの上端がこの線を越えた時点で切り替わり、少し上に戻っても上端がこの線より下がるまでは今の名前が残る。切り替えは0.2秒のフェード。ABOUT は Hero → ABOUT の演出（`--cxha-wordmark`）に合わせて現れる。
 - JS無効時は元の `.cxsb-label` がセクションと一緒に流れる。動き軽減時はフェードなし。CSS は `css/home-sections.css`。
 - 検証: `tests/test_section_backdrop.py`（PC・スマホで、各セクションの名前が1つ・スクロールしても同じ位置・上端が画面の30%まで戻っても残る・50%まで戻ると前の名前に戻る）。
@@ -451,6 +451,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 9.1 ページ構成とモーション（2026-10-12、#127）
 - 構成: HERO → 募集職種（`#positions`、募集要項はこの中で開く）→ 選考（`#flow`）→ エントリー（`#entry`）→ TOPICS（`#topics`、トップと共通）→ フッター。
 - **共通背景（`.rc-stage` / `.rc-stage__bg`）**: 募集職種・募集要項・選考・エントリーは親 `.rc-stage` の中にあり、背景写真はその最初の子 `.rc-stage__bg` の1枚だけ（`recruit-positions-bg.webp`、640px以下は `-sp` を上寄せ・高さ520px）。`position: sticky; height: 100lvh; margin-bottom: -100lvh` で画面に貼り付き、上を中身が流れるので、境目・繰り返し・位置のリセットが出ず、募集要項を開いてページが伸びても途切れない。白いオーバーレイ（`::after`）は旧 `.rc-op__bg` のものをそのまま使う。⚠️ セクションごとに背景画像を置かない。各セクションの `background` は透明のまま。最後は `.rc-stage::after` で淡い青（#f2f7fd）に溶かし、TOPICS の上端のグラデーション（同色）へつなぐ。旧ページの「職種カード選択で背景が切り替わる演出」「応募する／詳細を見るのボタン列」「共通CTA（`cta.js`）」は撤去。
+- **大きな背景文字（#135）**: トップと同じ見た目・仕組み（`js/home-section-labels.js` と `css/home-sections.css` の `.cxsb-name`）。募集職種＝`POSITIONS`／選考＝`PROCESS`／エントリー＝`ENTRY`（各 `section` の `data-cxsb-name`）、TOPICS は従来の `.cxsb-label`。共通背景 `.rc-stage__bg`（`data-cxsb-names-host`）の中に、画面の上から40%の線にいるセクションの名前だけを画面上部に固定で出し、切り替えは0.2秒のフェード。HERO には出さない。JS無効時は出ない（飾りのため）。
 - 方針: 特徴的な演出は要所だけ（HERO の X、HERO→募集職種の日差し）。ほかは `MOTION-UI-2026.md` の「1回だけ下から24px・0.75秒」。スクロールを止める・吸着させる処理は入れない。
 - 登場演出の仕組みは下層ページ共通の `js/sitewide-motion.js`（対象: `.rc-op__intro` `.rc-op-item` `.rc-sel__head` `.rc-sel__step` `.rc-entry__inner` `.cxtp-head` `.cxtp-list`）。職種カードは 0 / 0.14 / 0.28 秒、選考カードは PC で 0 / 0.12 / 0.24 / 0.36 秒の時間差（`css/recruit.css`）。選考の線とエントリーの紙飛行機の軌跡も、この登場クラス（`.cx-motion-pending` → `.cx-motion-visible`）に連動して CSS だけで1回描く（専用のJSは無い）。
 - スクロール量で動くのは「日差し」だけで、監視は `js/recruit.js` の1か所（画面内のときだけ計算・passive・requestAnimationFrame）。毎フレーム書く CSS 変数は子要素のない要素に置く（`sitewide-motion.js` が style の変化を監視しているため）。

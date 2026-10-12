@@ -269,15 +269,17 @@
 
   <!-- ===== 募集職種・選考・エントリーの共通背景 =====
        背景写真は .rc-stage__bg の1枚だけ（画面に貼り付いたまま、上を3セクションの中身が流れる）。
-       セクションごとに背景画像を置かない。募集要項を開いてページが伸びても背景は途切れない。 -->
-  <div class="rc-stage">
-  <div class="rc-stage__bg" aria-hidden="true"></div>
+       セクションごとに背景画像を置かない。募集要項を開いてページが伸びても背景は途切れない。
+       大きな背景文字（POSITIONS / PROCESS / ENTRY）はトップと同じ js/home-section-labels.js が、この共通背景の中に
+       「今いるセクションの名前」を画面上部に固定で描く（各セクションの data-cxsb-name が名前）。 -->
+  <div class="rc-stage" data-cxsb-names-host-scope>
+  <div class="rc-stage__bg" aria-hidden="true" data-cxsb-names-host></div>
 
   <!-- ===== OPEN POSITIONS：募集職種 =====
        光の帯（.rc-op__light）と白いベール（.rc-op__veil）だけが、
        HERO→募集職種のスクロール量に合わせて変化する（js/recruit.js。この演出はこのセクションだけ）。
        職種を増やすときは .rc-op-item を複製し、募集要項（.rc-detail）と JSON-LD を揃える。 -->
-  <section class="rc-op" id="positions" aria-labelledby="rc-op-title">
+  <section class="rc-op" id="positions" aria-labelledby="rc-op-title" data-cxsb-name="POSITIONS">
     <div class="rc-op__veil" aria-hidden="true" data-rc-light-veil></div>
     <div class="rc-op__light" aria-hidden="true" data-rc-light></div>
     <div class="rc-op__inner">
@@ -465,7 +467,7 @@
   <!-- ===== PROCESS：選考 =====
        4つのステップをつなぐ線は、ステップが表示されたときに1回だけ描かれる（js/sitewide-motion.js の登場演出に連動。CSSだけで描く）。
        ⚠️ ステップの文言はデザイン上の仮案（新卒・正社員・インターン向けを想定）。公開前に正式な採用フローと照合する（SPEC.md §9.4） -->
-  <section class="rc-sel" id="flow" aria-labelledby="rc-sel-title">
+  <section class="rc-sel" id="flow" aria-labelledby="rc-sel-title" data-cxsb-name="PROCESS">
     <div class="rc-sel__inner">
       <div class="rc-sel__head">
         <div class="rc-sel__intro">
@@ -524,7 +526,7 @@
        応募は採用専用フォーム /recruit/entry へ（法人お問い合わせ /contact とは別。CRM の営業リードには入らない）。
        職種別の応募は募集要項の「この募集に応募する」（/recruit/entry?position=職種名 で希望職種が選ばれた状態になる）。
        紙飛行機はインラインSVG。軌跡はパネルが表示されたときに1回だけ描かれる（ループしない） -->
-  <section class="rc-entry" id="entry" aria-labelledby="rc-entry-title" data-cx-page-cta>
+  <section class="rc-entry" id="entry" aria-labelledby="rc-entry-title" data-cx-page-cta data-cxsb-name="ENTRY">
     <div class="rc-entry__wrap">
       <div class="rc-entry__inner">
         <div class="rc-entry__copy">
@@ -655,6 +657,7 @@
   <script src="js/recruit.js" defer></script>
   <script src="/js/wp-config.js" defer></script>
   <script src="/js/home-topics.js" defer></script>
+  <script src="/js/home-section-labels.js" defer></script>
   <script src="js/dl-modal.js" defer></script>
 <!-- Start of HubSpot Embed Code -->
 <script>
