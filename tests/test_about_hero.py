@@ -32,6 +32,16 @@ def load(page, url, images=True):
     page.evaluate('document.fonts.ready')
 
 
+def hero_screenshot(page, path):
+    # A fixed header would cover the ABOUT label when the locator scrolls the
+    # tall mobile HERO to the top. Keep viewport captures unchanged.
+    style = page.add_style_tag(content='header{visibility:hidden!important}')
+    try:
+        page.locator('.ax-hero').screenshot(path=str(path))
+    finally:
+        style.evaluate('e=>e.remove()')
+
+
 def check_copy(page):
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'horizontal overflow'
     assert page.locator('.ax-hero-copy').evaluate('''e => {
@@ -71,7 +81,7 @@ with sync_playwright() as p:
         })'''), ('photo source/dimensions', width)
         if width in shots:
             page.screenshot(path=str(out/f'about-{width}.png'))
-            page.locator('.ax-hero').screenshot(path=str(out/f'hero-{width}.png'))
+            hero_screenshot(page, out/f'hero-{width}.png')
             page.evaluate('scrollTo(0,0)')
         if width<=1280:
             page.locator('#hamburger').click()
@@ -92,7 +102,7 @@ with sync_playwright() as p:
         })''')
         check_copy(page)
         if width in (390,1440):
-            page.locator('.ax-hero').screenshot(path=str(out/f'hero-enlarged-{width}.png'))
+            hero_screenshot(page, out/f'hero-enlarged-{width}.png')
         report.append({'width':width, 'ja_en_roundtrip':True, 'text_scale_1_4':True})
     load(page,args.url)
     page.locator('.ax-hero-scroll').click()
