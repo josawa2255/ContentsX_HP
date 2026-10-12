@@ -444,6 +444,7 @@
 }
 .rc-op-item { display: flex; min-width: 0; }
 .rc-op-card {
+  scroll-margin-top: 88px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -808,7 +809,7 @@
   margin: clamp(10px, 1.2vw, 16px) 0 clamp(14px, 1.6vw, 20px);
   color: var(--cx-color-sales, #005bfa);
 }
-.rc-sel__text { display: grid; gap: 10px; min-width: 0; }
+.rc-sel__text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: 100%; min-width: 0; }
 .rc-sel__step-title {
   margin: 0;
   color: var(--cx-color-ink, #07143b);
@@ -904,6 +905,10 @@
    top:-1px は、TOPICS の上端が小数ピクセルのときに固定背景（.cxsb-backdrop）が1行だけ線のように覗くのを防ぐため */
 .cxtp.cxsb-section::before { top: -1px; height: clamp(120px, 16vw, 220px); background: linear-gradient(#f2f7fd, rgba(242, 247, 253, 0)); }
 
+/* 読み上げ用の非表示テキストもカード内を配置基準にし、
+   横スワイプの画面外カードがページ全体の横幅を広げないようにする。 */
+.cxtp .cxtp-card { position: relative; }
+
 /* ---------- レスポンシブ ---------- */
 @media (max-width: 1023px) {
   .rc-op__motto { display: none; }
@@ -963,6 +968,91 @@
   .rc-op-card__media { aspect-ratio: 4 / 3; }
   .rc-detail-row { flex-direction: column; gap: 8px; }
   .rc-detail-badge { width: auto; padding: 6px 14px; }
+}
+
+/* スマホ・小型タブレット: 冒頭は要点と主要導線、職種一覧は写真付きの横長カードで比較しやすくする。
+   本文は16px以上、文字拡大時は固定高を使わず内容に合わせて伸びる。 */
+@media (max-width: 899px) {
+  .rc-xhero { flex-direction: column; align-items: stretch; min-height: 0; }
+  .rc-xhero__copy { max-width: none; }
+  .rc-xhero__veil { display: none; }
+  .rc-xhero__inner { order: 1; padding-block: 28px 24px; }
+  .rc-xhero__eyebrow { margin-bottom: 18px; }
+  .rc-xhero__title { font-size: clamp(2rem, 7.8vw + .25rem, 3.5rem); }
+  .rc-xhero__lead { margin-top: 18px; line-height: 1.8; }
+  .rc-xhero__actions { align-items: center; gap: 8px; margin-top: 24px; }
+  .rc-xhero__btn--primary { flex: 1 1 100%; min-width: 0; min-height: 52px; padding: 12px 20px; }
+  .rc-xhero__btn--secondary {
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    margin-inline: auto;
+    padding: 10px 16px;
+    border: 0;
+    background: transparent;
+  }
+  .rc-xhero__visual { position: relative; inset: auto; order: 2; aspect-ratio: 1000 / 941; align-self: center; width: min(100%, 320px); max-height: none; }
+  .rc-xhero__note { display: none; }
+
+  .rc-op { padding-block: 48px; }
+  .rc-op__head { margin-bottom: 24px; }
+  .rc-op__title { font-size: clamp(1.625rem, 5.8vw + .25rem, 2.75rem); }
+  .rc-op__lead { font-size: 1rem; line-height: 1.8; }
+  .rc-op__list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .rc-op-item:nth-child(3) { width: auto; justify-self: stretch; }
+  .rc-op-card { flex-direction: row; border-radius: 16px; }
+  .rc-op-card__media {
+    flex: 0 0 clamp(96px, 27vw, 156px);
+    align-self: stretch;
+    aspect-ratio: auto;
+  }
+  .rc-op-card__media img { position: absolute; inset: 0; object-position: 50% 24%; }
+  .rc-op-card__media::after { display: none; }
+  .rc-op-card__no { top: 12px; left: 12px; gap: 0; }
+  .rc-op-card__num { font-size: 1.25rem; }
+  .rc-op-card__num::after, .rc-op-card__label { display: none; }
+  .rc-op-card__body { min-width: 0; gap: 10px; padding: 18px 16px; }
+  .rc-op-card__row { gap: 0; }
+  .rc-op-card__title { font-size: clamp(1.0625rem, 2.4vw + .6rem, 1.375rem); line-height: 1.5; }
+  .rc-op-card__desc { font-size: 1rem; line-height: 1.65; word-break: normal; }
+  .rc-op-card__circle { display: none; }
+  .rc-op-card__more {
+    justify-content: flex-start;
+    min-height: 24px;
+    gap: 8px;
+    border-radius: 0;
+    background: none;
+    color: var(--cx-color-sales, #005bfa);
+    font-size: .875rem;
+    letter-spacing: .02em;
+  }
+  .rc-op-card[aria-expanded="true"] .rc-op-card__more svg { transform: rotate(90deg); }
+
+  .rc-req { margin-top: 24px; gap: 16px; }
+  .rc-detail { padding: 22px 18px; border-radius: 16px; }
+  .rc-detail-row { flex-direction: column; gap: 8px; padding-block: 16px; }
+  .rc-detail-badge { width: auto; padding: 6px 12px; font-size: .8125rem; }
+  .rc-detail-val { font-size: 1rem; line-height: 1.85; overflow-wrap: anywhere; }
+  .rc-detail-apply-btn { padding: 12px 16px; text-align: center; }
+  .rc-req__close--top { justify-self: end; }
+
+  .rc-sel { --rcsel-gap: 20px; padding-block: 40px; }
+  .rc-sel__head { margin-bottom: 24px; }
+  .rc-sel__note { display: none; }
+  .rc-sel__lead, .rc-entry__lead { font-size: 1rem; line-height: 1.8; }
+  .rc-sel__card { padding-block: 18px; border-radius: 16px; column-gap: 14px; }
+  .rc-sel__step-desc { font-size: 1rem; line-height: 1.7; word-break: normal; }
+
+  .rc-entry { padding-block: 16px 56px; }
+  .rc-entry__inner { grid-template-columns: minmax(0, 1fr); gap: 0; position: relative; padding: 28px 20px; border-radius: 20px; }
+  .rc-entry__copy { position: relative; }
+  .rc-entry__plane { position: absolute; top: 10px; right: 14px; width: 88px; margin: 0; }
+  .rc-entry__btn { display: flex; width: 100%; min-width: 0; padding: 14px 16px; }
+  .rc-sel__title, .rc-entry__title { font-size: clamp(1.5rem, 4.8vw + .25rem, 2.25rem); }
+}
+/* 上の閉じるボタンはスマホ専用。JS無効時はhidden属性を保持する。 */
+@media (min-width: 900px) {
+  .rc-req__close--top { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

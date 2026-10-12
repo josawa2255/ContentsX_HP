@@ -360,6 +360,7 @@
       <!-- 募集要項。JSが無いときは全件そのまま読める。JSがあるときはカードで選んだ職種だけを開く。
            id は JSON-LD の url（/recruit#detail-xxx）と対応しているので変えない -->
       <div class="rc-req" id="rc-req" data-rc-req role="region" aria-label="募集要項">
+        <button type="button" class="rc-req__close rc-req__close--top" data-rc-req-close hidden><span data-ja="職種一覧に戻る" data-en="Back to positions">職種一覧に戻る</span></button>
         <article class="rc-detail" id="detail-manga" data-group="manga" data-hiring-types="">
           <h3 class="rc-detail-title" data-ja="漫画家募集" data-en="Manga Artist Wanted">漫画家募集</h3>
           <div class="rc-detail-cat"><span data-ja="クリエイティブ" data-en="Creative">クリエイティブ</span></div>

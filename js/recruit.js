@@ -38,11 +38,11 @@
   var cards = document.querySelectorAll('.rc-op-card[data-req]');
   if (req && cards.length) {
     var details = req.querySelectorAll('.rc-detail');
-    var closeBtn = req.querySelector('[data-rc-req-close]');
+    var closeBtns = req.querySelectorAll('[data-rc-req-close]');
     var status = document.querySelector('[data-rc-req-status]');
     var openGroup = null;
     req.classList.add('is-enhanced');
-    if (closeBtn) closeBtn.hidden = false;
+    closeBtns.forEach(function(btn) { btn.hidden = false; });
 
     var isJa = function() { return !(window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en'); };
     var cardTitle = function(group) {
@@ -56,6 +56,12 @@
       if (!force && top >= 88 && top <= window.innerHeight * 0.6) return;
       el.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
     };
+    // WebKitは短時間の履歴更新回数を制限する。URL更新ができなくても開閉を続ける。
+    var replaceLocation = function(url) {
+      if (!history.replaceState) return;
+      try { history.replaceState(null, '', url); }
+      catch (e) { /* URLは補助状態。募集要項の表示・フォーカス復帰を優先する。 */ }
+    };
     var setOpen = function(group) {
       openGroup = group;
       req.classList.toggle('is-open', !!group);
@@ -67,8 +73,11 @@
       var name = cardTitle(openGroup);
       setOpen(null);
       announce(isJa() ? name + 'の募集要項を閉じました' : 'Closed the ' + name + ' requirements');
-      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
-      if (card && focusCard) { card.focus({ preventScroll: true }); scrollToEl(card); }
+      replaceLocation(location.pathname + location.search);
+      if (card && focusCard) {
+        scrollToEl(card);
+        card.focus({ preventScroll: true });
+      }
     };
 
     cards.forEach(function(card) {
@@ -80,8 +89,8 @@
         announce(isJa() ? cardTitle(group) + 'の募集要項を開きました' : 'Opened the ' + cardTitle(group) + ' requirements');
         var first = req.querySelector('.rc-detail.is-open');
         if (first) {
-          if (history.replaceState) history.replaceState(null, '', '#' + first.id);
-          scrollToEl(first);
+          replaceLocation('#' + first.id);
+          scrollToEl(window.matchMedia('(max-width: 899px)').matches ? req : first);
         }
       });
       // リンクを「開閉ボタン」として使っているので、Space でも押せるようにする
@@ -89,7 +98,7 @@
         if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); this.click(); }
       });
     });
-    if (closeBtn) closeBtn.addEventListener('click', function() { close(true); });
+    closeBtns.forEach(function(btn) { btn.addEventListener('click', function() { close(true); }); });
     req.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && openGroup) close(true);
     });
