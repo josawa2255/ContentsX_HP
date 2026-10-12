@@ -129,14 +129,15 @@
       },
       {
         "@type": "JobPosting",
-        "title": "営業",
-        "description": "ビジネスマンガ（BizManga）サービスの法人営業。企業の採用・広報・研修課題をヒアリングし、マンガを活用したソリューションを提案します。",
-        "datePosted": "2026-03-03",
-        "employmentType": "FULL_TIME",
+        "title": "営業（長期インターン）",
+        "description": "企業に対して、漫画・アニメ・動画などを活用したPR・採用・マーケティング施策を提案する営業をお任せします。企業リサーチや営業リストの作成、メール・問い合わせフォーム・電話などを使った新規企業へのアプローチから始め、慣れてきたら商談への参加や企画・提案に挑戦します。",
+        "datePosted": "2026-10-12",
+        "employmentType": ["INTERN", "CONTRACTOR"],
         "jobLocation": {
           "@type": "Place",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "中目黒1-8-8 目黒F2ビル 1F",
             "addressLocality": "目黒区",
             "addressRegion": "東京都",
             "addressCountry": "JP"
@@ -156,9 +157,45 @@
           "currency": "JPY",
           "value": {
             "@type": "QuantitativeValue",
-            "minValue": 4000000,
-            "maxValue": 6000000,
-            "unitText": "YEAR"
+            "minValue": 1500,
+            "maxValue": 1700,
+            "unitText": "HOUR"
+          }
+        }
+      },
+      {
+        "@type": "JobPosting",
+        "title": "エンジニア（長期インターン）",
+        "description": "AIを活用した社内業務の効率化や、新しいサービス・ツールの開発をお任せします。生成AIを活用した業務効率化、社内ツールの開発、営業・マーケティング業務の自動化、データ収集・整理・分析の自動化、APIを活用したAIサービスの開発、新しいサービスの企画・プロトタイプ制作、既存システムの改善、AIを活用した漫画・アニメ制作の効率化など。",
+        "datePosted": "2026-10-12",
+        "employmentType": "INTERN",
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "中目黒1-8-8 目黒F2ビル 1F",
+            "addressLocality": "目黒区",
+            "addressRegion": "東京都",
+            "addressCountry": "JP"
+          }
+        },
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": "Contents X 株式会社",
+          "sameAs": "https://contentsx.jp",
+          "logo": "https://contentsx.jp/material/images/logo/ContentsX.webp"
+        },
+        "url": "https://contentsx.jp/recruit#detail-engineer",
+        "directApply": true,
+        "validThrough": "2027-03-31T23:59:59+09:00",
+        "baseSalary": {
+          "@type": "MonetaryAmount",
+          "currency": "JPY",
+          "value": {
+            "@type": "QuantitativeValue",
+            "minValue": 1300,
+            "maxValue": 1500,
+            "unitText": "HOUR"
           }
         }
       }
@@ -330,7 +367,7 @@
                 <span class="rc-op-card__circle" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </span>
               <!-- 採用区分（新卒・正社員・インターン等）が確定したら <span>正社員</span> のように入れる。空なら表示されない -->
-              <span class="rc-op-card__types" data-hiring-types></span>
+              <span class="rc-op-card__types" data-hiring-types><span data-ja="長期インターン" data-en="Long-term Internship">長期インターン</span></span>
               <span class="rc-op-card__more"><span data-ja="詳細を見る" data-en="View details">詳細を見る</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             </span>
           </a>
@@ -350,7 +387,7 @@
                 <span class="rc-op-card__circle" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </span>
               <!-- 採用区分（新卒・正社員・インターン等）が確定したら <span>正社員</span> のように入れる。空なら表示されない -->
-              <span class="rc-op-card__types" data-hiring-types></span>
+              <span class="rc-op-card__types" data-hiring-types><span data-ja="長期インターン" data-en="Long-term Internship">長期インターン</span></span>
               <span class="rc-op-card__more"><span data-ja="詳細を見る" data-en="View details">詳細を見る</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             </span>
           </a>
@@ -415,49 +452,71 @@
           </div>
           <a href="/recruit/entry?position=%E3%83%9E%E3%83%B3%E3%82%AC%E8%A3%BD%E4%BD%9C%E6%8B%85%E5%BD%93" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </article>
-        <article class="rc-detail" id="detail-sales" data-group="sales" data-hiring-types="">
-          <h3 class="rc-detail-title" data-ja="営業募集" data-en="Sales Position">営業募集</h3>
+        <!-- 営業（長期インターン）。内容は 2026-10-12 時点のゼロワンインターン掲載（https://01intern.com/job/7846.html）と同じ。
+             条件を変えるときは掲載側と揃え、JSON-LD の JobPosting（url #detail-sales）も直す -->
+        <article class="rc-detail" id="detail-sales" data-group="sales" data-hiring-types="長期インターン">
+          <h3 class="rc-detail-title" data-ja="営業募集（長期インターン）" data-en="Sales (Long-term Internship)">営業募集（長期インターン）</h3>
           <div class="rc-detail-cat"><span data-ja="ビジネス" data-en="Business">ビジネス</span></div>
           <div class="rc-detail-rows">
             <div class="rc-detail-row">
               <div class="rc-detail-badge" data-ja="業務内容" data-en="Job Description">業務内容</div>
-              <div class="rc-detail-val" data-ja="企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。" data-en="B2B sales proposing manga as a solution for corporate communication challenges. Includes new business development using proprietary tools.">企業の情報伝達課題を発見し、マンガをソリューションとして提案する法人営業です。マンガDMやコンテンツセールス等、独自の営業ツールを活用した新規開拓も行います。<br>・法人向け新規開拓<br>・クライアントへのヒアリング・ソリューション提案<br>・パートナー企業の開拓・アライアンス推進</div>
+              <div class="rc-detail-val" data-ja="企業に対して、漫画・アニメ・動画などを活用したPR・採用・マーケティング施策を提案する営業をお任せします。・企業リサーチや営業リストの作成・メール・問い合わせフォーム・電話などを使った新規企業へのアプローチ・慣れてきたら、実際の商談への参加や企画・提案・経験を積んだ後は、新しい営業手法の企画、営業戦略の立案、新規サービスの企画、インターン生のマネジメントなど（希望や適性に応じて）" data-en="Sales proposing PR, recruiting and marketing using manga, anime and video: company research and lead lists, outreach to new companies by email, contact forms and phone, then joining meetings and making proposals. Later: new sales methods, sales strategy, new service planning and managing interns, depending on your interests.">企業に対して、漫画・アニメ・動画などを活用したPR・採用・マーケティング施策を提案する営業をお任せします。<br>・企業リサーチや営業リストの作成<br>・メール・問い合わせフォーム・電話などを使った新規企業へのアプローチ<br>・慣れてきたら、実際の商談への参加や企画・提案<br>・経験を積んだ後は、新しい営業手法の企画、営業戦略の立案、新規サービスの企画、インターン生のマネジメントなど（希望や適性に応じて）</div>
             </div>
             <div class="rc-detail-row">
               <div class="rc-detail-badge" data-ja="応募条件" data-en="Requirements">応募条件</div>
-              <div class="rc-detail-val" data-ja="・法人営業経験がある方（業界不問）・課題解決型の営業スタイルに関心がある方・将来的に事業開発にも携わりたい方・海外での案件に興味がある方・副業・業務委託からのスタートも可" data-en="B2B sales experience (any industry). Interest in solution-based sales. Desire to grow into business development. Interest in international projects. Side jobs and contract work welcome.">・法人営業経験がある方（業界不問）<br>・課題解決型の営業スタイルに関心がある方<br>・将来的に事業開発にも携わりたい方<br>・海外での案件に興味がある方<br>・副業・業務委託からのスタートも可</div>
+              <div class="rc-detail-val" data-ja="・基本的なパソコン操作ができる方・メール、チャット、オンライン会議ツールを使用できる方・勤務日にオフィスへ出社できる方・対象：大学1年生〜大学院生（全学年）・既卒／社会人" data-en="Basic PC skills. Able to use email, chat and online meeting tools. Able to come to the office on working days. Open to all university years, graduate students, graduates and working adults.">・基本的なパソコン操作ができる方<br>・メール、チャット、オンライン会議ツールを使用できる方<br>・勤務日にオフィスへ出社できる方<br>・対象：大学1年生〜大学院生（全学年）・既卒／社会人</div>
             </div>
             <div class="rc-detail-row">
               <div class="rc-detail-badge" data-ja="勤務形態" data-en="Work Style">勤務形態</div>
-              <div class="rc-detail-val" data-ja="業務委託・副業可（リモートワーク可）" data-en="Contract / Side job OK (Remote available)">業務委託・副業可（リモートワーク可）</div>
+              <div class="rc-detail-val" data-ja="長期インターン（業務委託）週1日以上／9:00〜21:00の間で1日1時間以上（月〜日・お好きな時間に働けます）" data-en="Long-term internship (contract). At least 1 day a week / at least 1 hour a day between 9:00 and 21:00 (Mon–Sun, flexible hours).">長期インターン（業務委託）<br>週1日以上／9:00〜21:00の間で1日1時間以上（月〜日）<br>・お好きな時間に働けます</div>
             </div>
             <div class="rc-detail-row">
               <div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div>
-              <div class="rc-detail-val" data-ja="リモートワーク可（全国どこからでも可）" data-en="Remote available (Anywhere in Japan)">リモートワーク可（全国どこからでも可）</div>
+              <div class="rc-detail-val" data-ja="東京都目黒区中目黒1-8-8 目黒F2ビル 1F（中目黒駅より徒歩6分）" data-en="1F Meguro F2 Bldg., 1-8-8 Nakameguro, Meguro-ku, Tokyo (6 min walk from Nakameguro Sta.).">東京都目黒区中目黒1-8-8 目黒F2ビル 1F<br>（中目黒駅より徒歩6分）</div>
             </div>
             <div class="rc-detail-row">
               <div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div>
-              <div class="rc-detail-val" data-ja="案件単位（スキル・経験に応じて相談）" data-en="Per project (negotiable based on skills and experience)">案件単位（スキル・経験に応じて相談）</div>
+              <div class="rc-detail-val" data-ja="時給1,500円〜1,700円・研修期間（1か月間）時給1,400円・昇給あり（3か月ごとの面談で判定。最短で入社3か月目から）・交通費支給あり" data-en="¥1,500–1,700/hour. Training period (1 month): ¥1,400/hour. Raises reviewed every 3 months (earliest from month 3). Transportation costs covered.">時給1,500円〜1,700円<br>・研修期間（1か月間）時給1,400円<br>・昇給あり（3か月ごとの面談で判定。最短で入社3か月目から。基準は入社時にお伝えします）<br>・交通費支給あり</div>
+            </div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="選考" data-en="Selection">選考</div>
+              <div class="rc-detail-val" data-ja="応募 → 1次面接（人事担当者）→ 最終面接（役員）→ 内定 → インターン開始（ご経験によって面接1回のみの可能性もあります）" data-en="Application → 1st interview (HR) → Final interview (executive) → Offer → Internship starts. Depending on experience, there may be only one interview.">応募 → 1次面接（人事担当者）→ 最終面接（役員）→ 内定 → インターン開始<br>（ご経験によって面接1回のみの可能性もあります）</div>
             </div>
           </div>
-          <a href="/recruit/entry?position=%E5%96%B6%E6%A5%AD" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
+          <a href="/recruit/entry?position=%E5%96%B6%E6%A5%AD&amp;type=%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%B3" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </article>
-        <!-- TODO(#127): エンジニアの募集要項・応募先が確定したら、下のコメントの枠に中身を入れて準備中の文を消し、
-             「この募集に応募する」（/recruit/entry?position=エンジニア）と JSON-LD の JobPosting も追加する。未確定の条件は書かない -->
-        <article class="rc-detail" id="detail-engineer" data-group="engineer" data-hiring-types="">
-          <h3 class="rc-detail-title" data-ja="エンジニア" data-en="Engineer">エンジニア</h3>
+        <!-- エンジニア（長期インターン）。内容は 2026-10-12 時点のゼロワンインターン掲載（https://01intern.com/job/7845.html）と同じ。
+             条件を変えるときは掲載側と揃え、JSON-LD の JobPosting（url #detail-engineer）も直す -->
+        <article class="rc-detail" id="detail-engineer" data-group="engineer" data-hiring-types="長期インターン">
+          <h3 class="rc-detail-title" data-ja="エンジニア募集（長期インターン）" data-en="Engineer (Long-term Internship)">エンジニア募集（長期インターン）</h3>
           <div class="rc-detail-cat"><span data-ja="テクノロジー" data-en="Technology">テクノロジー</span></div>
-          <p class="rc-detail-pending" data-ja="募集要項は現在準備中です。公開まで今しばらくお待ちください。" data-en="Requirements for this position are being prepared. Please check back soon.">募集要項は現在準備中です。公開まで今しばらくお待ちください。</p>
-          <!-- 確定後に使う枠（ほかの職種と同じ形）:
           <div class="rc-detail-rows">
-            <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="業務内容" data-en="Job Description">業務内容</div><div class="rc-detail-val"></div></div>
-            <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="応募条件" data-en="Requirements">応募条件</div><div class="rc-detail-val"></div></div>
-            <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="勤務形態" data-en="Work Style">勤務形態</div><div class="rc-detail-val"></div></div>
-            <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div><div class="rc-detail-val"></div></div>
-            <div class="rc-detail-row"><div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div><div class="rc-detail-val"></div></div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="業務内容" data-en="Job Description">業務内容</div>
+              <div class="rc-detail-val" data-ja="AIを活用した社内業務の効率化や、新しいサービス・ツールの開発をお任せします。興味やスキルに応じて、さまざまなテーマに挑戦できます。・ChatGPTなどの生成AIを活用した業務効率化・AIを使った社内ツールの開発・営業・マーケティング業務の自動化・データ収集・整理・分析の自動化・APIを活用したAIサービスの開発・AIを活用した新しいサービスの企画・プロトタイプ制作・既存システムの改善・AIを活用した漫画・アニメ制作の効率化" data-en="Improve internal operations with AI and develop new services and tools: generative AI for efficiency, internal tools, sales/marketing automation, data collection and analysis automation, AI services using APIs, planning and prototyping new AI services, improving existing systems, and streamlining manga/anime production with AI.">AIを活用した社内業務の効率化や、新しいサービス・ツールの開発をお任せします。興味やスキルに応じて、さまざまなテーマに挑戦できます。<br>・ChatGPTなどの生成AIを活用した業務効率化<br>・AIを使った社内ツールの開発<br>・営業・マーケティング業務の自動化<br>・データ収集・整理・分析の自動化<br>・APIを活用したAIサービスの開発<br>・AIを活用した新しいサービスの企画・プロトタイプ制作<br>・既存システムの改善<br>・AIを活用した漫画・アニメ制作の効率化</div>
+            </div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="応募条件" data-en="Requirements">応募条件</div>
+              <div class="rc-detail-val" data-ja="・基本的なパソコン操作ができる方・メール、チャット、オンライン会議ツールを使用できる方・勤務日にオフィスへ出社できる方・対象：大学1年生〜大学院生（全学年）・既卒／社会人" data-en="Basic PC skills. Able to use email, chat and online meeting tools. Able to come to the office on working days. Open to all university years, graduate students, graduates and working adults.">・基本的なパソコン操作ができる方<br>・メール、チャット、オンライン会議ツールを使用できる方<br>・勤務日にオフィスへ出社できる方<br>・対象：大学1年生〜大学院生（全学年）・既卒／社会人</div>
+            </div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="勤務形態" data-en="Work Style">勤務形態</div>
+              <div class="rc-detail-val" data-ja="長期インターン（雇用契約）週1日以上／9:00〜21:00の間で1日1時間以上（月〜日）" data-en="Long-term internship (employment contract). At least 1 day a week / at least 1 hour a day between 9:00 and 21:00 (Mon–Sun).">長期インターン（雇用契約）<br>週1日以上／9:00〜21:00の間で1日1時間以上（月〜日）</div>
+            </div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="勤務地" data-en="Location">勤務地</div>
+              <div class="rc-detail-val" data-ja="東京都目黒区中目黒1-8-8 目黒F2ビル 1F（中目黒駅より徒歩6分）・リモート勤務の日もあり" data-en="1F Meguro F2 Bldg., 1-8-8 Nakameguro, Meguro-ku, Tokyo (6 min walk from Nakameguro Sta.). Some remote days available.">東京都目黒区中目黒1-8-8 目黒F2ビル 1F<br>（中目黒駅より徒歩6分）<br>・リモート勤務の日もあり（下記の時給）</div>
+            </div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="報酬" data-en="Compensation">報酬</div>
+              <div class="rc-detail-val" data-ja="時給1,500円〜（出社勤務）・リモート勤務 時給1,300円・研修期間（約1か月間は出社）時給1,400円・交通費支給あり" data-en="From ¥1,500/hour (office). Remote: ¥1,300/hour. Training period (about 1 month, in office): ¥1,400/hour. Transportation costs covered.">時給1,500円〜（出社勤務）<br>・リモート勤務 時給1,300円<br>・研修期間（約1か月間は出社）時給1,400円<br>・交通費支給あり</div>
+            </div>
+            <div class="rc-detail-row">
+              <div class="rc-detail-badge" data-ja="選考" data-en="Selection">選考</div>
+              <div class="rc-detail-val" data-ja="応募 → 1次面接（人事担当者）→ 2次面接（役員）→ 内定 → インターン開始（ご経験によって面接が1回になる場合もあります）" data-en="Application → 1st interview (HR) → 2nd interview (executive) → Offer → Internship starts. Depending on experience, there may be only one interview.">応募 → 1次面接（人事担当者）→ 2次面接（役員）→ 内定 → インターン開始<br>（ご経験によって面接が1回になる場合もあります）</div>
+            </div>
           </div>
-          <a href="/recruit/entry?position=%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
-          -->
+          <a href="/recruit/entry?position=%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%8B%E3%82%A2&amp;type=%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%B3" class="rc-detail-apply-btn" data-ja="この募集に応募する" data-en="Apply for This Position">この募集に応募する</a>
         </article>
         <button type="button" class="rc-req__close" data-rc-req-close hidden><span data-ja="募集要項を閉じる" data-en="Close">募集要項を閉じる</span></button>
       </div>
