@@ -54,4 +54,6 @@
   .cxtp-list { margin-inline:-16px; padding-inline:16px; scroll-padding-inline:16px; }
   .cxtp-list>li { flex-basis:82%; }
   .cxtp-title { font-size:15px; }
+  .cxtp-type { font-size:12px; }
+  .cxtp-tags { font-size:13px; }
 }
