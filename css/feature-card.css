@@ -5,7 +5,7 @@
    - 並べ方（グリッド・列数・時間差）は各ページのCSSが持つ。ここはカード1枚の見た目と状態だけ
    - 色は変数で切り替える: --cx-fc-accent（線・矢印・区分の文字）/ --cx-fc-accent-soft（区分の地）/ --cx-fc-more-bg（ボタン）
    - 選択中: aria-expanded="true"（開閉ボタンとして使うとき）か .is-selected
-   - 899px以下は横長（左に画像、右に文字。丸い矢印は隠し、ボタンは文字リンクに）
+   - スマホでも既定は縦積み（上に画像）。--row-sp を付けると 899px以下で横長（左に画像、右に文字）
    - HTML の骨組み:
      <a class="cx-feature-card cx-ui-card" href="…">
        <span class="cx-feature-card__media"><img …><span class="cx-feature-card__no"><span class="cx-feature-card__num">01</span><span class="cx-feature-card__label">LABEL</span></span></span>
@@ -161,24 +161,25 @@
 .cx-feature-card:is([aria-expanded="true"], .is-selected) .cx-feature-card__circle { background: var(--cx-fc-accent); color: #fff; }
 .cx-feature-card[aria-expanded="true"] .cx-feature-card__circle svg { transform: rotate(90deg); }
 
+/* --row-sp: 899px以下で横長（左に画像、右に文字。丸い矢印は隠し、ボタンは文字リンクに）。採用の職種カードが使う */
 @media (max-width: 899px) {
-  .cx-feature-card { flex-direction: row; border-radius: 16px; }
-  .cx-feature-card__media {
+  .cx-feature-card--row-sp { flex-direction: row; border-radius: 16px; }
+  .cx-feature-card--row-sp .cx-feature-card__media {
     flex: 0 0 clamp(96px, 27vw, 156px);
     align-self: stretch;
     aspect-ratio: auto;
   }
-  .cx-feature-card__media img { position: absolute; inset: 0; object-position: 50% 24%; }
-  .cx-feature-card__media::after { display: none; }
-  .cx-feature-card__no { top: 12px; left: 12px; gap: 0; }
-  .cx-feature-card__num { font-size: 1.25rem; }
-  .cx-feature-card__num::after, .cx-feature-card__label { display: none; }
-  .cx-feature-card__body { min-width: 0; gap: 10px; padding: 18px 16px; }
-  .cx-feature-card__row { gap: 0; }
-  .cx-feature-card__title { font-size: clamp(1.0625rem, 2.4vw + .6rem, 1.375rem); line-height: 1.5; }
-  .cx-feature-card__desc { font-size: 1rem; line-height: 1.65; word-break: normal; }
-  .cx-feature-card__circle { display: none; }
-  .cx-feature-card__more {
+  .cx-feature-card--row-sp .cx-feature-card__media img { position: absolute; inset: 0; object-position: 50% 24%; }
+  .cx-feature-card--row-sp .cx-feature-card__media::after { display: none; }
+  .cx-feature-card--row-sp .cx-feature-card__no { top: 12px; left: 12px; gap: 0; }
+  .cx-feature-card--row-sp .cx-feature-card__num { font-size: 1.25rem; }
+  .cx-feature-card--row-sp .cx-feature-card__num::after, .cx-feature-card--row-sp .cx-feature-card__label { display: none; }
+  .cx-feature-card--row-sp .cx-feature-card__body { min-width: 0; gap: 10px; padding: 18px 16px; }
+  .cx-feature-card--row-sp .cx-feature-card__row { gap: 0; }
+  .cx-feature-card--row-sp .cx-feature-card__title { font-size: clamp(1.0625rem, 2.4vw + .6rem, 1.375rem); line-height: 1.5; }
+  .cx-feature-card--row-sp .cx-feature-card__desc { font-size: 1rem; line-height: 1.65; word-break: normal; }
+  .cx-feature-card--row-sp .cx-feature-card__circle { display: none; }
+  .cx-feature-card--row-sp .cx-feature-card__more {
     justify-content: flex-start;
     min-height: 24px;
     gap: 8px;
@@ -188,7 +189,7 @@
     font-size: .875rem;
     letter-spacing: .02em;
   }
-  .cx-feature-card[aria-expanded="true"] .cx-feature-card__more svg { transform: rotate(90deg); }
+  .cx-feature-card--row-sp[aria-expanded="true"] .cx-feature-card__more svg { transform: rotate(90deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
