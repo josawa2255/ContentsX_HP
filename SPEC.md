@@ -18,7 +18,7 @@
 | Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
 | 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
-| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | 事業紹介・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表メッセージには黒宮代表の実写真、事業紹介とバリュー03には実際の会議写真を掲載。バリュー01は20代前半〜中盤の日本人男女の生成イメージ。バリュー02は提供された実会議写真の人物・会議室を参考に生成した別場面のイメージであり、実際の会議記録ではない |
+| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | WHY（存在する理由）・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表メッセージには黒宮代表の実写真、事業紹介とバリュー03には実際の会議写真を掲載。バリュー01は20代前半〜中盤の日本人男女の生成イメージ。バリュー02は提供された実会議写真の人物・会議室を参考に生成した別場面のイメージであり、実際の会議記録ではない |
 | 代表メッセージ | `message.html` | i18n.js, nav.js, message-2026.js | `/message`。指定された新原稿を全文掲載。PCは左コピー・右ポートレート、1024px以下はMESSAGE→コピー・署名→写真→本文。本体コードで管理する静的ページ。支給PC/SPハンドオフに沿う最大1280pxの構成、本文最大720px・4章見出し、実写真、サムネイル付き関連リンク。Heroと会議写真だけ軽いフェード、本文は常時表示 |
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
@@ -636,6 +636,26 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - UIとモーションの共通基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページは `js/sitewide-motion.js` がセクションの1回だけの登場演出を担う。JS無し・動きの軽減設定時は常時表示する。
 - フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` から読み込み、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
 - 共通の小部品は `cx-ui-surface`（淡色面と枠）、`cx-ui-pill`（丸い外形）、`cx-ui-card`（カード反応）、`cx-ui-action`（操作反応）。ページ固有クラスは配置・内容を担当する。旧生成コラムカード `cx-col-card` の動きは生成テンプレート互換のため保持する。
+
+### About HERO（2026-10-12、Issue #139）
+
+- 対象は `/about` の `.ax-hero` のみ。支給された承認済みPC/SPデザインに合わせ、白地の理念コピーと、創作・会議・都市を斜めにつなぐ写真コラージュに刷新した。共通ヘッダー、SEOメタ情報、既存の事業紹介・理念・ミッション/ビジョン・バリュー・代表メッセージ以下は維持する。
+- h1 は「きっかけがあれば、／人も企業も、輝く。」の2行。「輝く。」のみ Sales X の青。承認デザインの例外として **About HEROのh1だけ** `Noto Serif JP` 500を使用し、リード・本文・他セクションは既存書体のまま。
+- リードは「企業の価値を、伝わる形にし、必要な相手へ届ける。」。本文は「コンテンツの力で、人の心を動かし、ビジネスの可能性をひらく。Contents X は、クリエイティブと営業の仕組みをつなぎ、まだ見ぬ出会いや成長のきっかけを生み出す会社です。」。実テキストと `data-ja` / `data-en` で日英往復し、h1の青い強調も維持する。
+- 1025px以上はコピーを左、写真を中央〜右に配置。1024px以下はコピー→縦コラージュの通常フローへ切替。高さはコピーに追従し、写真の切り抜きは `.ax-hero` 専用CSSの `clip-path`、写真の位置は `object-position` で調整する。会議写真は下部に配置して主な顔を保持し、上部の淡色面に「つなぐ。想いを、社会へ。」を置く。
+- 配信素材は `material/about-hero-2026/` の6枚のWebPと `brand-x-translucent.svg`。`picture` の `source` は1024px以下でモバイル素材を選択し、それぞれの実寸をwidth/heightに指定。生成されたイメージ素材であり、実在の社員・顧客・オフィスの記録として扱わない（装飾画像の `alt=""` と `aria-hidden`）。参照画像と高解像度原本PNGは配信しない。
+- `SCROLL` は44×44px以上の実リンク `/about#business`。既存の次セクションに接続する。HEROに新たなスクロール固定・JS演出を追加しない。JS無効・画像未読込・動きの軽減設定でもコピーと導線を表示する。
+- 検証: `python3 tests/test_about_hero.py --url <loopback> --base <基準loopback> --artifacts <保存先>`。320/375/390/412/430/448/480/481/640/767/768/769/1023/1024/1025/1280/1440/1920px、h1の2行、日英往復、文字1.4倍、メニュー、SCROLL、画像/JS無効、HERO以下のHTML・寸法維持を確認する。画面比較は既存 `tests/sitewide_check.py --pages /about` を使用する。
+
+### About WHY（2026-10-13、Issue #145）
+
+- `/about` のHERO直後の旧紹介セクションだけをWHYへ置換。既存アンカー `#business` を残し、HEROのSCROLLから接続する。HERO・理念以降・ヘッダー・フッターは維持する。前提はHEROのPR #140。
+- 見出しは「まだ見ぬ価値を、社会へ届けるために。」（「届ける」のみ青）、書体は既存のNoto Sans JP。リードは「優れた技術やサービス、まだ知られていない才能。良いものがあるだけでは、必要な人に届くとは限りません。」、補足は「私たちは、その価値が伝わり、次の出会いや挑戦につながる「きっかけ」をつくりたいと考えています。」。`data-ja` / `data-en` で日英切替・青い強調の往復に対応する。
+- 01「埋もれている価値」→02「伝わる仕組みをつくる」→03「可能性がひらく」を `ol` と3つの `article` で説明。採用の `css/feature-card.css` と `.cx-feature-card` / `--wide` / `--row-sp` を再利用する。共通CSSは変更しない。操作用の丸矢印・ボタン・tabindex・選択状態は付けず、ホバー画像拡大はWHY内だけ抑止。カード02のみ青枠と青い見出しを付ける。
+- 900px以上は3列・16:10の写真、899px以下は共通カードの左写真/右本文を縦に3枚並べる。読み順の矢印はカード外の装飾でPCは右向き/SPは下向き。WHY専用 `css/about-why.css` は外側レイアウトと写真位置、非操作カードの調整を持つ。`--wide` の後置ルールでSPの写真比率が上書きされるため、WHY内だけ `aspect-ratio:auto` に戻す。共通wideラベルの11px指定もWHY内だけ12pxの既存トークンへ上げる。
+- 素材は `material/images/about-2026/why/` の7枚のWebPと `why-brand-seam.svg`。PCカードは960×620、SPは490×680、右上の淡い都市写真は1440×760。生成された装飾イメージであり、社員/顧客/所在地の記録として扱わない。`picture/source` ごとに実寸を指定し、写真はlazy/async、alt空・aria-hiddenで本文と重複した説明を避ける。
+- 下部は「そのきっかけを、私たちはどうつくるのか。」＋ `NEXT 02 / OUR ROLE` の編集上の接続。OUR ROLEは次フェーズなのでリンク・ボタンや未実装の `#role` は付けない。WHY独自のスクロール監視・固定・パララックスを追加せず、JS無効・動き軽減でも全文を表示する。
+- 検証: `python3 tests/test_about_why.py --url <WHY loopback> --base <HERO loopback> --artifacts <保存先>`。320〜1920pxの17幅（899px境界前後含む）、日英、文字1.4倍、共通カードと非操作ホバー、`#business`、HERO/後続セクションのHTML・寸法維持、JS無効を確認する。既存 `tests/sitewide_check.py` でAbout/採用/サービス一覧を比較。確認画像は `tests/screenshots/about-why/`。
 
 ## 14. 参照ドキュメント
 
