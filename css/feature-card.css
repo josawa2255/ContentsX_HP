@@ -6,6 +6,9 @@
    - 色は変数で切り替える: --cx-fc-accent（線・矢印・区分の文字）/ --cx-fc-accent-soft（区分の地）/ --cx-fc-more-bg（ボタン）
    - 選択中: aria-expanded="true"（開閉ボタンとして使うとき）か .is-selected
    - スマホでも既定は縦積み（上に画像）。--row-sp を付けると 899px以下で横長（左に画像、右に文字）
+   - 種類: --wide（横長の写真。16:10 で切り抜く）／--creative（Creative X のオレンジ）
+   - カード全体をリンクにしない使い方（中に動画ボタンなどがあるとき）: 外側を <article>、__more を <a> か <button> にする。
+     丸い矢印（__circle）は「カード全体が押せる」合図なので、その場合は置かない
    - HTML の骨組み:
      <a class="cx-feature-card cx-ui-card" href="…">
        <span class="cx-feature-card__media"><img …><span class="cx-feature-card__no"><span class="cx-feature-card__num">01</span><span class="cx-feature-card__label">LABEL</span></span></span>
@@ -129,7 +132,7 @@
   padding: 4px 10px;
   border-radius: 999px;
   background: var(--cx-fc-accent-soft);
-  color: var(--cx-fc-accent);
+  color: var(--cx-fc-accent-text, var(--cx-fc-accent));
   font-size: .75rem;
   font-weight: 700;
 }
@@ -185,7 +188,7 @@
     gap: 8px;
     border-radius: 0;
     background: none;
-    color: var(--cx-fc-accent);
+    color: var(--cx-fc-accent-text, var(--cx-fc-accent));
     font-size: .875rem;
     letter-spacing: .02em;
   }
@@ -194,4 +197,34 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cx-feature-card__media img { transition: none; }
+}
+
+/* ---------- 種類 ---------- */
+.cx-feature-card--wide .cx-feature-card__media { aspect-ratio: 16 / 10; }
+.cx-feature-card--creative {
+  --cx-fc-accent: var(--cx-color-creative, #fa4d12);
+  --cx-fc-accent-soft: var(--cx-color-creative-soft, #fff3ec);
+  --cx-fc-accent-text: var(--cx-color-creative-text, #b83806);
+  --cx-fc-more-bg: linear-gradient(90deg, #e2531c, #f2814a);
+}
+
+/* ---------- カード全体がリンクではないとき（__more が <a> / <button>） ---------- */
+a.cx-feature-card__more,
+button.cx-feature-card__more {
+  width: 100%;
+  padding: 0 20px;
+  border: 0;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+a.cx-feature-card__more:focus-visible,
+button.cx-feature-card__more:focus-visible { outline: 3px solid var(--cx-fc-accent); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  a.cx-feature-card__more:hover svg,
+  button.cx-feature-card__more:hover svg { transform: translateX(4px); }
+}
+@media (max-width: 899px) {
+  a.cx-feature-card__more,
+  button.cx-feature-card__more { width: auto; min-height: 44px; padding: 0; }
 }
