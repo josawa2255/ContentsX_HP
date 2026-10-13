@@ -35,7 +35,7 @@
   // JSがあるときは、その職種のグループ（漫画家 / 漫画制作は「漫画家」「マンガ製作担当」の2件）だけを同じ場所に開く。
   // 同じカードをもう一度押す・「募集要項を閉じる」・Esc で閉じる。開閉は role="status" で読み上げる。
   var req = document.querySelector('[data-rc-req]');
-  var cards = document.querySelectorAll('.rc-op-card[data-req]');
+  var cards = document.querySelectorAll('.cx-feature-card[data-req]');
   if (req && cards.length) {
     var details = req.querySelectorAll('.rc-detail');
     var closeBtns = req.querySelectorAll('[data-rc-req-close]');
@@ -46,7 +46,7 @@
 
     var isJa = function() { return !(window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en'); };
     var cardTitle = function(group) {
-      var t = document.querySelector('.rc-op-card[data-req="' + group + '"] .rc-op-card__title');
+      var t = document.querySelector('.cx-feature-card[data-req="' + group + '"] .cx-feature-card__title');
       return t ? t.textContent.trim() : '';
     };
     var announce = function(text) { if (status) status.textContent = text; };
@@ -69,7 +69,7 @@
       cards.forEach(function(c) { c.setAttribute('aria-expanded', String(c.getAttribute('data-req') === group)); });
     };
     var close = function(focusCard) {
-      var card = document.querySelector('.rc-op-card[data-req="' + openGroup + '"]');
+      var card = document.querySelector('.cx-feature-card[data-req="' + openGroup + '"]');
       var name = cardTitle(openGroup);
       setOpen(null);
       announce(isJa() ? name + 'の募集要項を閉じました' : 'Closed the ' + name + ' requirements');
