@@ -364,7 +364,21 @@ def render_coming_soon() -> str:
     return '<div class="cxg-coming-soon"><strong>乞うご期待</strong><span>サービスのご案内を準備中です</span></div>'
 
 
+# English labels on the card image (same style as the recruit page's position cards).
+CARD_LABELS = {
+    "bizform": "BIZFORM", "bizaio": "BIZAIO", "bizkarte": "BIZKARTE", "bizrecruit": "BIZRECRUIT",
+    "bizmanga": "BIZMANGA", "bizanime": "BIZANIME", "bizvideo": "BIZVIDEO",
+}
+ARROW_SVG = ('<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">'
+             '<path d="{d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+ARROW_RIGHT = ARROW_SVG.format(d="M4 12h15M13 6l6 6-6 6")
+ARROW_OUT = ARROW_SVG.format(d="M7 17L17 7M8 7h9v9")
+
+
 def render_landing_card(service: dict, index: int) -> str:
+    """Service list card on the Sales X / Creative X pages. Uses the shared .cx-feature-card
+    (css/feature-card.css, #141). `cxg-service-card` stays only as a hook for js/service-media.js
+    (adds --playing) and the coming-soon panel; it has no card styles of its own."""
     service_id = service["id"]
     image = GROUP_IMAGES.get(service_id, service.get("hoverImage") or service.get("image"))
     href = service_destination(service)
@@ -374,14 +388,23 @@ def render_landing_card(service: dict, index: int) -> str:
     image_markup = render_landing_visual(service, image, dimensions)
     visual_class = "" if image else " cxg-service-card__image--icon"
     coming_soon = service_id in COMING_SOON
-    action = (f'<button class="cxg-coming-soon__trigger" type="button" aria-label="{esc(service["name"])}は準備中です">公開予定 <span aria-hidden="true">→</span></button>'
-              if coming_soon else '<a href="/contact">制作について相談 <span aria-hidden="true">→</span></a>'
-              if service_id == "bizvideo" else f'<a href="{esc(href)}">公式サイトを見る <span aria-hidden="true">↗</span></a>')
-    return re.sub(r"(?m)^[ \t]+$", "", f'''<article class="cxg-service-card cxg-service-card--{service_id}{' cxg-service-card--coming-soon' if coming_soon else ''}">
-  <div class="cxg-service-card__image{visual_class}">{image_markup}</div>
-  <div class="cxg-service-card__body"><small>{index:02}</small><h3>{esc(service['name'])}</h3>
-    <p>{esc(service['hoverSummary'])}</p>{action}</div>
-  {render_coming_soon() if coming_soon else ''}
+    tone = " cx-feature-card--creative" if service["group"] == "creative" else ""
+    if coming_soon:
+        action = (f'<button class="cx-feature-card__more cxg-coming-soon__trigger" type="button" '
+                  f'aria-label="{esc(service["name"])}は準備中です"><span>公開予定</span>{ARROW_RIGHT}</button>')
+    elif service_id == "bizvideo":
+        action = f'<a class="cx-feature-card__more" href="/contact"><span>制作について相談</span>{ARROW_RIGHT}</a>'
+    else:
+        action = f'<a class="cx-feature-card__more" href="{esc(href)}"><span>公式サイトを見る</span>{ARROW_OUT}</a>'
+    tags = "".join(f"<span>{esc(tag)}</span>" for tag in service.get("tags", [])[:2])
+    label = CARD_LABELS.get(service_id, service["name"])
+    return re.sub(r"(?m)^[ \t]+$", "", f'''<article class="cx-feature-card cx-feature-card--wide{tone} cx-ui-card cxg-service-card cxg-service-card--{service_id}{' cxg-service-card--coming-soon' if coming_soon else ''}">
+  <div class="cx-feature-card__media{visual_class}">{image_markup}<span class="cx-feature-card__no" aria-hidden="true"><span class="cx-feature-card__num">{index:02}</span><span class="cx-feature-card__label">{label}</span></span>{render_coming_soon() if coming_soon else ''}</div>
+  <div class="cx-feature-card__body">
+    <div class="cx-feature-card__row"><div class="cx-feature-card__text"><h3 class="cx-feature-card__title">{esc(service['name'])}</h3><p class="cx-feature-card__desc">{esc(service['hoverSummary'])}</p></div></div>
+    <div class="cx-feature-card__types">{tags}</div>
+    {action}
+  </div>
 </article>''')
 
 

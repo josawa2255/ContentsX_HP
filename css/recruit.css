@@ -433,7 +433,7 @@
   border-left: 1px solid rgba(0, 91, 250, .35);
 }
 
-/* 職種カード: 上に画像、下に白〜薄青のパネル */
+/* 職種カード: カード自体は共通部品 .cx-feature-card（css/feature-card.css）。ここは並べ方と登場の時間差だけ */
 .rc-op__list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -443,148 +443,6 @@
   list-style: none;
 }
 .rc-op-item { display: flex; min-width: 0; }
-.rc-op-card {
-  scroll-margin-top: 88px;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .9);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(239, 246, 255, .96));
-  box-shadow: 0 14px 36px rgba(17, 52, 104, .09);
-  color: var(--cx-color-ink, #07143b);
-  text-decoration: none;
-}
-.rc-op-card__media {
-  position: relative;
-  display: block;
-  aspect-ratio: 20 / 19;
-  overflow: hidden;
-  background: #dce8f6;
-}
-.rc-op-card__media img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 30%;
-  transition: transform 1s var(--cx-motion-ease, cubic-bezier(.16, 1, .3, 1));
-}
-/* 番号の読みやすさ（上）と、パネルへのなじみ（下） */
-.rc-op-card__media::before,
-.rc-op-card__media::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-.rc-op-card__media::before { top: 0; height: 42%; background: linear-gradient(180deg, rgba(7, 20, 59, .5), rgba(7, 20, 59, 0)); }
-.rc-op-card__media::after { bottom: 0; height: 34%; background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .96)); }
-.rc-op-card__no {
-  position: absolute;
-  top: clamp(18px, 2vw, 28px);
-  left: clamp(20px, 2.2vw, 32px);
-  z-index: 2;
-  display: grid;
-  gap: 10px;
-  color: #fff;
-  text-shadow: 0 1px 12px rgba(7, 20, 59, .35);
-}
-.rc-op-card__num {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-family: var(--cx-font-latin, 'Inter', sans-serif);
-  font-size: clamp(1.75rem, 2.4vw, 2.375rem);
-  font-weight: 700;
-  line-height: 1;
-}
-.rc-op-card__num::after { content: ''; width: 40px; height: 1px; background: currentColor; }
-.rc-op-card__label {
-  font-family: var(--cx-font-latin, 'Inter', sans-serif);
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .26em;
-}
-.rc-op-card__body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 16px;
-  padding: clamp(14px, 1.6vw, 22px) clamp(20px, 2.2vw, 30px) clamp(22px, 2.4vw, 30px);
-}
-.rc-op-card__row { display: flex; align-items: center; gap: 16px; }
-.rc-op-card__text { display: grid; flex: 1; gap: 8px; min-width: 0; }
-.rc-op-card__title {
-  margin: 0;
-  font-size: clamp(1.25rem, 1.2vw + .6rem, 1.75rem);
-  font-weight: 900;
-  line-height: 1.35;
-  letter-spacing: -.01em;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
-.rc-op-card__desc {
-  color: var(--cx-color-body, #172549);
-  font-size: .9375rem;
-  line-height: 1.7;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
-.rc-op-card__circle {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-  border: 1.5px solid var(--cx-color-sales, #005bfa);
-  border-radius: 50%;
-  color: var(--cx-color-sales, #005bfa);
-  transition: background-color var(--cx-motion-fast, .18s) ease, color var(--cx-motion-fast, .18s) ease;
-}
-.rc-op-card__circle svg,
-.rc-op-card__more svg { transition: transform var(--cx-motion-ui, .3s) var(--cx-motion-ease, cubic-bezier(.16, 1, .3, 1)); }
-.rc-op-card__types { display: flex; flex-wrap: wrap; gap: 6px; }
-.rc-op-card__types:empty { display: none; }
-.rc-op-card__types > span {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--cx-color-sales-soft, #eaf3ff);
-  color: var(--cx-color-sales, #005bfa);
-  font-size: .75rem;
-  font-weight: 700;
-}
-.rc-op-card__more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  min-height: 52px;
-  margin-top: auto;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #3d82f0, #6ea6f5);
-  color: #fff;
-  font-size: .9375rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rc-op-card:hover .rc-op-card__media img { transform: scale(1.03); }
-  .rc-op-card:hover .rc-op-card__circle { background: var(--cx-color-sales, #005bfa); color: #fff; }
-  .rc-op-card:hover .rc-op-card__circle svg,
-  .rc-op-card:hover .rc-op-card__more svg { transform: translateX(4px); }
-}
-.rc-op-card:focus-visible .rc-op-card__circle { background: var(--cx-color-sales, #005bfa); color: #fff; }
-.rc-op-card[aria-expanded="true"] {
-  border-color: var(--cx-color-sales, #005bfa);
-  box-shadow: 0 0 0 2px var(--cx-color-sales, #005bfa), 0 14px 36px rgba(17, 52, 104, .12);
-}
-.rc-op-card[aria-expanded="true"] .rc-op-card__circle { background: var(--cx-color-sales, #005bfa); color: #fff; }
-.rc-op-card[aria-expanded="true"] .rc-op-card__circle svg { transform: rotate(90deg); }
-
 /* カードの時間差（登場は js/sitewide-motion.js が .cx-motion-visible を付ける） */
 @media (prefers-reduced-motion: no-preference) {
   body.cx-sitewide .rc-op-item.cx-motion-pending.cx-motion-visible:nth-child(2) { transition-delay: .14s; }
@@ -965,7 +823,6 @@
   }
   .rc-op__list { grid-template-columns: minmax(0, 1fr); }
   .rc-op-item:nth-child(3) { width: auto; justify-self: stretch; }
-  .rc-op-card__media { aspect-ratio: 4 / 3; }
   .rc-detail-row { flex-direction: column; gap: 8px; }
   .rc-detail-badge { width: auto; padding: 6px 14px; }
 }
@@ -1000,33 +857,6 @@
   .rc-op__lead { font-size: 1rem; line-height: 1.8; }
   .rc-op__list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .rc-op-item:nth-child(3) { width: auto; justify-self: stretch; }
-  .rc-op-card { flex-direction: row; border-radius: 16px; }
-  .rc-op-card__media {
-    flex: 0 0 clamp(96px, 27vw, 156px);
-    align-self: stretch;
-    aspect-ratio: auto;
-  }
-  .rc-op-card__media img { position: absolute; inset: 0; object-position: 50% 24%; }
-  .rc-op-card__media::after { display: none; }
-  .rc-op-card__no { top: 12px; left: 12px; gap: 0; }
-  .rc-op-card__num { font-size: 1.25rem; }
-  .rc-op-card__num::after, .rc-op-card__label { display: none; }
-  .rc-op-card__body { min-width: 0; gap: 10px; padding: 18px 16px; }
-  .rc-op-card__row { gap: 0; }
-  .rc-op-card__title { font-size: clamp(1.0625rem, 2.4vw + .6rem, 1.375rem); line-height: 1.5; }
-  .rc-op-card__desc { font-size: 1rem; line-height: 1.65; word-break: normal; }
-  .rc-op-card__circle { display: none; }
-  .rc-op-card__more {
-    justify-content: flex-start;
-    min-height: 24px;
-    gap: 8px;
-    border-radius: 0;
-    background: none;
-    color: var(--cx-color-sales, #005bfa);
-    font-size: .875rem;
-    letter-spacing: .02em;
-  }
-  .rc-op-card[aria-expanded="true"] .rc-op-card__more svg { transform: rotate(90deg); }
 
   .rc-req { margin-top: 24px; gap: 16px; }
   .rc-detail { padding: 22px 18px; border-radius: 16px; }
@@ -1058,5 +888,4 @@
 @media (prefers-reduced-motion: reduce) {
   .rc-op.is-scrubbing :is(.rc-op__light, .rc-op__veil) { transition: none; }
   .rc-req.is-open .rc-detail.is-open { animation: none; }
-  .rc-op-card__media img { transition: none; }
 }

@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="/css/brand-system-2026.css">
   <link rel="stylesheet" href="/css/web-system-tokens.css">
   <link rel="stylesheet" href="/css/web-system.css">
+  <link rel="stylesheet" href="/css/feature-card.css">
   <link rel="stylesheet" href="/css/service-landing-2026.css">
   <link rel="stylesheet" href="/css/service-directory-2026.css">
   <link rel="stylesheet" href="/css/dl-modal.css">

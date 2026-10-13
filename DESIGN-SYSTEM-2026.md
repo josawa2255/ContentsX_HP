@@ -64,6 +64,7 @@
 | `.cx-ui-card` | カードの操作反応 | 会社案内、関連会社、役員、採用カード |
 | `.cx-ui-action` | ボタン・リンクの操作反応 | 採用のリンク、FAQのCTA |
 | `.cx-image-text--light` / `--dark` | 写真上の文字の補助 | 採用ヒーロー |
+| `.cx-feature-card`（`css/feature-card.css`） | 画像付きの案内カード1枚の見た目と状態（画像＋番号・欧文ラベル、見出し・一言・区分・丸い矢印・ボタン。スマホも既定は縦積み、`--row-sp` で899px以下を横長に）。色は `--cx-fc-accent` / `--cx-fc-accent-soft` / `--cx-fc-more-bg` で切り替え、選択中は `aria-expanded="true"` か `.is-selected`。並べ方は各ページ | 採用の職種カード（`--row-sp`）、Sales X / Creative X のサービス一覧カード（`--wide`、Creative X は `--creative`。#141） |
 
 カードの色や本文を一括で決めない。関連会社のロゴなど、内容そのものの色は保持する。コラムの一覧カードは生成スクリプトがHTMLを作るため、既存の `.cx-col-card` への共通モーション指定を残す。
 
