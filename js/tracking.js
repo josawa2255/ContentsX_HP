@@ -1,6 +1,7 @@
 /**
- * BizManga 行動トラッキング
+ * 行動トラッキング（BizManga から移植。保存キー bm_tracking は互換のため据え置き）
  * sessionStorageに閲覧行動を蓄積し、問い合わせフォーム送信時にメッセージに付加
+ * （js/form-common.js が window.bmGetTrackingNote() を呼ぶ）
  */
 (function() {
   'use strict';
@@ -28,7 +29,9 @@
   // ===== スクロール深度トラッキング =====
   var maxScroll = 0;
   var scrollKey = 'scroll_' + currentPage;
-  window.addEventListener('scroll', function() {
+  var scrollTicking = false;
+  function recordScroll() {
+    scrollTicking = false;
     var scrollPct = Math.round(
       (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
     );
@@ -38,10 +41,15 @@
       t[scrollKey] = maxScroll;
       saveTracking(t);
     }
+  }
+  window.addEventListener('scroll', function() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(recordScroll);
   }, { passive: true });
 
   // ===== セクション可視化トラッキング =====
-  var sections = document.querySelectorAll('section[id], .bm-about, .bm-whatis, .bm-news, .bm-gallery, .bm-testimonials, .bm-pre-section, .bm-faq-page, .bm-pricing-section');
+  var sections = document.querySelectorAll('section[id]');
   if (sections.length > 0 && 'IntersectionObserver' in window) {
     var viewedKey = 'viewed_' + currentPage;
     var observer = new IntersectionObserver(function(entries) {
@@ -49,7 +57,7 @@
         if (entry.isIntersecting) {
           var t = getTracking();
           if (!t[viewedKey]) t[viewedKey] = [];
-          var name = entry.target.id || entry.target.className.split(' ')[0];
+          var name = entry.target.id;
           if (t[viewedKey].indexOf(name) === -1) {
             t[viewedKey].push(name);
             saveTracking(t);
@@ -59,32 +67,6 @@
     }, { threshold: 0.3 });
     sections.forEach(function(s) { observer.observe(s); });
   }
-
-  // ===== FAQ クリックトラッキング =====
-  document.querySelectorAll('.bm-faq-q').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var t = getTracking();
-      if (!t.faqClicked) t.faqClicked = [];
-      var q = btn.getAttribute('data-ja') || btn.textContent.trim().slice(0, 30);
-      if (t.faqClicked.indexOf(q) === -1) {
-        t.faqClicked.push(q);
-        saveTracking(t);
-      }
-    });
-  });
-
-  // ===== 制作事例カテゴリフィルタートラッキング =====
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.bm-filter-btn, .filter-btn');
-    if (!btn) return;
-    var t = getTracking();
-    if (!t.categoryViewed) t.categoryViewed = [];
-    var cat = btn.getAttribute('data-ja') || btn.textContent.trim().replace(/\(\d+\)/, '').trim();
-    if (cat && cat !== 'すべて' && t.categoryViewed.indexOf(cat) === -1) {
-      t.categoryViewed.push(cat);
-      saveTracking(t);
-    }
-  });
 
   // ===== トラッキングデータをテキスト化（フォーム送信時に使用） =====
   window.bmGetTrackingNote = function() {
@@ -112,16 +94,6 @@
     });
     if (scrollLines.length > 0) {
       lines.push('スクロール深度: ' + scrollLines.join(', '));
-    }
-
-    // 閲覧FAQ
-    if (t.faqClicked && t.faqClicked.length > 0) {
-      lines.push('閲覧FAQ: ' + t.faqClicked.join(', '));
-    }
-
-    // 関心カテゴリ
-    if (t.categoryViewed && t.categoryViewed.length > 0) {
-      lines.push('関心カテゴリ: ' + t.categoryViewed.join(', '));
     }
 
     return lines.length > 0 ? '\n[行動ログ]\n' + lines.join('\n') : '';

@@ -8,9 +8,10 @@
   if (!root) return;
   var list = root.querySelector('[data-cxtp-list]');
   var nav = root.querySelector('[data-cxtp-nav]');
-  var IMAGE_HOSTS = ['cms.contentsx.jp', 'contentsx.jp', 'i.ytimg.com'];
 
-  function text(v) { return typeof v === 'string' ? v.trim() : ''; }
+  var text = window.cxDom.text;
+  var el = window.cxDom.el;
+  var safeImage = window.cxDom.safeImage;
   function safeLink(url) {
     url = text(url);
     if (/^\/(?!\/)[^\s<>"'\\]*$/.test(url)) return { href: url, external: false };
@@ -20,26 +21,12 @@
     } catch (e) { /* invalid */ }
     return null;
   }
-  function safeImage(url) {
-    url = text(url);
-    if (/^\/(?!\/)[\w\-./]+$/.test(url)) return url;
-    try {
-      var u = new URL(url);
-      return u.protocol === 'https:' && IMAGE_HOSTS.indexOf(u.hostname) !== -1 ? u.href : '';
-    } catch (e) { return ''; }
-  }
   /* YYYY-MM-DD that is a real calendar date */
   function validDate(v) {
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
     if (!m) return false;
     var d = new Date(Date.UTC(+m[1], m[2] - 1, +m[3]));
     return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === m[2] - 1 && d.getUTCDate() === +m[3];
-  }
-  function el(tag, cls, content) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (content) n.textContent = content;
-    return n;
   }
 
   function card(t) {
@@ -121,12 +108,7 @@
   updateNav();
 
   if (typeof WP_CONFIG === 'undefined' || WP_CONFIG.enabled === false || !WP_CONFIG.apiBase) return;
-  var controller = 'AbortController' in window ? new AbortController() : null;
-  var timer = controller && setTimeout(function () { controller.abort(); }, 6000);
-  fetch(WP_CONFIG.apiBase + '/topics', controller ? { signal: controller.signal } : {})
-    .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
-    .then(function (data) {
-      clearTimeout(timer);
+  window.cxDom.getJSON('/topics', 6000, 'TOPICS').then(function (data) {
       var items = (data && Array.isArray(data.topics) ? data.topics : []).map(card).filter(Boolean);
       if (!items.length) return; // keep the fallback cards
       list.textContent = '';
@@ -134,6 +116,5 @@
       list.scrollLeft = 0;
       root.classList.add('cxtp-ready');
       updateNav();
-    })
-    .catch(function (e) { clearTimeout(timer); console.warn('[TOPICS] /topics failed:', e.message); });
+    });
 })();

@@ -14,8 +14,6 @@
     return;
   }
 
-  var lang = (window.i18n && window.i18n.getLang && window.i18n.getLang()) || 'ja';
-
   // ===== Featured =====
   if (data.featured && data.featured.slug) {
     var f = data.featured;

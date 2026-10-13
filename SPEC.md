@@ -255,7 +255,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | CTA を画像の下へ(絶対条件) | `.hv2-ctas` は `.hv2-copy`(flex縦)の**子**なので `grid-area` は効かない。`.hv2-copy { min-height: calc(var(--hv2-visual-h) + 96px) }` で画像高+余白を確保し、`.hv2-ctas { margin-top: auto }` で下端へ落とす。→ 画面幅で画像高が変わっても CTA は常に画像の直下(≒下端+16px)に並ぶ。検証: 360/390/430/768 で `ctas.top >= bg.bottom` |
 | 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
 | sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
-| client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
+| client-logos 連結 | （撤去済み。ロゴ帯 `js/client-logos.js`・`js/data/client-logos.js` と style.css の指定は 2026-10-13 に削除） |
 
 > 2026-07-02: キャラ一体化＋SP一枚絵の比率固定表示に刷新。旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）・透過キャラ `right:-100px`・固定 `margin-top:166px` は全廃止。
 
@@ -280,7 +280,10 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
 | `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
 | `js/dl-modal.js` | 資料DLモーダル | contact送信済みか localStorage で判定 |
-| `js/wp-api.js` | WP API クライアント | `WORKS_DETAIL_DATA` / `NEW_WORKS_DATA` 上書き |
+| `js/wp-api.js` | WP API クライアント（ニュースだけ） | `.news-list` を描画し、終わったら（失敗時も）`wp-data-ready` を発火。`/news` の読み込み表示はこの合図で消す。2026-10-13 に旧トップ用の `/works`・`/works-new` 取得（`WORKS_DETAIL_DATA` / `NEW_WORKS_DATA`）を削除 |
+| `js/cx-dom.js` | WordPress 連携部品の共通道具 `window.cxDom` | `el` / `iconButton` / `text` / `safeImage`（サイト内パスか許可ホストの https 画像だけ）/ `getJSON(path, timeout, label)`。使う側（`cx-manga-reader.js`・`cx-video-player.js`・`home-creative-x.js`・`home-topics.js`）より前に defer で読む（トップ・採用） |
+| `js/hubspot-lazy.js` | HubSpot 追跡コードの遅延読み込み | 初回操作か4秒後に読む。トップ・会社概要・採用・ニュース詳細。お問い合わせは従来どおり直接読み込み、採用エントリーは読み込まない |
+| `js/script.js` | 下層ページの小さな動き | 会社概要・ニュース一覧・ニュース詳細。ヘッダーのスクロール時クラス、見出しのフェードイン、ページ内リンクのスムーススクロールだけ（2026-10-13 に旧トップ用の約1100行を削除） |
 | `js/wp-config.js` | WP設定 | API baseURL / cache TTL |
 
 ### 4.1 CTA セクション共有化 ⭐
@@ -628,13 +631,14 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - トップページとサービスページはそれぞれの担当作業ツリーで設計する。**その他のContents Xページ全体**（会社情報、採用、お問い合わせ、ニュース、コラム、FAQ、法務ページ、404）は第三の担当範囲として統一感を維持する。別セッション間の変更・色の決定は「claude連絡網」で共有する。
 - 下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を使用。白を土台に、濃紺 `#07143b`、Sales X の青 `#005bfa`、Creative X のオレンジ `#fa4d12` を共通の視覚語彙とする。見出し、ラベル、リンク、ボタン、淡色背景、境界線の基準をこのCSSへ集約する。
 - `body[data-theme="magenta-hot"]` と旧テーマ定義は互換性のため残す。下層ページでは `body.cx-sitewide` の変数が優先する。トップ・サービスのレイアウトにはこのクラスを付けない。
-- コラム静的記事は生成物と `tools/templates/c-column.html.tpl` の両方へ共通CSSを読み込む。再ビルド後も外観を維持するため、テンプレートの指定を削除しない。
+- コラム静的記事は生成物と `tools/templates/c-column.html.tpl` の両方へ共通CSSを読み込む。再ビルド後も外観を維持するため、テンプレートの指定を削除しない。記事の見た目は `css/column-article.css`（2026-10-13 にテンプレートの埋め込みCSSを移動）。記事ごとのサムネイルだけは `.cx-col-hero` の `style="--cx-col-thumb:url('…')"` で渡す。
+- 利用規約・プライバシーポリシーの見た目は `css/legal.css`（2026-10-13 に両ページの埋め込みCSSを移動）。
 - レスポンシブ検証幅は 320/390/412/448/640/768/1024/1440px。本文はユーザーの文字拡大設定を尊重する。
 - 会社概要 `company.html` の会社情報は480px以下で項目名と内容を縦並びにし、長い社名・事業内容の本文幅を確保する。481px以上は2列表示とする。
 - 会社概要 `company.html` 左側の紹介文（`.company-description`）は2026-09-29に営業支援の訴求へ差し替え。見出し1行（h2 `.company-description-lead`「営業の悩みを、売上につながる仕組みに。」）＋本文3段落の構成で、各段落に `data-ja`/`data-en` を付ける。旧文「埋もれていた物語に、光を当てる」「人の手7割・AI3割」は会社概要から削除（`llms.txt`・`faq.html`・`i18n/en.json` には旧文が残っている＝未変更）。meta description・og/twitter・構造化データの説明文も営業支援の訴求に合わせ、ページ内フッターの英語社名は `Contents X Inc.` にした。
 - 同日、右側の会社情報（`.company-info`）を「会社名／設立／資本金（1,000万円）／役員（代表取締役 黒宮 大貴・取締役 鵜池 航太）／事業内容（4行）／所在地」に更新。複数行の項目は `data-ja`/`data-en` に `<br>` を入れ、i18n が innerHTML で差し替える。社名の表記ゆれ（コンテンツエックス等）は表から外し、構造化データの `alternateName` に残している。
 - UIとモーションの共通基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページは `js/sitewide-motion.js` がセクションの1回だけの登場演出を担う。JS無し・動きの軽減設定時は常時表示する。
-- フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` から読み込み、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
+- フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` の直前に `<link>` で読み込み（2026-10-13 に `@import` から変更。直列の読み込み待ちをなくすため。新しいページでも2行セットで書く）、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
 - 共通の小部品は `cx-ui-surface`（淡色面と枠）、`cx-ui-pill`（丸い外形）、`cx-ui-card`（カード反応）、`cx-ui-action`（操作反応）。ページ固有クラスは配置・内容を担当する。旧生成コラムカード `cx-col-card` の動きは生成テンプレート互換のため保持する。
 
 ## 14. 参照ドキュメント
@@ -652,8 +656,8 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 
 1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば共通CTAを使う全ページ（現在は会社概要のみ）に反映される（手動コピペ禁止）
 2. **モバイルでハンバーガー押せない** → §7.1 のチェックリスト
-3. **新作情報に漫画事例を出したい** → 2026-08-05以降は`cx_show_new_contentsx`が未設定でも表示される（明示的に`0`を入れた作品だけ除外）。表示件数は`added`降順で最大10件（`script.js` `MAX_NEW_WORKS`）。**画面が更新されない場合**: `js/wp-api.js` `loadNewWorks()`完了時に発火する`wp-new-works-ready`イベントを`js/script.js`側で購読して`buildNewWorksCards()`を再実行する構成（2026-08-31修正、[BUGS.md #052](../BUGS.md)）。この購読が無いと`wp-data-ready`（`/works`取得完了時のみ発火）のタイミングでフォールバック`js/data/new-works.js`のまま描画が固定されてしまう
-4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に（2026-04-16修正: 静的 `WORKS_DETAIL_DATA` には `show_hero_site` が無いので初回描画は全作品表示。`wp-data-ready` で `buildHeroCarousel()` を再実行してフィルターを効かせている。サムネ差し替えのみだとCMS設定が反映されない）
+3. **新作情報に漫画事例を出したい** → 旧トップの「新作情報」は撤去済み（2026-10-13 に `script.js` の描画・`wp-api.js` の `/works-new` 取得・`js/data/new-works.js` を削除）。復活させる場合は git 履歴から戻す（当時の不具合は [BUGS.md #052](../BUGS.md)）
+4. **Heroカルーセルから特定漫画を外したい** → 旧HEROカルーセル（`hero-new.js`）はトップで読み込んでいない。`wp-api.js` は 2026-10-13 から `/works` を取得しないため、`hero-new.js` を戻すときは `WORKS_DETAIL_DATA` の取得も戻す必要がある
 5. **i18n 切替が動かない** → `i18n.js` が `nav.js` より先にロードされているか確認
 6. **テキストロゴの X だけ色を変えたい** → `.hlt-char--x` クラス
 7. **ヒーロー演出のタイミング変更** → `hero-new.js` の `startIntro()` / `startHeroAnimation()` の setTimeout 数値

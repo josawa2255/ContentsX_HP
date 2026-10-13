@@ -18,7 +18,6 @@
   var tabs = Array.prototype.slice.call(root.querySelectorAll('.cxcx-card[data-cxcx-service]'));
   if (!panel || !list || !tabs.length || !window.CxVideoPlayer || !window.CxMangaReader) return;
 
-  var API = WP_CONFIG.apiBase;
   var TIMEOUT = 8000;
   var FADE = 200;
   var LINKS = {
@@ -32,21 +31,9 @@
   var instance = null;
   var token = 0;
 
-  function getJSON(path) {
-    var controller = 'AbortController' in window ? new AbortController() : null;
-    var timer = controller && setTimeout(function () { controller.abort(); }, TIMEOUT);
-    return fetch(API + path, controller ? { signal: controller.signal } : {})
-      .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
-      .catch(function (e) { console.warn('[Creative X] ' + path + ' failed:', e.message); return null; })
-      .then(function (d) { clearTimeout(timer); return d; });
-  }
-  function text(v) { return typeof v === 'string' ? v.trim() : ''; }
-  function el(tag, cls, content) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (content) n.textContent = content;
-    return n;
-  }
+  function getJSON(path) { return window.cxDom.getJSON(path, TIMEOUT, 'Creative X'); }
+  var text = window.cxDom.text;
+  var el = window.cxDom.el;
 
   /* ---------- data ---------- */
   function viewerItems(videos, type) {

@@ -18,21 +18,8 @@
   var VERTICAL_RATIO = 1.8;
   var SAFE_IMG = /^https:\/\/(cms\.contentsx\.jp|contentsx\.jp)\/[^\s"'<>]+$/;
 
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text) n.textContent = text;
-    return n;
-  }
-  function iconButton(cls, label, glyph) {
-    var b = el('button', cls);
-    b.type = 'button';
-    b.setAttribute('aria-label', label);
-    var g = el('span', '', glyph);
-    g.setAttribute('aria-hidden', 'true');
-    b.appendChild(g);
-    return b;
-  }
+  var el = window.cxDom.el;
+  var iconButton = window.cxDom.iconButton;
   function forcedVertical(work) {
     var vt = work && (work.view_type || work.viewType || work.mode);
     return vt === 'vertical_only' || vt === 'vertical';

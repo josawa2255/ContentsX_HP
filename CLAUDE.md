@@ -49,19 +49,19 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
-| トップ | index.html | i18n.js, nav.js, wp-api.js, home-2026.js, hero-about.js, home-hero.js, home-section-labels.js, cx-manga-reader.js, cx-video-player.js, home-creative-x.js, home-topics.js（共通ヘッダーを使用。Creative X はWPのビューワー動画・マンガ作品をページ内のビューワーで表示、TOPICS はWP「Contents X ＞ TOPICS」から描画。仕様は SPEC.md §3） |
-| サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, services-ui.js, service-media.js, sitewide-motion.js（`tools/build-services.py` で生成。仕様は SPEC.md §3。⚠️ 生成スクリプト・テンプレート・`data/services.json` を変えたら、マージ前に `python3 -m unittest discover -s tests -p test_build_services.py` を通す。Pages のデプロイも同じ検査で、落ちると本番に出ない＝BUGS #065） |
-| 会社概要 | company.html | script.js, dl-modal.js |
+| トップ | index.html | i18n.js, nav.js, wp-api.js, home-2026.js, hero-about.js, home-hero.js, home-section-labels.js, cx-dom.js, cx-manga-reader.js, cx-video-player.js, home-creative-x.js, home-topics.js, hubspot-lazy.js（共通ヘッダーを使用。Creative X はWPのビューワー動画・マンガ作品をページ内のビューワーで表示、TOPICS はWP「Contents X ＞ TOPICS」から描画。仕様は SPEC.md §3） |
+| サービス一覧・事業群・個別詳細 | services/ | i18n.js, nav.js, service-media.js, sitewide-motion.js（`tools/build-services.py` で生成。仕様は SPEC.md §3。⚠️ 生成スクリプト・テンプレート・`data/services.json` を変えたら、マージ前に `python3 -m unittest discover -s tests -p test_build_services.py` を通す。Pages のデプロイも同じ検査で、落ちると本番に出ない＝BUGS #065） |
+| 会社概要 | company.html | script.js, dl-modal.js, hubspot-lazy.js |
 | ContentsXについて | about.html | i18n.js, nav.js, sitewide-motion.js |
 | 代表メッセージ | message.html | i18n.js, nav.js（`/message`。全文、支給画像、関連導線。SPEC.md §14） |
 | 役員紹介（非表示） | leadership.html | `/about#message` へ転送 |
 | 関連会社（非表示） | partners.html | `/company` へ転送 |
 | 私たちの思い（旧URL） | our-thoughts.html | `/about#message` へ転送 |
-| 採用情報 | recruit.html | recruit.js, wp-config.js, home-topics.js, dl-modal.js, sitewide-motion.js（構成と演出は SPEC.md §9） |
+| 採用情報 | recruit.html | recruit.js, wp-config.js, cx-dom.js, home-topics.js, dl-modal.js, hubspot-lazy.js, sitewide-motion.js（構成と演出は SPEC.md §9） |
 | お問い合わせ（法人） | contact.html | form-common.js, contact.js（旧 `?position=` は採用フォームへ転送） |
 | 採用エントリー | recruit/entry.html（`/recruit/entry`） | form-common.js, recruit-entry.js（採用専用。CRM・広告CVなし。仕様は SPEC.md §9.7） |
 | ニュース一覧 | news.html | wp-config.js, wp-api.js, script.js |
-| ニュース詳細 | news-detail.html | wp-config.js + インラインJS |
+| ニュース詳細 | news-detail.html | wp-config.js, script.js, hubspot-lazy.js + インラインJS |
 
 企業案内で非表示にした導線、復帰手順、画像素材の扱いは [CORPORATE-PAGE-VISIBILITY.md](CORPORATE-PAGE-VISIBILITY.md) を参照。**コラム（`/column`）も 2026-09-29 から共通ナビの導線だけ一時非表示**（ページ・検索掲載は公開のまま。戻し方も同ファイル）。
 
@@ -78,7 +78,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 ⛔ このフォルダを削除すると、旧URL `contentsx.jp/bizmanga/*` を踏んだ訪問者が404に飛ぶ。**削除厳禁。**
 
 ## 制作事例モーダル（旧トップの記録。2026-09-29撤去）
-- データ: `js/data/works-detail.js`（22+作品、WORKS_DETAIL_DATA配列）
+- データ: `js/data/works-detail.js`（22+作品、WORKS_DETAIL_DATA配列）。⚠️ 2026-10-13 から `wp-api.js` は `/works` を取得しない（戻すなら取得も戻す）
 - 表示: `hero-new.js` の `openWorkDetail()` でモーダル表示
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替
 - タイトル+カテゴリタグ: `.work-detail-title-row` でflexbox横並び（BizMangaと同仕様）
@@ -95,6 +95,12 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 <!-- 漫画ビューアは独立BizMangaサイト (bizmanga.contentsx.jp) に移行済み。
      旧 bizmanga/js/works.js は 2026-05-12 に削除。 -->
 
+## 共通部品（JS・CSS）
+- **小さな道具は増やさず `js/cx-dom.js`（`window.cxDom`）を使う**: 要素づくり `el`、アイコンボタン、`text`、画像URLの検査 `safeImage`、タイムアウト付き取得 `getJSON`。使うファイルより前に defer で読む（SPEC.md §4）
+- HubSpot 追跡コードの遅延読み込みは `js/hubspot-lazy.js` の1行で入れる（ページに埋め込まない）
+- コラム記事の見た目は `css/column-article.css`、規約2ページは `css/legal.css`
+- 使っていないCSSを消すときは [CSS-ARCHITECTURE.md](CSS-ARCHITECTURE.md)「未使用CSSの削除方法」の手順（ブラウザで変更前後のルールを照合し、全ページ撮り比べ）
+
 ## 外部サービス
 - HubSpot: Portal 48367061, Form b6da14d0-d60d-4357-89fc-0015ed32b704
 - WordPress API: `https://cms.contentsx.jp/wp-json/contentsx/v1`（wp-config.js）
@@ -104,7 +110,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 - メインサイト: `css/style.css`（共通）+ ページ別CSS。トップは `css/home-2026.css`（HEROは `home-hero.css`、Hero→Aboutは `hero-about.css`、ABOUT / SERVICE / NEWS の共通背景とスナップは `home-sections.css`、Creative X は `home-creative-x.css`、Sales X は `home-sales-x.css`、TOPICS は `home-topics.css`、NEWS は `home-news.css`（行の描画は `wp-api.js` のトップ用分岐）。仕様は SPEC.md §3）、他ページは `recruit.css` 等を使用。
 - **CSS構成・共通化の計画と、共通CSSを変えたときの全ページ撮り比べ（`tests/sitewide_check.py`）は [CSS-ARCHITECTURE.md](CSS-ARCHITECTURE.md)**。共通CSS・トークン・共通部品を触るPRは必ず撮り比べる。
 - フッターは全ページ共通の `.cx-footer`（`css/site-footer.css`）。変更時は静的ページ・コラム記事テンプレ・`services/index.html` の3か所を揃える（SPEC.md §7.5）。
-- トップ・サービス以外の下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
+- トップ・サービス以外の下層ページは `css/brand-system-2026.css` → `css/sitewide-cohesion.css` の順に `<link>`（2026-10-13 から `@import` ではなく2行セット）し、`body.cx-sitewide` を追加して共通の色、文字、余白、CTAを揃える（仕様は [SPEC.md §13](SPEC.md)）。コラム記事は `tools/templates/c-column.html.tpl` にも読み込みを置く。並列のトップ・サービス担当との色の調整は「claude連絡網」で共有する。
 - トップ・サービス・下層ページ共通のモーションとUIの判断基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。サービスと下層ページの登場・画像ワイプ演出は `js/sitewide-motion.js`。動きの軽減設定とJS無効時の表示を必ず確認する。
 - トップ・サービス・下層ページのフォント、色、文字階層、画像上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) が正本。再利用する変数・画像文字クラスは `css/brand-system-2026.css`。担当ごとに色・フォントの値を新設しない。
 
