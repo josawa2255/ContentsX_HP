@@ -1,0 +1,119 @@
+/* Contents X / About OUR ROLE — layout only.
+   Reuse /css/feature-card.css for ALL card fundamentals (surface, media, typography,
+   interactions, --row-sp mobile rules). Do NOT move or duplicate that stylesheet.
+   Load this after /css/feature-card.css and /css/about-2026.css.
+*/
+.ax-page .cxour {
+  --cxour-layer-art: 0;
+  --cxour-layer-copy: 1;
+  --cxour-layer-flow: 2;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: clamp(64px, 5vw, 86px) 0 clamp(85px, 7vw, 110px);
+  background: linear-gradient(180deg,var(--cx-color-surface) 0%,var(--cx-color-white) 24%,var(--cx-color-surface) 100%);
+  color: var(--cx-color-ink,#07143b);
+}
+.ax-page .cxour__atmosphere {pointer-events:none;position:absolute;inset:0;z-index:var(--cxour-layer-art);overflow:hidden}
+.ax-page .cxour__city {
+  position:absolute;right:-1%;top:-6px;width:min(74%,1250px);height:clamp(300px,33vw,480px);
+  object-fit:cover;object-position:50% 50%;opacity:.32;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 22%,#000 65%),linear-gradient(180deg,#000 0%,#000 68%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 22%,#000 65%),linear-gradient(180deg,#000 0%,#000 68%,transparent 100%);
+  -webkit-mask-composite:source-in;mask-composite:intersect;
+}
+.ax-page .cxour__bands {position:absolute;right:0;top:-50px;width:min(100%,1440px);height:620px;object-fit:cover;opacity:.55}
+.ax-page .cxour__inner {width:min(calc(100% - clamp(36px,7vw,112px)),1340px);margin:0 auto;position:relative;z-index:var(--cxour-layer-copy)}
+.ax-page .cxour__head {display:flex;justify-content:space-between;align-items:flex-start;gap:28px;margin-bottom:clamp(30px,3.4vw,48px)}
+.ax-page .cxour__head-copy {flex:1;min-width:0;width:min(100%,980px)}
+.ax-page .cxour__kicker {display:flex;align-items:center;gap:14px;margin:0 0 clamp(25px,3vw,40px);color:var(--cx-color-ink,#07143b);font:700 12px/1.5 var(--cx-font-latin,Inter,sans-serif);letter-spacing:.2em}
+.ax-page .cxour__kicker-index {letter-spacing:.02em}
+.ax-page .cxour__kicker-line {display:inline-block;width:40px;height:2px;background:var(--cx-color-sales,#005bfa)}
+.ax-page .cxour__title {margin:0 0 22px;font-family:var(--cx-font-ja,'Noto Sans JP',sans-serif);font-size:clamp(2.15rem,4.35vw,4.25rem);font-weight:900;line-height:1.25;letter-spacing:-.047em;max-width:none;text-wrap:balance}
+.ax-page .cxour__title em {font-style:normal;color:var(--cx-color-sales,#005bfa)}
+.ax-page .cxour__lead {margin:0;color:var(--cx-color-body,#172549);font-family:var(--cx-font-ja,'Noto Sans JP',sans-serif);font-size:clamp(.94rem,1vw + .3rem,1.1rem);font-weight:500;line-height:1.85}
+.ax-page .cxour__motto {flex:0 0 auto;margin:0;padding-top:4px;color:var(--cx-color-ink,#07143b);font-weight:700;font-size:clamp(14px,1.4vw,19px);line-height:1.5;letter-spacing:.04em}
+.ax-page .cxour__motto span {display:block;margin-top:19px;padding-top:16px;border-top:1px solid rgba(7,20,59,.32);color:var(--cx-color-muted,#52627e);font-family:var(--cx-font-latin,Inter,sans-serif);font-size:12px;line-height:1.7;font-weight:700;letter-spacing:.2em}
+.ax-page .cxour__cards {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.5vw,36px);margin:0;padding:0;list-style:none}
+.ax-page .cxour__item {display:flex;min-width:0;position:relative}
+.ax-page .cxour__item:not(:last-child)::after {content:'→';font-family:var(--cx-font-latin,Inter,sans-serif);font-size:30px;font-weight:700;color:var(--cx-color-sales,#005bfa);position:absolute;z-index:var(--cxour-layer-flow);right:calc(-.5 * clamp(18px,2.5vw,36px) - 11px);top:39%;line-height:1;pointer-events:none;text-shadow:0 1px 4px white}
+/* Card outer shell, media, font sizes, hover and responsive behavior COME FROM shared file. */
+.ax-page .cxour .cxour-card {min-width:0;min-height:100%}
+.ax-page .cxour .cxour-card--focus {border-color:rgba(0,91,250,.76);}
+.ax-page .cxour .cx-feature-card__media picture {display:block;width:100%;height:100%}
+.ax-page .cxour .cx-feature-card--wide .cx-feature-card__media {aspect-ratio: 7 / 5;}
+.ax-page .cxour .cxour__media-micro {margin-top:9px;font-family:var(--cx-font-latin,Inter,sans-serif);font-size:12px;font-weight:700;letter-spacing:.22em;line-height:1.7;}
+.ax-page .cxour .cxour__impact-tag .cx-feature-card__label {font-size:14px;letter-spacing:.17em;}
+.ax-page .cxour .cxour__impact-tag {text-shadow:0 1px 9px rgba(7,20,59,.5);}
+.ax-page .cxour .cxour__impact-script {position:absolute;z-index:var(--cxour-layer-copy);right:9%;top:13%;font-family:var(--cx-font-ja,'Noto Sans JP',sans-serif);font-weight:500;font-style:italic;line-height:1.6;font-size:clamp(16px,1.5vw,23px);color:var(--cx-color-ink,#07143b);transform:rotate(-7deg);text-align:center;text-shadow:0 2px 14px #fff;}
+.ax-page .cxour .cxour-card--creative .cx-feature-card__media img {object-position:64% 36%}
+.ax-page .cxour .cxour-card--focus .cx-feature-card__media img {object-position:59% 42%}
+.ax-page .cxour .cxour-card--impact .cx-feature-card__media img {object-position:50% 46%}
+.ax-page .cxour .cx-feature-card__title {color:var(--cx-color-ink,#07143b)}
+.ax-page .cxour .cxour-card--focus .cx-feature-card__title {color:var(--cx-color-sales,#005bfa)}
+/* In the selected mock, the action is a lightweight text link rather than a large pill.
+   Keep shared __more markup and interaction; change only its visual treatment here. */
+.ax-page .cxour .cx-feature-card__more {
+  align-self:flex-start;justify-content:flex-start;margin-top:auto;min-height:44px;padding:0;
+  background:none;border-radius:0;color:var(--cx-fc-accent-text,var(--cx-fc-accent,var(--cx-color-sales,#005bfa)));
+  letter-spacing:.025em;font-size:14px;font-weight:700;
+}
+.ax-page .cxour__from {position:absolute;left:0;bottom:20px;margin:0;color:var(--cx-color-muted,#52627e);font:700 12px/1.5 var(--cx-font-latin,Inter,sans-serif);letter-spacing:.2em;}
+.ax-page .cxour__outro {position:relative;display:flex;justify-content:center;align-items:center;min-height:122px;margin-top:clamp(28px,4vw,55px);padding-inline:clamp(180px,16vw,230px)}
+.ax-page .cxour__outro-lead {margin:0;text-align:center;color:var(--cx-color-ink,#07143b);font-size:clamp(20px,2vw,29px);font-weight:900;line-height:1.55;letter-spacing:-.015em}
+.ax-page .cxour__outro-lead span {background:linear-gradient(145deg,#005bfa 35%,#fa4d12 70%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.ax-page .cxour__next {position:absolute;right:0;bottom:12px;display:flex;gap:8px;align-items:center;min-height:44px;color:var(--cx-color-body,#172549);font-family:var(--cx-font-latin,Inter,sans-serif);font-size:12px;font-weight:700;letter-spacing:.08em;text-decoration:none}
+.ax-page .cxour__next strong {font-weight:800}
+.ax-page .cxour__next span:last-child {color:var(--cx-color-sales,#005bfa);font-size:20px;margin-left:4px}
+.ax-page .cxour__next:focus-visible {outline:2px solid var(--cx-color-sales);outline-offset:4px}
+@media (hover:hover) and (pointer:fine) {
+ .ax-page .cxour__next:hover {color:var(--cx-color-sales)}
+}
+@media (max-width:899px) {
+ .ax-page .cxour {padding:clamp(56px,7vw,80px) 0 clamp(68px,7vw,94px)}
+ .ax-page .cxour__inner {width:min(calc(100% - 40px),720px)}
+ .ax-page .cxour__city {width:100%;height:290px;opacity:.24;object-position:70% center;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 35%),linear-gradient(180deg,#000 0%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 35%),linear-gradient(180deg,#000 0%,transparent 100%)}
+ .ax-page .cxour__bands {width:100%;height:360px;top:-15px;opacity:.66}
+ .ax-page .cxour__head {display:block;margin-bottom:26px}
+ .ax-page .cxour__motto {display:none}
+ .ax-page .cxour__kicker {margin-bottom:22px}
+ .ax-page .cxour__title {font-size:clamp(28px,7.6vw,52px);line-height:1.35;margin-bottom:18px}
+ .ax-page .cxour__lead {font-size:15px;line-height:1.8}
+ .ax-page .cxour__lead br {display:none}
+ .ax-page .cxour__cards {grid-template-columns:minmax(0,1fr);gap:27px}
+ .ax-page .cxour__item:not(:last-child)::after {content:'↓';left:50%;right:auto;top:auto;bottom:-26px;transform:translateX(-50%);font-size:20px}
+ .ax-page .cxour .cx-feature-card__more {min-height:44px}
+ .ax-page .cxour .cx-feature-card__media img {object-position:50% 22%}
+ .ax-page .cxour .cx-feature-card--wide .cx-feature-card__media {aspect-ratio:auto;}
+ .ax-page .cxour .cxour__media-micro {display:none;}
+ .ax-page .cxour .cxour__impact-script {display:none;}
+ .ax-page .cxour__from {display:none;}
+ .ax-page .cxour__outro {display:block;min-height:auto;margin-top:40px;padding:0}
+ .ax-page .cxour__outro-lead {font-size:clamp(19px,4vw,25px)}
+ .ax-page .cxour__next {position:static;justify-content:center;margin-top:24px}
+}
+
+/* Only the role-card variations differ from the shared defaults. */
+.ax-page .cxour .cx-feature-card__label {font-size:var(--cx-type-label)}
+.ax-page .cxour .cx-feature-card__body {position:relative;padding-bottom:88px}
+.ax-page .cxour .cx-feature-card__circle {position:absolute;right:24px;bottom:24px}
+.ax-page .cxour .cx-feature-card__more {position:absolute;left:30px;bottom:24px;min-height:44px;max-width:calc(100% - 120px)}
+.ax-page .cxour .cxour__impact-tag {color:var(--cx-color-ink);text-shadow:0 1px 4px #fff}
+.ax-page .cxour .cxour__impact-script {background:rgba(255,255,255,.85);padding:4px 8px}
+.ax-page .cxour__motto p {margin:0;line-height:1.5}
+@media (max-width:1190px) {
+ .ax-page .cxour__motto {display:none}
+ .ax-page .cxour__outro {padding:0;flex-direction:column;gap:20px}
+ .ax-page .cxour__from,.ax-page .cxour__next {position:static}
+}
+@media (max-width:899px) {
+ .ax-page .cxour .cx-feature-card__body {padding-bottom:18px}
+ .ax-page .cxour .cx-feature-card__more {position:static;max-width:none}
+ .ax-page .cxour .cxour__impact-tag .cx-feature-card__label {display:block}
+ .ax-page .cxour .cxour__impact-tag {color:var(--cx-color-white);text-shadow:0 1px 9px var(--cx-color-ink)}
+}
+
+.ax-page .cxour .cx-feature-card__desc {word-break:normal;overflow-wrap:normal;line-break:strict;text-wrap:pretty}
+@media (max-width:899px) {
+ .ax-page .cxour .cxour-card--creative .cx-feature-card__media img {object-position:20% 22%}
+}

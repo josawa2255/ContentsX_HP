@@ -18,7 +18,7 @@
 | Sales X / Creative X | `services/sales-x/index.html`・`services/creative-x/index.html` | i18n.js, nav.js, service-media.js | 事業群ごとの紹介ページ |
 | 旧サービス詳細URL | `services/{slug}/index.html` | 転送のみ | 個別詳細は廃止。公式サイトまたは一覧の該当サービスへ転送 |
 | 会社概要 | `company.html` | script.js, cta.js, dl-modal.js | |
-| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | WHY（存在する理由）・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表メッセージには黒宮代表の実写真、事業紹介とバリュー03には実際の会議写真を掲載。バリュー01は20代前半〜中盤の日本人男女の生成イメージ。バリュー02は提供された実会議写真の人物・会議室を参考に生成した別場面のイメージであり、実際の会議記録ではない |
+| ContentsXについて | `about.html` | i18n.js, nav.js, sitewide-motion.js | WHY（存在する理由）・OUR ROLE（2事業と目指す変化）・理念・ミッション/ビジョン・3つのバリュー・代表メッセージを統合。デザインは `css/about-2026.css`、画像は `material/images/about-2026/`。各セクションは共通のスクロール演出を使用し、動きの軽減設定に対応。代表メッセージには黒宮代表の実写真、事業紹介とバリュー03には実際の会議写真を掲載。バリュー01は20代前半〜中盤の日本人男女の生成イメージ。バリュー02は提供された実会議写真の人物・会議室を参考に生成した別場面のイメージであり、実際の会議記録ではない |
 | 代表メッセージ | `message.html` | i18n.js, nav.js, message-2026.js | `/message`。指定された新原稿を全文掲載。PCは左コピー・右ポートレート、1024px以下はMESSAGE→コピー・署名→写真→本文。本体コードで管理する静的ページ。支給PC/SPハンドオフに沿う最大1280pxの構成、本文最大720px・4章見出し、実写真、サムネイル付き関連リンク。Heroと会議写真だけ軽いフェード、本文は常時表示 |
 | 役員紹介 | `leadership.html` | 転送のみ | 一時非表示。`/about#message` へ転送 |
 | 主要関連会社 | `partners.html` | 転送のみ | 一時非表示。`/company` へ転送 |
@@ -656,6 +656,17 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - 素材は `material/images/about-2026/why/` の7枚のWebPと `why-brand-seam.svg`。PCカードは960×620、SPは490×680、右上の淡い都市写真は1440×760。生成された装飾イメージであり、社員/顧客/所在地の記録として扱わない。`picture/source` ごとに実寸を指定し、写真はlazy/async、alt空・aria-hiddenで本文と重複した説明を避ける。
 - 下部は「そのきっかけを、私たちはどうつくるのか。」＋ `NEXT 02 / OUR ROLE` の編集上の接続。OUR ROLEは次フェーズなのでリンク・ボタンや未実装の `#role` は付けない。WHY独自のスクロール監視・固定・パララックスを追加せず、JS無効・動き軽減でも全文を表示する。
 - 検証: `python3 tests/test_about_why.py --url <WHY loopback> --base <HERO loopback> --artifacts <保存先>`。320〜1920pxの17幅（899px境界前後含む）、日英、文字1.4倍、共通カードと非操作ホバー、`#business`、HERO/後続セクションのHTML・寸法維持、JS無効を確認する。既存 `tests/sitewide_check.py` でAbout/採用/サービス一覧を比較。確認画像は `tests/screenshots/about-why/`。
+
+### About OUR ROLE（Issue #149）
+
+- `/about` のWHY直後へ `#our-role` / `.cxour` を追加。HERO/WHY/理念/ミッション以降・共通ヘッダー/フッターは保持する。現行の理念はWHYとMISSIONの間にあるため、実際の並びはHERO→WHY→OUR ROLE→理念→MISSION/VISION。選定画像の `NEXT 03 / CULTURE` は実在する遷移先に合わせ `NEXT 03 / MISSION & VISION` とした。
+- 参考はユーザー指定の選定2案目のみ。h2は「価値を伝え、届け、広げる。」、1440pxでは1行、「広げる。」だけ青。説明文と右上の「つくる。届ける。そして、社会を動かす。」、淡い都市/斜め帯、下部の結論をHTMLで表現する。本文は同梱初稿よりも参照画像の原文を優先した。
+- 3カードは01 CREATIVE X→02 SALES X→IMPACT。採用/サービスの `css/feature-card.css` と `.cx-feature-card` / `--wide` / `--row-sp`、Creativeの `--creative`、`__media` / `__no` / `__body` / `__title` / `__desc` / `__circle` / `__more` を再利用する。共通CSSは変更しない。Creativeはオレンジ、Salesのみ青枠・青い見出し、IMPACTは目指す変化であり第三の事業ではない。カード間の矢印は読み順で、契約の必須手順ではない。
+- カード見出しは「想いを、伝わる形に。」「接点をつくり、成果へ。」「企業の可能性が、次の挑戦へつながる。」。外側は実リンクで、Creative→`/services/creative-x/`、Sales→`/services/sales-x/`、IMPACTとNEXT→`/about#mission`。3カードのCTAはすべて「詳しく見る」。選択状態・開閉属性は付けない。
+- 配信素材は `material/images/about-our-role/` の7枚のWebPと斜め帯SVG。PC写真1280×800、SP写真600×780、都市1600×800、SVG1440×600。生成された装飾イメージで、社員・取引先・撮影実績と誤認させない。文字・番号・リンクは写真に焼き込まない。写真の角度・都市・小さな×の表現は参照画像の素材と完全同一ではない。
+- 専用 `css/about-our-role.css` は `.cxour` 内の配置・写真焦点・装飾・中央の強調を担当。900px以上は3列で7:5の写真、899px以下は共通横長カードを縦に並べる。wideの後置比率はSPだけautoへ戻す。共通wideラベルの11pxはこのセクション内だけ12pxの既存トークンに補正。参照画像の軽いテキストCTAと右下の丸矢印の位置もAbout内のバリエーションとして調整する。
+- `data-ja` / `data-en` で見出し・本文・CTA・まとめの往復に対応。英語コピーは実装用の仮訳で、公開前の校正対象。JS無効でも情報とリンクを表示し、独自のスクロール監視・固定・パララックスは追加しない。動き軽減時はカードの移動/transitionを止める。
+- 検証: `python3 tests/test_about_our_role.py --url <OUR ROLE loopback> --base <基準loopback> --artifacts <保存先>`。320/375/390/412/448/481/640/768/898/899/900/1024/1190/1191/1280/1440/1920px、日英、文字1.4倍、1440px見出し1行、写真の実寸/切替、3リンクの実遷移とNEXT、キーボードフォーカス、既存セクション維持、JS無効/動き軽減を確認。`tests/sitewide_check.py` のAbout/採用/サービス一覧×5幅（15比較）は新規問題0・エラー0、採用/サービスは同一。確認画像は `tests/screenshots/about-our-role/`。
 
 ## 14. 参照ドキュメント
 
