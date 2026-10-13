@@ -1,0 +1,58 @@
+/* WHY owns its layout; feature-card.css owns the explanatory cards. */
+.ax-why {
+  --ax-why-layer-art: 0;
+  --ax-why-layer-copy: 1;
+  --ax-why-layer-flow: 2;
+  position: relative; isolation: isolate; overflow: hidden;
+  padding: clamp(66px, 6.1vw, 98px) 0 70px;
+  background: linear-gradient(180deg, var(--cx-color-white) 72%, var(--cx-color-surface));
+}
+.ax-why__shell { position: relative; z-index: var(--ax-why-layer-copy); width: min(100% - 80px, 1260px); margin-inline: auto; min-width: 0; }
+.ax-why__skyline { position: absolute; right: -3%; top: -30px; width: min(57vw, 870px); height: 460px; z-index: var(--ax-why-layer-art); pointer-events: none; mask-image: linear-gradient(90deg, transparent, #000 42%); opacity: .27; }
+.ax-why__skyline img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 52% 45%; filter: saturate(.76) brightness(1.27); }
+.ax-why__brand-seam { position: absolute; right: -11%; top: -110px; width: 60%; height: auto; z-index: var(--ax-why-layer-art); opacity: .25; pointer-events: none; }
+.ax-why__head { position: relative; max-width: min(710px, 62%); }
+.ax-why .ax-why__eyebrow { display: flex; align-items: center; gap: 16px; margin: 0 0 42px; color: var(--cx-color-ink); font: 700 var(--cx-type-label)/1.5 var(--cx-font-latin); letter-spacing: .18em; }
+.ax-why__section-no { font-size: 15px; letter-spacing: 0; }
+.ax-why__eyebrow-rule { width: 44px; height: 1px; background: var(--cx-color-sales); }
+.ax-why .ax-why__title { margin: 0; font-size: clamp(36px, 4.3vw, 60px); line-height: 1.31; font-family: var(--cx-font-ja); }
+.ax-why__title-accent { color: var(--cx-color-sales); }
+.ax-why .ax-why__lead { margin: 30px 0 0; color: var(--cx-color-body); font-size: clamp(16px, 1.13vw, 17px); font-weight: 500; line-height: 1.95; }
+.ax-why .ax-why__summary { max-width: 580px; margin: 18px 0 0; color: var(--cx-color-muted); font-size: 15px; line-height: 1.9; }
+.ax-why__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin: 82px 0 0; padding: 0; list-style: none; }
+.ax-why__card-item { position: relative; display: flex; min-width: 0; }
+.ax-why__flow-arrow { position: absolute; right: -23px; top: 49%; z-index: var(--ax-why-layer-flow); color: var(--cx-color-sales); font: 700 24px/1 var(--cx-font-latin); }
+.ax-why .cx-feature-card { min-width: 0; cursor: default; }
+.ax-why .cx-feature-card__media picture { display: block; width: 100%; height: 100%; }
+.ax-why .cx-feature-card__media img { object-position: center; }
+/* The shared wide label is 11px; About's visible labels use the 12px token. */
+.ax-why .cx-feature-card__label { font-size: var(--cx-type-label); }
+.ax-why__card--focus { border-color: var(--cx-color-sales); }
+.ax-why__card--focus .cx-feature-card__title { color: var(--cx-color-sales); }
+.ax-why .cx-feature-card:hover .cx-feature-card__media img { transform: none; }
+.ax-why__closing { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 24px; margin-top: 54px; padding-top: 18px; }
+.ax-why__closing-rule { width: 55px; height: 2px; background: linear-gradient(90deg, var(--cx-color-sales), var(--cx-color-creative)); }
+.ax-why .ax-why__closing p { margin: 0; color: var(--cx-color-ink); font-weight: 700; font-size: clamp(16px, 1.7vw, 22px); line-height: 1.55; }
+.ax-why__next { display: flex; align-items: center; gap: 13px; color: var(--cx-color-muted); font: 400 var(--cx-type-label)/1.5 var(--cx-font-latin); letter-spacing: .12em; }
+.ax-why__next strong { color: var(--cx-color-ink); }
+.ax-why__next-arrow { font-size: 21px; color: var(--cx-color-sales); }
+@media (max-width: 1190px) { .ax-why__head { max-width: 700px; width: 70%; } }
+@media (max-width: 899px) {
+  .ax-why { padding: 50px 0 48px; }
+  .ax-why__shell { width: min(100% - 40px, 720px); }
+  .ax-why__head { width: 100%; max-width: none; }
+  .ax-why .ax-why__eyebrow { margin-bottom: 25px; gap: 11px; }
+  .ax-why .ax-why__title { font-size: clamp(28px, 7.7vw, 46px); line-height: 1.4; }
+  .ax-why .ax-why__lead { margin-top: 20px; font-size: 16px; line-height: 1.8; }
+  .ax-why__lead br { display: none; }
+  .ax-why .ax-why__summary { margin-top: 9px; font-size: 15px; line-height: 1.8; }
+  .ax-why__skyline { right: -13%; top: 250px; width: 112%; height: 300px; opacity: .12; mask-image: linear-gradient(180deg, transparent, #000 40%, transparent); }
+  .ax-why__brand-seam { top: -88px; right: -48%; width: 125%; opacity: .15; }
+  .ax-why__cards { grid-template-columns: minmax(0, 1fr); gap: 34px; margin-top: 38px; }
+  .ax-why__flow-arrow { right: auto; top: auto; left: 50%; bottom: -29px; transform: translateX(-50%) rotate(90deg); }
+  /* The shared --wide rule follows --row-sp. Keep its aspect ratio from
+     widening a row card's flex-basis; the common component still sizes media. */
+  .ax-why .cx-feature-card__media { aspect-ratio: auto; }
+  .ax-why__closing { grid-template-columns: minmax(0, 1fr); gap: 13px; margin-top: 35px; }
+  .ax-why__closing-rule { width: 42px; }
+}
