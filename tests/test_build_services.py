@@ -102,8 +102,9 @@ class ServiceBuildTests(unittest.TestCase):
     def test_group_landings_use_official_creative_destinations(self):
         sales = builder.render_group_landing("sales", self.services)
         creative = builder.render_group_landing("creative", self.services)
-        self.assertEqual(sales.count('<article class="cxg-service-card '), 4)
-        self.assertEqual(creative.count('<article class="cxg-service-card '), 3)
+        # 一覧カードは共通部品 .cx-feature-card（#141）。cxg-service-card は再生中・準備中の目印として残る
+        self.assertEqual(sales.count('<article class="cx-feature-card cx-feature-card--wide cx-ui-card cxg-service-card '), 4)
+        self.assertEqual(creative.count('<article class="cx-feature-card cx-feature-card--wide cx-feature-card--creative cx-ui-card cxg-service-card '), 3)
         self.assertIn('href="https://bizmanga.contentsx.jp/bizanime"', creative)
         self.assertIn('href="https://bizform.contentsx.jp/"', sales)
         self.assertIn('href="https://ichioshi.contentsx.jp/service.html"', sales)
