@@ -201,6 +201,10 @@
 
 /* ---------- 種類 ---------- */
 .cx-feature-card--wide .cx-feature-card__media { aspect-ratio: 16 / 10; }
+/* 横長の写真は高さが低いので、番号と欧文ラベルを少し小さく */
+.cx-feature-card--wide .cx-feature-card__no { gap: 6px; }
+.cx-feature-card--wide .cx-feature-card__num { font-size: clamp(1.375rem, 1.8vw, 1.875rem); }
+.cx-feature-card--wide .cx-feature-card__label { font-size: .6875rem; }
 .cx-feature-card--creative {
   --cx-fc-accent: var(--cx-color-creative, #fa4d12);
   --cx-fc-accent-soft: var(--cx-color-creative-soft, #fff3ec);
@@ -225,6 +229,6 @@ button.cx-feature-card__more:focus-visible { outline: 3px solid var(--cx-fc-acce
   button.cx-feature-card__more:hover svg { transform: translateX(4px); }
 }
 @media (max-width: 899px) {
-  a.cx-feature-card__more,
-  button.cx-feature-card__more { width: auto; min-height: 44px; padding: 0; }
+  .cx-feature-card--row-sp a.cx-feature-card__more,
+  .cx-feature-card--row-sp button.cx-feature-card__more { width: auto; min-height: 44px; padding: 0; }
 }
