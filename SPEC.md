@@ -227,6 +227,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - サービスカードはPCのhover/focusで補足文を示し、スマホでは1文の概要を常時表示する。JSなしでも概要は読める。ビズAIO・ビズカルテは準備中、公開済みサービスは公式サイトへ誘導し、ビズアニメ・ビズビデオの実作品動画はユーザー操作後にページ内で再生する。
 - サービス生成は `python3 tools/build-services.py --check` と `python3 -m unittest discover -s tests -p test_build_services.py` で確認する。Pagesワークフローも同じ生成処理とテストを実行する。
 - Sales X・Creative Xの紹介ページは `tools/templates/service-group-*.html.tpl` と `css/service-landing-2026.css` から生成する。白・濃紺を土台に、Sales Xの青 `#005bfa` とCreative Xのオレンジ `#fa4d12` を使う。ヒーロー・相談CTAの画像は背景と境界をつなげ、スマホでは本文の下に置く。Creative Xのヒーローは `creative-hero-v2.webp`、Sales Xは `sales-hero-v2.webp`。Creative Xの「夜明けスタジオ」は表示しない。Sales Xのビズフォーム画像は実際の業務内容に沿った `bizform-research-v2.webp` を使う。
+- 紹介ページのサービス一覧カード（`render_landing_card`、#141）は共通部品 `.cx-feature-card cx-feature-card--wide`（Creative X は `--creative`）。画像の左上に番号と欧文ラベル（`CARD_LABELS`）、見出し・説明・タグ2つ・下のボタン（公式サイトを見る／公開予定／制作について相談）。カード全体はリンクにせず（動画の再生ボタンがあるため）、丸い矢印は置かない。`.cxg-service-card` は `js/service-media.js` の再生中クラスと準備中パネルの目印として残す（見た目の指定は無い）。スマホは縦積み。
 - ビズマンガは共用WordPressの「正義の値段」表紙、ビズアニメとビズビデオは公式の実作品ポスターを使用する。後2者はポスターを押すと `js/service-media.js` がローカルのH.264/AAC MP4をページ内で音声付き再生する。YouTubeのiframe・投稿者表示・外部リンクは置かない。再生/一時停止・音量・字幕・進捗バー・拡大操作はホバー/フォーカス時に表示し、タッチ端末では常時表示する。`media-src 'self'` をサービスページのCSPに指定する。
 - ビズAIO・ビズカルテは画像エリアのホバー/フォーカス時に紺・青の「乞うご期待」を表示し、詳細リンクを出さない。ビズ採用は公式サービスページのヒーロー画像を使い、`https://ichioshi.contentsx.jp/service.html` に遷移する。ビズマンガは `https://bizmanga.contentsx.jp/`、ビズアニメは `https://bizmanga.contentsx.jp/bizanime` に直リンクする。ビズビデオは一覧内で再生し、制作相談へ誘導する。両事業ページは独自の相談CTAを持つため共通CTAは重複表示しない。
 
