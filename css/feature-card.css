@@ -1,0 +1,196 @@
+/* ============================================
+   共通部品: 画像付きの案内カード .cx-feature-card（2026-10-13、#141）
+   一覧から詳細へ案内するカード。上に画像（左上に番号＋欧文ラベル）、下に見出し・一言・区分・丸い矢印・ボタン。
+   採用の職種カードから切り出した。使用: recruit.html（職種カード）
+   - 並べ方（グリッド・列数・時間差）は各ページのCSSが持つ。ここはカード1枚の見た目と状態だけ
+   - 色は変数で切り替える: --cx-fc-accent（線・矢印・区分の文字）/ --cx-fc-accent-soft（区分の地）/ --cx-fc-more-bg（ボタン）
+   - 選択中: aria-expanded="true"（開閉ボタンとして使うとき）か .is-selected
+   - 899px以下は横長（左に画像、右に文字。丸い矢印は隠し、ボタンは文字リンクに）
+   - HTML の骨組み:
+     <a class="cx-feature-card cx-ui-card" href="…">
+       <span class="cx-feature-card__media"><img …><span class="cx-feature-card__no"><span class="cx-feature-card__num">01</span><span class="cx-feature-card__label">LABEL</span></span></span>
+       <span class="cx-feature-card__body">
+         <span class="cx-feature-card__row"><span class="cx-feature-card__text"><h3 class="cx-feature-card__title">見出し</h3><span class="cx-feature-card__desc">一言</span></span><span class="cx-feature-card__circle" aria-hidden="true">→</span></span>
+         <span class="cx-feature-card__types"><span>区分</span></span>（空なら非表示）
+         <span class="cx-feature-card__more">詳細を見る →</span>
+       </span>
+     </a>
+   ============================================ */
+.cx-feature-card {
+  --cx-fc-accent: var(--cx-color-sales, #005bfa);
+  --cx-fc-accent-soft: var(--cx-color-sales-soft, #eaf3ff);
+  --cx-fc-more-bg: linear-gradient(90deg, #3d82f0, #6ea6f5);
+  scroll-margin-top: 88px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(239, 246, 255, .96));
+  box-shadow: 0 14px 36px rgba(17, 52, 104, .09);
+  color: var(--cx-color-ink, #07143b);
+  text-decoration: none;
+}
+.cx-feature-card__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 20 / 19;
+  overflow: hidden;
+  background: #dce8f6;
+}
+.cx-feature-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  transition: transform 1s var(--cx-motion-ease, cubic-bezier(.16, 1, .3, 1));
+}
+/* 番号の読みやすさ（上）と、パネルへのなじみ（下） */
+.cx-feature-card__media::before,
+.cx-feature-card__media::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.cx-feature-card__media::before { top: 0; height: 42%; background: linear-gradient(180deg, rgba(7, 20, 59, .5), rgba(7, 20, 59, 0)); }
+.cx-feature-card__media::after { bottom: 0; height: 34%; background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .96)); }
+.cx-feature-card__no {
+  position: absolute;
+  top: clamp(18px, 2vw, 28px);
+  left: clamp(20px, 2.2vw, 32px);
+  z-index: 2;
+  display: grid;
+  gap: 10px;
+  color: #fff;
+  text-shadow: 0 1px 12px rgba(7, 20, 59, .35);
+}
+.cx-feature-card__num {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--cx-font-latin, 'Inter', sans-serif);
+  font-size: clamp(1.75rem, 2.4vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1;
+}
+.cx-feature-card__num::after { content: ''; width: 40px; height: 1px; background: currentColor; }
+.cx-feature-card__label {
+  font-family: var(--cx-font-latin, 'Inter', sans-serif);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .26em;
+}
+.cx-feature-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(14px, 1.6vw, 22px) clamp(20px, 2.2vw, 30px) clamp(22px, 2.4vw, 30px);
+}
+.cx-feature-card__row { display: flex; align-items: center; gap: 16px; }
+.cx-feature-card__text { display: grid; flex: 1; gap: 8px; min-width: 0; }
+.cx-feature-card__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 1.2vw + .6rem, 1.75rem);
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -.01em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.cx-feature-card__desc {
+  color: var(--cx-color-body, #172549);
+  font-size: .9375rem;
+  line-height: 1.7;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.cx-feature-card__circle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border: 1.5px solid var(--cx-fc-accent);
+  border-radius: 50%;
+  color: var(--cx-fc-accent);
+  transition: background-color var(--cx-motion-fast, .18s) ease, color var(--cx-motion-fast, .18s) ease;
+}
+.cx-feature-card__circle svg,
+.cx-feature-card__more svg { transition: transform var(--cx-motion-ui, .3s) var(--cx-motion-ease, cubic-bezier(.16, 1, .3, 1)); }
+.cx-feature-card__types { display: flex; flex-wrap: wrap; gap: 6px; }
+.cx-feature-card__types:empty { display: none; }
+.cx-feature-card__types > span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--cx-fc-accent-soft);
+  color: var(--cx-fc-accent);
+  font-size: .75rem;
+  font-weight: 700;
+}
+.cx-feature-card__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 52px;
+  margin-top: auto;
+  border-radius: 999px;
+  background: var(--cx-fc-more-bg);
+  color: #fff;
+  font-size: .9375rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cx-feature-card:hover .cx-feature-card__media img { transform: scale(1.03); }
+  .cx-feature-card:hover .cx-feature-card__circle { background: var(--cx-fc-accent); color: #fff; }
+  .cx-feature-card:hover .cx-feature-card__circle svg,
+  .cx-feature-card:hover .cx-feature-card__more svg { transform: translateX(4px); }
+}
+.cx-feature-card:focus-visible .cx-feature-card__circle { background: var(--cx-fc-accent); color: #fff; }
+.cx-feature-card:is([aria-expanded="true"], .is-selected) {
+  border-color: var(--cx-fc-accent);
+  box-shadow: 0 0 0 2px var(--cx-fc-accent), 0 14px 36px rgba(17, 52, 104, .12);
+}
+.cx-feature-card:is([aria-expanded="true"], .is-selected) .cx-feature-card__circle { background: var(--cx-fc-accent); color: #fff; }
+.cx-feature-card[aria-expanded="true"] .cx-feature-card__circle svg { transform: rotate(90deg); }
+
+@media (max-width: 899px) {
+  .cx-feature-card { flex-direction: row; border-radius: 16px; }
+  .cx-feature-card__media {
+    flex: 0 0 clamp(96px, 27vw, 156px);
+    align-self: stretch;
+    aspect-ratio: auto;
+  }
+  .cx-feature-card__media img { position: absolute; inset: 0; object-position: 50% 24%; }
+  .cx-feature-card__media::after { display: none; }
+  .cx-feature-card__no { top: 12px; left: 12px; gap: 0; }
+  .cx-feature-card__num { font-size: 1.25rem; }
+  .cx-feature-card__num::after, .cx-feature-card__label { display: none; }
+  .cx-feature-card__body { min-width: 0; gap: 10px; padding: 18px 16px; }
+  .cx-feature-card__row { gap: 0; }
+  .cx-feature-card__title { font-size: clamp(1.0625rem, 2.4vw + .6rem, 1.375rem); line-height: 1.5; }
+  .cx-feature-card__desc { font-size: 1rem; line-height: 1.65; word-break: normal; }
+  .cx-feature-card__circle { display: none; }
+  .cx-feature-card__more {
+    justify-content: flex-start;
+    min-height: 24px;
+    gap: 8px;
+    border-radius: 0;
+    background: none;
+    color: var(--cx-fc-accent);
+    font-size: .875rem;
+    letter-spacing: .02em;
+  }
+  .cx-feature-card[aria-expanded="true"] .cx-feature-card__more svg { transform: rotate(90deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cx-feature-card__media img { transition: none; }
+}
