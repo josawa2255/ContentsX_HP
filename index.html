@@ -652,33 +652,12 @@
   <script src="/js/home-section-labels.js" defer></script>
   <script src="/js/hero-about.js" defer></script>
   <script src="/js/home-hero.js" defer></script>
+  <script src="/js/cx-dom.js" defer></script>
   <script src="/js/cx-manga-reader.js" defer></script>
   <script src="/js/cx-video-player.js" defer></script>
   <script src="/js/home-creative-x.js" defer></script>
   <script src="/js/home-topics.js" defer></script>
-<!-- Start of HubSpot Embed Code -->
-<script>
-  /* HubSpot 遅延ロード: 初回ユーザー操作 or 4秒経過で読込 */
-  (function(){
-    var loaded = false;
-    function loadHS(){
-      if (loaded) return; loaded = true;
-      var s = document.createElement('script');
-      s.id = 'hs-script-loader';
-      s.async = true;
-      s.defer = true;
-      s.src = '//js-na2.hs-scripts.com/48367061.js';
-      document.head.appendChild(s);
-      ['scroll','mousemove','touchstart','keydown','click'].forEach(function(ev){
-        window.removeEventListener(ev, loadHS, {passive:true});
-      });
-    }
-    ['scroll','mousemove','touchstart','keydown','click'].forEach(function(ev){
-      window.addEventListener(ev, loadHS, {passive:true, once:true});
-    });
-    setTimeout(loadHS, 4000);
-  })();
-  </script>
-<!-- End of HubSpot Embed Code -->
+<!-- HubSpot（遅延読み込み） -->
+  <script src="/js/hubspot-lazy.js" defer></script>
 </body>
 </html>

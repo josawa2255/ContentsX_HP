@@ -2,24 +2,26 @@
    WordPress API クライアント
    ============================================================
    WP_CONFIG.enabled = true の場合:
-     WordPress REST API からデータを取得し、既存の
-     WORKS_DETAIL_DATA / NEW_WORKS_DATA / News DOM を上書き。
+     WordPress REST API からニュースを取得し、.news-list を描画する。
+     描画が終わったら（失敗時も）wp-data-ready を発火する（/news の読み込み表示を消す合図）。
 
-   WP_CONFIG.enabled = false の場合:
-     何もしない（既存の JS データファイルをそのまま使用）。
+   WP_CONFIG.enabled = false の場合: 何もしない。
 
-   ■ 読み込み順序（index.html の例）:
-     1. js/wp-config.js
-     2. js/data/works-detail.js   ← フォールバック用
-     3. js/data/new-works.js      ← フォールバック用
-     4. js/wp-api.js              ← このファイル（DOMContentLoaded で実行）
+   ■ 読み込み順序: js/wp-config.js → js/wp-api.js（DOMContentLoaded で実行）
+   2026-10-13: 旧トップ用の /works・/works-new の取得（WORKS_DETAIL_DATA / NEW_WORKS_DATA）は
+   使うページが無くなったため削除。
    ============================================================ */
 
 (function () {
   'use strict';
 
-  /* ── 設定チェック ── */
-  if (typeof WP_CONFIG === 'undefined' || !WP_CONFIG.enabled || !WP_CONFIG.apiBase) return;
+  /* ── 設定チェック（無効でも wp-data-ready は出す。/news の読み込み表示が残らないように） ── */
+  if (typeof WP_CONFIG === 'undefined' || !WP_CONFIG.enabled || !WP_CONFIG.apiBase) {
+    document.addEventListener('DOMContentLoaded', () => {
+      window.dispatchEvent(new CustomEvent('wp-data-ready'));
+    });
+    return;
+  }
 
   const API = WP_CONFIG.apiBase.replace(/\/+$/, '');
   const TIMEOUT = WP_CONFIG.timeout || 5000;
@@ -52,42 +54,18 @@
     }
   }
 
-  /* ── 漫画事例データを上書き ── */
-  async function loadWorks() {
-    const data = await apiFetch('/works?site=contentsx');
-    if (!data || !Array.isArray(data)) return;
-
-    /* グローバル変数を上書き */
-    if (typeof WORKS_DETAIL_DATA !== 'undefined') {
-      WORKS_DETAIL_DATA.length = 0;
-      data.forEach(w => WORKS_DETAIL_DATA.push(w));
-    } else {
-      window.WORKS_DETAIL_DATA = data;
-    }
-    console.log(`[WP-API] 漫画事例: ${data.length}件 loaded`);
-  }
-
-  /* ── 新作情報データを上書き ── */
-  async function loadNewWorks() {
-    const data = await apiFetch('/works-new?site=contentsx');
-    if (!data || !Array.isArray(data)) return;
-
-    if (typeof NEW_WORKS_DATA !== 'undefined') {
-      NEW_WORKS_DATA.length = 0;
-      data.forEach(w => NEW_WORKS_DATA.push(w));
-    } else {
-      window.NEW_WORKS_DATA = data;
-    }
-    console.log(`[WP-API] 新作情報: ${data.length}件 loaded`);
-    /* wp-data-ready（loadWorks完了時）は先に発火済みのため、
-       新作情報カードの再描画は専用イベントで通知する。
-       2026-08-31: このイベントが無かったため、WPで新作を追加しても
-       画面はフォールバック用 js/data/new-works.js のまま更新されないバグがあった。 */
-    window.dispatchEvent(new CustomEvent('wp-new-works-ready'));
-  }
-
   /* ── ニュース DOM を動的に生成 ── */
   const NEWS_HOME_LIMIT = 4;
+
+  /* 管理画面で決めたクロップ範囲の中心（%）。トップ用の *_top を優先 */
+  function cropCenter(item) {
+    const w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
+    const h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
+    const x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
+    const y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
+    const clamp = v => Math.max(0, Math.min(100, v)).toFixed(2) + '%';
+    return clamp(x + w / 2) + ' ' + clamp(y + h / 2);
+  }
 
   async function loadNews() {
     const data = await apiFetch('/news?site=contentsx&per_page=50');
@@ -130,12 +108,8 @@
         const mode = item.image_mode_top || item.image_mode || 'contain';
         if (mode === 'crop' && item.thumbnail) {
           // crop: 枠を埋め、管理画面で決めたクロップ中心を枠の中央に置く
-          const w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
-          const h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
-          const x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
-          const y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
           img.style.objectFit = 'cover';
-          img.style.objectPosition = Math.max(0, Math.min(100, x + w / 2)).toFixed(2) + '% ' + Math.max(0, Math.min(100, y + h / 2)).toFixed(2) + '%';
+          img.style.objectPosition = cropCenter(item);
         }
         img.onerror = function () { this.onerror = null; this.src = FALLBACK_THUMB; };
         thumb.appendChild(img);
@@ -200,18 +174,12 @@
       const mode = item.image_mode_top || item.image_mode || 'contain';
       if (mode === 'crop' && item.thumbnail) {
         // crop: 親枠 (aspect-ratio:5/3) を cover で埋め、クロップ中心を背景中央に置く
-        const w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
-        const h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
-        const x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
-        const y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
-        const cropCenterX = Math.max(0, Math.min(100, x + w / 2));
-        const cropCenterY = Math.max(0, Math.min(100, y + h / 2));
         const cropEl = document.createElement('div');
         cropEl.className = 'news-thumb-crop';
         cropEl.setAttribute('role', 'img');
         cropEl.setAttribute('aria-label', item.title_ja || '');
         cropEl.style.backgroundImage = 'url(' + src + ')';
-        cropEl.style.backgroundPosition = cropCenterX.toFixed(2) + '% ' + cropCenterY.toFixed(2) + '%';
+        cropEl.style.backgroundPosition = cropCenter(item);
         thumbWrap.appendChild(cropEl);
       } else {
         const img = document.createElement('img');
@@ -266,29 +234,17 @@
       list.appendChild(li);
     });
 
-    /* 5件以上ある場合、ホームに「一覧を見る」リンクを表示 */
-    if (isHome && data.length > NEWS_HOME_LIMIT) {
-      const moreLink = document.getElementById('newsMore');
-      if (moreLink) moreLink.style.display = '';
-    }
-
     console.log(`[WP-API] ニュース: ${displayData.length}/${data.length}件 rendered`);
   }
 
   /* ── 初期化 ── */
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      // Heroデータを最優先で取得 → 即座にイベント発火
-      await loadWorks();
-      window.dispatchEvent(new CustomEvent('wp-data-ready'));
-
-      // 残りは並列で取得（Heroをブロックしない）
-      await Promise.all([
-        loadNewWorks(),
-        loadNews(),
-      ]);
+      await loadNews();
     } catch (e) {
-      console.warn('[WP-API] 初期化エラー（ローカルデータで継続）:', e);
+      console.warn('[WP-API] 初期化エラー:', e);
+    } finally {
+      window.dispatchEvent(new CustomEvent('wp-data-ready'));
     }
   });
 

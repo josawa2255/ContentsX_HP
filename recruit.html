@@ -237,6 +237,7 @@
   <link rel="alternate" type="application/rss+xml" title="ContentsX RSS" href="https://contentsx.jp/feed.xml">
   <!-- 選考の手書き風サブコピー（.rc-sel__note）だけに使う。text= で使う文字だけを読み込む（文言を変えたらここも変える） -->
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&amp;text=%20%27%2C.Laceghmnorstwx%E3%80%81%E3%80%82%E3%81%86%E3%81%8B%E3%81%8F%E3%81%93%E3%81%A4%E3%81%AB%E3%81%AE%E3%82%89%E3%82%8C%E3%82%8D%E3%82%92%E3%82%B3%E3%83%84%E3%83%86%E3%83%B3%E4%B8%80%E7%B7%92&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brand-system-2026.css">
   <link rel="stylesheet" href="/css/sitewide-cohesion.css">
   <link rel="stylesheet" href="/css/site-footer.css">
   <link rel="stylesheet" href="/css/home-sections.css">
@@ -717,33 +718,12 @@
   <script src="js/tracking.js" defer></script>
   <script src="js/recruit.js" defer></script>
   <script src="/js/wp-config.js" defer></script>
+  <script src="/js/cx-dom.js" defer></script>
   <script src="/js/home-topics.js" defer></script>
   <script src="/js/home-section-labels.js" defer></script>
   <script src="js/dl-modal.js" defer></script>
-<!-- Start of HubSpot Embed Code -->
-<script>
-  /* HubSpot 遅延ロード: 初回ユーザー操作 or 4秒経過で読込 */
-  (function(){
-    var loaded = false;
-    function loadHS(){
-      if (loaded) return; loaded = true;
-      var s = document.createElement('script');
-      s.id = 'hs-script-loader';
-      s.async = true;
-      s.defer = true;
-      s.src = '//js-na2.hs-scripts.com/48367061.js';
-      document.head.appendChild(s);
-      ['scroll','mousemove','touchstart','keydown','click'].forEach(function(ev){
-        window.removeEventListener(ev, loadHS, {passive:true});
-      });
-    }
-    ['scroll','mousemove','touchstart','keydown','click'].forEach(function(ev){
-      window.addEventListener(ev, loadHS, {passive:true, once:true});
-    });
-    setTimeout(loadHS, 4000);
-  })();
-  </script>
-<!-- End of HubSpot Embed Code -->
+<!-- HubSpot（遅延読み込み） -->
+  <script src="/js/hubspot-lazy.js" defer></script>
   <script src="/js/sitewide-motion.js" defer></script>
 </body>
 </html>
