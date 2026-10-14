@@ -6,7 +6,9 @@
    - Vertical reading when view_type is vertical_only/vertical or the first page is taller than
      1.8× its width (bm-view-type.js isForcedVertical / isVerticalByRatio).
    - Spread on wide frames, one page at a time on narrow ones; swipe left = next, right = previous;
-     ← = next, → = previous. Pages are never cropped (object-fit: contain).
+     ← = next, → = previous; a click/tap on the left half of the pages = next, right half = previous
+     (same direction as the ‹ › buttons; not while zoomed or in vertical reading).
+     Pages are never cropped (object-fit: contain).
    The vertical rule is copied rather than delegated to window.bmViewType because contentsx.jp does
    not load BizManga's scripts (another site; Issue #97 keeps the sites independent). If BizManga
    changes bm-view-type.js (ratio 1.8, view_type values), change VERTICAL_RATIO / forcedVertical here.
@@ -151,9 +153,17 @@
       if (sx === null) return;
       var dx = e.clientX - sx, dy = e.clientY - sy;
       sx = null;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) go(dx < 0 ? 1 : -1);
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { swiped = true; setTimeout(function () { swiped = false; }, 400); go(dx < 0 ? 1 : -1); }
     });
     stage.addEventListener('pointercancel', function () { sx = null; });
+    // Click/tap on the pages: left half = next, right half = previous (right-bound book).
+    var swiped = false;
+    stage.addEventListener('click', function (e) {
+      if (swiped) { swiped = false; return; }
+      if (state.mode === 'vertical' || state.zoom || e.button !== 0) return;
+      var box = stage.getBoundingClientRect();
+      go(e.clientX - box.left < box.width / 2 ? 1 : -1);
+    });
     stage.addEventListener('scroll', function () {
       if (state.mode !== 'vertical') return;
       var imgs = stage.querySelectorAll('.cxmr-page');
