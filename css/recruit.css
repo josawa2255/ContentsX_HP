@@ -290,6 +290,9 @@
   position: relative;
   isolation: isolate;
   background: #f2f7fd;
+  /* 背景（.rc-stage__bg）は margin-bottom を引いているため、最後まで来ると .rc-stage の下へ最大1画面分はみ出し、
+     後ろの TOPICS・フッターの上に描かれてしまう（#156）。描画だけを .rc-stage の中に切り取る（sticky は効いたまま） */
+  clip-path: inset(0);
 }
 .rc-stage__bg {
   position: sticky;
