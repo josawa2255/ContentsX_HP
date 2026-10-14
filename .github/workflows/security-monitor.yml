@@ -49,6 +49,7 @@ jobs:
           done
           if [ -z "$live" ]; then echo "::error::no successful GitHub Pages deployment found"; exit 1; fi
           echo "live commit: $live"
+          echo "LIVE_SHA=$live" >> "$GITHUB_ENV"
           git checkout --quiet --detach "$live"
           if [ -f tools/build-site-artifact.py ]; then
             # デプロイ（static.yml）と同じ順: サービスページを作り直してから公開ファイルを集める

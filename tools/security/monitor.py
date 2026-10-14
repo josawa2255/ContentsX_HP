@@ -10,7 +10,8 @@
   3. 内部資料が本番から取得できないか（公開範囲の後退）
   4. DNS（NS / A / CNAME / MX / CAA）が基準値と同じか（ドメイン・DNSの乗っ取り）
   5. TLS 証明書の残り日数
-  6. GitHub Pages の独自ドメイン・HTTPS 強制、main への PR を通らない push・強制 push（リポジトリの乗っ取り）
+  6. GitHub Pages の独自ドメイン・HTTPS 強制・公開方式、本番が main より古いまま止まっていないか、
+     main への PR を通らない push・強制 push（リポジトリの乗っ取り）
      push した人は GitHub の操作記録（activity API）の actor で見る（コミットの作者名は偽装できるため）
   7. WordPress で閉じた入口が開いていないか（expected.json で true にした項目だけ。WP 側の後退）
 
@@ -214,6 +215,17 @@ def check_github():
             problems.append(f"GitHub Pages の公開方式が変わった: {pages.get('build_type')}（GitHub Actions 以外だと内部資料まで公開される）")
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
+    # 本番が main より古いまま放置されていないか（デプロイが止まっている・自動ビルドの反映漏れ）
+    live_sha = os.environ.get("LIVE_SHA")
+    st, head = github("/commits/main")
+    if live_sha and st == 200 and isinstance(head, dict) and head.get("sha") != live_sha:
+        committed = (head.get("commit", {}).get("committer") or {}).get("date", "")
+        try:
+            age_h = (datetime.now(timezone.utc) - datetime.fromisoformat(committed.replace("Z", "+00:00"))).total_seconds() / 3600
+        except ValueError:
+            age_h = 0
+        if age_h >= 1:
+            problems.append(f"本番が main より古いまま {age_h:.1f} 時間（デプロイが止まっている可能性）: 本番 {live_sha[:7]} / main {head['sha'][:7]}")
     # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない
     status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
     if status != 200 or not isinstance(acts, list):
