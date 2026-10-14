@@ -41,7 +41,7 @@ with sync_playwright() as p:
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  for width in widths:
   page.set_viewport_size({'width':width,'height':900});load(page,a.url)
-  assert page.locator('article.cx-feature-card').count()==3
+  assert page.locator('#business article.cx-feature-card').count()==3
   assert page.locator('#business a,#business button,#business [tabindex],#business [aria-expanded],#business .cx-feature-card__circle,#business .cx-feature-card__more').count()==0
   assert page.locator('#business').evaluate("e=>getComputedStyle(e.querySelector('.cx-feature-card')).flexDirection") == ('row' if width<=899 else 'column')
   check(page)
