@@ -43,7 +43,9 @@ with sync_playwright() as p:
    st=page.add_style_tag(content='header{visibility:hidden!important}')
    for im in page.locator('#next-action img').all():im.scroll_into_view_if_needed();page.wait_for_timeout(100)
    page.locator('#next-action').screenshot(path=str(out/f'next-{w}.png'));st.evaluate('e=>e.remove()')
-   if w in (390,1440):page.screenshot(path=str(out/f'footer-{w}.png'))
+   if w in (390,1440):
+    page.evaluate('scrollTo(0,document.querySelector("footer").offsetTop-180)');page.wait_for_timeout(150)
+    page.screenshot(path=str(out/f'footer-{w}.png'))
   page.locator('#next-action').evaluate('e=>e.querySelectorAll("h2,p,.cx-feature-card__title,.cx-feature-card__desc,.cx-about-next__link").forEach(n=>n.style.fontSize=parseFloat(getComputedStyle(n).fontSize)*1.4+"px")');check(page)
  for w in (390,1440):
   page.set_viewport_size({'width':w,'height':900});states=[]
