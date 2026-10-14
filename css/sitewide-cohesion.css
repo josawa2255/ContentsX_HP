@@ -1,4 +1,5 @@
-@import url('/css/brand-system-2026.css');
+/* brand-system-2026.css（正本トークン）は各ページで先に <link> する（2026-10-13 @import から変更。
+   @import だと brand-system → Inter の読み込みが直列になり描画開始が遅れるため）。 */
 
 /* Contents X 2026: shared visual language for pages outside Home and Services.
    Home and Services keep their own layouts; this sheet aligns the remaining pages. */

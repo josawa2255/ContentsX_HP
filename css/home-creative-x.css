@@ -26,29 +26,39 @@
 .cxcx-works-intro h3 span { font-family:Inter,Arial,'Noto Sans JP',sans-serif; font-weight:800; letter-spacing:-.01em; }
 .cxcx-works-intro p:not(.cxcx-eyebrow) { margin:clamp(8px,1.4svh,16px) 0 0; color:var(--cxcx-body); font-size:clamp(12px,1.05vw,15px); line-height:1.75; }
 
-.cxcx-card { --cxcx-accent:#ef5a17; position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto 1fr; column-gap:12px; padding:clamp(12px,1.25vw,18px); border:1px solid rgba(255,255,255,.9); border-radius:18px; background:rgba(255,255,255,.92); color:var(--cxcx-ink); box-shadow:0 16px 40px rgba(17,52,104,.1); transition:box-shadow .3s ease; }
-.cxcx-card--anime { --cxcx-accent:#2563eb; }
-.cxcx-card--video { --cxcx-accent:#7c3aed; }
-.cxcx-card-media { grid-column:1 / -1; height:clamp(72px,12svh,170px); border-radius:10px; }
-.cxcx-card-body { display:grid; align-content:center; gap:4px; min-width:0; padding:clamp(10px,1.6svh,16px) 0 2px 2px; }
-.cxcx-card-name { color:var(--cxcx-accent); font-size:clamp(18px,1.55vw,24px); font-weight:900; line-height:1.3; letter-spacing:.02em; }
-.cxcx-card-desc { color:var(--cxcx-body); font-size:clamp(12px,.98vw,14px); line-height:1.6; word-break:auto-phrase; overflow-wrap:anywhere; }
-.cxcx-card-go { align-self:center; display:grid; place-items:center; width:clamp(40px,3.6vw,52px); aspect-ratio:1; margin-top:clamp(8px,1.2svh,14px); border-radius:50%; background:#eef2f8; transition:transform .25s cubic-bezier(.16,1,.3,1),background .25s ease; }
-.cxcx-card-go::before { content:''; width:9px; height:9px; margin-left:-4px; border-top:2px solid var(--cxcx-ink); border-right:2px solid var(--cxcx-ink); transform:rotate(45deg); }
+/* Cards (2026-10-14 design, Issue #154): a dark, cinematic picture fills each card; category,
+   service name, short line and a round arrow sit on it in white over a deep-navy shade.
+   The pictures (material/home-2026/creative-cards/) carry no text. The cards stay the tabs that
+   switch the viewer above (js/home-creative-x.js). */
+.cxcx-card { --cxcx-card-h:clamp(160px,calc(12svh + 90px),250px); position:relative; isolation:isolate; display:block; height:var(--cxcx-card-h); overflow:hidden; border:1px solid rgba(255,255,255,.28); border-radius:18px; background:#0b1838; color:#fff; box-shadow:0 18px 40px rgba(7,20,59,.22); transition:box-shadow .3s ease,translate .35s cubic-bezier(.16,1,.3,1); }
+.cxcx-card-media { position:absolute; inset:0; z-index:-2; height:auto; border-radius:0; background:#0b1838; }
+.cxcx-card-media img { object-position:62% center; transition:transform .5s cubic-bezier(.16,1,.3,1); }
+.cxcx-card--manga .cxcx-card-media img { object-position:70% 30%; }
+.cxcx-card::before { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(7,20,59,.78) 0%,rgba(7,20,59,.36) 52%,rgba(7,20,59,.1) 82%),linear-gradient(0deg,rgba(7,20,59,.8) 0%,rgba(7,20,59,0) 68%); pointer-events:none; }
+.cxcx-card-label { position:absolute; top:clamp(14px,1.4vw,20px); left:clamp(16px,1.5vw,22px); color:rgba(255,255,255,.86); font-family:Inter,Arial,sans-serif; font-size:clamp(10px,.72vw,11px); font-weight:700; letter-spacing:.24em; line-height:1; }
+.cxcx-card-body { position:absolute; left:clamp(16px,1.5vw,22px); right:clamp(64px,5.2vw,78px); bottom:clamp(14px,1.4vw,20px); display:grid; gap:4px; min-width:0; }
+.cxcx-card-name { color:#fff; font-size:clamp(18px,1.5vw,24px); font-weight:900; line-height:1.3; letter-spacing:.02em; text-shadow:0 2px 12px rgba(7,20,59,.45); }
+.cxcx-card-desc { color:rgba(255,255,255,.92); font-size:clamp(12px,.9vw,14px); line-height:1.6; word-break:auto-phrase; line-break:strict; text-wrap:pretty; overflow-wrap:anywhere; text-shadow:0 1px 8px rgba(7,20,59,.5); }
+/* Round arrow (CSS only): translucent navy with a thin white ring, bottom right. */
+.cxcx-card-go { position:absolute; right:clamp(14px,1.4vw,20px); bottom:clamp(14px,1.4vw,20px); display:grid; place-items:center; width:clamp(38px,3vw,46px); aspect-ratio:1; border:1px solid rgba(255,255,255,.85); border-radius:50%; background:rgba(7,20,59,.42); transition:transform .25s cubic-bezier(.16,1,.3,1),background .25s ease; }
+.cxcx-card-go::before { content:''; width:8px; height:8px; margin-left:-3px; border-top:1.5px solid #fff; border-right:1.5px solid #fff; transform:rotate(45deg); }
 
 .cxcx-tagline { position:relative; z-index:1; display:flex; align-items:center; gap:clamp(16px,2vw,28px); max-width:1500px; margin:clamp(14px,2.6svh,48px) auto 0; color:#7a879e; font-family:Inter,Arial,sans-serif; font-size:clamp(10px,.85vw,12px); letter-spacing:.5em; white-space:nowrap; }
 .cxcx-tagline::before,.cxcx-tagline::after { content:''; flex:1; height:1px; background:#c9d3e2; }
 /* A soft white backing keeps the words readable over darker parts of the blurred backdrop. */
 .cxcx-tagline span { padding:4px 14px 4px calc(14px + .5em); border-radius:999px; background:rgba(255,255,255,.72); color:#52627e; }
 
-.cxcx-button:focus-visible,.cxcx-card:focus-visible { outline:3px solid #005cff; outline-offset:3px; }
+.cxcx-button:focus-visible { outline:3px solid #005cff; outline-offset:3px; }
+.cxcx-card:focus-visible { outline:3px solid #005cff; outline-offset:4px; }
 
 
 @media (hover:hover) {
   .cxcx-button:hover { transform:translateY(-2px); box-shadow:0 18px 36px rgba(37,99,235,.38); }
   .cxcx-button:hover .cxcx-button-arrow { transform:translateX(4px); }
-  .cxcx-card:hover { box-shadow:0 22px 48px rgba(17,52,104,.15); }
-  .cxcx-card:hover .cxcx-card-go { transform:translateX(4px); background:#e3e9f4; }
+  /* `translate`, not `transform`: the page's reveal animation owns the card's transform. */
+  .cxcx-card:hover { translate:0 -3px; box-shadow:0 24px 50px rgba(7,20,59,.3); }
+  .cxcx-card:hover .cxcx-card-media img { transform:scale(1.035); }
+  .cxcx-card:hover .cxcx-card-go { transform:translateX(3px); background:rgba(7,20,59,.6); }
 }
 /* Tablet & SP: one column — copy → OUR WORKS → cards → viewer. The cards (tabs) sit above the
    viewer so the tapped card never moves when the viewer height changes. */
@@ -59,7 +69,7 @@
   .cxcx-works-intro { order:2; margin-top:clamp(10px,3vw,24px); }
   .cxcx-cards { order:3; }
   .cxcx-viewer { order:4; }
-  .cxcx-card-media { height:auto; aspect-ratio:5 / 2; }
+  .cxcx-card { --cxcx-card-h:auto; aspect-ratio:4 / 3; }
 }
 /* SP: same order; the viewer spans the full width (rules further below). */
 @media (max-width:768px) {
@@ -94,7 +104,7 @@
 /* Laptops up to 860px tall: lower card images so the bigger viewer and the cards share one screen. */
 @media (min-width:1101px) and (max-height:860px) {
   .cxcx { padding-top:clamp(36px,5svh,150px); }
-  .cxcx-card-media { height:clamp(52px,7.5svh,170px); }
+  .cxcx-card { --cxcx-card-h:clamp(150px,calc(7.5svh + 115px),250px); }
   .cxcx-bottom { margin-top:clamp(10px,1.8svh,48px); }
 }
 
@@ -164,11 +174,12 @@
   .cxmr-status { inset:0; }
 }
 
-/* Service cards are the switch: the selected one is outlined in its colour. */
+/* Service cards are the switch: the selected one gets a thin white ring with a blue edge and a
+   deeper shadow; its arrow fills white. */
 .cxcx-card { width:100%; font:inherit; text-align:left; text-decoration:none; cursor:pointer; }
-.cxcx-card[aria-selected="true"] { border-color:var(--cxcx-accent); box-shadow:0 0 0 2px var(--cxcx-accent),0 16px 40px rgba(17,52,104,.12); background:#fff; }
-.cxcx-card[aria-selected="true"] .cxcx-card-go { background:var(--cxcx-accent); }
-.cxcx-card[aria-selected="true"] .cxcx-card-go::before { border-color:#fff; }
+.cxcx-card[aria-selected="true"] { border-color:rgba(255,255,255,.95); box-shadow:0 0 0 2px #2f6bff,0 22px 48px rgba(7,20,59,.32); }
+.cxcx-card[aria-selected="true"] .cxcx-card-go { background:#fff; }
+.cxcx-card[aria-selected="true"] .cxcx-card-go::before { border-color:#07143b; }
 
 .cxvp-arrow:focus-visible,.cxvp-play:focus-visible,.cxmr-stage:focus-visible,.cxmr-btn:focus-visible,.cxmr-zoom:focus-visible,.cxcx-fallback:focus-visible,.cxcx-message a:focus-visible { outline:3px solid #7fb1ff; outline-offset:2px; }
 @media (hover:hover) {
@@ -177,6 +188,9 @@
 }
 @media (prefers-reduced-motion:reduce) {
   .cxvp-play-ring,.cxvp-arrow,.cxvp-dot { transition:none; }
+  .cxcx-card,.cxcx-card-media img,.cxcx-card-go { transition:none; }
+  .cxcx-card:hover { translate:none; }
+  .cxcx-card:hover .cxcx-card-media img { transform:none; }
 }
 /* SP: cards become a compact three-way switch; manga pages get a tall single-page stage. */
 @media (max-width:768px) {
@@ -187,12 +201,15 @@
   .cxvp-arrow-next { right:8px; }
   .cxmr-zoom { position:static; }
   .cxmr-bar { gap:12px; }
-  .cxcx-cards { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-  .cxcx-card { grid-template-columns:minmax(0,1fr); padding:8px; border-radius:12px; }
-  .cxcx-card-media { height:auto; aspect-ratio:16 / 10; border-radius:8px; }
-  .cxcx-card-body { padding:8px 2px 2px; }
-  .cxcx-card-name { font-size:clamp(13px,3.8vw,16px); }
-  .cxcx-card-desc,.cxcx-card-go { display:none; }
+  /* Cards stack in one column, wide (2:1), subject on the right; text stays readable without hover. */
+  .cxcx-cards { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .cxcx-card { aspect-ratio:2 / 1; border-radius:16px; }
+  .cxcx-card-media img,.cxcx-card--manga .cxcx-card-media img { object-position:70% center; }
+  .cxcx-card-label { top:14px; left:16px; font-size:10px; }
+  .cxcx-card-body { left:16px; right:62px; bottom:14px; }
+  .cxcx-card-name { font-size:clamp(17px,5vw,20px); }
+  .cxcx-card-desc { font-size:clamp(12px,3.4vw,14px); }
+  .cxcx-card-go { right:14px; bottom:14px; width:38px; }
 }
 /* Phones: the viewer runs edge to edge. */
 @media (max-width:592px) {

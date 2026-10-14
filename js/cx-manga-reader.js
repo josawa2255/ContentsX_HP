@@ -14,25 +14,14 @@
    Usage: var r = CxMangaReader(container, work, { wide: function () { return true; } }); r.destroy(); */
 (function () {
   'use strict';
+  if (!window.cxDom) return; // js/cx-dom.js が先に読まれていない（Creative X は HTML のリンクのまま）
   var THANKS = '/material/manga/thanks_v02.webp';
   var VERTICAL_RATIO = 1.8;
-  var SAFE_IMG = /^https:\/\/(cms\.contentsx\.jp|contentsx\.jp)\/[^\s"'<>]+$/;
+  var PAGE_HOSTS = ['cms.contentsx.jp', 'contentsx.jp'];
 
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text) n.textContent = text;
-    return n;
-  }
-  function iconButton(cls, label, glyph) {
-    var b = el('button', cls);
-    b.type = 'button';
-    b.setAttribute('aria-label', label);
-    var g = el('span', '', glyph);
-    g.setAttribute('aria-hidden', 'true');
-    b.appendChild(g);
-    return b;
-  }
+  var el = window.cxDom.el;
+  var iconButton = window.cxDom.iconButton;
+  var safeImage = window.cxDom.safeImage;
   function forcedVertical(work) {
     var vt = work && (work.view_type || work.viewType || work.mode);
     return vt === 'vertical_only' || vt === 'vertical';
@@ -48,7 +37,7 @@
 
   window.CxMangaReader = function (root, work, opts) {
     opts = opts || {};
-    var pages = (Array.isArray(work && work.gallery) ? work.gallery : []).filter(function (u) { return SAFE_IMG.test(u); });
+    var pages = (Array.isArray(work && work.gallery) ? work.gallery : []).map(function (u) { return safeImage(u, PAGE_HOSTS); }).filter(Boolean);
     var wide = opts.wide || function () { return window.innerWidth >= 769; };
     var title = (work && work.title_ja) || 'マンガ';
     var state = { mode: 'single', index: 0, zoom: false, vertical: false, destroyed: false };

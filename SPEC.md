@@ -95,12 +95,13 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - ヒーロー右側の理念コピーは、都市画像の明暗の上でも読めるよう紺色の字に白い縁と淡い白い影を重ねる。事業紹介の中央ロゴは、青とオレンジが交差する文字なしのXマークをインラインSVGで表示する。独立したグリッド列に配置して左右の文言・CTAに重ならないようにし、SVGの viewBox に余白を取って両端を欠けずに描画する。写真は左カードを左寄せ、右カードを右寄せとして、余白付き素材の人物と作画の手を表示する。
 - レスポンシブ: 768px以下でヒーローを縦構成、事業カードとサービス欄を1列にする。事業紹介は1100px以下で縦並びに切り替える。文字は `clamp()` で連続スケール。320/390/412/448/640/768/1024/1100/1101/1280/1440/1920pxの横溢れ・事業カード内の文字収まりをブラウザ確認。
 - リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム・ビズマンガ・ビズアニメ・ビズ採用は公開先へ直リンク。ビズビデオは一覧内の動画カード、準備中のビズAIO・ビズカルテは一覧内の該当カードへ。Sales X / Creative Xの紹介は `/services/sales-x/` と `/services/creative-x/` に向ける。
-- 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。トップを含む全ページで `i18n.js` → `nav.js` の読込順を維持。共通ヘッダーは1280px以下でドロワーに切り替え、文字拡大時のナビ重なりも避ける。トップは固定ヘッダーの下からヒーローを開始する。
+- 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まない。`hero-new.js`・`hero-fx.js`・`js/data/works-detail.js` は**どのページからも読み込まれていない**（HERO作業の完了後に削除予定。2026-10-13 時点）。`hero-new.js` が購読する `wp-data-ready` は今は「ニュース描画完了」の合図で、`/works` は取得していない。トップを含む全ページで `i18n.js` → `nav.js` の読込順を維持。共通ヘッダーは1280px以下でドロワーに切り替え、文字拡大時のナビ重なりも避ける。トップは固定ヘッダーの下からヒーローを開始する。
 
 ### HERO（2026-10-10 刷新、Issue #108）
 
 - 基準: 平澤さん支給のハンドオフ `ContentsX_TOP_HERO_Interactive_Handoff_20261010`（PC/SPの確定モック・素材・動画ID）。モック画像を貼らず、文字・ボタン・3カード・装飾をHTML/CSS/JSで組む。ヘッダーとABOUT以下は変えない。
 - 構成（PC 1101px以上）: 白地＋薄い青/オレンジの幾何学背景（`material/home-2026/hero/hero-bg.webp`）。左に小見出し `BUSINESS × CREATIVE`・メインコピー「企業の価値を、売上に変える。」（明朝体、DESIGN-SYSTEM-2026.md のHERO例外）・説明「法人の営業と売上づくりを、仕組みとクリエイティブで支援します。」・ボタン「お問い合わせ」（`/contact`）「サービスを見る」（`/services/`）。右に傾いた3カード。装飾として `PEOPLE / IDEAS / SYSTEMS / GROWTH`・`CONTENTS X INC.`・`SCROLL`（読み上げ対象外）。HEROは画面の高さ−ヘッダー（最低520px）で、PC 1366×650〜1920×1080 でコピー・ボタン・3カードが1画面に収まり、カードはコピーに重ならない。
+- 下段3カード（2026-10-14 平澤さん支給デザイン・Issue #154）: 暗いシネマティックな画像をカード全面に敷き、白い文字で上に小さな英字カテゴリ（`MANGA` / `ANIME` / `VIDEO`）、下にサービス名と短い説明、右下に丸い矢印（半透明の紺に細い白い輪、CSSで描画）を重ねる。読みやすさのため左と下を深い紺で暗くする。画像は `material/home-2026/creative-cards/{bizmanga,bizanime,bizvideo}.webp`（1448×1086、文字なし。ビズマンガはビズちゃん）。枠は細い半透明の白・角丸18px。3枚の高さはPCで画面の高さに合わせてそろえ、ノートPCでも1画面に収まる。選択中のカードは白い縁＋青い輪＋濃い影、矢印が白く塗られる。PCのhover/フォーカスで画像1.035倍・3px浮く・矢印が右へ（動きの軽減では止める）。カードは引き続き上のビューワーを切り替えるタブ（行き先リンク・タブ操作・WP連携は変更なし）。
 - 1100px以下: コピー → ボタン → カードの箱（768px以下は縦長）。SPのカード配置はモックどおり、Creativeが右上・事業が左・仕組みが右下。
 - 以前のHEROの「Sales X × Creative X」「2026.09」右下の一文「日本の中にある価値を、世の中に出し切る。」は削除。ボタン「まずは相談する」は「お問い合わせ」に変更。旧HEROの街の画像 `material/home-2026/hero.jpg` はトップでは使っていない（ファイルは残置）。
 - カード2「事業を、次のステージへ。」→ `/about`、カード3「仕組みで、成果をつくる。」→ トップの `#sales-x` へなめらかにスクロール。**どちらも暫定**で、行き先は `index.html` の各 `<a>` の `href` を1か所変えるだけ。画像（`hero-card-business.webp` / `hero-card-system.webp`）は支給素材の焼き込みの角丸・白い縁を、文字にかからない範囲で切り落としたもの。画像内の文字は二重に重ねず、同じ文言を読み上げ用テキストとして持つ。右下の矢印でリンクと分かるようにする。
@@ -146,13 +147,13 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - 登場は #59 のスクロール連動の中で、見出し→メインビジュアル→導線カード→事業カードの順に軽くfade-up。`prefers-reduced-motion: reduce` とJS無効時は全表示し、hoverの変化も止める。
 - CSSは `css/hero-about.css`、背景とスナップは `css/home-sections.css`（#61）。検証は `tests/test_hero_about.py`（#59の演出・Hero比較）と `tests/test_section_backdrop.py`（リンク先4件、事業カード2枚、SPの並び順、hover）。
 
-### Creative X セクション（Issue #65、ビューワー化 Issue #97、動画の横スクロール化 Issue #102）
+### Creative X セクション（Issue #65、ビューワー化 Issue #97、動画の横スクロール化 Issue #102、下段カード刷新 Issue #154）
 
 - 位置: ABOUT（`.cxha-transition`）の直後、`#creative-x`。デザインは 2026-10-04 改訂版を土台に、2026-10-08（Issue #97）で右上の PICK UP を「メインビューワー」に置き換えた。画面を1枚画像にせずHTML/CSS/JSで組む。
 - 背景: ABOUTの共通背景（`.cxsb-section`）をそのまま継続。ABOUTに `.cxsb-join-next`、Creative Xに `.cxsb-join-prev` を付け、境目の白いフェードを出さず1枚の景色として続ける。上部に薄い大きな `CREATIVE X`。PCのスナップ対象。
 - しくみ: 下の3カード（ビズマンガ / ビズアニメ / ビズビデオ）がタブで、上のメインビューワー1枠の中身を切り替える。初期表示はビズアニメ。HTML上のカードは各サービスへのリンク（ビズ書庫 / ビズアニメ公式 / `/services/#bizvideo`）で、JSがタブに変える。JSが動けば普通のクリックではページ移動・ポップアップはせず、Ctrl/⌘クリックは各サービスを新しいタブで開ける。切替は約200msのフェード（動き軽減時は即時）、切替時は再生中の動画を止め、マンガは1ページ目・拡大なしに戻す。タブはスペースキー・矢印キー・Home/End でも操作できる（`role="tab"` / `tabpanel` はJSが付ける）。
 - PC（1101px以上）: 上段は左に「Creative X ——」・見出し「想いを、伝わるカタチに。」・説明・青いボタン「Creative X について →」（`/services/creative-x/`）、右にメインビューワー（濃紺の枠）。下段は左に「OUR WORKS ——」「作品で見る Creative X」・説明、右に3カード（画像・色付きのサービス名・一文・丸い矢印。選択中は枠線とサービス色の丸）。最下部に区切り線と「IDEAS INTO IMPACT」。ビューワーの高さはサービスを切り替えても変わらない。
-- 1100px以下: 1列で「見出し・説明・ボタン → OUR WORKS → 3カード（横3列）→ ビューワー」。カードをビューワーの上に置き、ビューワーの高さが変わっても押したカードが動かないようにする。768px以下はカードを画像＋名前だけの小さなタブにし、592px以下はビューワーを画面の端から端まで広げる。
+- 1100px以下: 1列で「見出し・説明・ボタン → OUR WORKS → 3カード（横3列）→ ビューワー」。カードをビューワーの上に置き、ビューワーの高さが変わっても押したカードが動かないようにする。768px以下はカードを縦1列の横長（2:1）にし、592px以下はビューワーを画面の端から端まで広げる。
 - ビズマンガ（`js/cx-manga-reader.js`）: ページ内で読めるマンガビューワー。BizManga の読み方の規則を写している（BizManga のJSは読み込まず、BizManga 側は変更しない）。右綴じで、PC（769px以上）は見開き [1,2],[3,4]… の若い番号が右、最終ページが奇数なら左に `/material/manga/thanks_v02.webp`。768px以下は1ページずつ。`view_type` が `vertical_only` / `vertical`、または1ページ目の縦横比が1.8超なら縦スクロール表示。1ページ目が読み込めないときは BizManga と同じく「縦読みではない」として表示を続ける。判定は BizManga の `bm-view-type.js` を読み込まずに写している（別サイトのため）ので、BizManga 側の判定を変えたら `js/cx-manga-reader.js` も合わせる。「次へ」は左・「前へ」は右、←キー＝次・→キー＝前、スワイプは左へ＝次。ページ番号表示、拡大ボタン（2倍・スクロールで移動）。ページは切り取らない（`object-fit: contain`）。PCではページを枠の高さいっぱいに使い、ボタン類は左右の余白に重ねる。
 - ビズアニメ / ビズビデオ（`js/cx-video-player.js`）: 共通の動画プレイヤー。各3本を横一列に並べ、横スクロール（SPは指でスワイプ、PCはトラックパッド・左右端の ‹ › ボタン・←→キー）で1本ずつ切り替える（2026-10-09 平澤さん指示で下のサムネイル列は廃止）。動画は枠の横幅いっぱいに16:9で表示し、上部の点で何本目かを示す（再生中は隠す）。最初はポスター・タイトル・説明と再生ボタンだけで、押すとその場で埋め込みを作って再生（自動再生しない）。別の動画へスクロール・別サービスを選ぶと埋め込みを外して止める。読み込み中・再生できないときは文字で知らせる。高画質サムネイル（maxresdefault）が無い動画は YouTube の灰色の代わり画像になるため、標準サイズ（hqdefault）に切り替える。
 - データ（`js/home-creative-x.js`、`WP_CONFIG.apiBase` 経由）:
@@ -255,7 +256,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | CTA を画像の下へ(絶対条件) | `.hv2-ctas` は `.hv2-copy`(flex縦)の**子**なので `grid-area` は効かない。`.hv2-copy { min-height: calc(var(--hv2-visual-h) + 96px) }` で画像高+余白を確保し、`.hv2-ctas { margin-top: auto }` で下端へ落とす。→ 画面幅で画像高が変わっても CTA は常に画像の直下(≒下端+16px)に並ぶ。検証: 360/390/430/768 で `ctas.top >= bg.bottom` |
 | 見出し傾斜 | `transform: rotate(-6deg) skewX(-9deg)`、SP は SVG グランジフィルタを解除 (filter:none) |
 | sub copy 傾斜 | 見出しと同じ `rotate(-6deg) skewX(-9deg)` で `transform-origin: left bottom` 統一 |
-| client-logos 連結 | section 暗黙の `padding: 100px 0` を `padding-bottom: 0` で hero から解除し、client-logos `padding: 24px 0 28px / margin-top: 0` で接続 |
+| client-logos 連結 | （撤去済み。ロゴ帯 `js/client-logos.js`・`js/data/client-logos.js` と style.css の指定は 2026-10-13 に削除） |
 
 > 2026-07-02: キャラ一体化＋SP一枚絵の比率固定表示に刷新。旧「bg/chars 下端一致」ルール（`--hv2-chars-h` / `chars.top = visual_h - chars_h`）・透過キャラ `right:-100px`・固定 `margin-top:166px` は全廃止。
 
@@ -280,7 +281,10 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
 | `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
 | `js/dl-modal.js` | 資料DLモーダル | contact送信済みか localStorage で判定 |
-| `js/wp-api.js` | WP API クライアント | `WORKS_DETAIL_DATA` / `NEW_WORKS_DATA` 上書き |
+| `js/wp-api.js` | WP API クライアント（ニュースだけ） | `.news-list` を描画し、終わったら（失敗時・`WP_CONFIG.enabled=false` のときも）`wp-data-ready` を発火。`/news` の読み込み表示はこの合図で消す。2026-10-13 に旧トップ用の `/works`・`/works-new` 取得（`WORKS_DETAIL_DATA` / `NEW_WORKS_DATA`）を削除 |
+| `js/cx-dom.js` | WordPress 連携部品の共通道具 `window.cxDom` | `el` / `iconButton` / `text` / `safeImage`（サイト内パスか許可ホストの https 画像だけ）/ `getJSON(path, timeout, label)`。使う側（`cx-manga-reader.js`・`cx-video-player.js`・`home-creative-x.js`・`home-topics.js`）より前に defer で読む（トップ・採用）。順番は `tests/test_asset_order.py` がデプロイ前に検査し、読めなかったときは各部品が何もせず HTML のまま残る。`safeImage(url, hosts)` の hosts で許可ホストを絞れる（マンガのページ画像は WordPress と自サイトだけ） |
+| `js/hubspot-lazy.js` | HubSpot 追跡コードの遅延読み込み | 初回操作か4秒後に読む。トップ・会社概要・採用・ニュース詳細。お問い合わせは従来どおり直接読み込み、採用エントリーは読み込まない |
+| `js/script.js` | 下層ページの小さな動き | 会社概要・ニュース一覧・ニュース詳細。ヘッダーのスクロール時クラス、見出しのフェードイン、ページ内リンクのスムーススクロールだけ（2026-10-13 に旧トップ用の約1100行を削除） |
 | `js/wp-config.js` | WP設定 | API baseURL / cache TTL |
 
 ### 4.1 CTA セクション共有化 ⭐
@@ -444,6 +448,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - **Xの書き順アニメーション**: 1画目＝＼（左上→右下）→ 2画目＝／（右上→左下）。SVG の中で画像を「Xを抜いた土台」と「帯2本」に分け、帯ごとに太い線のマスクを `stroke-dashoffset` で端から端へ伸ばして“描く”。1画目 0.1s 開始・2画目 0.45s 開始、各1.0s（全体約1.45s）。描画中は帯の透明度を 0.3→1 に。補助コピーは描き終わりにフェードイン。初回表示時に1回だけ。
 - 画像の読込が遅いとき: `js/recruit.js` が `.is-waiting` を付けて描画を止め、読込完了（失敗・4秒経過でも）で外して最初から描く。JS が無くても最終状態（X全体が見える）で表示される。
 - `prefers-reduced-motion: reduce` では動かさず最初から全体を表示。
+- **スマホ（768px以下、#152）**: 書き順アニメーションはせず、Xの画像全体を0.8秒で軽くフェードイン（下から12px）。太い線のマスクを毎コマ描き直す演出はスマホのGPUで引っかかりやすいため。画像の幅はボタンと同じ（左右の余白 `--rcx-gutter` をそろえる、最大480px）、下端はマスクで次のセクションへなじませる。PC・タブレット横は従来どおり書き順。
 - ⚠️ **画像を差し替えるときは、SVG の `polygon`（帯の形・2箇所ずつ）と描画線 `path` の座標、CSS の `stroke-dasharray`（1画目 1355／2画目 1506＝線の長さ）を測り直す**。帯の形の境界が写真の端にぴったり重なると、描画前に細い線のノイズが出る（境界は写真の外側の白地に置く）。
 - レイアウト: PC と横長タブレットは画像を全面に敷き（右寄せ `xMaxYMid slice`）、左に薄い白のグラデーション（`.rc-xhero__veil`）。**767px 以下と、1023px 以下の縦長画面**はコピー→ボタン→画像の縦積み（縦長で全面にするとXが大きく切れてコピーと重なるため）。
 - 899px以下は §9.8 のコンパクトな縦積みを優先する。
@@ -453,6 +458,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 ### 9.1 ページ構成とモーション（2026-10-12、#127）
 - 構成: HERO → 募集職種（`#positions`、募集要項はこの中で開く）→ 選考（`#flow`）→ エントリー（`#entry`）→ TOPICS（`#topics`、トップと共通）→ フッター。
 - **共通背景（`.rc-stage` / `.rc-stage__bg`）**: 募集職種・募集要項・選考・エントリーは親 `.rc-stage` の中にあり、背景写真はその最初の子 `.rc-stage__bg` の1枚だけ（`recruit-positions-bg.webp`、640px以下は `-sp` を上寄せ・高さ520px）。`position: sticky; height: 100lvh; margin-bottom: -100lvh` で画面に貼り付き、上を中身が流れるので、境目・繰り返し・位置のリセットが出ず、募集要項を開いてページが伸びても途切れない。白いオーバーレイ（`::after`）は旧 `.rc-op__bg` のものをそのまま使う。⚠️ セクションごとに背景画像を置かない。各セクションの `background` は透明のまま。最後は `.rc-stage::after` で淡い青（#f2f7fd）に溶かし、TOPICS の上端のグラデーション（同色）へつなぐ。旧ページの「職種カード選択で背景が切り替わる演出」「応募する／詳細を見るのボタン列」「共通CTA（`cta.js`）」は撤去。
+- **スマホ（768px以下）の背景文字（#152）**: 画面上部に固定すると見出し・本文と重なって読みにくいため、固定をやめて各セクション（`data-cxsb-name` の `::before`、TOPICS は元の `.cxsb-label`）の上の余白に置く。大きさ・色はトップのスマホの TOPICS と同じ（`clamp(52px, 18vw, 130px)`、`rgba(21,88,161,.09)`）。セクションの上の余白は「欧文の大きさ×0.78＋30px」で、見出しは欧文の下から始まる（その分セクションの間が広がる）。
 - **大きな背景文字（#135）**: トップと同じ見た目・仕組み（`js/home-section-labels.js` と `css/home-sections.css` の `.cxsb-name`）。募集職種＝`POSITIONS`／選考＝`PROCESS`／エントリー＝`ENTRY`（各 `section` の `data-cxsb-name`）、TOPICS は従来の `.cxsb-label`。共通背景 `.rc-stage__bg`（`data-cxsb-names-host`）の中に、画面の上から40%の線にいるセクションの名前だけを画面上部に固定で出し、切り替えは0.2秒のフェード。HERO には出さない。JS無効時は出ない（飾りのため）。
 - 方針: 特徴的な演出は要所だけ（HERO の X、HERO→募集職種の日差し）。ほかは `MOTION-UI-2026.md` の「1回だけ下から24px・0.75秒」。スクロールを止める・吸着させる処理は入れない。
 - 登場演出の仕組みは下層ページ共通の `js/sitewide-motion.js`（対象: `.rc-op__intro` `.rc-op-item` `.rc-sel__head` `.rc-sel__step` `.rc-entry__inner` `.cxtp-head` `.cxtp-list`）。職種カードは 0 / 0.14 / 0.28 秒、選考カードは PC で 0 / 0.12 / 0.24 / 0.36 秒の時間差（`css/recruit.css`）。選考の線とエントリーの紙飛行機の軌跡も、この登場クラス（`.cx-motion-pending` → `.cx-motion-visible`）に連動して CSS だけで1回描く（専用のJSは無い）。
@@ -628,13 +634,14 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - トップページとサービスページはそれぞれの担当作業ツリーで設計する。**その他のContents Xページ全体**（会社情報、採用、お問い合わせ、ニュース、コラム、FAQ、法務ページ、404）は第三の担当範囲として統一感を維持する。別セッション間の変更・色の決定は「claude連絡網」で共有する。
 - 下層ページは `css/sitewide-cohesion.css` と `body.cx-sitewide` を使用。白を土台に、濃紺 `#07143b`、Sales X の青 `#005bfa`、Creative X のオレンジ `#fa4d12` を共通の視覚語彙とする。見出し、ラベル、リンク、ボタン、淡色背景、境界線の基準をこのCSSへ集約する。
 - `body[data-theme="magenta-hot"]` と旧テーマ定義は互換性のため残す。下層ページでは `body.cx-sitewide` の変数が優先する。トップ・サービスのレイアウトにはこのクラスを付けない。
-- コラム静的記事は生成物と `tools/templates/c-column.html.tpl` の両方へ共通CSSを読み込む。再ビルド後も外観を維持するため、テンプレートの指定を削除しない。
+- コラム静的記事は生成物と `tools/templates/c-column.html.tpl` の両方へ共通CSSを読み込む。再ビルド後も外観を維持するため、テンプレートの指定を削除しない。記事の見た目は `css/column-article.css`（2026-10-13 にテンプレートの埋め込みCSSを移動）。記事ごとのサムネイルだけは `.cx-col-hero` の `style="--cx-col-thumb:url('…')"` で渡す。
+- 利用規約・プライバシーポリシーの見た目は `css/legal.css`（2026-10-13 に両ページの埋め込みCSSを移動）。
 - レスポンシブ検証幅は 320/390/412/448/640/768/1024/1440px。本文はユーザーの文字拡大設定を尊重する。
 - 会社概要 `company.html` の会社情報は480px以下で項目名と内容を縦並びにし、長い社名・事業内容の本文幅を確保する。481px以上は2列表示とする。
 - 会社概要 `company.html` 左側の紹介文（`.company-description`）は2026-09-29に営業支援の訴求へ差し替え。見出し1行（h2 `.company-description-lead`「営業の悩みを、売上につながる仕組みに。」）＋本文3段落の構成で、各段落に `data-ja`/`data-en` を付ける。旧文「埋もれていた物語に、光を当てる」「人の手7割・AI3割」は会社概要から削除（`llms.txt`・`faq.html`・`i18n/en.json` には旧文が残っている＝未変更）。meta description・og/twitter・構造化データの説明文も営業支援の訴求に合わせ、ページ内フッターの英語社名は `Contents X Inc.` にした。
 - 同日、右側の会社情報（`.company-info`）を「会社名／設立／資本金（1,000万円）／役員（代表取締役 黒宮 大貴・取締役 鵜池 航太）／事業内容（4行）／所在地」に更新。複数行の項目は `data-ja`/`data-en` に `<br>` を入れ、i18n が innerHTML で差し替える。社名の表記ゆれ（コンテンツエックス等）は表から外し、構造化データの `alternateName` に残している。
 - UIとモーションの共通基準は [MOTION-UI-2026.md](MOTION-UI-2026.md)。下層ページは `js/sitewide-motion.js` がセクションの1回だけの登場演出を担う。JS無し・動きの軽減設定時は常時表示する。
-- フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` から読み込み、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
+- フォント・文字階層・色の役割・写真上の文字は [DESIGN-SYSTEM-2026.md](DESIGN-SYSTEM-2026.md) に集約。CSSの正本は `css/brand-system-2026.css`。下層ページは `css/sitewide-cohesion.css` の直前に `<link>` で読み込み（2026-10-13 に `@import` から変更。直列の読み込み待ちをなくすため。新しいページでも2行セットで書く）、トップ/サービス担当も同じ変数を使用する。通常サイズの Creative X 文字には `#b83806` を使い、鮮やかな `#fa4d12` は大きい見出しや装飾に限定する。
 - 共通の小部品は `cx-ui-surface`（淡色面と枠）、`cx-ui-pill`（丸い外形）、`cx-ui-card`（カード反応）、`cx-ui-action`（操作反応）。ページ固有クラスは配置・内容を担当する。旧生成コラムカード `cx-col-card` の動きは生成テンプレート互換のため保持する。
 
 ### About HERO（2026-10-12、Issue #139）
@@ -695,8 +702,8 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 
 1. **CTA変更忘れ** → [js/cta.js](js/cta.js) 1箇所を編集すれば共通CTAを使う全ページ（現在は会社概要のみ）に反映される（手動コピペ禁止）
 2. **モバイルでハンバーガー押せない** → §7.1 のチェックリスト
-3. **新作情報に漫画事例を出したい** → 2026-08-05以降は`cx_show_new_contentsx`が未設定でも表示される（明示的に`0`を入れた作品だけ除外）。表示件数は`added`降順で最大10件（`script.js` `MAX_NEW_WORKS`）。**画面が更新されない場合**: `js/wp-api.js` `loadNewWorks()`完了時に発火する`wp-new-works-ready`イベントを`js/script.js`側で購読して`buildNewWorksCards()`を再実行する構成（2026-08-31修正、[BUGS.md #052](../BUGS.md)）。この購読が無いと`wp-data-ready`（`/works`取得完了時のみ発火）のタイミングでフォールバック`js/data/new-works.js`のまま描画が固定されてしまう
-4. **Heroカルーセルから特定漫画を外したい** → WP `cx_show_hero_site` を `bizmanga` or `none` に（2026-04-16修正: 静的 `WORKS_DETAIL_DATA` には `show_hero_site` が無いので初回描画は全作品表示。`wp-data-ready` で `buildHeroCarousel()` を再実行してフィルターを効かせている。サムネ差し替えのみだとCMS設定が反映されない）
+3. **新作情報に漫画事例を出したい** → 旧トップの「新作情報」は撤去済み（2026-10-13 に `script.js` の描画・`wp-api.js` の `/works-new` 取得・`js/data/new-works.js` を削除）。復活させる場合は git 履歴から戻す（当時の不具合は [BUGS.md #052](../BUGS.md)）
+4. **Heroカルーセルから特定漫画を外したい** → 旧HEROカルーセル（`hero-new.js`）はトップで読み込んでいない。`wp-api.js` は 2026-10-13 から `/works` を取得しないため、`hero-new.js` を戻すときは `WORKS_DETAIL_DATA` の取得も戻す必要がある
 5. **i18n 切替が動かない** → `i18n.js` が `nav.js` より先にロードされているか確認
 6. **テキストロゴの X だけ色を変えたい** → `.hlt-char--x` クラス
 7. **ヒーロー演出のタイミング変更** → `hero-new.js` の `startIntro()` / `startHeroAnimation()` の setTimeout 数値
