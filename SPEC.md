@@ -649,6 +649,7 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 | ファイル | 内容 |
 |---|---|
 | [CLAUDE.md](CLAUDE.md) | Claude Code 引き継ぎ資料 |
+| [Aboutデザイン試作](prototypes/about-2026/README.md) | 冒頭3セクションのA/B/C比較・プレビュー・確認結果（Issue #133） |
 | [../SPEC.md](../SPEC.md) | プロジェクト全体仕様（B/C横断） |
 | [../STYLE-GUIDE.md](../STYLE-GUIDE.md) | デザインルール |
 | [../COMPONENT.md](../COMPONENT.md) | 再利用UIパーツ |
@@ -688,3 +689,12 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - TOPICS制作PR #78を土台にする。静的フォールバックカードの代表メッセージは `/message`。
 - `js/home-topics.js` は WordPress の `type: MESSAGE` かつ既知の自サイトURL（`/about#message`・`/message`・`/message.html`）だけを `/message` に揃える。言語等のクエリを保持し、外部サイトや別のMESSAGEリンクは変更しない。本番WPの書換えは不要。
 - `tests/test_topics.py` の旧リンクfixtureを維持して新しい行き先を検証する。静的・WP正常・取得失敗・JS無効の各経路と実クリックを確認する。
+
+
+## 16. Aboutデザイン試作（2026-10-12、Issue #133）
+
+- 本番置換前の比較用。`prototypes/about-2026/` にHERO → WHY → OUR ROLEだけの3案を分離する。Aはエディトリアル、Bはスクロールで補助図が変わるストーリー、Cは青とオレンジのブランドビジュアル。理念 → 接点不足という背景 → Creative XとSales Xの役割を一続きに示す。
+- 比較画面 `prototypes/about-2026/index.html` は1440px/390pxのiframe切替と、各案を別タブで開くリンク、特徴・メリット・懸念点、PC/SPのPNGへのリンクを持つ。
+- 本番の `about.html`・`index.html`・`recruit.html` は変更しない。共通ヘッダー、ブランドトークン、Noto Sans JP / Interを使用。固有CSSは `ap-*` / `apr-*` に限定。画像化した文字は使わない。
+- 本文はJSに依存せず、動きの軽減でtransition/smooth scrollとBのstickyを解除。共通スクリプトはi18n → navの順。本番計測・フォーム・WP取得を含まず、試作をナビ/sitemapへ追加しない。各HTMLにnoindex,nofollowを付与。
+- 詳細・ローカル起動方法・17幅/文字1.4倍などの確認結果は [試作README](prototypes/about-2026/README.md) を参照。採用案の確認後に本番実装の指示を受ける。
