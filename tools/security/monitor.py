@@ -317,7 +317,8 @@ def check_wordpress():
     if wp.get("cors_unknown_origin_blocked"):
         # 無関係なオリジンに CORS を許可していないか（許可オリジンの一覧が崩れた・ワイルドカードになった）
         probe = "https://cxmon-probe.invalid"
-        status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": probe})
+        # WP の前段のキャッシュ（最大10分）を避けるため、本番サイトの点検と同じくクエリを付ける
+        status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics?{BUST}", headers={"Origin": probe})
         if status != 200:
             warnings.append(f"WordPress の CORS を確認できない (HTTP {status})")
         else:

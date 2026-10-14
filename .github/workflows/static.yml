@@ -10,11 +10,6 @@ on:
   # 自動ビルド（GITHUB_TOKEN での push）は上の push を起動しないので、ビルド側が push の後に手動起動する
   # （build-c-columns.yml の dispatch ジョブ。本番のファイルを書き換える自動ビルドを足したら同じ手順を入れる）
   workflow_dispatch:
-    inputs:
-      indexnow_sha:
-        description: デプロイの成功後に IndexNow へ通知する変更のコミット（自動ビルドが指定する。空なら通知しない）
-        required: false
-        type: string
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -62,18 +57,32 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # 自動ビルドの変更は、公開が終わってから検索エンジンへ通知する（先に送るとクローラーが 404 を受け取る）。
-  # 人の push は indexnow.yml が push トリガーで通知する
+  # 公開が成功してから、前回デプロイしたコミットから今回までに変わった URL を IndexNow へ通知する
+  # （先に送るとクローラーが 404 を受け取る。人の push・自動ビルドの起動のどちらでも同じ。
+  #   待機中のデプロイが後の実行に置き換えられても、次の実行が前回デプロイからの差分をまとめて送る）
   indexnow:
     needs: deploy
-    if: github.event_name == 'workflow_dispatch' && inputs.indexnow_sha != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      deployments: read
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.indexnow_sha }}
-          fetch-depth: 2
-      - name: Submit changed URLs to IndexNow
-        run: python3 tools/indexnow-ping.py
+          fetch-depth: 0
+      - name: Submit URLs changed since the previous deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          prev=""
+          skipped_self=0
+          for id_sha in $(gh api "repos/$REPO/deployments?environment=github-pages&per_page=20" --jq '.[] | "\(.id):\(.sha)"'); do
+            state=$(gh api "repos/$REPO/deployments/${id_sha%%:*}/statuses" --jq '.[0].state')
+            [ "$state" = "success" ] || continue
+            if [ "${id_sha#*:}" = "$GITHUB_SHA" ] && [ "$skipped_self" = 0 ]; then skipped_self=1; continue; fi
+            prev="${id_sha#*:}"
+            break
+          done
+          echo "previous deployment: ${prev:-none}"
+          python3 tools/indexnow-ping.py --base "${prev:-HEAD~1}" --head "$GITHUB_SHA"

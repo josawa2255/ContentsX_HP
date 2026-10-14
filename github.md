@@ -129,8 +129,7 @@ git checkout -b feat/42-client-logos-add
 | ワークフロー | 何をするか |
 |------------|-----------|
 | `build-c-columns.yml` | WPのコラムから静的ページを生成 |
-| `indexnow.yml` | IndexNow へURL通知 |
-| `static.yml` | GitHub Pages へのデプロイ（人の push・手動実行で起動。ボットの push では起動しないので、`build-c-columns.yml` が push の後に手動起動する） |
+| `static.yml` | GitHub Pages へのデプロイと、成功後の IndexNow へのURL通知（人の push・手動実行で起動。ボットの push では起動しないので、`build-c-columns.yml` が push の後に手動起動する） |
 
 → ブランチ保護を設定する際は、これらの Bot（`github-actions[bot]`）を**例外として許可**します（§5参照）。人間だけがPR必須になるよう設定します。
 

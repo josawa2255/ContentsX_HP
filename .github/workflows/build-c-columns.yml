@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       pushed: ${{ steps.commit.outputs.pushed }}
-      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
       - name: Run build-c-columns
@@ -32,12 +31,11 @@ jobs:
             git commit -m "chore(columns): 週次再ビルド (WP CMS → static)"
             git push
             echo "pushed=true" >> "$GITHUB_OUTPUT"
-            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
 
   # GITHUB_TOKEN での push は push トリガーのワークフロー（公開・IndexNow）を起動しない（GitHub の仕様）。
-  # workflow_dispatch は GITHUB_TOKEN からでも起動できるので、実際に push したときだけ公開を起動し、
-  # 公開の成功後に IndexNow へ通知させる。ワークフローを起動できる権限（actions: write）は、
+  # workflow_dispatch は GITHUB_TOKEN からでも起動できるので、実際に push したときだけ公開を起動する
+  # （IndexNow への通知は static.yml が公開の成功後に行う）。ワークフローを起動できる権限（actions: write）は、
   # 外部（WordPress）のデータを扱うビルドのジョブには渡さず、このジョブだけに付ける。
   # main で動いたときだけ（別ブランチで試したときに main を公開しない）。
   dispatch:
@@ -47,9 +45,8 @@ jobs:
     permissions:
       actions: write
     steps:
-      - name: Deploy, then notify IndexNow
+      - name: Deploy (IndexNow is notified by static.yml after the deploy)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          PUSHED_SHA: ${{ needs.build.outputs.sha }}
-        run: gh workflow run static.yml --ref main -f indexnow_sha="$PUSHED_SHA"
+        run: gh workflow run static.yml --ref main

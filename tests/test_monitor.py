@@ -109,7 +109,8 @@ class StaleDeploy(Base):
             if path == "/pages":
                 return 200, {"cname": "contentsx.jp", "https_enforced": True, "build_type": "workflow"}
             return (200, [act("aaa", "zzz", 1)]) if path.startswith("/activity") else (404, None)
-        with mock.patch.object(monitor, "github", fake_github), mock.patch.dict(os.environ, {"LIVE_SHA": "aaa"}):
+        with mock.patch.object(monitor, "github", fake_github), mock.patch.dict(os.environ, {"LIVE_SHA": "aaa"}), \
+                mock.patch.dict(monitor.EXPECTED["github"], GitHubSettings.EXPECTED_GITHUB, clear=True):
             monitor.check_github()
             monitor.check_stale_deploy()
         self.assertEqual(sum(p.startswith("/activity") for p in calls), 1)
@@ -117,6 +118,10 @@ class StaleDeploy(Base):
 
 
 class GitHubSettings(Base):
+    # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
+    EXPECTED_GITHUB = {"pages_cname": "contentsx.jp", "pages_https_enforced": True,
+                       "pages_build_type": "workflow", "direct_push_allowed": ["github-actions[bot]"]}
+
     def run_check(self, pages, acts=()):
         def fake_github(path):
             if path == "/pages":
@@ -124,7 +129,8 @@ class GitHubSettings(Base):
             if path.startswith("/activity"):
                 return 200, list(acts)
             return 404, None
-        with mock.patch.object(monitor, "github", fake_github):
+        with mock.patch.object(monitor, "github", fake_github), \
+                mock.patch.dict(monitor.EXPECTED["github"], self.EXPECTED_GITHUB, clear=True):
             monitor.check_github()
 
     def good_pages(self, **kw):
