@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 600" fill="none" aria-hidden="true">
+<!-- Transparent geometric atmosphere ONLY. No logos, words, people or card artwork. -->
+<defs>
+  <linearGradient id="blueBand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#005BFA" stop-opacity="0"/><stop offset=".46" stop-color="#005BFA" stop-opacity=".18"/><stop offset="1" stop-color="#9ACBFF" stop-opacity=".02"/></linearGradient>
+  <linearGradient id="orangeBand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FA4D12" stop-opacity="0"/><stop offset=".62" stop-color="#FA4D12" stop-opacity=".12"/><stop offset="1" stop-color="#FFCD96" stop-opacity="0"/></linearGradient>
+</defs>
+<path d="M955 -180L1144 -180L622 630L432 630Z" fill="url(#blueBand)"/>
+<path d="M1215 -220L1351 -220L829 640L692 640Z" fill="url(#blueBand)"/>
+<path d="M1470 -180L1530 -180L950 640L875 640Z" fill="url(#orangeBand)"/>
+</svg>
