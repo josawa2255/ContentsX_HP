@@ -64,7 +64,9 @@ python3 tests/sitewide_check.py --base http://127.0.0.1:8791 --head http://127.0
 
 ### 共通部品にしたもの
 
-- 画像付きの案内カード `.cx-feature-card`（`css/feature-card.css`、#141）: 採用の職種カードを切り出した（2026-10-13、平澤さん決定。以前は「共通化しないもの」に入れていた）。サービスの Sales X / Creative X の一覧カードにも使用（段階2。`--wide` の横長写真・`--creative` のオレンジ・中に動画ボタンがあるためカード全体はリンクにせず下のボタンだけ押せる形。`.cxg-service-card` は再生中・準備中の目印として残し、カードの見た目の指定は持たない）。私たちについてのカードは作り直し（#137 / #140）の後に検討。
+- 画像付きの案内カード `.cx-feature-card`（`css/feature-card.css`、#141）: 採用の職種カードを切り出した（2026-10-13、平澤さん決定。以前は「共通化しないもの」に入れていた）。サービスの Sales X / Creative X の一覧カードにも使用（段階2。`--wide` の横長写真・`--creative` のオレンジ・中に動画ボタンがあるためカード全体はリンクにせず下のボタンだけ押せる形。`.cxg-service-card` は再生中・準備中の目印として残し、カードの見た目の指定は持たない）。私たちについてのWHYでも再利用（#145、HEROの#140の後）。説明用のarticleに `--wide` / `--row-sp` を組み合わせ、About専用 `about-why.css` が並べ方・写真位置・ホバー抑止と中央カードの強調だけを持つ。共通カードCSSは変更しない。OUR ROLE（#149）でも再利用し、`about-our-role.css` が3列/縦並び、写真位置、中央の青枠、参照画像のテキストCTAと丸矢印の配置を担当する。
+
+About後半03–06（#151）は `about-late-2026.css` で構図を管理し、VALUES/FUTUREのカードは既存 `feature-card.css` を再利用する。VALUESは非操作article、FUTUREは実リンク。共通部品の基礎CSS・ブランドトークンは変更しない。
 
 ### 共通化しないもの
 
@@ -74,3 +76,5 @@ python3 tests/sitewide_check.py --base http://127.0.0.1:8791 --head http://127.0
 
 - トップの各セクションとフッター（`home-*.css` / `site-footer.css`）は PR #106、代表メッセージは #81 / #82 が作業中。重なるファイルは各PRの統合後に触る。
 - 下層ページの共通化 #39 は 2026-10-10 に閉じ、この計画に吸収した（平澤さん判断）。
+
+**About NEXT ACTION（2026-10-14、#161）**: 末尾の企業/採用CTAも `.cx-feature-card` / `.cx-ui-card` を再利用。専用 `css/about-next-action.css` がPC横並び・SP縦積みと背景を担当。共通カード・フッターのCSS変更はなく、重複問い合わせ枠の非表示はAbout内のNEXT ACTIONが存在する場合だけに限定。
