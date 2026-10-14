@@ -254,10 +254,12 @@ def check_wordpress():
                             headers={"Content-Type": "text/xml"})
         if status == 200:
             problems.append("WordPress の xmlrpc.php が開いている")
-    if wp.get("cors_localhost_removed"):
+    if wp.get("cors_dev_without_credentials"):
+        # 開発用オリジンは資格情報（Cookie）なしでだけ許可する設計（WP プラグイン 2026-10-14）
         _, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": "http://localhost:3000"})
-        if any(k.lower() == "access-control-allow-origin" and "localhost" in v for k, v in headers.items()):
-            problems.append("WordPress の CORS が localhost を許可している")
+        h = {k.lower(): v for k, v in headers.items()}
+        if "localhost" in h.get("access-control-allow-origin", "") and h.get("access-control-allow-credentials", "").lower() == "true":
+            problems.append("WordPress の CORS が localhost に資格情報つきの呼び出しを許可している")
 
 
 def main():
