@@ -142,8 +142,24 @@ with sync_playwright() as p:
         assert page.locator('#cxcx-panel').get_attribute('data-service') == 'bizanime'
         assert page.locator('.cxvp-stage').count() == 3 and page.locator('.cxvp-thumb').count() == 0
         r = page.locator('.cxcx-card').evaluate_all('(n)=>n.map(e=>e.getBoundingClientRect().toJSON())')
-        assert abs(r[0]['top'] - r[2]['top']) < 1 and r[1]['left'] > r[0]['right'], 'cards in one row'
+        if width > 768:
+            assert abs(r[0]['top'] - r[2]['top']) < 1 and r[1]['left'] > r[0]['right'], 'cards in one row'
+        else:
+            # SP (Issue #154): one column of wide (2:1) cards.
+            assert all(r[i + 1]['top'] >= r[i]['bottom'] - 1 for i in range(2)), 'SP cards stack'
+            assert all(abs(c['width'] / c['height'] - 2) < .05 for c in r), r
         assert min(c['height'] for c in r) >= 44, 'cards are tappable'
+        # Card design (Issue #154): full picture, white category/name/line, arrow clear of the text.
+        assert page.locator('.cxcx-card-label').all_inner_texts() == ['MANGA', 'ANIME', 'VIDEO']
+        assert [x.split('/')[-1] for x in page.locator('.cxcx-card img').evaluate_all('(n)=>n.map(i=>i.getAttribute("src"))')] == ['bizmanga.webp', 'bizanime.webp', 'bizvideo.webp']
+        for i in range(3):
+            card = page.locator('.cxcx-card').nth(i)
+            cb, mb = card.bounding_box(), card.locator('.cxcx-card-media').bounding_box()
+            assert abs(mb['width'] - cb['width']) < 3 and abs(mb['height'] - cb['height']) < 3, 'picture fills the card'
+            assert card.locator('.cxcx-card-name').evaluate('e=>getComputedStyle(e).color') == 'rgb(255, 255, 255)'
+            assert card.locator('.cxcx-card-desc').is_visible()
+            body, go = card.locator('.cxcx-card-body').bounding_box(), card.locator('.cxcx-card-go').bounding_box()
+            assert body['x'] + body['width'] <= go['x'] + 1 or body['y'] + body['height'] <= go['y'] + 1, 'arrow clear of text'
         viewer = rect(page, '.cxcx-viewer')
         if width > 1100:
             # Copy on the left of the viewer; OUR WORKS on the left of the cards; cards below the viewer.
@@ -324,6 +340,28 @@ with sync_playwright() as p:
     switch(page, 'manga')
     page.wait_for_selector('.cxmr.is-ready')
     assert page.locator('.cxmr-stage').evaluate("e=>e.classList.contains('is-vertical')")
+    page.close()
+
+    # PC hover: image ≤1.035×, card lifts ≤4px, arrow moves right; selected card ring; reduced motion stops it.
+    page = browser.new_page(viewport={'width': 1440, 'height': 900})
+    load(page)
+    to_section(page)
+    card = page.locator('.cxcx-card--video')
+    card.hover()
+    page.wait_for_timeout(700)
+    assert card.locator('img').evaluate('e=>getComputedStyle(e).transform') == 'matrix(1.035, 0, 0, 1.035, 0, 0)'
+    lift = card.evaluate('e=>parseFloat(getComputedStyle(e).translate.split(" ")[1]||0)')
+    assert -4 <= lift < 0, lift
+    assert card.locator('.cxcx-card-go').evaluate('e=>new DOMMatrix(getComputedStyle(e).transform).m41') > 0
+    sel = page.locator('.cxcx-card[aria-selected="true"]')
+    assert sel.evaluate('e=>getComputedStyle(e).backgroundColor') != 'rgb(255, 255, 255)', 'selected card stays dark'
+    page.close()
+    page = browser.new_page(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
+    load(page)
+    to_section(page, 300)
+    page.locator('.cxcx-card--video').hover()
+    page.wait_for_timeout(400)
+    assert page.locator('.cxcx-card--video').evaluate('e=>getComputedStyle(e).translate') == 'none'
     page.close()
 
     # Laptops: the whole section (viewer and cards) stays inside one screen below the fixed header;
