@@ -3,7 +3,7 @@ import argparse,json
 from pathlib import Path
 from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
-ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--url',default='http://127.0.0.1:8870');ap.add_argument('--base',default='http://127.0.0.1:8871');ap.add_argument('--artifacts',default='/tmp/cx-about-exact/verified');ap.add_argument('--widths',default='320,360,390,412,448,481,640,768,898,899,900,1023,1024,1025,1100,1101,1280,1440,1920');a=ap.parse_args()
+ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--url',default='http://127.0.0.1:8870');ap.add_argument('--base',default='http://127.0.0.1:8871');ap.add_argument('--artifacts',default='/tmp/cx-about-exact/verified');ap.add_argument('--widths',default='320,360,390,412,448,481,640,768,898,899,900,1023,1024,1025,1100,1101,1280,1440,1920');ap.add_argument("--browser",choices=["chromium","webkit"],default="chromium");a=ap.parse_args()
 for u in (a.url,a.base):assert urlsplit(u).hostname in ('127.0.0.1','localhost')
 out=Path(a.artifacts);out.mkdir(parents=True,exist_ok=True)
 widths=[int(x) for x in a.widths.split(',')]
@@ -19,7 +19,18 @@ def check(page):
  const r=document.createRange();r.selectNodeContents(t);for(const b of r.getClientRects())if(b.left<-2||b.right>innerWidth+2)bad.push(t.textContent);
  }return bad;}''');assert not bad,bad
  assert page.locator('#business .ax-why__card').evaluate_all('es=>es.every(e=>{const t=e.querySelector(".ax-why__photo-copy").getBoundingClientRect(),l=e.querySelector(".ax-why__photo-label").getBoundingClientRect(),b=e.getBoundingClientRect();return e.querySelector(".ax-why__photo-overline").getBoundingClientRect().top>=l.bottom+8&&t.bottom<=b.bottom+1})'), page.locator('#business .ax-why__card').evaluate_all('es=>es.map(e=>[e.getBoundingClientRect().height,e.querySelector(".ax-why__photo-copy").getBoundingClientRect().toJSON(),e.querySelector(".ax-why__photo-label").getBoundingClientRect().toJSON()])')
- assert page.locator('.ax-hero-caption--meeting').evaluate('e=>e.getBoundingClientRect().height<160'), 'Meeting caption stretched over the photo'
+ if page.viewport_size['width']>1024:
+  assert page.locator('.ax-hero-copy').evaluate('''e=>{const r=e.getBoundingClientRect();if(getComputedStyle(e).backgroundColor!=="rgb(255, 255, 255)")return false;const walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);while(walker.nextNode()){const t=walker.currentNode;if(!t.textContent.trim())continue;const range=document.createRange();range.selectNodeContents(t);for(const b of range.getClientRects()){const progress=Math.max(0,Math.min(1,(b.bottom-r.top-r.height*.08)/(r.height*.92))),edge=r.right-r.width*.34*progress;if(b.right>edge+1)return false;}}return true;}'''), 'HERO text leaves the white copy area'
+ # Decorative photo labels stay away from faces; VALUES labels have their own heading row.
+ assert page.locator('#values article').evaluate_all('es=>es.every(e=>{const h=e.querySelector(".axl-card-heading").getBoundingClientRect(),m=e.querySelector(".cx-feature-card__media").getBoundingClientRect();return h.bottom<=m.top+1})'), 'VALUES labels overlap photos'
+ if page.viewport_size['width']>=900:
+  tops=page.locator('#values .cx-feature-card__media').evaluate_all('es=>es.map(e=>e.getBoundingClientRect().top)');assert max(tops)-min(tops)<1, 'VALUES photo tops do not align'
+ if page.viewport_size['width']>1024:
+  assert page.locator('.axl-mv-flow').evaluate('''e=>{const p=e.querySelector(".axl-mv-image--person").getBoundingClientRect(),c=e.querySelector(".axl-mv-image--city").getBoundingClientRect(),j=e.querySelector(".axl-mv-join").getBoundingClientRect();return Math.abs(p.left-c.right)<1&&Math.abs(p.bottom-c.top)<1&&Math.abs(j.left+j.width/2-p.left)<1&&Math.abs(j.top+j.height/2-p.bottom)<1}'''), 'MISSION/VISION tips and X do not meet'
+ # Known face bounds of the unchanged 960x1440 portrait, projected into the cropped frame.
+ assert page.locator('.axl-portrait img').evaluate('''e=>{const r=e.getBoundingClientRect(),s=Math.max(r.width/960,r.height/1440),pos=getComputedStyle(e).objectPosition.split(" ").map(parseFloat),dx=(r.width-960*s)*pos[0]/100,dy=(r.height-1440*s)*pos[1]/100;return 300*s+dx>r.width*.12&&580*s+dx<r.width*.86&&240*s+dy>r.height*.12&&670*s+dy<r.height*.72}'''), 'Portrait face is cropped or feathered'
+
+ assert page.locator('.ax-hero-caption--city').evaluate('e=>e.getBoundingClientRect().height<=parseFloat(getComputedStyle(e).lineHeight)*2+1'), 'HERO photo caption wraps beyond two lines'
  assert page.locator('#mission .axl-link-circle').count()==2, 'Mission/Vision arrow lost after language switch'
  assert page.locator('#values article').count()==3
  assert page.locator('#business article').count()==2
@@ -29,7 +40,7 @@ def check(page):
  assert not page.locator('.cx-footer__contact').is_visible()
  assert page.locator('.cx-footer__nav').is_visible()
 with sync_playwright() as p:
- b=p.chromium.launch();ctx=b.new_context(reduced_motion='reduce');page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+ b=getattr(p,a.browser).launch();ctx=b.new_context(reduced_motion='reduce');page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  for w in widths:
   print('width',w,flush=True)
   page.set_viewport_size({'width':w,'height':900});load(page,a.url);check(page)
@@ -54,7 +65,7 @@ with sync_playwright() as p:
   assert ss[0]==ss[1], 'Header/footer markup changed'
  for lang in ['ja','en']:
   for sel,i,path in [('.cxour-card',0,'/services/creative-x/'),('.cxour-card',1,'/services/sales-x/'),('.axl-future a.axl-card',0,'/services/sales-x/'),('.axl-future a.axl-card',1,'/services/creative-x/'),('.axl-future a.axl-card',2,'/contact'),('.cx-about-next__card',0,'/contact'),('.cx-about-next__card',1,'/recruit'),('.axl-message .axl-text-link',0,'/message'),('.axl-mv .axl-text-link',0,'/services/')]:
-   load(page,a.url);page.evaluate('(l)=>i18n.switchLang(l)',lang);page.locator(sel).nth(i).click();page.wait_for_url('**'+path+'**');assert urlsplit(page.url).path==path
+   load(page,a.url);page.evaluate('(l)=>i18n.switchLang(l)',lang);page.locator(sel).nth(i).click();page.wait_for_url('**'+path+'**');page.wait_for_load_state('networkidle');assert urlsplit(page.url).path==path
  load(page,a.url)
  for sel in ['.cx-about-next__card','.cxour-card','.ax-why__next']:
   page.locator(sel).first.focus();assert page.locator(sel).first.evaluate('e=>getComputedStyle(e).outlineStyle')!='none'

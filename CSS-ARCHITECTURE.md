@@ -80,3 +80,5 @@ About後半03–06（#151）は `about-late-2026.css` で構図を管理し、VA
 **About NEXT ACTION（2026-10-14、#161）**: 末尾の企業/採用CTAも `.cx-feature-card` / `.cx-ui-card` を再利用。専用 `css/about-next-action.css` がPC横並び・SP縦積みと背景を担当。共通カード・フッターのCSS変更はなく、重複問い合わせ枠の非表示はAbout内のNEXT ACTIONが存在する場合だけに限定。
 
 **About確定画像（2026-10-14、#165）**: 旧WHY3カードを写真2枚へ、旧NEXT ACTION写真CTAを斜めパネルへ置換。OUR ROLE/VALUES/FUTUREは共通feature-cardを再利用し、写真比率・配置・限定文字サイズだけAbout CSSで調整。NEXT ACTIONは形状が異なるため操作の共通cx-ui-cardを使い、feature-cardの写真/丸矢印構造は付けない。共通CSS/JSを変更しない。
+
+**Aboutの構図調整（2026-10-14、#167）**: `about-late-2026.css` がMISSION/VISIONの同一gridでの交点、VALUESの写真外ラベル、代表写真の全周マスクとcropを担当。`about-2026.css` はHEROの装飾整理/モバイル写真位置、`about-our-role.css` は導入背景/見出しを調整。共通CSS/JSとロード順は維持。
