@@ -10,7 +10,8 @@
   3. 内部資料が本番から取得できないか（公開範囲の後退）
   4. DNS（NS / A / CNAME / MX / CAA）が基準値と同じか（ドメイン・DNSの乗っ取り）
   5. TLS 証明書の残り日数
-  6. GitHub Pages の独自ドメイン・HTTPS 強制、main への PR を通らない push（リポジトリの乗っ取り）
+  6. GitHub Pages の独自ドメイン・HTTPS 強制、main への PR を通らない push・強制 push（リポジトリの乗っ取り）
+     push した人は GitHub の操作記録（activity API）の actor で見る（コミットの作者名は偽装できるため）
   7. WordPress で閉じた入口が開いていないか（expected.json で true にした項目だけ。WP 側の後退）
 
 Usage:
@@ -18,7 +19,6 @@ Usage:
   python3 tools/security/monitor.py --site-dir _site --report   # 記録だけ（常に exit 0。基準値づくり用）
 """
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -45,6 +45,12 @@ DNS_QUERIES = [
 ]
 
 problems, warnings, notes = [], [], []
+# 本番の取得は毎回別の URL にして CDN（最大10分のキャッシュ）を通り越す。GitHub Pages はクエリを無視して同じファイルを返す
+BUST = f"cxmon={int(time.time())}"
+
+
+def live(site, rel):
+    return http(f"{site}/{quote(rel)}?{BUST}")
 
 
 def http(url, method="GET", data=None, headers=None, timeout=20):
@@ -99,26 +105,29 @@ def check_content(site_dir):
     mismatched = []
     for p in files:
         rel = p.relative_to(site_dir).as_posix()
-        status, body, _ = http(f"{site}/{quote(rel)}")
-        if status != 200 or hashlib.sha256(body).digest() != hashlib.sha256(p.read_bytes()).digest():
-            mismatched.append((rel, status))
+        status, body, _ = live(site, rel)
+        if status != 200 or body != p.read_bytes():
+            mismatched.append(rel)
         if rel.endswith(".html") and status == 200:
             parser = TagHosts()
             parser.feed(body.decode("utf-8", "replace"))
             unknown = sorted(parser.hosts - set(EXPECTED["script_hosts"]) - {"contentsx.jp", "www.contentsx.jp"})
             if unknown:
                 problems.append(f"許可していない外部スクリプト/iframe: {rel} → {', '.join(unknown)}")
-    if mismatched:
-        # デプロイの切り替わり中かもしれないので、少し待って違ったものだけ取り直す
-        time.sleep(90)
-        still = []
-        for rel, _ in mismatched:
-            status, body, _ = http(f"{site}/{quote(rel)}")
-            local = (Path(site_dir) / rel).read_bytes()
-            if status != 200 or hashlib.sha256(body).digest() != hashlib.sha256(local).digest():
-                still.append(f"{rel} (HTTP {status})")
-        if still:
-            problems.append(f"本番の内容がデプロイしたコミットと違う（改ざんの可能性）: {len(still)}件 — " + ", ".join(still[:15]))
+    still = mismatched
+    # デプロイの切り替わり中・配信の反映待ちかもしれないので、間を空けて2回まで取り直す（合計約7分）
+    for wait in (120, 300):
+        if not still:
+            break
+        time.sleep(wait)
+        retry = []
+        for rel in still:
+            status, body, _ = http(f"{site}/{quote(rel)}?cxmon={int(time.time())}")
+            if status != 200 or body != (Path(site_dir) / rel).read_bytes():
+                retry.append(rel)
+        still = retry
+    if still:
+        problems.append(f"本番の内容がデプロイしたコミットと違う（改ざんの可能性）: {len(still)}件 — " + ", ".join(still[:15]))
     notes.append(f"本番の内容: {len(files)}ファイルを照合")
 
 
@@ -126,7 +135,7 @@ def check_hidden():
     site = EXPECTED["site"]
     leaked = []
     for rel in EXPECTED["must_be_hidden"]:
-        status, _, _ = http(f"{site}/{quote(rel)}")
+        status, _, _ = live(site, rel)
         if status == 200:
             leaked.append(rel)
     if leaked:
@@ -136,10 +145,14 @@ def check_hidden():
 # ---------- 4. DNS ----------
 def dig(name, rtype):
     try:
-        out = subprocess.run(["dig", "+short", "+time=5", "+tries=2", name, rtype, "@1.1.1.1"],
-                             capture_output=True, text=True, timeout=30).stdout
+        res = subprocess.run(["dig", "+short", "+time=5", "+tries=2", name, rtype, "@1.1.1.1"],
+                             capture_output=True, text=True, timeout=30)
     except Exception as e:  # noqa: BLE001
         return None, str(e)
+    out = res.stdout
+    # 問い合わせ自体の失敗（タイムアウト・SERVFAIL）は「空の答え」ではない。乗っ取りと誤判定しないよう別扱いにする
+    if res.returncode != 0 or any(line.startswith(";;") for line in out.splitlines()):
+        return None, (out.strip() or res.stderr.strip() or f"dig exit {res.returncode}")[:120]
     vals = sorted({line.strip().rstrip(".").lower() for line in out.splitlines() if line.strip() and not line.startswith(";")})
     # A / AAAA の問い合わせでは途中の CNAME も返るので、アドレスだけ残す
     if rtype == "A":
@@ -163,7 +176,7 @@ def check_dns(report):
             warnings.append(f"DNS の基準値が未登録: {key} = {vals}")
         elif sorted(expected[key]) != vals:
             problems.append(f"DNS が基準値と違う（乗っ取り・誤設定の可能性）: {key} 基準={expected[key]} 現在={vals}")
-    if report or any("基準値が未登録" in w for w in warnings):
+    if report:
         notes.append("現在の DNS（expected.json の dns に貼る値）:\n```json\n" + json.dumps(current, ensure_ascii=False, indent=2) + "\n```")
 
 
@@ -198,18 +211,19 @@ def check_github():
             problems.append("GitHub Pages の HTTPS 強制が外れている")
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
-    since = datetime.fromtimestamp(time.time() - 26 * 3600, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    status, commits = github(f"/commits?sha=main&since={since}&per_page=100")
-    if status != 200 or not isinstance(commits, list):
-        warnings.append(f"main のコミットを読めない (HTTP {status})")
+    # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない
+    status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
+    if status != 200 or not isinstance(acts, list):
+        problems.append(f"main への操作の記録を読めない（PR を通らない push を確認できない）: HTTP {status}")
         return
-    for c in commits:
-        login = ((c.get("author") or {}).get("login") or (c.get("commit", {}).get("author") or {}).get("name") or "?")
-        if login in exp["direct_push_allowed"]:
-            continue
-        s2, pulls = github(f"/commits/{c['sha']}/pulls")
-        if s2 == 200 and isinstance(pulls, list) and not pulls:
-            problems.append(f"PR を通らずに main へ入ったコミット: {c['sha'][:7]} by {login} — {c['commit']['message'].splitlines()[0][:80]}")
+    for a in acts:
+        kind = a.get("activity_type")
+        actor = (a.get("actor") or {}).get("login") or "?"
+        sha = (a.get("after") or "")[:7]
+        if kind in ("force_push", "branch_deletion"):
+            problems.append(f"main に {kind} があった: {actor} {a.get('timestamp')} {sha}")
+        elif kind == "push" and actor not in exp["direct_push_allowed"]:
+            problems.append(f"PR を通らずに main へ push された: {actor} {a.get('timestamp')} {sha}")
 
 
 # ---------- 7. WordPress ----------

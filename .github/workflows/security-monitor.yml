@@ -51,6 +51,8 @@ jobs:
           echo "live commit: $live"
           git checkout --quiet --detach "$live"
           if [ -f tools/build-site-artifact.py ]; then
+            # デプロイ（static.yml）と同じ順: サービスページを作り直してから公開ファイルを集める
+            python3 tools/build-services.py
             python3 tools/build-site-artifact.py
             echo "SITE_DIR=$PWD/_site" >> "$GITHUB_ENV"
           else

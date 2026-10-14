@@ -1,28 +1,36 @@
 """公開ファイルの絞り込み（tools/build-site-artifact.py）の検査。デプロイ前に実行する。
 - 内部資料（md・skill・docx・スクリプト・テスト・試作）が公開対象に入っていない
 - 公開する HTML / CSS が参照するサイト内ファイルが、公開対象から漏れていない
+- 外部スクリプト・iframe のホストが、本番の監視（tools/security/monitor.py）と同じ許可リストの中
 python3 -m unittest discover -s tests -p test_site_artifact.py"""
 import importlib.util
+import posixpath
 import re
 import unittest
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("build_site_artifact", ROOT / "tools" / "build-site-artifact.py")
-bsa = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(bsa)
 
-TRACKED = bsa.tracked_files()
-PUBLIC = {f for f in TRACKED if bsa.is_public(f)}
+
+def load(name, path):
+    spec = importlib.util.spec_from_file_location(name, ROOT / path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+bsa = load("build_site_artifact", "tools/build-site-artifact.py")
+monitor = load("security_monitor", "tools/security/monitor.py")   # 監視と同じ許可リスト・同じ判定を使う
+
+CANDIDATES = bsa.tracked_files()
+CANDIDATE_SET = set(CANDIDATES)
+PUBLIC = {f for f in CANDIDATES if bsa.is_public(f)}
 REF = re.compile(r'''(?:src|href|poster|content)\s*=\s*["']([^"'#?]+)|url\(\s*["']?([^"')#?]+)''', re.I)
 
 
-TRACKED_SET = set(TRACKED)
-
-
 def resolves(path, files=None):
-    """GitHub Pages と同じ解決: /a → a.html / a/index.html、/a/ → a/index.html"""
+    """GitHub Pages と同じ解決: /a → a / a.html / a/index.html、/a/ → a/index.html"""
     files = PUBLIC if files is None else files
     p = path.lstrip("/")
     if p == "" or p.endswith("/"):
@@ -30,14 +38,25 @@ def resolves(path, files=None):
     return p in files or (p + ".html") in files or (p + "/index.html") in files
 
 
+def site_path(page, ref):
+    """ページ内の参照をサイトのパスにする。相対参照はそのページの場所から解決する（ブラウザと同じ）"""
+    u = urlsplit(ref)
+    if u.scheme or u.netloc:
+        return u.path if u.netloc in ("contentsx.jp", "www.contentsx.jp") else None
+    if u.path.startswith("/"):
+        path = u.path
+    else:
+        path = posixpath.join("/" + posixpath.dirname(page), u.path)
+    norm = posixpath.normpath(unquote(path))
+    return norm + "/" if path.endswith("/") and norm != "/" else norm
+
+
 class SiteArtifact(unittest.TestCase):
     def test_internal_files_are_not_public(self):
         leaked = sorted(f for f in PUBLIC if re.search(
-            r"\.(md|skill|docx|py|pyc|tpl|sh|ya?ml|ai|json)$", f) and f not in bsa.ALLOWED_FILES)
+            r"\.(md|skill|docx|py|pyc|tpl|sh|ya?ml|ai|json|jsonl)$", f) and f not in bsa.ALLOWED_FILES)
         self.assertEqual(leaked, [])
-        for must_hide in ("CLAUDE.md", "SPEC.md", "github.md", "hirasawa_HP_infrastructure.skill",
-                          "contentsx-complete-kb.skill", "tools/build-c-columns.py", "data/services.json",
-                          "wordpress/SETUP.md", "tests/sitewide_check.py"):
+        for must_hide in monitor.EXPECTED["must_be_hidden"]:
             self.assertNotIn(must_hide, PUBLIC)
 
     def test_pages_and_assets_are_public(self):
@@ -47,18 +66,22 @@ class SiteArtifact(unittest.TestCase):
             self.assertIn(must_show, PUBLIC)
 
     def test_external_script_hosts_are_allowed(self):
-        """本番の監視（tools/security/monitor.py）と同じ許可リスト。足すときは expected.json も直す"""
-        import json
-        allowed = set(json.loads((ROOT / "tools" / "security" / "expected.json").read_text(encoding="utf-8"))["script_hosts"])
-        tag = re.compile(r'<(?:script|iframe)\b[^>]*\bsrc\s*=\s*["\']((?:https?:)?//[^/"\']+)', re.I)
+        """足すときは tools/security/expected.json の script_hosts も直す（直さないと毎時の監視が失敗する）"""
+        allowed = set(monitor.EXPECTED["script_hosts"]) | {"contentsx.jp", "www.contentsx.jp"}
         unknown = set()
         for rel in sorted(PUBLIC):
             if rel.endswith(".html"):
-                for m in tag.finditer((ROOT / rel).read_text(encoding="utf-8", errors="ignore")):
-                    host = urlsplit(m.group(1) if not m.group(1).startswith("//") else "https:" + m.group(1)).netloc.lower()
-                    if host not in allowed and host not in ("contentsx.jp", "www.contentsx.jp"):
-                        unknown.add(f"{rel}: {host}")
-        self.assertEqual(sorted(unknown), [], "tools/security/expected.json の script_hosts に追加してください")
+                parser = monitor.TagHosts()
+                parser.feed((ROOT / rel).read_text(encoding="utf-8", errors="ignore"))
+                unknown |= {f"{rel}: {h}" for h in parser.hosts - allowed}
+        self.assertEqual(sorted(unknown), [])
+
+    def test_site_path_resolution(self):
+        self.assertEqual(site_path("index.html", "../css/x.css"), "/css/x.css")       # ルートより上には出ない
+        self.assertEqual(site_path("services/a/index.html", "img/h.webp"), "/services/a/img/h.webp")
+        self.assertEqual(site_path("css/style.css", "../material/a.webp"), "/material/a.webp")
+        self.assertEqual(site_path("column/x.html", "/js/a.js"), "/js/a.js")
+        self.assertIsNone(site_path("index.html", "https://example.com/a.js"))
 
     def test_local_references_resolve(self):
         missing = set()
@@ -66,28 +89,13 @@ class SiteArtifact(unittest.TestCase):
             if not rel.endswith((".html", ".css")):
                 continue
             text = (ROOT / rel).read_text(encoding="utf-8", errors="ignore")
-            base = "/" + rel.rsplit("/", 1)[0] + "/" if "/" in rel else "/"
             for m in REF.finditer(text):
                 ref = (m.group(1) or m.group(2) or "").strip()
                 if not ref or ref.startswith(("data:", "mailto:", "tel:", "javascript:", "{{", "$", "+")):
                     continue
-                u = urlsplit(ref)
-                if u.scheme or u.netloc:
-                    if u.netloc not in ("contentsx.jp", "www.contentsx.jp"):
-                        continue
-                    path = u.path
-                elif ref.startswith("/"):
-                    path = u.path
-                else:
-                    if rel.endswith(".css"):
-                        path = base + u.path
-                    else:
-                        path = "/" + u.path       # HTML は相対パスでも全ページ直下想定（既存の書き方）
-                path = unquote(re.sub(r"/\./", "/", path))
-                while "/../" in path:
-                    path = re.sub(r"/[^/]+/\.\./", "/", path, count=1)
+                path = site_path(rel, ref)
                 # 公開の絞り込みで欠けたものだけを問題にする（リポジトリにも無い参照は対象外）
-                if not resolves(path) and resolves(path, TRACKED_SET):
+                if path and not resolves(path) and resolves(path, CANDIDATE_SET):
                     missing.add(f"{rel} -> {ref}")
         self.assertEqual(sorted(missing), [])
 

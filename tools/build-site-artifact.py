@@ -42,10 +42,12 @@ DENY_DIRS = (
 
 
 def tracked_files():
-    """git 管理下のファイルだけを対象にする（手元の作業ファイル・秘密を拾わない）"""
-    out = subprocess.run(["git", "-c", "core.quotepath=false", "ls-files", "-z"], cwd=ROOT,
-                         capture_output=True, check=True).stdout.decode("utf-8")
-    return [p for p in out.split("\0") if p]
+    """公開の候補: git 管理下のファイル＋.gitignore されていない新しいファイルのうち、いまディスクにあるもの。
+    デプロイでは tools/build-services.py が先にページを作り直す（追加・削除がありうる）ので、
+    コミット済みの一覧ではなく「作り直した後の作業ツリー」を正とする。.gitignore 対象（秘密・作業ファイル）は拾わない"""
+    out = subprocess.run(["git", "-c", "core.quotepath=false", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+                         cwd=ROOT, capture_output=True, check=True).stdout.decode("utf-8")
+    return sorted({p for p in out.split("\0") if p and (ROOT / p).is_file()})
 
 
 def is_public(rel):
@@ -73,7 +75,7 @@ def main():
         src, dst = ROOT / rel, OUT / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
-    print(f"published {len(public)} of {len(files)} tracked files -> {OUT.relative_to(ROOT)}/")
+    print(f"published {len(public)} of {len(files)} candidate files -> {OUT.relative_to(ROOT)}/")
     return 0
 
 
