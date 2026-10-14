@@ -9,11 +9,13 @@ on:
 
 permissions:
   contents: write
-  actions: write   # push の後に static.yml / indexnow.yml を起動するため（下の説明）
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pushed: ${{ steps.commit.outputs.pushed }}
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
       - name: Run build-c-columns
@@ -32,15 +34,22 @@ jobs:
             echo "pushed=true" >> "$GITHUB_OUTPUT"
             echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
-      # GITHUB_TOKEN での push は push トリガーのワークフロー（公開・IndexNow）を起動しない（GitHub の仕様）。
-      # workflow_dispatch は GITHUB_TOKEN からでも起動できるので、実際に push したときだけここで起動する
-      # main で動いたときだけ（別ブランチで試したときに main を公開・通知しない）。
-      # IndexNow には push したコミットを渡す（起動までに別のコミットが main に入っても取りこぼさない）
-      - name: Deploy and notify IndexNow
-        if: steps.commit.outputs.pushed == 'true' && github.ref == 'refs/heads/main'
+
+  # GITHUB_TOKEN での push は push トリガーのワークフロー（公開・IndexNow）を起動しない（GitHub の仕様）。
+  # workflow_dispatch は GITHUB_TOKEN からでも起動できるので、実際に push したときだけ公開を起動し、
+  # 公開の成功後に IndexNow へ通知させる。ワークフローを起動できる権限（actions: write）は、
+  # 外部（WordPress）のデータを扱うビルドのジョブには渡さず、このジョブだけに付ける。
+  # main で動いたときだけ（別ブランチで試したときに main を公開しない）。
+  dispatch:
+    needs: build
+    if: needs.build.outputs.pushed == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Deploy, then notify IndexNow
         env:
           GH_TOKEN: ${{ github.token }}
-          PUSHED_SHA: ${{ steps.commit.outputs.sha }}
-        run: |
-          gh workflow run static.yml --ref main
-          gh workflow run indexnow.yml --ref main -f sha="$PUSHED_SHA"
+          GH_REPO: ${{ github.repository }}
+          PUSHED_SHA: ${{ needs.build.outputs.sha }}
+        run: gh workflow run static.yml --ref main -f indexnow_sha="$PUSHED_SHA"

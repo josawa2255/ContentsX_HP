@@ -20,6 +20,7 @@ Usage:
   python3 tools/security/monitor.py --site-dir _site --report   # 記録だけ（常に exit 0。基準値づくり用）
 """
 import argparse
+import functools
 import json
 import os
 import re
@@ -46,16 +47,6 @@ DNS_QUERIES = [
 ]
 
 problems, warnings, notes = [], [], []
-_activity_cache = {}   # main への操作の記録（1回の実行で1度だけ取る。check_github と check_stale_deploy が共有）
-
-
-def main_activity():
-    """main への操作の記録（直近1日・新しい順）を (HTTP status, list) で返す。失敗も含めて1回の実行で1度だけ取る"""
-    if "result" not in _activity_cache:
-        status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
-        acts = [a for a in acts if isinstance(a, dict)] if status == 200 and isinstance(acts, list) else None
-        _activity_cache["result"] = (status, acts)
-    return _activity_cache["result"]
 # 本番の取得は毎回別の URL にして CDN（最大10分のキャッシュ）を通り越す。GitHub Pages はクエリを無視して同じファイルを返す
 BUST = f"cxmon={int(time.time())}"
 
@@ -240,6 +231,19 @@ def check_github():
             problems.append(f"PR を通らずに main へ push された: {actor} {a.get('timestamp')} {sha}")
 
 
+ACTIVITY_PAGE = 100
+
+
+@functools.cache
+def main_activity():
+    """main への操作の記録（直近1日・新しい順）を (HTTP status, list or None) で返す。
+    失敗も含めて1回の実行で1度だけ取り、check_github と check_stale_deploy が共有する"""
+    status, acts = github(f"/activity?ref=refs/heads/main&time_period=day&per_page={ACTIVITY_PAGE}")
+    if status != 200 or not isinstance(acts, list):
+        return status, None
+    return status, [a for a in acts if isinstance(a, dict)]
+
+
 def parse_utc(value):
     """GitHub の時刻（ISO 8601）を UTC の日時にする。時差の無い表記は UTC とみなす。読めなければ None"""
     try:
@@ -279,6 +283,9 @@ def check_stale_deploy():
     if not pending:
         return
     oldest = pending[-1]
+    if len(pending) == len(acts) and len(acts) >= ACTIVITY_PAGE:
+        warnings.append(f"main への操作が直近1日で {len(acts)} 件以上あり、本番のコミットを記録の中で見つけられない（本番の更新停止の点検を省略）")
+        return
     if len(pending) == len(acts) and (oldest.get("before") or "") != live_sha:
         # 本番のコミットが直近1日の記録に無く、最初の未反映の操作も記録より前 → 1日以上遅れている
         problems.append(f"本番が main より古いまま、少なくとも1日（本番のコミットが直近1日の操作記録に無い）: "
@@ -307,18 +314,16 @@ def check_wordpress():
                             headers={"Content-Type": "text/xml"})
         if status == 200:
             problems.append("WordPress の xmlrpc.php が開いている")
-    if wp.get("cors_dev_without_credentials"):
-        # 資格情報（Cookie）つきの CORS が本番ドメイン以外に出ていないか。無関係なオリジンは許可されていないか
-        for origin in ("http://localhost:3000", "http://127.0.0.1:5500", "https://cxmon-probe.invalid"):
-            _, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": origin})
-            h = {k.lower(): v for k, v in headers.items()}
-            allowed = h.get("access-control-allow-origin", "")
-            if origin.endswith(".invalid"):
-                if allowed in (origin, "*"):
-                    problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {allowed}")
-            elif allowed == origin and h.get("access-control-allow-credentials", "").lower() == "true":
-                problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している")
-
+    if wp.get("cors_unknown_origin_blocked"):
+        # 無関係なオリジンに CORS を許可していないか（許可オリジンの一覧が崩れた・ワイルドカードになった）
+        probe = "https://cxmon-probe.invalid"
+        status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": probe})
+        if status != 200:
+            warnings.append(f"WordPress の CORS を確認できない (HTTP {status})")
+        else:
+            allowed = {k.lower(): v for k, v in headers.items()}.get("access-control-allow-origin", "")
+            if allowed in (probe, "*"):
+                problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {allowed}")
 
 def main():
     ap = argparse.ArgumentParser()

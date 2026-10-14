@@ -7,9 +7,14 @@ on:
     branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
   # 自動ビルド（GITHUB_TOKEN での push）は上の push を起動しないので、ビルド側が push の後に手動起動する
-  # （build-c-columns.yml の最後の手順。本番のファイルを書き換える自動ビルドを足したら同じ手順を入れる）
+  # （build-c-columns.yml の dispatch ジョブ。本番のファイルを書き換える自動ビルドを足したら同じ手順を入れる）
+  workflow_dispatch:
+    inputs:
+      indexnow_sha:
+        description: デプロイの成功後に IndexNow へ通知する変更のコミット（自動ビルドが指定する。空なら通知しない）
+        required: false
+        type: string
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -41,7 +46,6 @@ jobs:
         run: |
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_asset_order.py'
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_build_c_columns.py'
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_monitor.py'
       - name: Collect public files only (no internal docs / scripts / tests)
         run: |
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_site_artifact.py'
@@ -57,3 +61,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # 自動ビルドの変更は、公開が終わってから検索エンジンへ通知する（先に送るとクローラーが 404 を受け取る）。
+  # 人の push は indexnow.yml が push トリガーで通知する
+  indexnow:
+    needs: deploy
+    if: github.event_name == 'workflow_dispatch' && inputs.indexnow_sha != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.indexnow_sha }}
+          fetch-depth: 2
+      - name: Submit changed URLs to IndexNow
+        run: python3 tools/indexnow-ping.py

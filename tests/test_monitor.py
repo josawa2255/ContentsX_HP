@@ -30,7 +30,7 @@ class Base(unittest.TestCase):
         monitor.problems.clear()
         monitor.warnings.clear()
         monitor.notes.clear()
-        monitor._activity_cache.clear()
+        monitor.main_activity.cache_clear()
 
 
 class StaleDeploy(Base):
@@ -85,6 +85,12 @@ class StaleDeploy(Base):
         self.run_check([], head="bbb")
         self.assertEqual(len(monitor.problems), 1)
         self.assertIn("少なくとも1日", monitor.problems[0])
+
+    def test_full_page_without_live_is_a_warning(self):
+        acts = [act(f"s{i}", f"s{i+1}", 0.1) for i in range(monitor.ACTIVITY_PAGE)]
+        self.run_check(acts)
+        self.assertEqual(monitor.problems, [])
+        self.assertTrue(any("件以上" in w for w in monitor.warnings))
 
     def test_no_activity_and_main_is_live(self):
         self.run_check([], head="aaa")
@@ -142,33 +148,30 @@ class GitHubSettings(Base):
 
 
 class WordPressCors(Base):
-    def run_check(self, responses):
-        def fake_http(url, method="GET", data=None, headers=None, timeout=20):
-            origin = (headers or {}).get("Origin")
-            if origin is None:
-                return 404, b"", {}   # CORS 以外の点検（ユーザー一覧API・xmlrpc 等）は対象外
-            return 200, b"{}", responses.get(origin, {})
+    def run_check(self, status, headers):
         # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
-        wp = {"api": "https://cms.example.test", "cors_dev_without_credentials": True}
-        with mock.patch.object(monitor, "http", fake_http), \
+        wp = {"api": "https://cms.example.test", "cors_unknown_origin_blocked": True}
+        with mock.patch.object(monitor, "http", lambda url, **kw: (status, b"{}", headers)), \
                 mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
             monitor.check_wordpress()
 
-    def test_dev_origins_without_credentials_are_ok(self):
-        self.run_check({"http://localhost:3000": {"Access-Control-Allow-Origin": "http://localhost:3000"},
-                        "http://127.0.0.1:5500": {"Access-Control-Allow-Origin": "http://127.0.0.1:5500"}})
+    def test_unknown_origin_not_allowed_is_ok(self):
+        self.run_check(200, {"Vary": "Origin"})
         self.assertEqual(monitor.problems, [])
+        self.assertEqual(monitor.warnings, [])
 
-    def test_credentials_on_either_dev_origin_is_a_problem(self):
-        self.run_check({"http://127.0.0.1:5500": {"Access-Control-Allow-Origin": "http://127.0.0.1:5500",
-                                                  "Access-Control-Allow-Credentials": "true"}})
-        self.assertEqual(len(monitor.problems), 1)
-        self.assertIn("127.0.0.1:5500", monitor.problems[0])
-
-    def test_unrelated_origin_allowed_is_a_problem(self):
-        self.run_check({"https://cxmon-probe.invalid": {"Access-Control-Allow-Origin": "*"}})
+    def test_unknown_origin_echoed_is_a_problem(self):
+        self.run_check(200, {"Access-Control-Allow-Origin": "https://cxmon-probe.invalid"})
         self.assertEqual(len(monitor.problems), 1)
 
+    def test_wildcard_is_a_problem(self):
+        self.run_check(200, {"Access-Control-Allow-Origin": "*"})
+        self.assertEqual(len(monitor.problems), 1)
+
+    def test_unreachable_is_a_warning_not_silence(self):
+        self.run_check(0, {})
+        self.assertEqual(monitor.problems, [])
+        self.assertTrue(any("確認できない" in w for w in monitor.warnings))
 
 if __name__ == "__main__":
     unittest.main()
