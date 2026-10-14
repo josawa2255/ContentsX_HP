@@ -130,7 +130,7 @@ git checkout -b feat/42-client-logos-add
 |------------|-----------|
 | `build-c-columns.yml` | WPのコラムから静的ページを生成 |
 | `indexnow.yml` | IndexNow へURL通知 |
-| `static.yml` | GitHub Pages へのデプロイ（pushトリガー） |
+| `static.yml` | GitHub Pages へのデプロイ（人の push・手動実行で起動。ボットの push では起動しないので、`build-c-columns.yml` が push の後に手動起動する） |
 
 → ブランチ保護を設定する際は、これらの Bot（`github-actions[bot]`）を**例外として許可**します（§5参照）。人間だけがPR必須になるよう設定します。
 
@@ -150,7 +150,7 @@ git checkout -b feat/42-client-logos-add
 4. **ビルドBotの例外**:
    - Ruleset の **Bypass list** に `Repository admin` と、Actions が使う `github-actions[bot]` 相当を追加する
    - 旧UIの場合: `github-actions[bot]` は `GITHUB_TOKEN` で push するため、"Allow specified actors to bypass required pull requests" に追加、もしくは各ビルドワークフローの push 先を保護対象から外れるよう運用で担保する
-   - **設定後、必ず `build-c-columns` を手動実行（workflow_dispatch）してBotのpushが通ることを確認する**
+   - **設定後、必ず `build-c-columns` を手動実行（workflow_dispatch）してBotのpushが通ることを確認する**（コラムに変更があれば、そのまま本番へのデプロイと IndexNow の通知まで走る）
 
 > 設定でBotのpushがブロックされると、コラムの静的ページ更新が止まります。設定変更の翌日は反映を必ず確認してください。
 

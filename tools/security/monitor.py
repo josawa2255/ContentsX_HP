@@ -46,6 +46,7 @@ DNS_QUERIES = [
 ]
 
 problems, warnings, notes = [], [], []
+_main_activity = None   # check_github が取った main への操作の記録（新しい順）。check_stale_deploy が使い回す
 # 本番の取得は毎回別の URL にして CDN（最大10分のキャッシュ）を通り越す。GitHub Pages はクエリを無視して同じファイルを返す
 BUST = f"cxmon={int(time.time())}"
 
@@ -216,10 +217,12 @@ def check_github():
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
     # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない
+    global _main_activity
     status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
     if status != 200 or not isinstance(acts, list):
         problems.append(f"main への操作の記録を読めない（PR を通らない push を確認できない）: HTTP {status}")
         return
+    _main_activity = [a for a in acts if isinstance(a, dict)]
     for a in acts:
         kind = a.get("activity_type")
         actor = (a.get("actor") or {}).get("login") or "?"
@@ -230,28 +233,58 @@ def check_github():
             problems.append(f"PR を通らずに main へ push された: {actor} {a.get('timestamp')} {sha}")
 
 
+def parse_utc(value):
+    """GitHub の時刻（ISO 8601）を UTC の日時にする。時差の無い表記は UTC とみなす。読めなければ None"""
+    try:
+        t = datetime.fromisoformat(str(value or "").replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+
+
 def check_stale_deploy():
     """本番が main より古いまま放置されていないか（デプロイが止まっている・自動ビルドの反映漏れ）。
-    起点は GitHub が記録した main への最新の操作（push / PR マージ）の時刻（コミットの日時は書き換えられるため使わない）"""
+    起点は「本番に出ていない main への操作のうち最も古いもの」の時刻。GitHub が記録した操作の時刻を使う
+    （コミットの日時は書き換えられる。最新の操作を起点にすると、push が続く限り遅れに気づけない）"""
     live_sha = os.environ.get("LIVE_SHA")
     if not live_sha:
+        warnings.append("本番のコミット（LIVE_SHA）が分からないので、本番の更新停止の点検を省略")
         return
-    status, acts = github("/activity?ref=refs/heads/main&per_page=1")
-    if status != 200 or not isinstance(acts, list) or not acts or not isinstance(acts[0], dict):
-        warnings.append(f"main の最新の操作を読めないため、本番の更新停止を確認できない (HTTP {status})")
+    acts = _main_activity
+    if acts is None:
+        status, got = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
+        if status != 200 or not isinstance(got, list):
+            warnings.append(f"main への操作の記録を読めないので、本番の更新停止の点検を省略 (HTTP {status})")
+            return
+        acts = [a for a in got if isinstance(a, dict)]
+    if not acts:
+        # 直近1日に main への操作が無い。main の先頭と本番が違えば、1日以上止まっている
+        status, head = github("/commits/main")
+        head_sha = head.get("sha") if status == 200 and isinstance(head, dict) else None
+        if head_sha is None:
+            warnings.append(f"直近1日の操作記録が無く、main の先頭も読めないので、本番の更新停止の点検を省略 (HTTP {status})")
+        elif head_sha != live_sha:
+            problems.append(f"本番が main より古いまま、少なくとも1日（直近1日に main への操作なし）: 本番 {live_sha[:7]} / main {head_sha[:7]}")
         return
-    latest = acts[0]
-    if (latest.get("after") or "") == live_sha:
+    if (acts[0].get("after") or "") == live_sha:
         return
-    try:
-        pushed = datetime.fromisoformat(str(latest.get("timestamp") or "").replace("Z", "+00:00"))
-    except ValueError:
-        warnings.append(f"main の最新の操作の時刻を読めない: {latest.get('timestamp')!r}")
+    # 新しい順に見て、本番のコミットに届くまでの操作が「本番に出ていない操作」
+    pending = []
+    for a in acts:
+        if (a.get("after") or "") == live_sha:
+            break
+        pending.append(a)
+    reached = len(pending) < len(acts)
+    oldest = pending[-1]
+    started = parse_utc(oldest.get("timestamp"))
+    if started is None:
+        warnings.append(f"main への操作の時刻を読めない: {oldest.get('timestamp')!r}")
         return
-    age_h = (datetime.now(timezone.utc) - pushed).total_seconds() / 3600
+    age_h = (datetime.now(timezone.utc) - started).total_seconds() / 3600
     if age_h >= 1:
-        problems.append(f"本番が main より古いまま {age_h:.1f} 時間（デプロイが止まっている可能性）: "
-                        f"本番 {live_sha[:7]} / main {(latest.get('after') or '?')[:7]}")
+        qualifier = "" if reached else "少なくとも"
+        problems.append(f"本番が main より古いまま{qualifier} {age_h:.1f} 時間（デプロイが止まっている可能性）: "
+                        f"本番 {live_sha[:7]} / main {(acts[0].get('after') or '?')[:7]}・未反映の操作 {len(pending)} 件")
 
 
 # ---------- 7. WordPress ----------
@@ -268,11 +301,16 @@ def check_wordpress():
         if status == 200:
             problems.append("WordPress の xmlrpc.php が開いている")
     if wp.get("cors_dev_without_credentials"):
-        # 開発用オリジンは資格情報（Cookie）なしでだけ許可する設計（WP プラグイン 2026-10-14）
-        _, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": "http://localhost:3000"})
-        h = {k.lower(): v for k, v in headers.items()}
-        if "localhost" in h.get("access-control-allow-origin", "") and h.get("access-control-allow-credentials", "").lower() == "true":
-            problems.append("WordPress の CORS が localhost に資格情報つきの呼び出しを許可している")
+        # 資格情報（Cookie）つきの CORS が本番ドメイン以外に出ていないか。無関係なオリジンは許可されていないか
+        for origin in ("http://localhost:3000", "http://127.0.0.1:5500", "https://cxmon-probe.invalid"):
+            _, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": origin})
+            h = {k.lower(): v for k, v in headers.items()}
+            allowed = h.get("access-control-allow-origin", "")
+            if origin.endswith(".invalid"):
+                if allowed in (origin, "*"):
+                    problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {allowed}")
+            elif allowed == origin and h.get("access-control-allow-credentials", "").lower() == "true":
+                problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している")
 
 
 def main():

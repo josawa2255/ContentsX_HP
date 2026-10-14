@@ -9,6 +9,8 @@ on:
       - '**.html'
       - 'sitemap.xml'
       - 'llms.txt'
+  # 自動ビルドの push では上の push が起動しないため、ビルドから手動起動される（build-c-columns.yml）
+  workflow_dispatch:
 
 permissions:
   contents: read
