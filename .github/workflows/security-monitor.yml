@@ -1,0 +1,72 @@
+# 改ざん・乗っ取りの兆候を1時間ごとに点検する（2026-10-14）。
+# 異常があるとジョブが失敗し、GitHub がメールで知らせる（スケジュール実行の通知先は、
+# このファイルの cron を最後に変更したユーザー）。点検の中身は tools/security/monitor.py。
+name: Security monitor
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/security/**'
+      - 'tools/build-site-artifact.py'
+      - '.github/workflows/security-monitor.yml'
+
+permissions:
+  contents: read
+  pages: read
+  deployments: read
+
+concurrency:
+  group: security-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Keep the monitor from this commit
+        run: |
+          mkdir -p "$RUNNER_TEMP/monitor/tools"
+          cp -R tools/security "$RUNNER_TEMP/monitor/tools/security"
+
+      - name: Rebuild the files that are live on GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          live=""
+          for id_sha in $(gh api "repos/$REPO/deployments?environment=github-pages&per_page=20" --jq '.[] | "\(.id):\(.sha)"'); do
+            state=$(gh api "repos/$REPO/deployments/${id_sha%%:*}/statuses" --jq '.[0].state')
+            if [ "$state" = "success" ]; then live="${id_sha#*:}"; break; fi
+          done
+          if [ -z "$live" ]; then echo "::error::no successful GitHub Pages deployment found"; exit 1; fi
+          echo "live commit: $live"
+          git checkout --quiet --detach "$live"
+          if [ -f tools/build-site-artifact.py ]; then
+            # デプロイ（static.yml）と同じ順: サービスページを作り直してから公開ファイルを集める
+            python3 tools/build-services.py
+            python3 tools/build-site-artifact.py
+            echo "SITE_DIR=$PWD/_site" >> "$GITHUB_ENV"
+          else
+            # 公開ファイルの絞り込み以前のデプロイはリポジトリ全体を公開していた
+            echo "SITE_DIR=$PWD" >> "$GITHUB_ENV"
+          fi
+
+      - name: Check production
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPORT_ONLY: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ "$REPORT_ONLY" = "true" ]; then
+            python3 "$RUNNER_TEMP/monitor/tools/security/monitor.py" --site-dir "$SITE_DIR" --report
+          else
+            python3 "$RUNNER_TEMP/monitor/tools/security/monitor.py" --site-dir "$SITE_DIR"
+          fi
