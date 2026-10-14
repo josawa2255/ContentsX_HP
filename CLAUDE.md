@@ -106,6 +106,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 
 ## 公開範囲と監視（2026-10-14 セキュリティ強化）⭐
 - ⛔ **このリポジトリは PUBLIC。顧客情報・インフラ構成・未対応の弱点リスト・認証の手順をコミットしない**（2026-10-14、`.skill` 2本と SEO 戦略の `.docx` が公開されていたのを除去。原本はローカル専用の `../docs/private-from-contentx-repo/`）。
+- ⛔ **GitHub Pages の公開方式は「GitHub Actions」（`build_type: workflow`）から変えない**。「ブランチから公開（legacy）」に戻すと、従来型の公開処理がリポジトリ全体を同時に公開し、許可リストが効かなくなる（2026-10-14 に実際に競合した。監視が検知する）。
 - 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap 等と、名前を指定した `robots.txt` `llms.txt` `manifest.json` `i18n/en.json` など）だけ。`*.md`・スクリプト・テスト・`data/`・`review/`・`skills/` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tests/test_site_artifact.py`（デプロイ前に実行。公開ページが参照するファイルの漏れも見る）。
 - 改ざん・乗っ取りの監視 `.github/workflows/security-monitor.yml`（1時間ごと、`tools/security/monitor.py`）: 本番の HTML/CSS/JS がデプロイしたコミットと同一か、外部スクリプトのホスト、内部資料が見えないか、DNS、証明書、GitHub Pages の設定、PR を通らない main への push、WordPress のユーザー一覧API。**異常で失敗 → GitHub からメール**。
 - 意図して変えるとき（DNS の変更・外部スクリプトの追加・WordPress の強化完了）は、`tools/security/expected.json` を同じ PR で直す。直さないと監視が毎時失敗する。

@@ -209,6 +209,9 @@ def check_github():
             problems.append(f"GitHub Pages の独自ドメインが変わった: {pages.get('cname')}")
         if exp["pages_https_enforced"] and not pages.get("https_enforced"):
             problems.append("GitHub Pages の HTTPS 強制が外れている")
+        # legacy（ブランチから公開）に戻るとリポジトリ全体が公開され、許可リストが効かなくなる（BUGS #067）
+        if exp.get("pages_build_type") and pages.get("build_type") != exp["pages_build_type"]:
+            problems.append(f"GitHub Pages の公開方式が変わった: {pages.get('build_type')}（GitHub Actions 以外だと内部資料まで公開される）")
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
     # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない

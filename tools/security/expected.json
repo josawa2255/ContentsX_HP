@@ -69,7 +69,8 @@
     "pages_https_enforced": true,
     "direct_push_allowed": [
       "github-actions[bot]"
-    ]
+    ],
+    "pages_build_type": "workflow"
   },
   "wordpress": {
     "api": "https://cms.contentsx.jp",
