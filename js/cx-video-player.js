@@ -10,35 +10,15 @@
    show when there are none). */
 (function () {
   'use strict';
+  if (!window.cxDom) return; // js/cx-dom.js が先に読まれていない
   var YT_ID = /^[A-Za-z0-9_-]{6,20}$/;
   var LIST_ID = /^[A-Za-z0-9_-]{10,64}$/;
   var DRIVE_ID = /^[A-Za-z0-9_-]{10,}$/;
-  var IMAGE_HOSTS = ['i.ytimg.com', 'cms.contentsx.jp', 'contentsx.jp'];
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text) n.textContent = text;
-    return n;
-  }
-  function iconButton(cls, label, glyph) {
-    var b = el('button', cls);
-    b.type = 'button';
-    b.setAttribute('aria-label', label);
-    var g = el('span', '', glyph);
-    g.setAttribute('aria-hidden', 'true');
-    b.appendChild(g);
-    return b;
-  }
-  function safeImage(url) {
-    if (typeof url !== 'string' || !url) return '';
-    if (/^\/(?!\/)[\w\-./]+$/.test(url)) return url;
-    try {
-      var u = new URL(url);
-      return u.protocol === 'https:' && IMAGE_HOSTS.indexOf(u.hostname) !== -1 ? u.href : '';
-    } catch (e) { return ''; }
-  }
+  var el = window.cxDom.el;
+  var iconButton = window.cxDom.iconButton;
+  var safeImage = window.cxDom.safeImage;
   /** Build the embed for a user-initiated play. Returns null when the item is not playable. */
   function embedFor(item) {
     var id = String(item.video_id || '');

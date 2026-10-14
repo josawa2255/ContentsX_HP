@@ -210,10 +210,8 @@ wordpress/
 
 js/
   wp-config.js           ← API接続設定（apiBase / enabled）
-  wp-api.js              ← APIクライアント（自動でデータ取得）
-  data/
-    works-detail.js      ← フォールバック用ローカルデータ
-    new-works.js         ← フォールバック用ローカルデータ
+  wp-api.js              ← ニュースの取得と描画（2026-10-13 から /works・/works-new は取得しない）
+  cx-dom.js              ← トップ・採用の WordPress 連携部品が共有する取得・検査の道具
 ```
 
 ## トラブルシューティング
@@ -225,4 +223,4 @@ js/
 → `contentsx-cms.php` の `$allowed` 配列にフロントサイトのドメインが入っているか確認。
 
 **Q: WordPress が落ちたらサイトも止まる？**
-→ いいえ。`wp-api.js` はエラー時にローカルの `works-detail.js` / `new-works.js` をフォールバックとして使います。WordPress が停止してもサイトは表示され続けます。
+→ いいえ。ページは止まりません。WordPress から取れなかった部分は、各ページの HTML に書いてある初期表示のまま残ります（TOPICS の3枚、Creative X のサービスへのリンクなど）。ニュース一覧は読み込み表示が消えて空の一覧になります。（旧 `js/data/new-works.js` などのローカルデータは 2026-10-13 に削除）

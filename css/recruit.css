@@ -885,6 +885,64 @@
   .rc-req__close--top { display: none; }
 }
 
+/* ---------- スマホ（768px以下）: 背景の大きな欧文とヒーロー（#152） ----------
+   背景の欧文（POSITIONS / PROCESS / ENTRY / TOPICS）は、PCでは画面上部に固定して切り替える（js/home-section-labels.js）。
+   スマホでは固定すると見出し・本文と重なって読みにくいので、各セクションの上の余白に置き、その分セクションの間を広げる。
+   大きさと位置はトップのスマホの TOPICS（home-sections.css の .cxsb-label / home-topics.css の余白）と同じ。 */
+@media (max-width: 768px) {
+  .rc-stage .cxsb-names,
+  .cxtp .cxsb-names { display: none; }
+  html.cxsb-fixed-labels .cxtp.cxsb-section > .cxsb-label { display: block; }
+  .rc-sel,
+  .rc-entry { position: relative; }
+  .rc-op__inner,
+  .rc-sel__inner,
+  .rc-entry__wrap { position: relative; z-index: 1; }
+  :is(.rc-op, .rc-sel, .rc-entry)[data-cxsb-name]::before {
+    content: attr(data-cxsb-name);
+    position: absolute;
+    top: clamp(10px, 1.6vw, 26px);
+    left: 3%;
+    z-index: 0;
+    width: 94%;
+    overflow: hidden;
+    color: rgba(21, 88, 161, .09);
+    font-family: Arial, sans-serif;
+    font-size: clamp(52px, 18vw, 130px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -.06em;
+    white-space: nowrap;
+    pointer-events: none;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  /* 欧文の高さ（文字の大きさ×0.78）＋30px だけ上を空け、見出しは欧文の下から始める（TOPICS も同じ） */
+  .rc-op,
+  .rc-sel,
+  .rc-entry,
+  .cxtp.cxsb-section { padding-top: calc(clamp(52px, 18vw, 130px) * .78 + 30px); }
+  .rc-op { padding-bottom: 56px; }
+  .rc-sel { padding-bottom: 48px; }
+
+  /* ヒーロー: Xの画像の幅をボタンと同じ（左右の余白をそろえる）にし、下端は次のセクションへなじませる */
+  .rc-xhero__visual {
+    width: calc(100% - var(--rcx-gutter) * 2);
+    max-width: 480px;
+    -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+    mask-image: linear-gradient(180deg, #000 78%, transparent);
+  }
+}
+/* スマホのXは書き順アニメーションをやめ、画像全体を軽くフェードインする。
+   太い線のマスクを毎コマ描き直す演出はスマホのGPUで引っかかり（ガタつき）やすいため。PCは書き順のまま */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .rc-xhero:not(.is-waiting) :is(.rc-xhero__stroke--1, .rc-xhero__stroke--2, .rc-xhero__band--1, .rc-xhero__band--2) { animation: none; }
+  .rc-xhero :is(.rc-xhero__stroke--1, .rc-xhero__stroke--2) { stroke-dashoffset: 0; }
+  .rc-xhero.is-waiting .rc-xhero__visual { opacity: 0; }
+  .rc-xhero:not(.is-waiting) .rc-xhero__visual { animation: rcxVisualIn .8s cubic-bezier(.16, 1, .3, 1) .1s both; }
+}
+@keyframes rcxVisualIn { from { opacity: 0; transform: translate3d(0, 12px, 0); } to { opacity: 1; transform: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   .rc-op.is-scrubbing :is(.rc-op__light, .rc-op__veil) { transition: none; }
   .rc-req.is-open .rc-detail.is-open { animation: none; }

@@ -35,6 +35,10 @@ jobs:
         run: python3 tools/build-services.py
       - name: Check service data and generated pages
         run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_build_services.py'
+      - name: Check shared CSS/JS load order and column input checks
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_asset_order.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_build_c_columns.py'
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
