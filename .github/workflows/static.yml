@@ -39,13 +39,18 @@ jobs:
         run: |
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_asset_order.py'
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_build_c_columns.py'
+      - name: Collect public files only (no internal docs / scripts / tests)
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_site_artifact.py'
+          python3 tools/build-site-artifact.py
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # 公開してよいファイルだけ（tools/build-site-artifact.py の許可リスト）。
+          # 以前の path: '.' は内部資料まで https://contentsx.jp/ から取得できた（2026-10-14 修正）
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

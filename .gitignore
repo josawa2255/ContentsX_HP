@@ -1,2 +1,5 @@
 # macOS
 .DS_Store
+
+# GitHub Pages 用に公開ファイルだけを集めたフォルダ（tools/build-site-artifact.py が生成）
+_site/

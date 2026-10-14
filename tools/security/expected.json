@@ -1,0 +1,78 @@
+{
+  "_comment": "tools/security/monitor.py の基準値。意図して変えたとき（DNS・外部スクリプト・公開設定）は同じPRで直す。WordPress の項目は「閉じた（対策済み）」ものだけ true で足す（公開リポジトリなので未対策の項目は書かない）",
+  "site": "https://contentsx.jp",
+  "script_hosts": [
+    "www.googletagmanager.com",
+    "js-na2.hs-scripts.com",
+    "contentsx-crm.vercel.app",
+    "cdn.jsdelivr.net",
+    "www.youtube.com",
+    "www.youtube-nocookie.com",
+    "drive.google.com",
+    "www.google.com"
+  ],
+  "must_be_hidden": [
+    "CLAUDE.md",
+    "SPEC.md",
+    "github.md",
+    "CSS-ARCHITECTURE.md",
+    "hirasawa_HP_infrastructure.skill",
+    "contentsx-complete-kb.skill",
+    "tools/build-c-columns.py",
+    "tools/security/monitor.py",
+    "tests/sitewide_check.py",
+    "data/services.json",
+    "wordpress/SETUP.md",
+    "review/home-2026-after-pc.jpg"
+  ],
+  "dns": {
+    "contentsx.jp NS": [
+      "01.dnsv.jp",
+      "02.dnsv.jp",
+      "03.dnsv.jp",
+      "04.dnsv.jp"
+    ],
+    "contentsx.jp A": [
+      "185.199.108.153",
+      "185.199.109.153",
+      "185.199.110.153",
+      "185.199.111.153"
+    ],
+    "contentsx.jp AAAA": [],
+    "contentsx.jp MX": [
+      "1 aspmx.l.google.com",
+      "10 alt3.aspmx.l.google.com",
+      "10 alt4.aspmx.l.google.com",
+      "5 alt1.aspmx.l.google.com",
+      "5 alt2.aspmx.l.google.com"
+    ],
+    "contentsx.jp CAA": [],
+    "www.contentsx.jp CNAME": [
+      "josawa2255.github.io"
+    ],
+    "bizmanga.contentsx.jp CNAME": [
+      "josawa2255.github.io"
+    ],
+    "cms.contentsx.jp A": [
+      "157.120.209.47"
+    ],
+    "cms.contentsx.jp CNAME": []
+  },
+  "tls_hosts": [
+    "contentsx.jp",
+    "www.contentsx.jp",
+    "bizmanga.contentsx.jp",
+    "cms.contentsx.jp"
+  ],
+  "github": {
+    "pages_cname": "contentsx.jp",
+    "pages_https_enforced": true,
+    "direct_push_allowed": [
+      "github-actions[bot]"
+    ]
+  },
+  "wordpress": {
+    "api": "https://cms.contentsx.jp",
+    "users_endpoint_closed": true
+  }
+}
