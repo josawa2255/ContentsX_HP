@@ -139,6 +139,9 @@
 /* Manga reader (js/cx-manga-reader.js) — pages are never cropped. */
 .cxmr { position:relative; display:grid; gap:12px; }
 .cxmr-stage { position:relative; display:flex; align-items:center; justify-content:center; height:var(--cxcx-manga-h); overflow:hidden; border-radius:12px; background:#111a33; touch-action:pan-y; }
+/* Pages turn on click (left half = next, right half = previous): show it with the cursor. */
+.cxmr-stage.is-spread,.cxmr-stage.is-single { cursor:pointer; }
+.cxmr-stage.is-zoomed { cursor:grab; }
 .cxmr-spread { display:flex; justify-content:center; height:100%; }
 .cxmr-page { display:block; height:100%; width:auto; max-width:100%; object-fit:contain; background:#fff; }
 .cxmr-stage.is-spread .cxmr-page { max-width:50%; }

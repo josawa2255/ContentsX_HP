@@ -285,6 +285,14 @@ with sync_playwright() as p:
     assert page.locator('.cxmr-next').is_disabled()
     page.keyboard.press('ArrowRight')  # → = previous
     assert page.locator('.cxmr-count').inner_text() == '3-4 / 5'
+    # Click on the pages: left half = next, right half = previous (same as ‹ ›).
+    st = page.locator('.cxmr-stage').bounding_box()
+    page.mouse.click(st['x'] + st['width'] * .25, st['y'] + st['height'] / 2)
+    page.wait_for_timeout(150)
+    assert page.locator('.cxmr-count').inner_text() == '5 / 5'
+    page.mouse.click(st['x'] + st['width'] * .75, st['y'] + st['height'] / 2)
+    page.wait_for_timeout(150)
+    assert page.locator('.cxmr-count').inner_text() == '3-4 / 5'
     page.locator('.cxmr-zoom').click()
     assert page.locator('.cxmr-zoom').get_attribute('aria-pressed') == 'true'
     assert page.locator('.cxmr-stage').evaluate("e=>e.classList.contains('is-zoomed') && e.scrollWidth > e.clientWidth")
