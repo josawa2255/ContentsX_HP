@@ -15,8 +15,13 @@
 (function () {
   'use strict';
 
-  /* ── 設定チェック ── */
-  if (typeof WP_CONFIG === 'undefined' || !WP_CONFIG.enabled || !WP_CONFIG.apiBase) return;
+  /* ── 設定チェック（無効でも wp-data-ready は出す。/news の読み込み表示が残らないように） ── */
+  if (typeof WP_CONFIG === 'undefined' || !WP_CONFIG.enabled || !WP_CONFIG.apiBase) {
+    document.addEventListener('DOMContentLoaded', () => {
+      window.dispatchEvent(new CustomEvent('wp-data-ready'));
+    });
+    return;
+  }
 
   const API = WP_CONFIG.apiBase.replace(/\/+$/, '');
   const TIMEOUT = WP_CONFIG.timeout || 5000;

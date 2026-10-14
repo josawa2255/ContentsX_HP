@@ -95,7 +95,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - ヒーロー右側の理念コピーは、都市画像の明暗の上でも読めるよう紺色の字に白い縁と淡い白い影を重ねる。事業紹介の中央ロゴは、青とオレンジが交差する文字なしのXマークをインラインSVGで表示する。独立したグリッド列に配置して左右の文言・CTAに重ならないようにし、SVGの viewBox に余白を取って両端を欠けずに描画する。写真は左カードを左寄せ、右カードを右寄せとして、余白付き素材の人物と作画の手を表示する。
 - レスポンシブ: 768px以下でヒーローを縦構成、事業カードとサービス欄を1列にする。事業紹介は1100px以下で縦並びに切り替える。文字は `clamp()` で連続スケール。320/390/412/448/640/768/1024/1100/1101/1280/1440/1920pxの横溢れ・事業カード内の文字収まりをブラウザ確認。
 - リンク: 総合ページは `/services/`。他ページの共通ナビにも独立した「サービス」を置く。ビズフォーム・ビズマンガ・ビズアニメ・ビズ採用は公開先へ直リンク。ビズビデオは一覧内の動画カード、準備中のビズAIO・ビズカルテは一覧内の該当カードへ。Sales X / Creative Xの紹介は `/services/sales-x/` と `/services/creative-x/` に向ける。
-- 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まず、他ページ用の実装とファイルは残す。トップを含む全ページで `i18n.js` → `nav.js` の読込順を維持。共通ヘッダーは1280px以下でドロワーに切り替え、文字拡大時のナビ重なりも避ける。トップは固定ヘッダーの下からヒーローを開始する。
+- 旧トップ用JS（`script.js`、`hero-new.js`、`hero-fx.js`、`cta.js` 等）はトップでは読み込まない。`hero-new.js`・`hero-fx.js`・`js/data/works-detail.js` は**どのページからも読み込まれていない**（HERO作業の完了後に削除予定。2026-10-13 時点）。`hero-new.js` が購読する `wp-data-ready` は今は「ニュース描画完了」の合図で、`/works` は取得していない。トップを含む全ページで `i18n.js` → `nav.js` の読込順を維持。共通ヘッダーは1280px以下でドロワーに切り替え、文字拡大時のナビ重なりも避ける。トップは固定ヘッダーの下からヒーローを開始する。
 
 ### HERO（2026-10-10 刷新、Issue #108）
 
@@ -280,8 +280,8 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | `js/i18n.js` | i18nエンジン | 全ページ（nav.jsより先） |
 | `js/column.js` | コラム一覧の Featured 表示・カテゴリチップ生成・絞り込み | `column.html`（`#cx-column-data` JSONを読む） |
 | `js/dl-modal.js` | 資料DLモーダル | contact送信済みか localStorage で判定 |
-| `js/wp-api.js` | WP API クライアント（ニュースだけ） | `.news-list` を描画し、終わったら（失敗時も）`wp-data-ready` を発火。`/news` の読み込み表示はこの合図で消す。2026-10-13 に旧トップ用の `/works`・`/works-new` 取得（`WORKS_DETAIL_DATA` / `NEW_WORKS_DATA`）を削除 |
-| `js/cx-dom.js` | WordPress 連携部品の共通道具 `window.cxDom` | `el` / `iconButton` / `text` / `safeImage`（サイト内パスか許可ホストの https 画像だけ）/ `getJSON(path, timeout, label)`。使う側（`cx-manga-reader.js`・`cx-video-player.js`・`home-creative-x.js`・`home-topics.js`）より前に defer で読む（トップ・採用） |
+| `js/wp-api.js` | WP API クライアント（ニュースだけ） | `.news-list` を描画し、終わったら（失敗時・`WP_CONFIG.enabled=false` のときも）`wp-data-ready` を発火。`/news` の読み込み表示はこの合図で消す。2026-10-13 に旧トップ用の `/works`・`/works-new` 取得（`WORKS_DETAIL_DATA` / `NEW_WORKS_DATA`）を削除 |
+| `js/cx-dom.js` | WordPress 連携部品の共通道具 `window.cxDom` | `el` / `iconButton` / `text` / `safeImage`（サイト内パスか許可ホストの https 画像だけ）/ `getJSON(path, timeout, label)`。使う側（`cx-manga-reader.js`・`cx-video-player.js`・`home-creative-x.js`・`home-topics.js`）より前に defer で読む（トップ・採用）。順番は `tests/test_asset_order.py` がデプロイ前に検査し、読めなかったときは各部品が何もせず HTML のまま残る。`safeImage(url, hosts)` の hosts で許可ホストを絞れる（マンガのページ画像は WordPress と自サイトだけ） |
 | `js/hubspot-lazy.js` | HubSpot 追跡コードの遅延読み込み | 初回操作か4秒後に読む。トップ・会社概要・採用・ニュース詳細。お問い合わせは従来どおり直接読み込み、採用エントリーは読み込まない |
 | `js/script.js` | 下層ページの小さな動き | 会社概要・ニュース一覧・ニュース詳細。ヘッダーのスクロール時クラス、見出しのフェードイン、ページ内リンクのスムーススクロールだけ（2026-10-13 に旧トップ用の約1100行を削除） |
 | `js/wp-config.js` | WP設定 | API baseURL / cache TTL |

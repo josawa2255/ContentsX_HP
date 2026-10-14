@@ -73,6 +73,33 @@ def escape_meta(s):
     return html.escape(s, quote=True)
 
 
+# WordPress の値は管理画面の乗っ取りで書き換えられうる前提で扱う（docs/operations/SECURITY.md P1）。
+# サムネイルは meta 属性・JSON-LD・CSS url() の3か所にそのまま入るため、エスケープではなく
+# 「許可したホストの https で、引用符・括弧・空白・山かっこ・バックスラッシュを含まない」URLだけを通す。
+SAFE_IMAGE_URL = re.compile(r"^https://(?:cms\.)?contentsx\.jp/[^\s\"'<>\\()]*$")
+DEFAULT_THUMB = "https://contentsx.jp/material/images/og/og-index.webp"
+
+
+def safe_image_url(u, fallback=""):
+    """許可した画像URLならそのまま、それ以外は fallback（空文字は空文字のまま）"""
+    if not u:
+        return u if isinstance(u, str) else fallback
+    return u if isinstance(u, str) and SAFE_IMAGE_URL.match(u) else fallback
+
+
+def safe_slug(s):
+    """URL パス用のスラッグ。区切り・引用符・山かっこを含むものは使わない"""
+    if not isinstance(s, str) or not s or re.search(r"[\s/\\\"'<>?#%]", s) or s in (".", ".."):
+        return ""
+    return s
+
+
+def json_for_script(data, indent=2):
+    """<script> 内に置く JSON。値に </script> があっても閉じないよう < > & を \\u 表記にする"""
+    return (json.dumps(data, ensure_ascii=False, indent=indent)
+            .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026"))
+
+
 H2_PATTERN = re.compile(r"<h2(\s[^>]*)?>(.*?)</h2>", re.DOTALL | re.IGNORECASE)
 H2_ID_ATTR = re.compile(r'\bid\s*=\s*"([^"]+)"', re.IGNORECASE)
 
@@ -146,10 +173,12 @@ def build_related_cards(current_id, all_cols, category):
 
     cards = []
     for c in related:
-        slug = c.get("slug", "")
+        slug = safe_slug(c.get("slug", ""))
+        if not slug:
+            continue
         title = escape_meta(c.get("title_ja", "").strip())
         cat = escape_meta(c.get("category", ""))
-        thumb = c.get("thumbnail", "")
+        thumb = safe_image_url(c.get("thumbnail", ""))
         cards.append(f"""      <a href="/column/{slug}" class="cx-col-related-card">
         <div class="cx-col-related-card-img"><img src="{thumb}" alt="{title}" loading="lazy" width="400" height="225"></div>
         <div class="cx-col-related-card-body">
@@ -164,13 +193,15 @@ def build_one(col, all_cols, template):
     """1コラムの静的HTMLを生成"""
     col_id = col["id"]
     full = fetch_column_full(col_id)
-    slug = full.get("slug", "")
+    slug = safe_slug(full.get("slug", ""))
+    if not slug:
+        raise ValueError(f"unsafe or empty slug for column id={col_id}")
     title = full.get("title_ja", "").strip()
     title_en = full.get("title_en", "").strip()
     excerpt = full.get("excerpt_ja", "").strip()
     content_html = full.get("content", "") or ""
     category = full.get("category", "コラム")
-    thumbnail = full.get("thumbnail", "https://contentsx.jp/material/images/og/og-index.webp")
+    thumbnail = safe_image_url(full.get("thumbnail", DEFAULT_THUMB), DEFAULT_THUMB)
     date_ymd = full.get("date_ymd", "2026-01-01")
     modified_ymd = full.get("modified_ymd", date_ymd)
     date_display = full.get("date", date_ymd).replace("-", ".")
@@ -222,12 +253,12 @@ def build_one(col, all_cols, template):
 
 def build_card(col):
     """1枚分のカードHTMLを生成 (column.html のグリッド用)"""
-    slug = col.get("slug", "")
+    slug = safe_slug(col.get("slug", ""))
     title = escape_meta(col.get("title_ja", "").strip())
     excerpt = escape_meta(col.get("excerpt_ja", "").strip())
     cat = escape_meta(col.get("category", "コラム"))
-    thumb = col.get("thumbnail", "https://contentsx.jp/material/images/og/og-index.webp")
-    date_display = col.get("date", col.get("date_ymd", "")).replace("-", ".")
+    thumb = safe_image_url(col.get("thumbnail", DEFAULT_THUMB), DEFAULT_THUMB)
+    date_display = escape_meta(col.get("date", col.get("date_ymd", "")).replace("-", "."))
     return f"""          <a class="cx-col-card" href="/column/{slug}" data-category="{cat}">
             <div class="cx-col-card-img"><img src="{thumb}" alt="{title}" loading="lazy" width="400" height="225"></div>
             <div class="cx-col-card-body">
@@ -278,14 +309,14 @@ def update_column_listing(columns):
             "slug": featured.get("slug", ""),
             "title": featured.get("title_ja", ""),
             "excerpt": featured.get("excerpt_ja", ""),
-            "thumbnail": featured.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp",
+            "thumbnail": safe_image_url(featured.get("thumbnail"), DEFAULT_THUMB) or DEFAULT_THUMB,
             "category": featured.get("category") or "",
             "date": featured.get("date", ""),
         } if featured else None,
     }
     data_tag = (
         '<script type="application/json" id="cx-column-data">\n'
-        + json.dumps(data_payload, ensure_ascii=False, indent=2)
+        + json_for_script(data_payload)
         + "\n</script>"
     )
     data_pattern = re.compile(
@@ -312,7 +343,7 @@ def update_column_listing(columns):
     }
     ld_tag = (
         '<script type="application/ld+json" id="column-itemlist-ld">\n'
-        + json.dumps(ld, ensure_ascii=False, indent=2)
+        + json_for_script(ld)
         + "\n</script>"
     )
     ld_pattern = re.compile(

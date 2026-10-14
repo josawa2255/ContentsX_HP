@@ -9,9 +9,10 @@
   var list = root.querySelector('[data-cxtp-list]');
   var nav = root.querySelector('[data-cxtp-nav]');
 
-  var text = window.cxDom.text;
-  var el = window.cxDom.el;
-  var safeImage = window.cxDom.safeImage;
+  var dom = window.cxDom; // js/cx-dom.js。無ければ WordPress からの取得だけ止める（HTMLの3枚のまま）
+  var text = dom && dom.text;
+  var el = dom && dom.el;
+  var safeImage = dom && dom.safeImage;
   function safeLink(url) {
     url = text(url);
     if (/^\/(?!\/)[^\s<>"'\\]*$/.test(url)) return { href: url, external: false };
@@ -107,8 +108,8 @@
   window.addEventListener('resize', updateNav, { passive: true });
   updateNav();
 
-  if (typeof WP_CONFIG === 'undefined' || WP_CONFIG.enabled === false || !WP_CONFIG.apiBase) return;
-  window.cxDom.getJSON('/topics', 6000, 'TOPICS').then(function (data) {
+  if (!dom || typeof WP_CONFIG === 'undefined' || WP_CONFIG.enabled === false || !WP_CONFIG.apiBase) return;
+  dom.getJSON('/topics', 6000, 'TOPICS').then(function (data) {
       var items = (data && Array.isArray(data.topics) ? data.topics : []).map(card).filter(Boolean);
       if (!items.length) return; // keep the fallback cards
       list.textContent = '';
@@ -116,5 +117,6 @@
       list.scrollLeft = 0;
       root.classList.add('cxtp-ready');
       updateNav();
-    });
+    })
+    .catch(function (e) { console.warn('[TOPICS] render failed:', e && e.message); });
 })();

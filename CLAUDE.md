@@ -78,6 +78,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 ⛔ このフォルダを削除すると、旧URL `contentsx.jp/bizmanga/*` を踏んだ訪問者が404に飛ぶ。**削除厳禁。**
 
 ## 制作事例モーダル（旧トップの記録。2026-09-29撤去）
+> ⚠️ 下の `hero-new.js`・`js/data/works-detail.js` はどのページからも読み込まれていない（記録として残すだけ。HERO作業の完了後に削除予定）。
 - データ: `js/data/works-detail.js`（22+作品、WORKS_DETAIL_DATA配列）。⚠️ 2026-10-13 から `wp-api.js` は `/works` を取得しない（戻すなら取得も戻す）
 - 表示: `hero-new.js` の `openWorkDetail()` でモーダル表示
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替
@@ -98,6 +99,8 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 ## 共通部品（JS・CSS）
 - **小さな道具は増やさず `js/cx-dom.js`（`window.cxDom`）を使う**: 要素づくり `el`、アイコンボタン、`text`、画像URLの検査 `safeImage`、タイムアウト付き取得 `getJSON`。使うファイルより前に defer で読む（SPEC.md §4）
 - HubSpot 追跡コードの遅延読み込みは `js/hubspot-lazy.js` の1行で入れる（ページに埋め込まない）
+- 読み込み順（`brand-system-2026.css` → `sitewide-cohesion.css`、`cx-dom.js` → 使う側）は `tests/test_asset_order.py` がデプロイ前に検査する。新しいページ・試作ページでも同じ順で書く
+- コラム生成（`tools/build-c-columns.py`）は WordPress の値を信用しない: サムネイルは許可ホストの https だけ、スラッグは区切り・引用符を含まないものだけ、`<script>` 内の JSON は `<` `>` `&` を \\u 表記に（`tests/test_build_c_columns.py`）
 - コラム記事の見た目は `css/column-article.css`、規約2ページは `css/legal.css`
 - 使っていないCSSを消すときは [CSS-ARCHITECTURE.md](CSS-ARCHITECTURE.md)「未使用CSSの削除方法」の手順（ブラウザで変更前後のルールを照合し、全ページ撮り比べ）
 

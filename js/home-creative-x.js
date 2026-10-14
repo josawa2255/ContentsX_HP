@@ -16,7 +16,7 @@
   var panel = root.querySelector('[data-cxcx-panel]');
   var list = root.querySelector('.cxcx-cards');
   var tabs = Array.prototype.slice.call(root.querySelectorAll('.cxcx-card[data-cxcx-service]'));
-  if (!panel || !list || !tabs.length || !window.CxVideoPlayer || !window.CxMangaReader) return;
+  if (!panel || !list || !tabs.length || !window.CxVideoPlayer || !window.CxMangaReader || !window.cxDom) return;
 
   var TIMEOUT = 8000;
   var FADE = 200;

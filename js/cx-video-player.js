@@ -10,6 +10,7 @@
    show when there are none). */
 (function () {
   'use strict';
+  if (!window.cxDom) return; // js/cx-dom.js が先に読まれていない
   var YT_ID = /^[A-Za-z0-9_-]{6,20}$/;
   var LIST_ID = /^[A-Za-z0-9_-]{10,64}$/;
   var DRIVE_ID = /^[A-Za-z0-9_-]{10,}$/;

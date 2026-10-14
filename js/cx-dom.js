@@ -28,13 +28,14 @@
     return b;
   }
 
-  /** サイト内パスか、許可したホストの https 画像だけ通す。それ以外は '' */
-  function safeImage(url) {
+  /** サイト内パスか、許可したホストの https 画像だけ通す。それ以外は ''。
+      hosts を渡すとその中だけに絞る（例: マンガのページ画像は WordPress と自サイトだけ） */
+  function safeImage(url, hosts) {
     url = text(url);
     if (/^\/(?!\/)[\w\-./]+$/.test(url)) return url;
     try {
       var u = new URL(url);
-      return u.protocol === 'https:' && IMAGE_HOSTS.indexOf(u.hostname) !== -1 ? u.href : '';
+      return u.protocol === 'https:' && (hosts || IMAGE_HOSTS).indexOf(u.hostname) !== -1 ? u.href : '';
     } catch (e) { return ''; }
   }
 
