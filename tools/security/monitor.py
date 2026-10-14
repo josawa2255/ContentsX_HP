@@ -210,22 +210,11 @@ def check_github():
             problems.append(f"GitHub Pages の独自ドメインが変わった: {pages.get('cname')}")
         if exp["pages_https_enforced"] and not pages.get("https_enforced"):
             problems.append("GitHub Pages の HTTPS 強制が外れている")
-        # legacy（ブランチから公開）に戻るとリポジトリ全体が公開され、許可リストが効かなくなる（BUGS #067）
+        # legacy（ブランチから公開）に戻るとリポジトリ全体が公開され、許可リストが効かなくなる（CLAUDE.md「公開範囲と監視」）
         if exp.get("pages_build_type") and pages.get("build_type") != exp["pages_build_type"]:
             problems.append(f"GitHub Pages の公開方式が変わった: {pages.get('build_type')}（GitHub Actions 以外だと内部資料まで公開される）")
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
-    # 本番が main より古いまま放置されていないか（デプロイが止まっている・自動ビルドの反映漏れ）
-    live_sha = os.environ.get("LIVE_SHA")
-    st, head = github("/commits/main")
-    if live_sha and st == 200 and isinstance(head, dict) and head.get("sha") != live_sha:
-        committed = (head.get("commit", {}).get("committer") or {}).get("date", "")
-        try:
-            age_h = (datetime.now(timezone.utc) - datetime.fromisoformat(committed.replace("Z", "+00:00"))).total_seconds() / 3600
-        except ValueError:
-            age_h = 0
-        if age_h >= 1:
-            problems.append(f"本番が main より古いまま {age_h:.1f} 時間（デプロイが止まっている可能性）: 本番 {live_sha[:7]} / main {head['sha'][:7]}")
     # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない
     status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
     if status != 200 or not isinstance(acts, list):
@@ -239,6 +228,30 @@ def check_github():
             problems.append(f"main に {kind} があった: {actor} {a.get('timestamp')} {sha}")
         elif kind == "push" and actor not in exp["direct_push_allowed"]:
             problems.append(f"PR を通らずに main へ push された: {actor} {a.get('timestamp')} {sha}")
+
+
+def check_stale_deploy():
+    """本番が main より古いまま放置されていないか（デプロイが止まっている・自動ビルドの反映漏れ）。
+    起点は GitHub が記録した main への最新の操作（push / PR マージ）の時刻（コミットの日時は書き換えられるため使わない）"""
+    live_sha = os.environ.get("LIVE_SHA")
+    if not live_sha:
+        return
+    status, acts = github("/activity?ref=refs/heads/main&per_page=1")
+    if status != 200 or not isinstance(acts, list) or not acts or not isinstance(acts[0], dict):
+        warnings.append(f"main の最新の操作を読めないため、本番の更新停止を確認できない (HTTP {status})")
+        return
+    latest = acts[0]
+    if (latest.get("after") or "") == live_sha:
+        return
+    try:
+        pushed = datetime.fromisoformat(str(latest.get("timestamp") or "").replace("Z", "+00:00"))
+    except ValueError:
+        warnings.append(f"main の最新の操作の時刻を読めない: {latest.get('timestamp')!r}")
+        return
+    age_h = (datetime.now(timezone.utc) - pushed).total_seconds() / 3600
+    if age_h >= 1:
+        problems.append(f"本番が main より古いまま {age_h:.1f} 時間（デプロイが止まっている可能性）: "
+                        f"本番 {live_sha[:7]} / main {(latest.get('after') or '?')[:7]}")
 
 
 # ---------- 7. WordPress ----------
@@ -268,7 +281,7 @@ def main():
     ap.add_argument("--report", action="store_true", help="記録だけ。異常があっても exit 0")
     args = ap.parse_args()
     for fn in (lambda: check_content(args.site_dir), check_hidden, lambda: check_dns(args.report),
-               check_tls, check_github, check_wordpress):
+               check_tls, check_github, check_stale_deploy, check_wordpress):
         try:
             fn()
         except Exception as e:  # noqa: BLE001 — 1つの点検の失敗で他を止めない。失敗自体は異常扱い
