@@ -46,7 +46,16 @@ DNS_QUERIES = [
 ]
 
 problems, warnings, notes = [], [], []
-_main_activity = None   # check_github が取った main への操作の記録（新しい順）。check_stale_deploy が使い回す
+_activity_cache = {}   # main への操作の記録（1回の実行で1度だけ取る。check_github と check_stale_deploy が共有）
+
+
+def main_activity():
+    """main への操作の記録（直近1日・新しい順）を (HTTP status, list) で返す。失敗も含めて1回の実行で1度だけ取る"""
+    if "result" not in _activity_cache:
+        status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
+        acts = [a for a in acts if isinstance(a, dict)] if status == 200 and isinstance(acts, list) else None
+        _activity_cache["result"] = (status, acts)
+    return _activity_cache["result"]
 # 本番の取得は毎回別の URL にして CDN（最大10分のキャッシュ）を通り越す。GitHub Pages はクエリを無視して同じファイルを返す
 BUST = f"cxmon={int(time.time())}"
 
@@ -217,12 +226,10 @@ def check_github():
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
     # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない
-    global _main_activity
-    status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
-    if status != 200 or not isinstance(acts, list):
+    status, acts = main_activity()
+    if acts is None:
         problems.append(f"main への操作の記録を読めない（PR を通らない push を確認できない）: HTTP {status}")
         return
-    _main_activity = [a for a in acts if isinstance(a, dict)]
     for a in acts:
         kind = a.get("activity_type")
         actor = (a.get("actor") or {}).get("login") or "?"
@@ -250,13 +257,10 @@ def check_stale_deploy():
     if not live_sha:
         warnings.append("本番のコミット（LIVE_SHA）が分からないので、本番の更新停止の点検を省略")
         return
-    acts = _main_activity
+    status, acts = main_activity()
     if acts is None:
-        status, got = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
-        if status != 200 or not isinstance(got, list):
-            warnings.append(f"main への操作の記録を読めないので、本番の更新停止の点検を省略 (HTTP {status})")
-            return
-        acts = [a for a in got if isinstance(a, dict)]
+        warnings.append(f"main への操作の記録を読めないので、本番の更新停止の点検を省略 (HTTP {status})")
+        return
     if not acts:
         # 直近1日に main への操作が無い。main の先頭と本番が違えば、1日以上止まっている
         status, head = github("/commits/main")
@@ -266,24 +270,27 @@ def check_stale_deploy():
         elif head_sha != live_sha:
             problems.append(f"本番が main より古いまま、少なくとも1日（直近1日に main への操作なし）: 本番 {live_sha[:7]} / main {head_sha[:7]}")
         return
-    if (acts[0].get("after") or "") == live_sha:
-        return
     # 新しい順に見て、本番のコミットに届くまでの操作が「本番に出ていない操作」
     pending = []
     for a in acts:
         if (a.get("after") or "") == live_sha:
             break
         pending.append(a)
-    reached = len(pending) < len(acts)
+    if not pending:
+        return
     oldest = pending[-1]
+    if len(pending) == len(acts) and (oldest.get("before") or "") != live_sha:
+        # 本番のコミットが直近1日の記録に無く、最初の未反映の操作も記録より前 → 1日以上遅れている
+        problems.append(f"本番が main より古いまま、少なくとも1日（本番のコミットが直近1日の操作記録に無い）: "
+                        f"本番 {live_sha[:7]} / main {(acts[0].get('after') or '?')[:7]}")
+        return
     started = parse_utc(oldest.get("timestamp"))
     if started is None:
         warnings.append(f"main への操作の時刻を読めない: {oldest.get('timestamp')!r}")
         return
     age_h = (datetime.now(timezone.utc) - started).total_seconds() / 3600
     if age_h >= 1:
-        qualifier = "" if reached else "少なくとも"
-        problems.append(f"本番が main より古いまま{qualifier} {age_h:.1f} 時間（デプロイが止まっている可能性）: "
+        problems.append(f"本番が main より古いまま {age_h:.1f} 時間（デプロイが止まっている可能性）: "
                         f"本番 {live_sha[:7]} / main {(acts[0].get('after') or '?')[:7]}・未反映の操作 {len(pending)} 件")
 
 

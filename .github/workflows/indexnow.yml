@@ -11,6 +11,11 @@ on:
       - 'llms.txt'
   # 自動ビルドの push では上の push が起動しないため、ビルドから手動起動される（build-c-columns.yml）
   workflow_dispatch:
+    inputs:
+      sha:
+        description: 通知する変更のコミット（そのコミットと1つ前の差分を送る。空なら main の先頭）
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -21,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.sha || github.sha }}
           fetch-depth: 2
 
       - name: Submit changed URLs to IndexNow

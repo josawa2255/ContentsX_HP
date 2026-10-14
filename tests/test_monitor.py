@@ -30,7 +30,7 @@ class Base(unittest.TestCase):
         monitor.problems.clear()
         monitor.warnings.clear()
         monitor.notes.clear()
-        monitor._main_activity = None
+        monitor._activity_cache.clear()
 
 
 class StaleDeploy(Base):
@@ -67,7 +67,19 @@ class StaleDeploy(Base):
     def test_live_older_than_the_activity_window(self):
         self.run_check([act("ccc", "bbb", 5), act("bbb", "xxx", 8)])
         self.assertEqual(len(monitor.problems), 1)
-        self.assertIn("少なくとも", monitor.problems[0])
+        self.assertIn("少なくとも1日", monitor.problems[0])
+
+    def test_one_fresh_push_after_a_long_outage_is_still_reported(self):
+        # 本番 aaa は直近1日の記録に無い。10分前のマージ1件だけが見える → 1日以上遅れとして即座に知らせる
+        self.run_check([act("ccc", "bbb", 0.2)])
+        self.assertEqual(len(monitor.problems), 1)
+        self.assertIn("少なくとも1日", monitor.problems[0])
+
+    def test_first_pending_push_directly_after_live(self):
+        # 本番 aaa の直後の操作が記録の最古（before == 本番）→ その時刻から測る
+        self.run_check([act("ccc", "bbb", 0.2), act("bbb", "aaa", 2)])
+        self.assertEqual(len(monitor.problems), 1)
+        self.assertIn("2.0 時間", monitor.problems[0])
 
     def test_no_activity_but_main_differs(self):
         self.run_check([], head="bbb")
@@ -84,13 +96,17 @@ class StaleDeploy(Base):
         self.assertEqual(monitor.problems, [])
         self.assertTrue(any("LIVE_SHA" in w for w in monitor.warnings))
 
-    def test_reuses_activity_from_check_github(self):
-        monitor._main_activity = [act("aaa", "zzz", 1)]
+    def test_activity_is_fetched_once_per_run(self):
         calls = []
-        with mock.patch.object(monitor, "github", lambda p: calls.append(p) or (500, None)), \
-                mock.patch.dict(os.environ, {"LIVE_SHA": "aaa"}):
+        def fake_github(path):
+            calls.append(path)
+            if path == "/pages":
+                return 200, {"cname": "contentsx.jp", "https_enforced": True, "build_type": "workflow"}
+            return (200, [act("aaa", "zzz", 1)]) if path.startswith("/activity") else (404, None)
+        with mock.patch.object(monitor, "github", fake_github), mock.patch.dict(os.environ, {"LIVE_SHA": "aaa"}):
+            monitor.check_github()
             monitor.check_stale_deploy()
-        self.assertEqual(calls, [])
+        self.assertEqual(sum(p.startswith("/activity") for p in calls), 1)
         self.assertEqual(monitor.problems, [])
 
 
@@ -129,9 +145,13 @@ class WordPressCors(Base):
     def run_check(self, responses):
         def fake_http(url, method="GET", data=None, headers=None, timeout=20):
             origin = (headers or {}).get("Origin")
+            if origin is None:
+                return 404, b"", {}   # CORS 以外の点検（ユーザー一覧API・xmlrpc 等）は対象外
             return 200, b"{}", responses.get(origin, {})
+        # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
+        wp = {"api": "https://cms.example.test", "cors_dev_without_credentials": True}
         with mock.patch.object(monitor, "http", fake_http), \
-                mock.patch.dict(monitor.EXPECTED["wordpress"], {"cors_dev_without_credentials": True}):
+                mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
             monitor.check_wordpress()
 
     def test_dev_origins_without_credentials_are_ok(self):
