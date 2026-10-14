@@ -733,3 +733,12 @@ CSS変数 `--accent` は `data-theme` で切替可能:
 - TOPICS制作PR #78を土台にする。静的フォールバックカードの代表メッセージは `/message`。
 - `js/home-topics.js` は WordPress の `type: MESSAGE` かつ既知の自サイトURL（`/about#message`・`/message`・`/message.html`）だけを `/message` に揃える。言語等のクエリを保持し、外部サイトや別のMESSAGEリンクは変更しない。本番WPの書換えは不要。
 - `tests/test_topics.py` の旧リンクfixtureを維持して新しい行き先を検証する。静的・WP正常・取得失敗・JS無効の各経路と実クリックを確認する。
+
+### About 07 NEXT ACTION（2026-10-14、Issue #161）
+
+- FUTURE直後の旧 `.ax-contact` だけを `#next-action.cx-about-next[data-cx-page-cta]` に置換。07 / NEXT ACTION、「次の一歩へ」、確定見出し「可能性を、ここから一緒に。」とリードをDOMテキスト・日英切替で表示。
+- 確定3-Cの都市背景・斜め帯・白い写真CTA2枚・濃紺への背景接続を再現。PCはカード2列で写真左/本文右、899px以下は1列で写真上/本文下。見出しだけNoto Serif JPを使う例外。
+- 共通 `.cx-feature-card` / `.cx-ui-card` / Creative色変数と丸矢印・hoverを再利用。`css/about-next-action.css` は配置・媒体の向き・限定された文字サイズと背景だけを持つ。共通CSS・JS・フッターHTMLは変更しない。
+- カード全体が `/contact` と `/recruit` へのリンク。入れ子リンク/ボタン無し。用途アイコン・背景コピーは装飾扱い。Aboutでのみ `.cx-footer__contact` を非表示にし、共通フッターのナビ・サービスリンクは保持。
+- 素材は `material/images/about-2026/next-action/`。参照に近い支給写真2枚（633×672 / 606×570）、文字無し都市背景と斜めSVGを採用。人物は生成イメージであり実在社員/顧客の撮影ではない。低解像度の参照切り出しを使用するため写真の鮮明さは原画の制約を受ける。完成モックアップを貼り付けない。
+- 検証: `tests/test_about_next_action.py`。320〜1920px、日英、文字1.4倍、CTA遷移、focus、JS無効、動き軽減、前半HTML/寸法とフッターHTMLの維持を確認。スクリーンショットは `tests/screenshots/about-next-action/`。
