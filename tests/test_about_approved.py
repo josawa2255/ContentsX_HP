@@ -67,7 +67,7 @@ with sync_playwright() as p:
   for sel,i,path in [('.cxour-card',0,'/services/creative-x/'),('.cxour-card',1,'/services/sales-x/'),('.axl-future a.axl-card',0,'/services/sales-x/'),('.axl-future a.axl-card',1,'/services/creative-x/'),('.axl-future a.axl-card',2,'/contact'),('.cx-about-next__card',0,'/contact'),('.cx-about-next__card',1,'/recruit'),('.axl-message .axl-text-link',0,'/message'),('.axl-mv .axl-text-link',0,'/services/')]:
    load(page,a.url);page.evaluate('(l)=>i18n.switchLang(l)',lang);page.locator(sel).nth(i).click();page.wait_for_url('**'+path+'**');page.wait_for_load_state('networkidle');assert urlsplit(page.url).path==path
  load(page,a.url)
- for sel in ['.cx-about-next__card','.cxour-card','.ax-why__next']:
+ for sel in ['.cx-about-next__card','.cxour-card']:
   page.locator(sel).first.focus();assert page.locator(sel).first.evaluate('e=>getComputedStyle(e).outlineStyle')!='none'
  page.set_viewport_size({'width':390,'height':844});page.locator('#hamburger').click();assert page.locator('#nav').is_visible();page.locator('#hamburger').click()
  page.evaluate('i18n.switchLang("ja")');assert '黒宮' in page.locator('#message').inner_text() and '田中' not in page.locator('#message').inner_text()

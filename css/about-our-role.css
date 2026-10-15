@@ -253,26 +253,6 @@
   color:transparent;
   font-size:0
 }
-.cxour__next {
-  position:absolute;
-  right:0;
-  top:34px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  min-height:44px;
-  font:700 12px/1.5 var(--cx-font-latin);
-  letter-spacing:.1em;
-  color:var(--cx-color-ink)
-}
-.cxour__next span:last-child {
-  color:var(--cx-color-sales);
-  font-size:20px
-}
-.cxour__next:focus-visible {
-  outline:3px solid var(--cx-color-sales);
-  outline-offset:4px
-}
 @media(max-width:1190px) {
   .cxour__motto {
     display:none
@@ -281,7 +261,7 @@
     display:none
   }
   .cxour__outro {
-    padding:0 130px
+    padding:0
   }
   .cxour__from {
     display:none
@@ -337,11 +317,6 @@
     display:block;
     padding:0;
     margin-top:34px
-  }
-  .cxour__next {
-    position:static;
-    justify-content:center;
-    margin-top:22px
   }
   .cxour__city,.cxour__bands {
     width:100%;

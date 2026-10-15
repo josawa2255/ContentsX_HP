@@ -351,26 +351,6 @@
   vertical-align:middle;
   background:url('/material/about-hero-2026/brand-x-translucent.svg') center/contain no-repeat
 }
-.axl-next {
-  position:absolute;
-  right:0;
-  top:28px;
-  display:inline-flex;
-  gap:12px;
-  align-items:center;
-  min-height:44px;
-  font:700 12px/1.5 var(--cx-font-latin);
-  color:var(--cx-color-ink);
-  letter-spacing:.08em
-}
-.axl-next span {
-  color:var(--cx-color-sales);
-  font-size:20px
-}
-.axl-next:focus-visible {
-  outline:3px solid var(--cx-color-sales);
-  outline-offset:4px
-}
 .axl-message-grid {
   position:relative;
   display:grid;
@@ -422,10 +402,6 @@
 }
 .axl-signature strong {
   font:500 30px/1.5 'Noto Serif JP',serif
-}
-.axl-message .axl-closing {
-  justify-content:space-between;
-  margin-top:0
 }
 .axl-future .axl-card {
   position:relative
@@ -483,7 +459,7 @@
     display:none
   }
   .axl-closing {
-    padding-inline:150px
+    padding-inline:0
   }
 }
 @media(max-width:1024px) {
@@ -532,9 +508,6 @@
   }
   .axl-message .axl-title {
     font-size:clamp(28px,7.2vw,52px)
-  }
-  .axl-message .axl-closing {
-    margin-top:26px
   }
 }
 @media(max-width:899px) {
@@ -594,9 +567,6 @@
     padding:0;
     margin-top:32px;
     gap:14px
-  }
-  .axl-next {
-    position:static
   }
   .axl-ambient img:first-child,.axl-ambient img:last-child {
     width:100%;
