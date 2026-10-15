@@ -55,15 +55,23 @@ def live(site, rel):
     return http(f"{site}/{quote(rel)}?{BUST}")
 
 
+def merge_headers(msg):
+    """応答ヘッダーを辞書にする。同じ名前が複数あれば ", " でつなぐ（dict(msg) だと最初の1つしか残らない）"""
+    out = {}
+    for k, v in (msg.items() if msg else []):
+        out[k] = f"{out[k]}, {v}" if k in out else v
+    return out
+
+
 def http(url, method="GET", data=None, headers=None, timeout=20):
     h = {"User-Agent": UA, "Cache-Control": "no-cache"}
     h.update(headers or {})
     req = urllib.request.Request(url, data=data, method=method, headers=h)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
-            return r.status, r.read(), dict(r.headers)
+            return r.status, r.read(), merge_headers(r.headers)
     except urllib.error.HTTPError as e:
-        return e.code, e.read() if e.fp else b"", dict(e.headers or {})
+        return e.code, e.read() if e.fp else b"", merge_headers(e.headers)
     except Exception as e:  # noqa: BLE001 — 通信の失敗も記録して続ける
         return 0, str(e).encode(), {}
 
@@ -302,61 +310,93 @@ def check_stale_deploy():
 
 
 # ---------- 7. WordPress ----------
-UNRELATED_ORIGIN = "https://cxmon-probe.invalid"
+# 許可してはいけないオリジン。null（sandbox の iframe・file://）や、許可判定の前方一致・後方一致の誤りを突く形も試す
+UNRELATED_ORIGINS = ["https://cxmon-probe.invalid", "null",
+                     "https://contentsx.jp.cxmon-probe.invalid", "https://cxmon-probecontentsx.jp"]
+# 独自の API と WordPress 本体の API（Cookie 認証で管理者として操作されうる）の両方を試す
+CORS_PATHS = ["/wp-json/contentsx/v1/topics", "/wp-json/wp/v2/users/me"]
+XMLRPC_CLOSED = (403, 404, 405, 410)
 
 
-def cors_headers(api, origin, preflight=False):
-    """topics に Origin を付けて取得し、(HTTP status, 小文字にそろえたヘッダー) を返す。
-    オリジンごとに URL を変え、WP の前段のキャッシュ（最大10分。Vary: Origin を見ない場合もある）を共有させない"""
-    url = f"{api}/wp-json/contentsx/v1/topics?{BUST}&o={quote(origin, safe='')}"
-    if preflight:
-        status, _, headers = http(url, method="OPTIONS",
-                                  headers={"Origin": origin, "Access-Control-Request-Method": "POST"})
-    else:
-        status, _, headers = http(url, headers={"Origin": origin})
-    return status, {k.lower(): v for k, v in headers.items()}
+class WordPressDown(Exception):
+    pass
+
+
+def header_values(h, name):
+    return [v.strip().lower() for v in h.get(name, "").split(",") if v.strip()]
+
+
+def cors_grants(h, origin):
+    vals = header_values(h, "access-control-allow-origin")
+    return origin.lower() in vals or "*" in vals
+
+
+def cors_with_credentials(h, origin):
+    return cors_grants(h, origin) and "true" in header_values(h, "access-control-allow-credentials")
 
 
 def check_wordpress():
     wp = EXPECTED["wordpress"]
     api = wp["api"]
-    status, body, _ = http(f"{api}/wp-json/wp/v2/users")
-    if status == 0:
-        # 落ちている・つながらないときは、同じ原因の注意を何行も出さず、待ち時間も重ねない
-        warnings.append("WordPress に接続できないので、WordPress の点検を省略")
-        return
-    if wp.get("users_endpoint_closed") and status == 200 and body.strip().startswith(b"["):
-        problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
-    if wp.get("xmlrpc_closed"):
-        status, _, _ = http(f"{api}/xmlrpc.php", method="POST",
-                            data=b"<?xml version='1.0'?><methodCall><methodName>system.listMethods</methodName></methodCall>",
-                            headers={"Content-Type": "text/xml"})
-        if status == 200:
-            problems.append("WordPress の xmlrpc.php が開いている")
-        elif status != 403:   # プラグインは 403 で止める。それ以外は閉じているとは言えない
-            warnings.append(f"WordPress の xmlrpc.php が想定外の応答 (HTTP {status})")
-    if wp.get("cors_unknown_origin_blocked"):
-        # 無関係なオリジンに CORS を許可していないか（許可オリジンの一覧が崩れた・ワイルドカードになった）
-        status, h = cors_headers(api, UNRELATED_ORIGIN)
-        if status != 200:
-            warnings.append(f"WordPress の CORS を確認できない (HTTP {status})")
-        elif h.get("access-control-allow-origin", "") in (UNRELATED_ORIGIN, "*"):
-            problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {h['access-control-allow-origin']}")
-    if wp.get("cors_credentials_production_only"):
-        # 資格情報（Cookie）つきの CORS は本番ドメインだけ。それ以外のオリジン（開発用を含む）に出すと、
-        # 手元などで開いた任意のページからログイン中の管理者として API を呼べてしまう。
-        # 許可オリジンの一覧を同期せず「本番以外で試して資格情報つきが返ったら異常」と一般的に判定する。
-        # プラグインはプリフライト（OPTIONS）を別の経路で返すので、GET と両方を確かめる
-        for origin in [UNRELATED_ORIGIN] + list(wp.get("cors_probe_origins", [])):
-            for preflight in (False, True):
-                status, h = cors_headers(api, origin, preflight)
-                kind = "プリフライト" if preflight else "GET"
-                if status not in (200, 204):
-                    warnings.append(f"WordPress の CORS（{origin}・{kind}）を確認できない (HTTP {status})")
-                    continue
-                if h.get("access-control-allow-origin", "") in (origin, "*") \
-                        and h.get("access-control-allow-credentials", "").lower() == "true":
-                    problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している（{kind}）")
+    cache = {}
+
+    def request(url, **kw):
+        status, body, headers = http(url, **kw)
+        if status == 0:
+            raise WordPressDown(url)
+        return status, body, headers
+
+    def cors(path, origin, preflight=False):
+        """(status, 小文字のヘッダー)。オリジンごとに URL を変え、WP の前段のキャッシュ（最大10分。
+        Vary: Origin を見ない場合もある）を共有させない。同じ組み合わせは1回だけ取る"""
+        key = (path, origin, preflight)
+        if key not in cache:
+            url = f"{api}{path}?{BUST}&o={quote(origin, safe='')}"
+            if preflight:   # 本物のブラウザが Cookie つきの POST の前に送るのと同じ形
+                kw = {"method": "OPTIONS", "headers": {"Origin": origin, "Access-Control-Request-Method": "POST",
+                                                       "Access-Control-Request-Headers": "content-type,x-wp-nonce"}}
+            else:
+                kw = {"headers": {"Origin": origin}}
+            status, _, headers = request(url, **kw)
+            cache[key] = (status, {k.lower(): v for k, v in headers.items()})
+        return cache[key]
+
+    try:
+        status, body, _ = request(f"{api}/wp-json/wp/v2/users")
+        if status >= 500:
+            warnings.append(f"WordPress がエラーを返す (HTTP {status}) ので、WordPress の点検を省略")
+            return
+        if wp.get("users_endpoint_closed") and status == 200 and body.strip().startswith(b"["):
+            problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
+        if wp.get("xmlrpc_closed"):
+            status, _, _ = request(f"{api}/xmlrpc.php", method="POST",
+                                   data=b"<?xml version='1.0'?><methodCall><methodName>system.listMethods</methodName></methodCall>",
+                                   headers={"Content-Type": "text/xml"})
+            if status == 200:
+                problems.append("WordPress の xmlrpc.php が開いている")
+            elif status not in XMLRPC_CLOSED:
+                warnings.append(f"WordPress の xmlrpc.php が想定外の応答 (HTTP {status})")
+        # 応答の状態（401・404 など）に関係なくヘッダーを見る。エラー応答でも CORS の許可があればブラウザは読ませる
+        if wp.get("cors_unknown_origin_blocked"):
+            for origin in UNRELATED_ORIGINS:
+                for path in CORS_PATHS:
+                    _, h = cors(path, origin)
+                    if cors_grants(h, origin):
+                        problems.append(f"WordPress の CORS が無関係なオリジン {origin} を許可している: {path}")
+        if wp.get("cors_credentials_production_only"):
+            # 資格情報（Cookie）つきの CORS は本番ドメインだけ。それ以外のオリジン（開発用を含む）に出すと、
+            # 手元などで開いた任意のページからログイン中の管理者として API を呼べてしまう。
+            # プラグインの許可一覧とは同期せず、本番以外のオリジンで試して資格情報つきが返ったら異常とする。
+            # プラグインはプリフライト（OPTIONS）を別の経路で返すので、GET と両方を確かめる
+            for origin in UNRELATED_ORIGINS + list(wp.get("cors_probe_origins", [])):
+                for path in CORS_PATHS:
+                    for preflight in (False, True):
+                        _, h = cors(path, origin, preflight)
+                        if cors_with_credentials(h, origin):
+                            kind = "プリフライト" if preflight else "GET"
+                            problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している（{path}・{kind}）")
+    except WordPressDown as e:
+        warnings.append(f"WordPress に接続できなくなったので、WordPress の点検を打ち切り（{e}）")
 
 def main():
     ap = argparse.ArgumentParser()
