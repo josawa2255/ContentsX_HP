@@ -369,13 +369,14 @@ def check_wordpress():
     wp = EXPECTED["wordpress"]
     api = wp["api"]
     # 1つの入口の失敗で他の点検を省かない（それぞれ注意にとどめて続ける）
-    status, body, _ = http(f"{api}/wp-json/wp/v2/users")
-    if status == 0:
-        warnings.append("WordPress のユーザー一覧APIに接続できない")
-    elif status >= 500:
-        warnings.append(f"WordPress のユーザー一覧APIがエラーを返す (HTTP {status})")
-    elif wp.get("users_endpoint_closed") and status == 200 and body.strip().startswith(b"["):
-        problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
+    if wp.get("users_endpoint_closed"):
+        # パス（/wp-json/wp/v2/...）は前段が GitHub Actions の IP からの要求を遮断するので、同じ API をクエリで指定する。
+        # 遮断ページの 403 を「閉じている」と取り違えないよう、WordPress 自身の拒否（JSON の code）を確かめる
+        status, body, _ = http(f"{api}/?rest_route=/wp/v2/users&{BUST}")
+        if status == 200 and body.strip().startswith(b"["):
+            problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
+        elif not (status in (401, 403) and body.lstrip().startswith(b"{") and b'"code"' in body):
+            warnings.append(f"WordPress のユーザー一覧APIが閉じているか確認できない (HTTP {status})")
     if wp.get("xmlrpc_closed"):
         status, body, _ = http(f"{api}/xmlrpc.php", method="POST",
                                data=b"<?xml version='1.0'?><methodCall><methodName>system.listMethods</methodName></methodCall>",
