@@ -393,29 +393,35 @@ def check_wordpress():
             probe.append(origin)
     # プリフライトはプラグインが REST 全体で同じ経路で返すので独自APIで試す（共用サーバーへの要求数を抑える）
     combos = [(path, False) for path in CORS_PATHS] + [(CORS_PATHS[0], True)]
-    jobs = [(path, CONTROL_ORIGIN, False) for path in CORS_PATHS]
+    jobs = [(path, CONTROL_ORIGIN, pre) for path, pre in combos]
     jobs += [(path, o, pre) for o in UNRELATED_ORIGINS + probe for path, pre in combos]
     with ThreadPoolExecutor(max_workers=3) as pool:
         results = dict(zip(jobs, pool.map(lambda j: fetch_cors(api, *j), jobs)))
-    # 対照（API ごと）: 本番オリジンに許可が返らない API は、届いているのが WordPress の応答ではない（WAF の遮断ページ等）
-    checked_paths = []
-    for path in CORS_PATHS:
-        st, h = results[(path, CONTROL_ORIGIN, False)]
-        if cors_grants(h, CONTROL_ORIGIN):
-            checked_paths.append(path)
-        else:
-            warnings.append(f"本番オリジンにも CORS の許可が返らないので、{path} の CORS を確認できない (HTTP {st})")
-    missing = [k for k in jobs if k[0] in checked_paths and results[k][0] == 0]
-    if missing:
-        warnings.append(f"WordPress の CORS の点検で {len(missing)} 件に接続できなかった（取れた結果だけで判定）")
-
-    def got(origin):
-        """この origin について、確かめられた API の取れた結果 [(path, preflight, ヘッダー)]"""
-        return [(path, pre, results[(path, origin, pre)][1]) for path, pre in combos
-                if path in checked_paths and results[(path, origin, pre)][0] != 0]
-
     def label(path, pre):
         return f"{path}・{'プリフライト' if pre else 'GET'}"
+    # 対照（API・GET/プリフライトごと）: 本番オリジンに許可が返らない組は、届いているのが WordPress の応答ではない
+    # （WAF の遮断ページ・前段が OPTIONS を一律に拒否する等）ので、その組は判定しない
+    checked = []
+    for path, pre in combos:
+        st, h = results[(path, CONTROL_ORIGIN, pre)]
+        if cors_grants(h, CONTROL_ORIGIN):
+            checked.append((path, pre))
+        else:
+            warnings.append(f"本番オリジンにも CORS の許可が返らないので、{label(path, pre)} の CORS を確認できない (HTTP {st})")
+
+    def usable(st, h):
+        # 接続できない、または CORS ヘッダーが無く WordPress が返す状態（200/204/401/403/404）でもない応答
+        # （429・5xx の遮断ページ等）は、許可していない証拠にならない
+        return st != 0 and (st in (200, 204, 401, 403, 404) or "access-control-allow-origin" in h)
+    unverified = [k for k in jobs if k[1] != CONTROL_ORIGIN and (k[0], k[2]) in checked and not usable(*results[k])]
+    if unverified:
+        codes = sorted({results[k][0] for k in unverified})
+        warnings.append(f"WordPress の CORS の点検で {len(unverified)} 件を確認できなかった（HTTP {codes}。取れた結果だけで判定）")
+
+    def got(origin):
+        """この origin について、確かめられた組の使える結果 [(path, preflight, ヘッダー)]"""
+        return [(path, pre, results[(path, origin, pre)][1]) for path, pre in combos
+                if (path, pre) in checked and usable(*results[(path, origin, pre)])]
     # 応答の状態（401・404 など）に関係なくヘッダーを見る。エラー応答でも CORS の許可があればブラウザは読ませる
     if wp.get("cors_unknown_origin_blocked"):
         for origin in UNRELATED_ORIGINS:

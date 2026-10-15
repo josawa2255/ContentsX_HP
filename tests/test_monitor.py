@@ -164,8 +164,10 @@ class WordPress(Base):
         WAF の遮断ページのように CORS ヘッダー無しの 403 を返す。drop の (API, origin, method) は接続できない"""
         cors, preflight = dict(cors or {}), dict(preflight or {})
         if control:
-            cors.setdefault(monitor.CONTROL_ORIGIN, {"Access-Control-Allow-Origin": monitor.CONTROL_ORIGIN,
-                                                     "Access-Control-Allow-Credentials": "true"})
+            ok = {"Access-Control-Allow-Origin": monitor.CONTROL_ORIGIN, "Access-Control-Allow-Credentials": "true"}
+            cors.setdefault(monitor.CONTROL_ORIGIN, ok)
+            if control != "get-only":
+                preflight.setdefault(monitor.CONTROL_ORIGIN, ok)
         def fake_http(url, method="GET", data=None, headers=None, timeout=20):
             if seen is not None:
                 seen.append((url, method, dict(headers or {})))
@@ -176,7 +178,7 @@ class WordPress(Base):
             path = url.split("cms.example.test", 1)[1].split("?")[0]
             origin = (headers or {}).get("Origin")
             if (path, origin, method) in drop:
-                return 0, b"", {}
+                return (drop[(path, origin, method)], b"", {}) if isinstance(drop, dict) else (0, b"", {})
             if path in blocked_paths:
                 return 403, b"<html>blocked</html>", {}
             table = preflight if method == "OPTIONS" else cors
@@ -233,7 +235,7 @@ class WordPress(Base):
     def test_blocked_page_on_every_api_is_a_warning_not_a_pass(self):
         self.run_check(cors_status=403, control=False)
         self.assertEqual(monitor.problems, [])
-        self.assertEqual(len(monitor.warnings), 2)   # API ごと
+        self.assertEqual(len(monitor.warnings), 3)   # API・GET/プリフライトの組ごと
         self.assertTrue(all("本番オリジン" in w for w in monitor.warnings))
 
     def test_blocked_on_one_api_still_checks_the_other(self):
@@ -248,6 +250,22 @@ class WordPress(Base):
         self.assertTrue(any("null" in p for p in monitor.problems))
         self.assertEqual(len(monitor.warnings), 1)
         self.assertIn("1 件", monitor.warnings[0])
+
+    def test_blocked_status_without_cors_headers_is_unverified_not_a_pass(self):
+        # 一部の組だけ 429 の遮断ページ → 「許可していない」とみなさず、確認できなかった件数として注意
+        drop = {(self.TOPICS, "null", "GET"): 429, (self.TOPICS, "null", "OPTIONS"): 503}
+        self.run_check(self.dev_ok(), self.dev_ok(), drop=drop)
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 1)
+        self.assertIn("2 件", monitor.warnings[0])
+        self.assertIn("429", monitor.warnings[0])
+
+    def test_preflight_route_blocked_still_checks_get(self):
+        # 前段が OPTIONS を一律に拒否 → プリフライトの組だけ「確認できない」、GET は判定を続ける
+        self.run_check({UNRELATED: {"Access-Control-Allow-Origin": UNRELATED}}, control="get-only")
+        self.assertEqual(len(monitor.warnings), 1)
+        self.assertIn("プリフライト", monitor.warnings[0])
+        self.assertTrue(any("許可してはいけない" in p for p in monitor.problems))
 
     def test_unrelated_origins_must_not_be_granted(self):
         for origin, allow in ((UNRELATED, UNRELATED), (UNRELATED, "*"), ("null", "null"),
