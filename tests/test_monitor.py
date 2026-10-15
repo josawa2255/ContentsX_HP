@@ -155,10 +155,13 @@ class GitHubSettings(Base):
 
 class WordPress(Base):
     DEV = ["http://localhost:3000", "http://127.0.0.1:5500"]
+    TOPICS, CORE = monitor.CORS_PATHS
 
-    def run_check(self, cors=None, preflight=None, xmlrpc=403, users=403, cors_status=200, control=True, seen=None):
+    def run_check(self, cors=None, preflight=None, xmlrpc=(403, b""), users=403, cors_status=200, control=True,
+                  blocked_paths=(), drop=(), probe=None, seen=None):
         """cors / preflight: {origin: ヘッダー} で GET / OPTIONS の応答を決める（どの API でも同じ応答）。
-        control=True なら本番オリジン（対照）には資格情報つきの許可を返す"""
+        control=True なら本番オリジン（対照）には資格情報つきの許可を返す。blocked_paths の API は
+        WAF の遮断ページのように CORS ヘッダー無しの 403 を返す。drop の (API, origin, method) は接続できない"""
         cors, preflight = dict(cors or {}), dict(preflight or {})
         if control:
             cors.setdefault(monitor.CONTROL_ORIGIN, {"Access-Control-Allow-Origin": monitor.CONTROL_ORIGIN,
@@ -169,14 +172,20 @@ class WordPress(Base):
             if url.endswith("/wp/v2/users"):
                 return users, b"", {}
             if url.endswith("/xmlrpc.php"):
-                return xmlrpc, b"", {}
+                return xmlrpc[0], xmlrpc[1], {}
+            path = url.split("cms.example.test", 1)[1].split("?")[0]
             origin = (headers or {}).get("Origin")
+            if (path, origin, method) in drop:
+                return 0, b"", {}
+            if path in blocked_paths:
+                return 403, b"<html>blocked</html>", {}
             table = preflight if method == "OPTIONS" else cors
-            return cors_status, b"", table.get(origin, {})
+            # 本物の http() と同じく、ヘッダー名は小文字にそろえて返す
+            return cors_status, b"", {k.lower(): v for k, v in table.get(origin, {}).items()}
         # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
         wp = {"api": "https://cms.example.test", "users_endpoint_closed": True, "xmlrpc_closed": True,
               "cors_unknown_origin_blocked": True, "cors_credentials_production_only": True,
-              "cors_probe_origins": self.DEV}
+              "cors_probe_origins": self.DEV if probe is None else probe}
         with mock.patch.object(monitor, "http", fake_http), \
                 mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
             monitor.check_wordpress()
@@ -188,49 +197,57 @@ class WordPress(Base):
         self.run_check(self.dev_ok(), self.dev_ok())
         self.assertEqual((monitor.problems, monitor.warnings), ([], []))
 
-    def test_wp_down_is_one_warning(self):
-        self.run_check(users=0)
+    def test_everything_down_is_warnings_only(self):
+        self.run_check(users=0, xmlrpc=(0, b""), cors_status=0)
         self.assertEqual(monitor.problems, [])
-        self.assertEqual(len(monitor.warnings), 1)
+        self.assertTrue(monitor.warnings)
 
-    def test_xmlrpc_connection_reset_does_not_stop_cors_checks(self):
-        self.run_check({UNRELATED: {"Access-Control-Allow-Origin": "*"}}, xmlrpc=0)
-        self.assertTrue(any("許可してはいけない" in p for p in monitor.problems))
-        self.assertEqual(monitor.warnings, [])
+    def test_users_unreachable_or_5xx_does_not_stop_other_checks(self):
+        for users in (0, 500):
+            with self.subTest(users=users):
+                self.setUp()
+                self.run_check({UNRELATED: {"Access-Control-Allow-Origin": UNRELATED}}, users=users)
+                self.assertTrue(any("許可してはいけない" in p for p in monitor.problems))
+                self.assertEqual(len(monitor.warnings), 1)
 
-    def test_users_5xx_does_not_stop_cors_checks(self):
-        self.run_check({UNRELATED: {"Access-Control-Allow-Origin": UNRELATED}}, users=500)
-        self.assertTrue(any("許可してはいけない" in p for p in monitor.problems))
-        self.assertEqual(len(monitor.warnings), 1)
-
-    def test_cors_unreachable_is_one_warning(self):
-        self.run_check(cors_status=0)
-        self.assertEqual(monitor.problems, [])
-        self.assertEqual(len(monitor.warnings), 1)
-
-    def test_blocked_page_without_cors_headers_is_a_warning_not_a_pass(self):
-        # WAF の遮断ページなど: どのオリジンにも CORS ヘッダーが無い → 対照が崩れるので「確認できない」
-        self.run_check(cors_status=403, control=False)
-        self.assertEqual(monitor.problems, [])
-        self.assertEqual(len(monitor.warnings), 1)
-        self.assertIn("本番オリジン", monitor.warnings[0])
-
-    def test_xmlrpc_open_is_a_problem(self):
-        self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=200)
+    def test_xmlrpc_open_only_when_the_body_is_xmlrpc(self):
+        self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=(200, b"<?xml version='1.0'?><methodResponse>..."))
         self.assertTrue(any("xmlrpc" in p for p in monitor.problems))
 
     def test_xmlrpc_closed_variants_are_ok(self):
-        for code in (0, 403, 404, 405, 410):
-            with self.subTest(code=code):
+        for st, body in ((403, b""), (404, b""), (405, b""), (410, b""), (200, b"<html>top page</html>")):
+            with self.subTest(status=st):
                 self.setUp()
-                self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=code)
+                self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=(st, body))
                 self.assertEqual((monitor.problems, monitor.warnings), ([], []))
 
-    def test_xmlrpc_5xx_is_a_warning(self):
-        self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=503)
+    def test_xmlrpc_unreachable_or_5xx_is_a_warning_and_cors_continues(self):
+        for st in (0, 503):
+            with self.subTest(status=st):
+                self.setUp()
+                self.run_check({UNRELATED: {"Access-Control-Allow-Origin": "*"}}, xmlrpc=(st, b""))
+                self.assertTrue(any("許可してはいけない" in p for p in monitor.problems))
+                self.assertEqual(len(monitor.warnings), 1)
+                self.assertIn("xmlrpc", monitor.warnings[0])
+
+    def test_blocked_page_on_every_api_is_a_warning_not_a_pass(self):
+        self.run_check(cors_status=403, control=False)
         self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 2)   # API ごと
+        self.assertTrue(all("本番オリジン" in w for w in monitor.warnings))
+
+    def test_blocked_on_one_api_still_checks_the_other(self):
+        self.run_check({UNRELATED: {"Access-Control-Allow-Origin": UNRELATED}}, blocked_paths={self.CORE})
         self.assertEqual(len(monitor.warnings), 1)
-        self.assertIn("503", monitor.warnings[0])
+        self.assertIn(self.CORE, monitor.warnings[0])
+        self.assertTrue(any("許可してはいけない" in p and self.TOPICS in p for p in monitor.problems))
+
+    def test_partial_unreachable_still_judges_the_rest(self):
+        drop = {(self.CORE, UNRELATED, "GET")}
+        self.run_check({"null": {"Access-Control-Allow-Origin": "null"}}, drop=drop)
+        self.assertTrue(any("null" in p for p in monitor.problems))
+        self.assertEqual(len(monitor.warnings), 1)
+        self.assertIn("1 件", monitor.warnings[0])
 
     def test_unrelated_origins_must_not_be_granted(self):
         for origin, allow in ((UNRELATED, UNRELATED), (UNRELATED, "*"), ("null", "null"),
@@ -241,6 +258,12 @@ class WordPress(Base):
                 self.run_check({origin: {"Access-Control-Allow-Origin": allow}})
                 self.assertEqual(len(monitor.problems), 1)
                 self.assertIn(origin, monitor.problems[0])
+
+    def test_unrelated_origin_granted_only_in_preflight(self):
+        self.run_check(preflight={UNRELATED: {"Access-Control-Allow-Origin": UNRELATED,
+                                              "Access-Control-Allow-Credentials": "true"}})
+        self.assertEqual(len(monitor.problems), 1)
+        self.assertIn("プリフライト", monitor.problems[0])
 
     def test_credentials_on_dev_origin_get_is_one_problem_per_origin(self):
         cors = self.dev_ok()
@@ -259,8 +282,8 @@ class WordPress(Base):
 
     def test_credentials_only_in_preflight(self):
         pre = self.dev_ok()
-        pre["http://localhost:3000"] = {"access-control-allow-origin": "http://localhost:3000",
-                                        "access-control-allow-credentials": "TRUE"}
+        pre["http://localhost:3000"] = {"Access-Control-Allow-Origin": "http://localhost:3000",
+                                        "Access-Control-Allow-Credentials": "TRUE"}
         self.run_check(self.dev_ok(), pre)
         self.assertEqual(len(monitor.problems), 1)
         self.assertIn("プリフライト", monitor.problems[0])
@@ -281,15 +304,21 @@ class WordPress(Base):
         self.run_check({"http://localhost:3000": {"Access-Control-Allow-Credentials": "true"}})
         self.assertEqual(monitor.problems, [])
 
+    def test_production_origin_in_probe_list_is_excluded(self):
+        self.run_check(probe=["https://contentsx.jp", "http://localhost:3000"])
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 1)
+        self.assertIn("除外", monitor.warnings[0])
+
     def test_preflight_looks_like_a_real_browser_and_core_api_is_checked(self):
         seen = []
         self.run_check(self.dev_ok(), self.dev_ok(), seen=seen)
         pre = [h for u, m, h in seen if m == "OPTIONS"]
         self.assertTrue(pre and all("x-wp-nonce" in h.get("Access-Control-Request-Headers", "") for h in pre))
-        self.assertTrue(any("/wp-json/wp/v2/users/me" in u for u, m, h in seen))
+        self.assertTrue(any(self.CORE in u for u, m, h in seen))
         keys = [(u.split("?")[0], m, h.get("Origin")) for u, m, h in seen if h.get("Origin")]
         self.assertEqual(len(keys), len(set(keys)))
-
+        self.assertLessEqual(len(keys), 40)   # 共用サーバーへの要求数を抑える
 
 class MergeHeaders(unittest.TestCase):
     def test_duplicates_are_joined_case_insensitively(self):

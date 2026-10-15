@@ -13,7 +13,11 @@
   6. GitHub Pages の独自ドメイン・HTTPS 強制・公開方式、本番が main より古いまま止まっていないか、
      main への PR を通らない push・強制 push（リポジトリの乗っ取り）
      push した人は GitHub の操作記録（activity API）の actor で見る（コミットの作者名は偽装できるため）
-  7. WordPress で閉じた入口が開いていないか（expected.json で true にした項目だけ。WP 側の後退）
+  7. WordPress で閉じた入口が開いていないか（expected.json で true にした項目だけ。WP 側の後退）:
+     ユーザー一覧API、xmlrpc.php（本文が XML-RPC の応答なら開いている）、許可してはいけないオリジン
+     （null・前方/後方一致の誤り・http の本番ホスト・偽サブドメイン）への CORS、開発用オリジンへの資格情報つき CORS。
+     独自API と WordPress 本体の API、GET とプリフライトを試す。API ごとに本番オリジン（対照）に許可が返るかを
+     確かめ、返らない API（WAF の遮断ページ等）と取れなかった組は「確認できない」の注意にする
 
 Usage:
   python3 tools/security/monitor.py --site-dir _site            # 点検（異常で exit 1）
@@ -341,8 +345,9 @@ def cors_with_credentials(h, origin):
 
 
 def fetch_cors(api, path, origin, preflight):
-    """(status, 小文字のヘッダー)。オリジンごとに URL を変え、WP の前段のキャッシュ（最大10分。
-    Vary: Origin を見ない場合もある）を共有させない。プリフライトは本物のブラウザが Cookie つきの POST の前に送る形"""
+    """(status, ヘッダー〈名前は http() が小文字にそろえる〉)。オリジンごとに URL を変え、WP の前段のキャッシュ
+    （最大10分。Vary: Origin を見ない場合もある）を共有させない。プリフライトは本物のブラウザが Cookie つきの
+    POST の前に送る形"""
     url = f"{api}{path}?{BUST}&o={quote(origin, safe='')}"
     if preflight:
         headers = {"Origin": origin, "Access-Control-Request-Method": "POST",
@@ -350,7 +355,12 @@ def fetch_cors(api, path, origin, preflight):
         status, _, h = http(url, method="OPTIONS", headers=headers, timeout=15)
     else:
         status, _, h = http(url, headers={"Origin": origin}, timeout=15)
-    return status, {k.lower(): v for k, v in h.items()}
+    return status, h
+
+
+def is_production_origin(origin):
+    host = urlsplit(origin).hostname or ""
+    return origin.startswith("https://") and (host == "contentsx.jp" or host.endswith(".contentsx.jp"))
 
 
 def check_wordpress():
@@ -359,49 +369,64 @@ def check_wordpress():
     # 1つの入口の失敗で他の点検を省かない（それぞれ注意にとどめて続ける）
     status, body, _ = http(f"{api}/wp-json/wp/v2/users")
     if status == 0:
-        warnings.append("WordPress に接続できないので、WordPress の点検を省略")
-        return
-    if status >= 500:
+        warnings.append("WordPress のユーザー一覧APIに接続できない")
+    elif status >= 500:
         warnings.append(f"WordPress のユーザー一覧APIがエラーを返す (HTTP {status})")
     elif wp.get("users_endpoint_closed") and status == 200 and body.strip().startswith(b"["):
         problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
     if wp.get("xmlrpc_closed"):
-        status, _, _ = http(f"{api}/xmlrpc.php", method="POST",
-                            data=b"<?xml version='1.0'?><methodCall><methodName>system.listMethods</methodName></methodCall>",
-                            headers={"Content-Type": "text/xml"})
-        if status == 200:
-            problems.append("WordPress の xmlrpc.php が開いている")
-        elif status not in XMLRPC_CLOSED and status != 0:   # 0＝接続を切られた（閉じ方の一つ）
-            warnings.append(f"WordPress の xmlrpc.php が想定外の応答 (HTTP {status})")
+        status, body, _ = http(f"{api}/xmlrpc.php", method="POST",
+                               data=b"<?xml version='1.0'?><methodCall><methodName>system.listMethods</methodName></methodCall>",
+                               headers={"Content-Type": "text/xml"})
+        # urllib は POST への 301/302/303 を GET で追うので、状態コードではなく本文で「開いている」を判定する
+        if status == 200 and b"<methodResponse" in body:
+            problems.append("WordPress の xmlrpc.php が開いている（XML-RPC の応答が返る）")
+        elif status not in XMLRPC_CLOSED and not (status == 200 and b"<methodResponse" not in body):
+            warnings.append(f"WordPress の xmlrpc.php を確認できない (HTTP {status})")
     if not (wp.get("cors_unknown_origin_blocked") or wp.get("cors_credentials_production_only")):
         return
-    probe = list(wp.get("cors_probe_origins", []))   # 一般的な開発用ポート（プラグインの許可一覧とは同期しない）
+    probe = []
+    for origin in wp.get("cors_probe_origins", []):   # 一般的な開発用ポート（プラグインの許可一覧とは同期しない）
+        if is_production_origin(origin):
+            warnings.append(f"cors_probe_origins に本番のオリジンが入っているので除外: {origin}")
+        else:
+            probe.append(origin)
+    # プリフライトはプラグインが REST 全体で同じ経路で返すので独自APIで試す（共用サーバーへの要求数を抑える）
+    combos = [(path, False) for path in CORS_PATHS] + [(CORS_PATHS[0], True)]
     jobs = [(path, CONTROL_ORIGIN, False) for path in CORS_PATHS]
-    jobs += [(path, o, False) for o in UNRELATED_ORIGINS for path in CORS_PATHS]
-    jobs += [(path, o, pre) for o in probe for path in CORS_PATHS for pre in (False, True)]
-    with ThreadPoolExecutor(max_workers=6) as pool:
+    jobs += [(path, o, pre) for o in UNRELATED_ORIGINS + probe for path, pre in combos]
+    with ThreadPoolExecutor(max_workers=3) as pool:
         results = dict(zip(jobs, pool.map(lambda j: fetch_cors(api, *j), jobs)))
-    if any(st == 0 for st, _ in results.values()):
-        warnings.append("WordPress の CORS の点検中に接続できない応答があったので、CORS の判定を省略")
-        return
-    # 対照: 本番オリジンに許可が返らないなら、届いているのは WordPress の応答ではない（WAF の遮断ページ等）
-    if not any(cors_grants(results[(path, CONTROL_ORIGIN, False)][1], CONTROL_ORIGIN) for path in CORS_PATHS):
-        codes = sorted({results[(path, CONTROL_ORIGIN, False)][0] for path in CORS_PATHS})
-        warnings.append(f"本番オリジンにも CORS の許可が返らないので、WordPress の CORS を確認できない (HTTP {codes})")
-        return
+    # 対照（API ごと）: 本番オリジンに許可が返らない API は、届いているのが WordPress の応答ではない（WAF の遮断ページ等）
+    checked_paths = []
+    for path in CORS_PATHS:
+        st, h = results[(path, CONTROL_ORIGIN, False)]
+        if cors_grants(h, CONTROL_ORIGIN):
+            checked_paths.append(path)
+        else:
+            warnings.append(f"本番オリジンにも CORS の許可が返らないので、{path} の CORS を確認できない (HTTP {st})")
+    missing = [k for k in jobs if k[0] in checked_paths and results[k][0] == 0]
+    if missing:
+        warnings.append(f"WordPress の CORS の点検で {len(missing)} 件に接続できなかった（取れた結果だけで判定）")
+
+    def got(origin):
+        """この origin について、確かめられた API の取れた結果 [(path, preflight, ヘッダー)]"""
+        return [(path, pre, results[(path, origin, pre)][1]) for path, pre in combos
+                if path in checked_paths and results[(path, origin, pre)][0] != 0]
+
+    def label(path, pre):
+        return f"{path}・{'プリフライト' if pre else 'GET'}"
     # 応答の状態（401・404 など）に関係なくヘッダーを見る。エラー応答でも CORS の許可があればブラウザは読ませる
     if wp.get("cors_unknown_origin_blocked"):
         for origin in UNRELATED_ORIGINS:
-            granted = [path for path in CORS_PATHS if cors_grants(results[(path, origin, False)][1], origin)]
-            if granted:
-                problems.append(f"WordPress の CORS が許可してはいけないオリジン {origin} を許可している: {', '.join(granted)}")
+            hits = [label(path, pre) for path, pre, h in got(origin) if cors_grants(h, origin)]
+            if hits:
+                problems.append(f"WordPress の CORS が許可してはいけないオリジン {origin} を許可している: {', '.join(hits)}")
     if wp.get("cors_credentials_production_only"):
         # 資格情報（Cookie）つきの CORS は本番ドメインだけ。開発用オリジンに出すと、手元などで開いた
-        # 任意のページからログイン中の管理者として API を呼べてしまう。プラグインはプリフライト（OPTIONS）を
-        # 別の経路で返すので GET と両方を確かめる（許可してはいけないオリジンは上の点検で報告済み）
+        # 任意のページからログイン中の管理者として API を呼べてしまう（許可してはいけないオリジンは上で報告済み）
         for origin in probe:
-            hits = [f"{path}・{'プリフライト' if pre else 'GET'}" for path in CORS_PATHS for pre in (False, True)
-                    if cors_with_credentials(results[(path, origin, pre)][1], origin)]
+            hits = [label(path, pre) for path, pre, h in got(origin) if cors_with_credentials(h, origin)]
             if hits:
                 problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している: {', '.join(hits)}")
 
