@@ -324,8 +324,9 @@ UNRELATED_ORIGINS = ["https://cxmon-probe.invalid", "null",
                      "http://contentsx.jp", "https://cxmon-probe.contentsx.jp"]
 # 許可されているはずの本番オリジン（対照）。これに許可が返らない応答は WordPress のものではない（WAF の遮断ページ等）
 CONTROL_ORIGIN = "https://contentsx.jp"
-# 独自の API と WordPress 本体の API（Cookie 認証で管理者として操作されうる）の両方を試す
-CORS_PATHS = ["/wp-json/contentsx/v1/topics", "/wp-json/wp/v2/users/me"]
+# 独自の API と WordPress 本体の API（Cookie 認証で管理者として操作されうる。CORS の付け方は本体の API 全体で同じ）の
+# 両方を試す。本体の代表は wp/v2/types（users 系は前段が GitHub Actions の IP からの要求を遮断し、確かめられないため）
+CORS_PATHS = ["/wp-json/contentsx/v1/topics", "/wp-json/wp/v2/types"]
 XMLRPC_CLOSED = (403, 404, 405, 410)
 
 
