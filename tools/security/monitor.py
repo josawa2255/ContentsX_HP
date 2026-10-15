@@ -302,10 +302,29 @@ def check_stale_deploy():
 
 
 # ---------- 7. WordPress ----------
+UNRELATED_ORIGIN = "https://cxmon-probe.invalid"
+
+
+def cors_headers(api, origin, preflight=False):
+    """topics に Origin を付けて取得し、(HTTP status, 小文字にそろえたヘッダー) を返す。
+    オリジンごとに URL を変え、WP の前段のキャッシュ（最大10分。Vary: Origin を見ない場合もある）を共有させない"""
+    url = f"{api}/wp-json/contentsx/v1/topics?{BUST}&o={quote(origin, safe='')}"
+    if preflight:
+        status, _, headers = http(url, method="OPTIONS",
+                                  headers={"Origin": origin, "Access-Control-Request-Method": "POST"})
+    else:
+        status, _, headers = http(url, headers={"Origin": origin})
+    return status, {k.lower(): v for k, v in headers.items()}
+
+
 def check_wordpress():
     wp = EXPECTED["wordpress"]
     api = wp["api"]
     status, body, _ = http(f"{api}/wp-json/wp/v2/users")
+    if status == 0:
+        # 落ちている・つながらないときは、同じ原因の注意を何行も出さず、待ち時間も重ねない
+        warnings.append("WordPress に接続できないので、WordPress の点検を省略")
+        return
     if wp.get("users_endpoint_closed") and status == 200 and body.strip().startswith(b"["):
         problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
     if wp.get("xmlrpc_closed"):
@@ -314,31 +333,30 @@ def check_wordpress():
                             headers={"Content-Type": "text/xml"})
         if status == 200:
             problems.append("WordPress の xmlrpc.php が開いている")
-        elif status == 0:
-            warnings.append("WordPress の xmlrpc.php を確認できない（接続できない）")
+        elif status != 403:   # プラグインは 403 で止める。それ以外は閉じているとは言えない
+            warnings.append(f"WordPress の xmlrpc.php が想定外の応答 (HTTP {status})")
     if wp.get("cors_unknown_origin_blocked"):
         # 無関係なオリジンに CORS を許可していないか（許可オリジンの一覧が崩れた・ワイルドカードになった）
-        probe = "https://cxmon-probe.invalid"
-        # WP の前段のキャッシュ（最大10分）を避けるため、本番サイトの点検と同じくクエリを付ける
-        status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics?{BUST}", headers={"Origin": probe})
+        status, h = cors_headers(api, UNRELATED_ORIGIN)
         if status != 200:
             warnings.append(f"WordPress の CORS を確認できない (HTTP {status})")
-        else:
-            allowed = {k.lower(): v for k, v in headers.items()}.get("access-control-allow-origin", "")
-            if allowed in (probe, "*"):
-                problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {allowed}")
-    if wp.get("cors_dev_without_credentials"):
-        # 開発用オリジン（手元のプレビュー・B のスモークテスト）は、資格情報（Cookie）なしでだけ許可する設計。
-        # 資格情報つきで許可すると、手元で開いた任意のページからログイン中の管理者として API を呼べてしまう
-        for origin in wp.get("dev_origins", []):
-            status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics?{BUST}", headers={"Origin": origin})
-            if status != 200:
-                warnings.append(f"WordPress の CORS（{origin}）を確認できない (HTTP {status})")
-                continue
-            h = {k.lower(): v for k, v in headers.items()}
-            if h.get("access-control-allow-origin", "") in (origin, "*") and h.get("access-control-allow-credentials", "").lower() == "true":
-                problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している")
-
+        elif h.get("access-control-allow-origin", "") in (UNRELATED_ORIGIN, "*"):
+            problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {h['access-control-allow-origin']}")
+    if wp.get("cors_credentials_production_only"):
+        # 資格情報（Cookie）つきの CORS は本番ドメインだけ。それ以外のオリジン（開発用を含む）に出すと、
+        # 手元などで開いた任意のページからログイン中の管理者として API を呼べてしまう。
+        # 許可オリジンの一覧を同期せず「本番以外で試して資格情報つきが返ったら異常」と一般的に判定する。
+        # プラグインはプリフライト（OPTIONS）を別の経路で返すので、GET と両方を確かめる
+        for origin in [UNRELATED_ORIGIN] + list(wp.get("cors_probe_origins", [])):
+            for preflight in (False, True):
+                status, h = cors_headers(api, origin, preflight)
+                kind = "プリフライト" if preflight else "GET"
+                if status not in (200, 204):
+                    warnings.append(f"WordPress の CORS（{origin}・{kind}）を確認できない (HTTP {status})")
+                    continue
+                if h.get("access-control-allow-origin", "") in (origin, "*") \
+                        and h.get("access-control-allow-credentials", "").lower() == "true":
+                    problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している（{kind}）")
 
 def main():
     ap = argparse.ArgumentParser()

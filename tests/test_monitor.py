@@ -153,73 +153,87 @@ class GitHubSettings(Base):
         self.assertEqual(len(monitor.problems), 2)
 
 
-class WordPressCors(Base):
-    def run_check(self, status, headers):
-        # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
-        wp = {"api": "https://cms.example.test", "cors_unknown_origin_blocked": True}
-        with mock.patch.object(monitor, "http", lambda url, **kw: (status, b"{}", headers)), \
-                mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
-            monitor.check_wordpress()
-
-    def test_unknown_origin_not_allowed_is_ok(self):
-        self.run_check(200, {"Vary": "Origin"})
-        self.assertEqual(monitor.problems, [])
-        self.assertEqual(monitor.warnings, [])
-
-    def test_unknown_origin_echoed_is_a_problem(self):
-        self.run_check(200, {"Access-Control-Allow-Origin": "https://cxmon-probe.invalid"})
-        self.assertEqual(len(monitor.problems), 1)
-
-    def test_wildcard_is_a_problem(self):
-        self.run_check(200, {"Access-Control-Allow-Origin": "*"})
-        self.assertEqual(len(monitor.problems), 1)
-
-    def test_unreachable_is_a_warning_not_silence(self):
-        self.run_check(0, {})
-        self.assertEqual(monitor.problems, [])
-        self.assertTrue(any("確認できない" in w for w in monitor.warnings))
-
-
-class WordPressHardening(Base):
+class WordPress(Base):
     DEV = ["http://localhost:3000", "http://127.0.0.1:5500"]
 
-    def run_check(self, cors=None, xmlrpc_status=403, cors_status=200):
-        cors = cors or {}
+    def run_check(self, cors=None, preflight=None, xmlrpc=403, users=403, cors_status=200):
+        """cors / preflight: {origin: ヘッダー} で GET / OPTIONS の応答を決める"""
+        cors, preflight = cors or {}, preflight or {}
         def fake_http(url, method="GET", data=None, headers=None, timeout=20):
+            if url.endswith("/wp/v2/users"):
+                return users, b"", {}
             if url.endswith("/xmlrpc.php"):
-                return xmlrpc_status, b"", {}
-            return cors_status, b"{}", cors.get((headers or {}).get("Origin"), {})
+                return xmlrpc, b"", {}
+            origin = (headers or {}).get("Origin")
+            table = preflight if method == "OPTIONS" else cors
+            return cors_status, b"", table.get(origin, {})
         # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
-        wp = {"api": "https://cms.example.test", "xmlrpc_closed": True,
-              "cors_dev_without_credentials": True, "dev_origins": self.DEV}
+        wp = {"api": "https://cms.example.test", "users_endpoint_closed": True, "xmlrpc_closed": True,
+              "cors_unknown_origin_blocked": True, "cors_credentials_production_only": True,
+              "cors_probe_origins": self.DEV}
         with mock.patch.object(monitor, "http", fake_http), \
                 mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
             monitor.check_wordpress()
 
+    def dev_ok(self):
+        return {o: {"Access-Control-Allow-Origin": o} for o in self.DEV}
+
     def test_hardened(self):
-        self.run_check({o: {"Access-Control-Allow-Origin": o} for o in self.DEV})
+        self.run_check(self.dev_ok(), self.dev_ok())
         self.assertEqual(monitor.problems, [])
         self.assertEqual(monitor.warnings, [])
 
+    def test_wp_down_is_one_warning(self):
+        self.run_check(users=0)
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 1)
+
     def test_xmlrpc_open_is_a_problem(self):
-        self.run_check(xmlrpc_status=200)
+        self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=200)
         self.assertTrue(any("xmlrpc" in p for p in monitor.problems))
 
-    def test_xmlrpc_unreachable_is_a_warning(self):
-        self.run_check(xmlrpc_status=0)
+    def test_xmlrpc_5xx_is_a_warning(self):
+        self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=503)
         self.assertEqual(monitor.problems, [])
-        self.assertTrue(any("xmlrpc" in w for w in monitor.warnings))
+        self.assertTrue(any("xmlrpc" in w and "503" in w for w in monitor.warnings))
 
-    def test_dev_origin_with_credentials_is_a_problem(self):
-        self.run_check({"http://127.0.0.1:5500": {"Access-Control-Allow-Origin": "http://127.0.0.1:5500",
-                                                  "Access-Control-Allow-Credentials": "true"}})
+    def test_unrelated_origin_echoed_is_a_problem(self):
+        self.run_check({UNRELATED: {"Access-Control-Allow-Origin": UNRELATED}})
+        self.assertTrue(any("無関係" in p for p in monitor.problems))
+
+    def test_credentials_on_dev_origin_get(self):
+        cors = self.dev_ok()
+        cors["http://127.0.0.1:5500"] = {"Access-Control-Allow-Origin": "http://127.0.0.1:5500",
+                                         "Access-Control-Allow-Credentials": "true"}
+        self.run_check(cors, self.dev_ok())
         self.assertEqual(len(monitor.problems), 1)
         self.assertIn("127.0.0.1:5500", monitor.problems[0])
+        self.assertIn("GET", monitor.problems[0])
+
+    def test_credentials_only_in_preflight(self):
+        pre = self.dev_ok()
+        pre["http://localhost:3000"] = {"access-control-allow-origin": "http://localhost:3000",
+                                        "access-control-allow-credentials": "TRUE"}
+        self.run_check(self.dev_ok(), pre)
+        self.assertEqual(len(monitor.problems), 1)
+        self.assertIn("プリフライト", monitor.problems[0])
+
+    def test_wildcard_with_credentials(self):
+        self.run_check({"http://localhost:3000": {"Access-Control-Allow-Origin": "*",
+                                                  "Access-Control-Allow-Credentials": "true"}})
+        self.assertTrue(any("localhost:3000" in p for p in monitor.problems))
+
+    def test_credentials_header_without_allow_origin_is_not_a_problem(self):
+        self.run_check({"http://localhost:3000": {"Access-Control-Allow-Credentials": "true"}})
+        self.assertEqual(monitor.problems, [])
 
     def test_cors_unreachable_is_a_warning(self):
         self.run_check(cors_status=503)
         self.assertEqual(monitor.problems, [])
-        self.assertEqual(len(monitor.warnings), 2)
+        self.assertTrue(monitor.warnings)
+
+
+UNRELATED = monitor.UNRELATED_ORIGIN
 
 if __name__ == "__main__":
     unittest.main()
