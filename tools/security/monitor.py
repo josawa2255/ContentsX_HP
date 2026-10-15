@@ -10,7 +10,8 @@
   3. 内部資料が本番から取得できないか（公開範囲の後退）
   4. DNS（NS / A / CNAME / MX / CAA）が基準値と同じか（ドメイン・DNSの乗っ取り）
   5. TLS 証明書の残り日数
-  6. GitHub Pages の独自ドメイン・HTTPS 強制、main への PR を通らない push・強制 push（リポジトリの乗っ取り）
+  6. GitHub Pages の独自ドメイン・HTTPS 強制・公開方式、本番が main より古いまま止まっていないか、
+     main への PR を通らない push・強制 push（リポジトリの乗っ取り）
      push した人は GitHub の操作記録（activity API）の actor で見る（コミットの作者名は偽装できるため）
   7. WordPress で閉じた入口が開いていないか（expected.json で true にした項目だけ。WP 側の後退）
 
@@ -19,6 +20,7 @@ Usage:
   python3 tools/security/monitor.py --site-dir _site --report   # 記録だけ（常に exit 0。基準値づくり用）
 """
 import argparse
+import functools
 import json
 import os
 import re
@@ -209,11 +211,14 @@ def check_github():
             problems.append(f"GitHub Pages の独自ドメインが変わった: {pages.get('cname')}")
         if exp["pages_https_enforced"] and not pages.get("https_enforced"):
             problems.append("GitHub Pages の HTTPS 強制が外れている")
+        # legacy（ブランチから公開）に戻るとリポジトリ全体が公開され、許可リストが効かなくなる（CLAUDE.md「公開範囲と監視」）
+        if exp.get("pages_build_type") and pages.get("build_type") != exp["pages_build_type"]:
+            problems.append(f"GitHub Pages の公開方式が変わった: {pages.get('build_type')}（GitHub Actions 以外だと内部資料まで公開される）")
     else:
         warnings.append(f"GitHub Pages の設定を読めない (HTTP {status})")
     # main への操作の記録（直近1日）。actor は実際に操作した認証済みアカウントで、コミットの作者名と違い偽装できない
-    status, acts = github("/activity?ref=refs/heads/main&time_period=day&per_page=100")
-    if status != 200 or not isinstance(acts, list):
+    status, acts = main_activity()
+    if acts is None:
         problems.append(f"main への操作の記録を読めない（PR を通らない push を確認できない）: HTTP {status}")
         return
     for a in acts:
@@ -224,6 +229,76 @@ def check_github():
             problems.append(f"main に {kind} があった: {actor} {a.get('timestamp')} {sha}")
         elif kind == "push" and actor not in exp["direct_push_allowed"]:
             problems.append(f"PR を通らずに main へ push された: {actor} {a.get('timestamp')} {sha}")
+
+
+ACTIVITY_PAGE = 100
+
+
+@functools.cache
+def main_activity():
+    """main への操作の記録（直近1日・新しい順）を (HTTP status, list or None) で返す。
+    失敗も含めて1回の実行で1度だけ取り、check_github と check_stale_deploy が共有する"""
+    status, acts = github(f"/activity?ref=refs/heads/main&time_period=day&per_page={ACTIVITY_PAGE}")
+    if status != 200 or not isinstance(acts, list):
+        return status, None
+    return status, [a for a in acts if isinstance(a, dict)]
+
+
+def parse_utc(value):
+    """GitHub の時刻（ISO 8601）を UTC の日時にする。時差の無い表記は UTC とみなす。読めなければ None"""
+    try:
+        t = datetime.fromisoformat(str(value or "").replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+
+
+def check_stale_deploy():
+    """本番が main より古いまま放置されていないか（デプロイが止まっている・自動ビルドの反映漏れ）。
+    起点は「本番に出ていない main への操作のうち最も古いもの」の時刻。GitHub が記録した操作の時刻を使う
+    （コミットの日時は書き換えられる。最新の操作を起点にすると、push が続く限り遅れに気づけない）"""
+    live_sha = os.environ.get("LIVE_SHA")
+    if not live_sha:
+        warnings.append("本番のコミット（LIVE_SHA）が分からないので、本番の更新停止の点検を省略")
+        return
+    status, acts = main_activity()
+    if acts is None:
+        warnings.append(f"main への操作の記録を読めないので、本番の更新停止の点検を省略 (HTTP {status})")
+        return
+    if not acts:
+        # 直近1日に main への操作が無い。main の先頭と本番が違えば、1日以上止まっている
+        status, head = github("/commits/main")
+        head_sha = head.get("sha") if status == 200 and isinstance(head, dict) else None
+        if head_sha is None:
+            warnings.append(f"直近1日の操作記録が無く、main の先頭も読めないので、本番の更新停止の点検を省略 (HTTP {status})")
+        elif head_sha != live_sha:
+            problems.append(f"本番が main より古いまま、少なくとも1日（直近1日に main への操作なし）: 本番 {live_sha[:7]} / main {head_sha[:7]}")
+        return
+    # 新しい順に見て、本番のコミットに届くまでの操作が「本番に出ていない操作」
+    pending = []
+    for a in acts:
+        if (a.get("after") or "") == live_sha:
+            break
+        pending.append(a)
+    if not pending:
+        return
+    oldest = pending[-1]
+    if len(pending) == len(acts) and len(acts) >= ACTIVITY_PAGE:
+        warnings.append(f"main への操作が直近1日で {len(acts)} 件以上あり、本番のコミットを記録の中で見つけられない（本番の更新停止の点検を省略）")
+        return
+    if len(pending) == len(acts) and (oldest.get("before") or "") != live_sha:
+        # 本番のコミットが直近1日の記録に無く、最初の未反映の操作も記録より前 → 1日以上遅れている
+        problems.append(f"本番が main より古いまま、少なくとも1日（本番のコミットが直近1日の操作記録に無い）: "
+                        f"本番 {live_sha[:7]} / main {(acts[0].get('after') or '?')[:7]}")
+        return
+    started = parse_utc(oldest.get("timestamp"))
+    if started is None:
+        warnings.append(f"main への操作の時刻を読めない: {oldest.get('timestamp')!r}")
+        return
+    age_h = (datetime.now(timezone.utc) - started).total_seconds() / 3600
+    if age_h >= 1:
+        problems.append(f"本番が main より古いまま {age_h:.1f} 時間（デプロイが止まっている可能性）: "
+                        f"本番 {live_sha[:7]} / main {(acts[0].get('after') or '?')[:7]}・未反映の操作 {len(pending)} 件")
 
 
 # ---------- 7. WordPress ----------
@@ -239,11 +314,17 @@ def check_wordpress():
                             headers={"Content-Type": "text/xml"})
         if status == 200:
             problems.append("WordPress の xmlrpc.php が開いている")
-    if wp.get("cors_localhost_removed"):
-        _, _, headers = http(f"{api}/wp-json/contentsx/v1/topics", headers={"Origin": "http://localhost:3000"})
-        if any(k.lower() == "access-control-allow-origin" and "localhost" in v for k, v in headers.items()):
-            problems.append("WordPress の CORS が localhost を許可している")
-
+    if wp.get("cors_unknown_origin_blocked"):
+        # 無関係なオリジンに CORS を許可していないか（許可オリジンの一覧が崩れた・ワイルドカードになった）
+        probe = "https://cxmon-probe.invalid"
+        # WP の前段のキャッシュ（最大10分）を避けるため、本番サイトの点検と同じくクエリを付ける
+        status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics?{BUST}", headers={"Origin": probe})
+        if status != 200:
+            warnings.append(f"WordPress の CORS を確認できない (HTTP {status})")
+        else:
+            allowed = {k.lower(): v for k, v in headers.items()}.get("access-control-allow-origin", "")
+            if allowed in (probe, "*"):
+                problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {allowed}")
 
 def main():
     ap = argparse.ArgumentParser()
@@ -251,7 +332,7 @@ def main():
     ap.add_argument("--report", action="store_true", help="記録だけ。異常があっても exit 0")
     args = ap.parse_args()
     for fn in (lambda: check_content(args.site_dir), check_hidden, lambda: check_dns(args.report),
-               check_tls, check_github, check_wordpress):
+               check_tls, check_github, check_stale_deploy, check_wordpress):
         try:
             fn()
         except Exception as e:  # noqa: BLE001 — 1つの点検の失敗で他を止めない。失敗自体は異常扱い

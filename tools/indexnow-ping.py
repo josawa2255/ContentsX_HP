@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""IndexNow ping for ContentsX. HEAD~1 比較で変更URLをBing/Yandexへ通知。"""
+"""IndexNow ping for ContentsX. 変更URLをBing/Yandexへ通知。
+
+既定は HEAD~1..HEAD の差分。static.yml は公開の成功後に「前回デプロイしたコミット..今回」の範囲を渡す
+（--base / --head）。自動ビルドの変更も、待機中のデプロイが置き換えられた場合も取りこぼさない。
+"""
+import argparse
 import json
 import re
 import subprocess
@@ -10,10 +15,10 @@ HOST = "contentsx.jp"
 KEY = "d3aa5088bd3c49f988a9c1ead3f8206a"
 KEY_LOCATION = f"https://{HOST}/{KEY}.txt"
 
-def get_changed_urls():
+def get_changed_urls(base="HEAD~1", head="HEAD"):
     try:
         out = subprocess.check_output(
-            ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+            ["git", "diff", "--name-only", base, head],
             text=True
         )
     except subprocess.CalledProcessError:
@@ -33,7 +38,11 @@ def get_changed_urls():
     return list(dict.fromkeys(urls))
 
 def main():
-    urls = get_changed_urls()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default="HEAD~1")
+    ap.add_argument("--head", default="HEAD")
+    args = ap.parse_args()
+    urls = get_changed_urls(args.base, args.head)
     if not urls:
         print("No relevant URL changes.")
         return 0

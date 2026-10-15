@@ -69,10 +69,12 @@
     "pages_https_enforced": true,
     "direct_push_allowed": [
       "github-actions[bot]"
-    ]
+    ],
+    "pages_build_type": "workflow"
   },
   "wordpress": {
     "api": "https://cms.contentsx.jp",
-    "users_endpoint_closed": true
+    "users_endpoint_closed": true,
+    "cors_unknown_origin_blocked": true
   }
 }

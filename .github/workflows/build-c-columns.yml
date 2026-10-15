@@ -13,11 +13,14 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pushed: ${{ steps.commit.outputs.pushed }}
     steps:
       - uses: actions/checkout@v4
       - name: Run build-c-columns
         run: python3 tools/build-c-columns.py
       - name: Commit generated columns
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -27,4 +30,23 @@ jobs:
           else
             git commit -m "chore(columns): 週次再ビルド (WP CMS → static)"
             git push
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
+
+  # GITHUB_TOKEN での push は push トリガーのワークフロー（公開・IndexNow）を起動しない（GitHub の仕様）。
+  # workflow_dispatch は GITHUB_TOKEN からでも起動できるので、実際に push したときだけ公開を起動する
+  # （IndexNow への通知は static.yml が公開の成功後に行う）。ワークフローを起動できる権限（actions: write）は、
+  # 外部（WordPress）のデータを扱うビルドのジョブには渡さず、このジョブだけに付ける。
+  # main で動いたときだけ（別ブランチで試したときに main を公開しない）。
+  dispatch:
+    needs: build
+    if: needs.build.outputs.pushed == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Deploy (IndexNow is notified by static.yml after the deploy)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run static.yml --ref main

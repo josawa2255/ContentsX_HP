@@ -10,6 +10,7 @@ on:
   pull_request:
     paths:
       - 'tools/security/**'
+      - 'tests/test_monitor.py'
       - 'tools/build-site-artifact.py'
       - '.github/workflows/security-monitor.yml'
 
@@ -32,6 +33,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Unit tests of the monitor (PR only)
+        if: github.event_name == 'pull_request'
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_monitor.py'
+
       - name: Keep the monitor from this commit
         run: |
           mkdir -p "$RUNNER_TEMP/monitor/tools"
@@ -49,6 +54,7 @@ jobs:
           done
           if [ -z "$live" ]; then echo "::error::no successful GitHub Pages deployment found"; exit 1; fi
           echo "live commit: $live"
+          echo "LIVE_SHA=$live" >> "$GITHUB_ENV"
           git checkout --quiet --detach "$live"
           if [ -f tools/build-site-artifact.py ]; then
             # デプロイ（static.yml）と同じ順: サービスページを作り直してから公開ファイルを集める
