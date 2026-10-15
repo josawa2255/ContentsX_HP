@@ -179,5 +179,47 @@ class WordPressCors(Base):
         self.assertEqual(monitor.problems, [])
         self.assertTrue(any("確認できない" in w for w in monitor.warnings))
 
+
+class WordPressHardening(Base):
+    DEV = ["http://localhost:3000", "http://127.0.0.1:5500"]
+
+    def run_check(self, cors=None, xmlrpc_status=403, cors_status=200):
+        cors = cors or {}
+        def fake_http(url, method="GET", data=None, headers=None, timeout=20):
+            if url.endswith("/xmlrpc.php"):
+                return xmlrpc_status, b"", {}
+            return cors_status, b"{}", cors.get((headers or {}).get("Origin"), {})
+        # 基準値ファイル（expected.json）の中身に左右されないよう、点検の設定をこのテスト用に丸ごと置き換える
+        wp = {"api": "https://cms.example.test", "xmlrpc_closed": True,
+              "cors_dev_without_credentials": True, "dev_origins": self.DEV}
+        with mock.patch.object(monitor, "http", fake_http), \
+                mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
+            monitor.check_wordpress()
+
+    def test_hardened(self):
+        self.run_check({o: {"Access-Control-Allow-Origin": o} for o in self.DEV})
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(monitor.warnings, [])
+
+    def test_xmlrpc_open_is_a_problem(self):
+        self.run_check(xmlrpc_status=200)
+        self.assertTrue(any("xmlrpc" in p for p in monitor.problems))
+
+    def test_xmlrpc_unreachable_is_a_warning(self):
+        self.run_check(xmlrpc_status=0)
+        self.assertEqual(monitor.problems, [])
+        self.assertTrue(any("xmlrpc" in w for w in monitor.warnings))
+
+    def test_dev_origin_with_credentials_is_a_problem(self):
+        self.run_check({"http://127.0.0.1:5500": {"Access-Control-Allow-Origin": "http://127.0.0.1:5500",
+                                                  "Access-Control-Allow-Credentials": "true"}})
+        self.assertEqual(len(monitor.problems), 1)
+        self.assertIn("127.0.0.1:5500", monitor.problems[0])
+
+    def test_cors_unreachable_is_a_warning(self):
+        self.run_check(cors_status=503)
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 2)
+
 if __name__ == "__main__":
     unittest.main()

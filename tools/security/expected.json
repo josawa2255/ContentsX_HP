@@ -75,6 +75,12 @@
   "wordpress": {
     "api": "https://cms.contentsx.jp",
     "users_endpoint_closed": true,
-    "cors_unknown_origin_blocked": true
+    "cors_unknown_origin_blocked": true,
+    "xmlrpc_closed": true,
+    "cors_dev_without_credentials": true,
+    "dev_origins": [
+      "http://localhost:3000",
+      "http://127.0.0.1:5500"
+    ]
   }
 }

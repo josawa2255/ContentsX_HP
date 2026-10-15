@@ -314,6 +314,8 @@ def check_wordpress():
                             headers={"Content-Type": "text/xml"})
         if status == 200:
             problems.append("WordPress の xmlrpc.php が開いている")
+        elif status == 0:
+            warnings.append("WordPress の xmlrpc.php を確認できない（接続できない）")
     if wp.get("cors_unknown_origin_blocked"):
         # 無関係なオリジンに CORS を許可していないか（許可オリジンの一覧が崩れた・ワイルドカードになった）
         probe = "https://cxmon-probe.invalid"
@@ -325,6 +327,18 @@ def check_wordpress():
             allowed = {k.lower(): v for k, v in headers.items()}.get("access-control-allow-origin", "")
             if allowed in (probe, "*"):
                 problems.append(f"WordPress の CORS が無関係なオリジンを許可している: {allowed}")
+    if wp.get("cors_dev_without_credentials"):
+        # 開発用オリジン（手元のプレビュー・B のスモークテスト）は、資格情報（Cookie）なしでだけ許可する設計。
+        # 資格情報つきで許可すると、手元で開いた任意のページからログイン中の管理者として API を呼べてしまう
+        for origin in wp.get("dev_origins", []):
+            status, _, headers = http(f"{api}/wp-json/contentsx/v1/topics?{BUST}", headers={"Origin": origin})
+            if status != 200:
+                warnings.append(f"WordPress の CORS（{origin}）を確認できない (HTTP {status})")
+                continue
+            h = {k.lower(): v for k, v in headers.items()}
+            if h.get("access-control-allow-origin", "") in (origin, "*") and h.get("access-control-allow-credentials", "").lower() == "true":
+                problems.append(f"WordPress の CORS が {origin} に資格情報つきの呼び出しを許可している")
+
 
 def main():
     ap = argparse.ArgumentParser()
