@@ -139,7 +139,7 @@
   isolation:isolate;
   margin-top:64px;
   padding:0;
-  min-height:clamp(620px,51vw,980px);
+  min-height:clamp(620px,48vw,880px);
   background:#fff
 }
 .ax-hero-copy {
@@ -147,7 +147,9 @@
   z-index:var(--ax-layer-copy);
   width:51%;
   min-width:0;
-  padding:clamp(80px,6vw,125px) 0 90px 6.7%
+  padding:clamp(80px,6vw,125px) 0 140px 6.7%;
+  background:#fff;
+  clip-path:polygon(0 0,100% 0,100% 8%,66% 100%,0 100%)
 }
 .ax-hero .ax-hero-label {
   margin:0 0 18px;
@@ -165,7 +167,8 @@
 }
 .ax-page .ax-hero h1 {
   margin:0 0 22px;
-  font:500 clamp(42px,4.25vw,78px)/1.4 'Noto Serif JP',serif;
+  max-width:80%;
+  font:500 clamp(38px,3.8vw,72px)/1.4 'Noto Serif JP',serif;
   letter-spacing:-.065em
 }
 .ax-hero h1>span {
@@ -179,15 +182,15 @@
 }
 .ax-hero .ax-hero-lead {
   margin:0 0 28px;
-  max-width:650px;
+  max-width:80%;
   font-size:clamp(15px,1.22vw,21px);
   font-weight:500;
   line-height:1.8
 }
 .ax-hero .ax-hero-description {
   margin:0;
-  max-width:460px;
-  font-size:clamp(13px,.92vw,17px);
+  max-width:clamp(320px,25vw,540px);
+  font-size:clamp(16px,1vw,18px);
   line-height:2;
   color:var(--cx-color-muted)
 }
@@ -258,12 +261,12 @@
 }
 .ax-hero-cross {
   position:absolute;
-  right:9%;
-  bottom:-7%;
-  width:34%;
-  height:75%;
+  right:0;
+  bottom:-12%;
+  width:28%;
+  height:48%;
   object-fit:contain;
-  opacity:.8
+  opacity:.35
 }
 .ax-hero .ax-hero-caption {
   position:absolute;
@@ -272,8 +275,8 @@
   margin:0;
   color:#fff;
   font:500 clamp(18px,1.8vw,32px)/1.5 'Noto Serif JP',serif;
-  font-style:italic;
-  transform:rotate(-8deg);
+  font-style:normal;
+  transform:none;
   text-shadow:0 2px 8px #07143b
 }
 .ax-hero .ax-hero-caption--meeting {
@@ -357,11 +360,13 @@ html[lang=en] .ax-hero-description br {
     clip-path:polygon(0 0,100% 0,100% calc(100% - 130px),55% calc(100% - 40px),0 100%)
   }
   .ax-page .ax-hero h1 {
+    max-width:100%;
     font-size:clamp(26px,8.6vw,60px);
     line-height:1.45;
     margin-bottom:14px
   }
   .ax-hero .ax-hero-lead {
+    max-width:100%;
     font-size:clamp(13px,3.15vw,18px);
     margin-bottom:18px
   }
@@ -483,7 +488,7 @@ html[lang=en] .ax-hero-description br {
   .ax-hero-creative img {
     position:absolute;
     left:-60%;
-    top:12%;
+    top:28%;
     width:175%;
     height:auto;
     object-fit:initial;
@@ -499,5 +504,34 @@ html[lang=en] .ax-hero-description br {
 @media(max-width:1024px) {
   .ax-hero .ax-hero-caption--meeting {
     bottom:auto
+  }
+}
+
+/* Keep photo subjects clear; only one quiet caption remains in the collage. */
+.ax-hero .ax-hero-cross-copy,.ax-hero .ax-hero-caption--meeting,.ax-hero .ax-hero-creative-copy {
+  display:none
+}
+.ax-hero .ax-hero-caption--city {
+  width:max-content;
+  white-space:nowrap;
+  text-size-adjust:100%;
+  -webkit-text-size-adjust:100%
+}
+@media(max-width:1024px) {
+  .ax-hero-cross {
+    width:46%;
+    height:38%;
+    bottom:-8%;
+    right:0;
+    opacity:.3
+  }
+  .ax-hero .ax-hero-lead {
+    font-size:clamp(15px,3.2vw,18px)
+  }
+  .ax-hero .ax-hero-description {
+    font-size:clamp(15px,3.1vw,17px)
+  }
+  .ax-hero .ax-hero-caption--city {
+    font-size:clamp(16px,3.6vw,24px)
   }
 }
