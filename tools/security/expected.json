@@ -1,5 +1,5 @@
 {
-  "_comment": "tools/security/monitor.py の基準値。意図して変えたとき（DNS・外部スクリプト・公開設定）は同じPRで直す。WordPress の項目は「閉じた（対策済み）」ものだけ true で足す（公開リポジトリなので未対策の項目は書かない）",
+  "_comment": "tools/security/monitor.py の基準値。意図して変えたとき（DNS・外部スクリプト・公開設定）は同じPRで直す。WordPress の項目は「閉じた（対策済み）」ものだけ true で足す（公開リポジトリなので未対策の項目は書かない）。cors_probe_origins は一般的な開発用ポートの一覧で、WordPress プラグインの許可一覧とは同期しない（本番以外で資格情報つきの CORS が返ったら異常とする一般的な判定のため）",
   "site": "https://contentsx.jp",
   "script_hosts": [
     "www.googletagmanager.com",
@@ -75,6 +75,15 @@
   "wordpress": {
     "api": "https://cms.contentsx.jp",
     "users_endpoint_closed": true,
-    "cors_unknown_origin_blocked": true
+    "cors_unknown_origin_blocked": true,
+    "xmlrpc_closed": true,
+    "cors_credentials_production_only": true,
+    "cors_probe_origins": [
+      "http://localhost:3000",
+      "http://127.0.0.1:5500",
+      "http://localhost:5173",
+      "http://localhost:8080",
+      "http://127.0.0.1:3000"
+    ]
   }
 }
