@@ -171,8 +171,9 @@ class WordPress(Base):
         def fake_http(url, method="GET", data=None, headers=None, timeout=20):
             if seen is not None:
                 seen.append((url, method, dict(headers or {})))
-            if url.endswith("/wp/v2/users"):
-                return users, b"", {}
+            if "rest_route=/wp/v2/users" in url:
+                st, body = users if isinstance(users, tuple) else (users, b'{"code":"rest_forbidden"}' if users in (401, 403) else b"")
+                return st, body, {}
             if url.endswith("/xmlrpc.php"):
                 return xmlrpc[0], xmlrpc[1], {}
             path = url.split("cms.example.test", 1)[1].split("?")[0]
@@ -211,6 +212,17 @@ class WordPress(Base):
                 self.run_check({UNRELATED: {"Access-Control-Allow-Origin": UNRELATED}}, users=users)
                 self.assertTrue(any("許可してはいけない" in p for p in monitor.problems))
                 self.assertEqual(len(monitor.warnings), 1)
+
+    def test_users_endpoint(self):
+        cases = (((403, b'{"code":"rest_forbidden","message":"..."}'), 0, 0),   # WordPress 自身の拒否 → 閉じている
+                 ((200, b'[{"id":1,"slug":"admin"}]'), 1, 0),                   # 一覧が返る → 異常
+                 ((403, b"<html>blocked by WAF</html>"), 0, 1),                 # 遮断ページ → 確認できない
+                 ((0, b""), 0, 1))
+        for users, n_problems, n_warnings in cases:
+            with self.subTest(users=users):
+                self.setUp()
+                self.run_check(self.dev_ok(), self.dev_ok(), users=users)
+                self.assertEqual((len(monitor.problems), len(monitor.warnings)), (n_problems, n_warnings))
 
     def test_xmlrpc_open_only_when_the_body_is_xmlrpc(self):
         self.run_check(self.dev_ok(), self.dev_ok(), xmlrpc=(200, b"<?xml version='1.0'?><methodResponse>..."))

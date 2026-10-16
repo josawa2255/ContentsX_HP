@@ -324,8 +324,10 @@ UNRELATED_ORIGINS = ["https://cxmon-probe.invalid", "null",
                      "http://contentsx.jp", "https://cxmon-probe.contentsx.jp"]
 # 許可されているはずの本番オリジン（対照）。これに許可が返らない応答は WordPress のものではない（WAF の遮断ページ等）
 CONTROL_ORIGIN = "https://contentsx.jp"
-# 独自の API と WordPress 本体の API（Cookie 認証で管理者として操作されうる）の両方を試す
-CORS_PATHS = ["/wp-json/contentsx/v1/topics", "/wp-json/wp/v2/users/me"]
+# 独自の API と WordPress 本体の API（Cookie 認証で管理者として操作されうる。CORS の付け方は本体の API 全体で同じ）の
+# 両方を試す。本体の代表は REST の入口 /wp-json/（前段が GitHub Actions の IP からの /wp/v2/ への要求を遮断し、
+# users・types 等は確かめられないため。CORS は REST の応答全体に同じ処理で付く）
+CORS_PATHS = ["/wp-json/contentsx/v1/topics", "/wp-json/"]
 XMLRPC_CLOSED = (403, 404, 405, 410)
 
 
@@ -367,13 +369,14 @@ def check_wordpress():
     wp = EXPECTED["wordpress"]
     api = wp["api"]
     # 1つの入口の失敗で他の点検を省かない（それぞれ注意にとどめて続ける）
-    status, body, _ = http(f"{api}/wp-json/wp/v2/users")
-    if status == 0:
-        warnings.append("WordPress のユーザー一覧APIに接続できない")
-    elif status >= 500:
-        warnings.append(f"WordPress のユーザー一覧APIがエラーを返す (HTTP {status})")
-    elif wp.get("users_endpoint_closed") and status == 200 and body.strip().startswith(b"["):
-        problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
+    if wp.get("users_endpoint_closed"):
+        # パス（/wp-json/wp/v2/...）は前段が GitHub Actions の IP からの要求を遮断するので、同じ API をクエリで指定する。
+        # 遮断ページの 403 を「閉じている」と取り違えないよう、WordPress 自身の拒否（JSON の code）を確かめる
+        status, body, _ = http(f"{api}/?rest_route=/wp/v2/users&{BUST}")
+        if status == 200 and body.strip().startswith(b"["):
+            problems.append("WordPress のユーザー一覧APIが開いている（管理者名が取得できる）")
+        elif not (status in (401, 403) and body.lstrip().startswith(b"{") and b'"code"' in body):
+            warnings.append(f"WordPress のユーザー一覧APIが閉じているか確認できない (HTTP {status})")
     if wp.get("xmlrpc_closed"):
         status, body, _ = http(f"{api}/xmlrpc.php", method="POST",
                                data=b"<?xml version='1.0'?><methodCall><methodName>system.listMethods</methodName></methodCall>",
