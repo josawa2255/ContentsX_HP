@@ -22,4 +22,68 @@ const WP_CONFIG = {
 
   /* キャッシュ有効期間（ミリ秒）— ブラウザメモリ内 */
   cacheTTL: 5 * 60 * 1000,   // 5分
+
+  /* メンテナンス表示スイッチ（手順: SPEC.md「WordPress 一時停止スイッチ」）
+     true にすると WordPress API へのアクセスをすべて止め、画面下に中立なお知らせを出す。
+     自動ビルド（コラム）もこの行を見て止まる。行の書式を変えないこと。 */
+  maintenance: false,
 };
+
+/* メンテナンス中: WordPress API 宛ての fetch をここで一括して失敗させる。
+   WP の URL を直書きしている部品もあるため、呼び出し側ではなく fetch 自体で止める。
+   失敗扱いになるので、各部品は既存の「読み込めなかったとき」の表示に落ちる。 */
+(function () {
+  if (!WP_CONFIG.maintenance || typeof window.fetch !== 'function') return;
+
+  const WP_API_PREFIX = 'https://cms.contentsx.jp/wp-json/';
+  const originalFetch = window.fetch;
+  WP_CONFIG.enabled = false;
+
+  window.fetch = function (input) {
+    const url = typeof input === 'string' ? input : (input && input.url) || String(input);
+    if (url.indexOf(WP_API_PREFIX) === 0) {
+      return Promise.reject(new TypeError('maintenance'));
+    }
+    return originalFetch.apply(this, arguments);
+  };
+
+  if (window.top !== window.self) return;
+
+  const DISMISS_KEY = 'cxMaintenanceNoticeClosed';
+  try { if (sessionStorage.getItem(DISMISS_KEY)) return; } catch (e) {}
+
+  function showNotice() {
+    if (document.getElementById('cxMaintenanceNotice')) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/css/cx-maintenance-notice.css';
+    document.head.appendChild(link);
+
+    const bar = document.createElement('div');
+    bar.id = 'cxMaintenanceNotice';
+    bar.className = 'cx-maintenance-notice';
+    bar.setAttribute('role', 'status');
+
+    const text = document.createElement('p');
+    text.className = 'cx-maintenance-notice__text';
+    text.textContent = 'ただいま一部の表示を一時停止しています。しばらくしてから再度ご覧ください。';
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'cx-maintenance-notice__close';
+    close.setAttribute('aria-label', 'お知らせを閉じる');
+    close.textContent = '×';
+    close.addEventListener('click', function () {
+      bar.remove();
+      try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+    });
+
+    bar.appendChild(text);
+    bar.appendChild(close);
+    document.body.appendChild(bar);
+  }
+
+  if (document.body) showNotice();
+  else document.addEventListener('DOMContentLoaded', showNotice);
+})();

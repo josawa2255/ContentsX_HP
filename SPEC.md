@@ -285,7 +285,7 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 | `js/cx-dom.js` | WordPress 連携部品の共通道具 `window.cxDom` | `el` / `iconButton` / `text` / `safeImage`（サイト内パスか許可ホストの https 画像だけ）/ `getJSON(path, timeout, label)`。使う側（`cx-manga-reader.js`・`cx-video-player.js`・`home-creative-x.js`・`home-topics.js`）より前に defer で読む（トップ・採用）。順番は `tests/test_asset_order.py` がデプロイ前に検査し、読めなかったときは各部品が何もせず HTML のまま残る。`safeImage(url, hosts)` の hosts で許可ホストを絞れる（マンガのページ画像は WordPress と自サイトだけ） |
 | `js/hubspot-lazy.js` | HubSpot 追跡コードの遅延読み込み | 初回操作か4秒後に読む。トップ・会社概要・採用・ニュース詳細。お問い合わせは従来どおり直接読み込み、採用エントリーは読み込まない |
 | `js/script.js` | 下層ページの小さな動き | 会社概要・ニュース一覧・ニュース詳細。ヘッダーのスクロール時クラス、見出しのフェードイン、ページ内リンクのスムーススクロールだけ（2026-10-13 に旧トップ用の約1100行を削除） |
-| `js/wp-config.js` | WP設定 | API baseURL / cache TTL |
+| `js/wp-config.js` | WP設定 | API baseURL / cache TTL / メンテナンス表示スイッチ（§6「WordPress 一時停止スイッチ」） |
 
 ### 4.1 CTA セクション共有化 ⭐
 - 6ページで CTA を重複コピペしていた問題を解消
@@ -324,6 +324,16 @@ contact フォーム送信時にメッセージ末尾にトラッキング情報
 - `/works?site=contentsx` — 漫画事例
 - `/works-new?site=contentsx` — 新作情報
 - `/news?site=contentsx&per_page=50` — ニュース
+
+### WordPress 一時停止スイッチ（メンテナンス表示・2026-10-22・Issue #173）⭐
+WordPress 側の保守などで止めたいときに、**`js/wp-config.js` の `maintenance: false` を `true` にしてmainへ反映するだけ**で次が一度に起きる。戻すときは `false` に戻して反映する。
+- そのページから WordPress API（`https://cms.contentsx.jp/wp-json/`）へのアクセスを一切しない（`fetch` 自体を設定ファイルで止めるので、URLを直書きしている部品も止まる）。各部品は既存の「読み込めなかったとき」の表示に落ちる（TOPICS は HTML の初期3件など）
+- 画面下に中立なお知らせ「ただいま一部の表示を一時停止しています。…」を出す（`css/cx-maintenance-notice.css`。どのセクションがWPかは名指ししない。×で閉じるとそのタブでは再表示しない。スマホのドロワーより下）
+- 自動ビルド（`build-c-columns`）はこの行を見て何もせず終わる（取り込み・コミットをしない）
+- ⚠️ WP を使うページは必ず `wp-config.js` を **WPを読む部品より前**に読み込む（現在は index / news / news-detail / recruit の4ページ）。新しくWPを読むページ・部品を作ったら同じようにする
+- ⚠️ 行の書式（`  maintenance: false,`）を変えない。ワークフローが `grep` で判定している
+- ⚠️ WordPress 画像（`/wp-content/uploads/`）は止めない（静的ファイルのため）
+- ⚠️ これはサイト側の表示を守るだけで、WordPress サーバー自体は守らない。サーバー側の対応は非公開の運用手順で行う
 
 ### WP 管理画面メニュー・CORS（2026-06-12 再編）
 - 左メニュー階層ルール: **複数サービス共通**（漫画事例・ニュース・コラム）= 最上階層 / **サービス専用** = サービス名親メニュー配下（ビズマンガ > お客様の声・赤ペン・ネーム）。親メニューは `add_menu_page('cxcms-bizmanga')` ＋ CPT側 `show_in_menu` で実現
