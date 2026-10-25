@@ -17,7 +17,9 @@
      ユーザー一覧API、xmlrpc.php（本文が XML-RPC の応答なら開いている）、許可してはいけないオリジン
      （null・前方/後方一致の誤り・http の本番ホスト・偽サブドメイン）への CORS、開発用オリジンへの資格情報つき CORS。
      独自API と WordPress 本体の API、GET とプリフライトを試す。API ごとに本番オリジン（対照）に許可が返るかを
-     確かめ、返らない API（WAF の遮断ページ等）と取れなかった組は「確認できない」の注意にする
+     確かめ、返らない API（WAF の遮断ページ等）と取れなかった組は「確認できない」の注意にする。
+     海外（監視を動かす GitHub Actions）から管理画面・ログイン画面に届かないこと（サーバーの国外アクセス制限）と、
+     サーバーの WAF が攻撃の形をした要求を止めていること
 
 Usage:
   python3 tools/security/monitor.py --site-dir _site            # 点検（異常で exit 1）
@@ -386,6 +388,26 @@ def check_wordpress():
             problems.append("WordPress の xmlrpc.php が開いている（XML-RPC の応答が返る）")
         elif status not in XMLRPC_CLOSED and not (status == 200 and b"<methodResponse" not in body):
             warnings.append(f"WordPress の xmlrpc.php を確認できない (HTTP {status})")
+    if wp.get("overseas_dashboard_blocked"):
+        # 監視は GitHub Actions（海外の IP）から動く。サーバーの「国外アクセス制限（ダッシュボード）」で
+        # 管理画面・ログイン画面に届かないこと（urllib はリダイレクトを追うので、届けば最後は 200 になる）
+        for path in ("/wp-login.php", "/wp-admin/"):
+            status, _, _ = http(f"{api}{path}?{BUST}")
+            if status == 200:
+                problems.append(f"海外から WordPress の管理画面・ログイン画面に届く（国外アクセス制限が外れている）: {path}")
+            elif status != 403:
+                warnings.append(f"海外からの {path} を確認できない (HTTP {status})")
+    if wp.get("waf_blocks_attacks"):
+        # サーバーの WAF が、攻撃の形をした要求を止めているか。同じ URL の普通の要求（対照）は通ることも確かめる
+        base = f"{api}/wp-json/contentsx/v1/topics?{BUST}"
+        normal, _, _ = http(base)
+        attack, _, _ = http(base + "&q=" + quote("<script>alert(1)</script>", safe=""))
+        if normal != 200:
+            warnings.append(f"WAF を確認できない（普通の要求が HTTP {normal}）")
+        elif attack == 200:
+            problems.append("WordPress の WAF が攻撃の形をした要求を止めていない（WAF が外れている可能性）")
+        elif attack != 403:
+            warnings.append(f"WAF の応答が想定外 (HTTP {attack})")
     if not (wp.get("cors_unknown_origin_blocked") or wp.get("cors_credentials_production_only")):
         return
     probe = []
