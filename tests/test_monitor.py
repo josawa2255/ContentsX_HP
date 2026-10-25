@@ -350,6 +350,56 @@ class WordPress(Base):
         self.assertEqual(len(keys), len(set(keys)))
         self.assertLessEqual(len(keys), 40)   # 共用サーバーへの要求数を抑える
 
+
+class ServerProtections(Base):
+    """サーバー側（お名前.com）の国外アクセス制限と WAF の点検"""
+
+    def run_check(self, login=403, admin=403, normal=200, attack=403):
+        def fake_http(url, method="GET", data=None, headers=None, timeout=20):
+            if "/wp-login.php" in url:
+                return login, b"", {}
+            if "/wp-admin/" in url:
+                return admin, b"", {}
+            if "/topics" in url:
+                return (attack if "%3Cscript%3E" in url else normal), b"", {}
+            return 404, b"", {}
+        wp = {"api": "https://cms.example.test", "overseas_dashboard_blocked": True, "waf_blocks_attacks": True}
+        with mock.patch.object(monitor, "http", fake_http), \
+                mock.patch.dict(monitor.EXPECTED["wordpress"], wp, clear=True):
+            monitor.check_wordpress()
+
+    def test_protected(self):
+        self.run_check()
+        self.assertEqual((monitor.problems, monitor.warnings), ([], []))
+
+    def test_dashboard_reachable_from_overseas_is_a_problem(self):
+        for kw in ({"login": 200}, {"admin": 200}):
+            with self.subTest(**kw):
+                self.setUp()
+                self.run_check(**kw)
+                self.assertEqual(len(monitor.problems), 1)
+                self.assertIn("国外アクセス制限", monitor.problems[0])
+
+    def test_dashboard_unexpected_status_is_a_warning(self):
+        self.run_check(login=0)
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 1)
+
+    def test_waf_off_is_a_problem(self):
+        self.run_check(attack=200)
+        self.assertEqual(len(monitor.problems), 1)
+        self.assertIn("WAF", monitor.problems[0])
+
+    def test_waf_cannot_be_judged_when_normal_request_fails(self):
+        self.run_check(normal=503, attack=503)
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 1)
+
+    def test_waf_unexpected_status_is_a_warning(self):
+        self.run_check(attack=500)
+        self.assertEqual(monitor.problems, [])
+        self.assertEqual(len(monitor.warnings), 1)
+
 class MergeHeaders(unittest.TestCase):
     def test_duplicates_are_joined_case_insensitively(self):
         from email.message import Message
