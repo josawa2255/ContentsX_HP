@@ -52,8 +52,8 @@
     "@context": "https://schema.org",
     "@type": "Article",
     "@id": "https://contentsx.jp/column/{{SLUG}}#article",
-    "headline": "{{TITLE_SHORT}}",
-    "description": "{{DESCRIPTION}}",
+    "headline": "{{TITLE_SHORT_JSON}}",
+    "description": "{{DESCRIPTION_JSON}}",
     "image": "{{THUMBNAIL}}",
     "datePublished": "{{DATE_PUBLISHED}}",
     "dateModified": "{{DATE_MODIFIED}}",
@@ -68,7 +68,7 @@
       "@type": "WebPage",
       "@id": "https://contentsx.jp/column/{{SLUG}}"
     },
-    "articleSection": "{{CATEGORY}}",
+    "articleSection": "{{CATEGORY_JSON}}",
     "inLanguage": "ja-JP"
   }
   </script>
@@ -80,7 +80,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://contentsx.jp/" },
       { "@type": "ListItem", "position": 2, "name": "コラム", "item": "https://contentsx.jp/news" },
-      { "@type": "ListItem", "position": 3, "name": "{{TITLE_SHORT}}", "item": "https://contentsx.jp/column/{{SLUG}}" }
+      { "@type": "ListItem", "position": 3, "name": "{{TITLE_SHORT_JSON}}", "item": "https://contentsx.jp/column/{{SLUG}}" }
     ]
   }
   </script>

@@ -2,6 +2,7 @@
 python3 -m unittest discover -s tests -p test_build_c_columns.py"""
 import importlib.util
 import json
+import re
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -79,7 +80,32 @@ class SeoFields(unittest.TestCase):
     def test_long_values_are_shortened(self):
         page = self.build(seo_title="あ" * 70, seo_description="い" * 200)
         self.assertIn("<title>" + "あ" * 58 + "…｜ContentsX</title>", page)
-        self.assertIn('<meta name="description" content="' + "い" * 129 + '…">', page)
+        self.assertIn('<meta name="description" content="' + "い" * 128 + '…">', page)
+
+    def test_site_name_written_by_editor_is_not_doubled(self):
+        # サイト名はビルドが付ける。B と共有する記事に「｜ビズマンガ」と書かれても C で並べない
+        for written in ("検索用｜ContentsX", "検索用 | Contents X", "検索用｜ビズマンガ", "検索用｜コラム｜ビズマンガ"):
+            self.assertIn("<title>検索用｜ContentsX</title>", self.build(seo_title=written), written)
+        self.assertIn("<title>記事タイトル｜ContentsX</title>", self.build(seo_title="｜ContentsX"))
+
+    def test_saved_entities_are_shown_as_text(self):
+        # WP は保存時に単独の「<」を &lt; に変える。検索結果に「&lt;」と出さない
+        page = self.build(seo_title="費用&lt;相場", seo_description="A&amp;B &lt; C")
+        self.assertIn("<title>費用&lt;相場｜ContentsX</title>", page)
+        self.assertIn('<meta name="description" content="A&amp;B &lt; C">', page)
+
+    def test_json_ld_stays_valid(self):
+        page = self.build(title_ja='引用"と\\と</script>&', seo_description='説明"と\\と<b>&</b>')
+        docs = [json.loads(m) for m in re.findall(r'<script type="application/ld\+json">(.*?)</script>', page, re.S)]
+        article = next(d for d in docs if d.get("@type") in ("Article", "BlogPosting"))
+        self.assertEqual(article["headline"], '引用"と\\と</script>&')
+        self.assertEqual(article["description"], '説明"と\\と&')
+        self.assertEqual(page.count("</script>"), page.count("<script"))
+
+    def test_wp_values_are_not_expanded_as_placeholders(self):
+        page = self.build(seo_title="{{CONTENT}}", seo_description="{{SLUG}}", content="<p>本文</p>")
+        self.assertIn("<title>{{CONTENT}}｜ContentsX</title>", page)
+        self.assertIn('<meta name="description" content="{{SLUG}}">', page)
 
 
 if __name__ == "__main__":
