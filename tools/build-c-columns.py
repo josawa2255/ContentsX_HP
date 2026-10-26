@@ -206,15 +206,16 @@ def build_one(col, all_cols, template):
     modified_ymd = full.get("modified_ymd", date_ymd)
     date_display = full.get("date", date_ymd).replace("-", ".")
 
-    # タイトルを短縮（SEO用）
-    title_short = title if len(title) <= 60 else title[:58] + "…"
-    # SEO タイトル（末尾にブランド）
-    seo_title = f"{title_short}｜ContentsX"
-    if len(seo_title) > 72:
-        seo_title = f"{title[:50]}…｜ContentsX"
+    def shorten(text):
+        return text if len(text) <= 60 else text[:58] + "…"
 
-    # description: excerpt優先、なければ本文先頭から
-    desc = excerpt or truncate_desc(content_html, 110)
+    # 見出し h1・構造化データの headline・パンくずは記事タイトル
+    title_short = shorten(title)
+    # 検索結果・SNS 向けのタイトルと説明文は、WP の「SEOタイトル」「SEO説明文」を優先する（空なら記事タイトル・抜粋）
+    seo_title = f"{shorten((full.get('seo_title') or '').strip() or title)}｜ContentsX"
+
+    # description: SEO説明文 > 抜粋 > 本文先頭
+    desc = truncate_desc(full.get("seo_description") or "", 130) or excerpt or truncate_desc(content_html, 110)
     if len(desc) > 130:
         desc = desc[:128] + "…"
 

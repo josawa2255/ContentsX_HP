@@ -436,6 +436,7 @@ WordPress 側の保守などで止めたいときに、**`js/wp-config.js` の `
 
 ## 7.4 コラム機能（2026-05-08 新設）
 - 個別記事は WP CMS → `tools/build-c-columns.py` → `column/{slug}.html` で静的生成（既存）
+- 個別記事の**検索結果・SNS 向けのタイトルと説明文**（`<title>`・`og:title`・`twitter:title`／`description`・`og:description`・`twitter:description`・JSON-LD の `description`）は、WP のコラム編集画面の「SEOタイトル」「SEO説明文」（API の `seo_title` / `seo_description`）を優先し、空なら記事タイトル・抜粋・本文の冒頭を使う。タイトルは60字を超えると58字＋「…」に縮めて末尾に「｜ContentsX」、説明文は130字まで。見出し h1・JSON-LD の `headline`・パンくず・一覧カードは記事タイトルと抜粋のまま（2026-10-26 Issue #178。それまで欄は保存されるのに使われていなかった）。この2欄は管理画面でだけ入れられる（REST からは書けない）
 - WP API は `?site=contentsx` フィルタで取得（`show_site` が `contentsx` または `both` の記事のみ）。⚠️ 過去に `contentx`（sなし）と誤記しC向けコラムが0件になっていた（BUGS.md #041、2026-06-12修正）
 - 一覧ページ `column.html` も build-c-columns.py が自動更新（Featured 1本 + カードグリッド + カテゴリチップ + ItemList JSON-LD）
 - マーカー: `<!-- BUILD:COLUMN_GRID -->` ... `<!-- /BUILD:COLUMN_GRID -->`

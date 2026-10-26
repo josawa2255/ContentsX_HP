@@ -4,6 +4,7 @@ import importlib.util
 import json
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("build_c_columns", ROOT / "tools" / "build-c-columns.py")
@@ -46,6 +47,39 @@ class JsonForScript(unittest.TestCase):
         self.assertNotIn("</", out)
         self.assertNotIn("<script", out)
         self.assertEqual(json.loads(out)["title"], "</script><script>alert(1)</script> & co")
+
+
+class SeoFields(unittest.TestCase):
+    """WP の「SEOタイトル」「SEO説明文」は検索・SNS 向けの欄にだけ使い、見出しは記事タイトルのまま"""
+
+    def build(self, **fields):
+        full = dict({"id": 7, "slug": "seo-fields", "title_ja": "記事タイトル", "excerpt_ja": "一覧カードの抜粋",
+                     "content": "<p>Body</p>"}, **fields)
+        with patch.object(bc, "fetch_column_full", lambda col_id: full):
+            return bc.build_one({"id": 7}, [], bc.TEMPLATE_PATH.read_text(encoding="utf-8"))[1]
+
+    def test_prefers_seo_fields(self):
+        page = self.build(seo_title="検索用タイトル", seo_description="検索用の<b>説明</b>\r\n文")
+        for tag in ("<title>検索用タイトル｜ContentsX</title>",
+                    '<meta property="og:title" content="検索用タイトル｜ContentsX">',
+                    '<meta name="twitter:title" content="検索用タイトル｜ContentsX">',
+                    '<meta name="description" content="検索用の説明 文">',
+                    '<meta property="og:description" content="検索用の説明 文">',
+                    "<h1>記事タイトル</h1>"):
+            self.assertIn(tag, page)
+        self.assertIn('"headline": "記事タイトル"', page)
+        self.assertNotIn("一覧カードの抜粋", page)
+
+    def test_falls_back_to_title_and_excerpt(self):
+        for fields in ({"seo_title": " ", "seo_description": ""}, {}):  # 空欄・API に欄が無いとき
+            page = self.build(**fields)
+            self.assertIn("<title>記事タイトル｜ContentsX</title>", page)
+            self.assertIn('<meta name="description" content="一覧カードの抜粋">', page)
+
+    def test_long_values_are_shortened(self):
+        page = self.build(seo_title="あ" * 70, seo_description="い" * 200)
+        self.assertIn("<title>" + "あ" * 58 + "…｜ContentsX</title>", page)
+        self.assertIn('<meta name="description" content="' + "い" * 129 + '…">', page)
 
 
 if __name__ == "__main__":
