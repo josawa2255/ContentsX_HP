@@ -102,6 +102,12 @@ class SeoFields(unittest.TestCase):
         self.assertEqual(article["description"], '説明"と\\と&')
         self.assertEqual(page.count("</script>"), page.count("<script"))
 
+    def test_huge_values_do_not_stall_the_build(self):
+        # 末尾のサイト名を外す正規表現は長い値で遅くなる。先に1000字で切るので一瞬で終わる（切らないと20万字で約20秒）
+        page = self.build(seo_title=" | Contents X" * 20000 + "x", seo_description="<" * 200000)
+        self.assertIn("<title>| Contents X | Contents X", page)
+        self.assertIn('<meta name="description" content="' + "&lt;" * 128 + '…">', page)
+
     def test_wp_values_are_not_expanded_as_placeholders(self):
         page = self.build(seo_title="{{CONTENT}}", seo_description="{{SLUG}}", content="<p>本文</p>")
         self.assertIn("<title>{{CONTENT}}｜ContentsX</title>", page)
