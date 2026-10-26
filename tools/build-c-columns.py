@@ -73,6 +73,21 @@ def escape_meta(s):
     return html.escape(s, quote=True)
 
 
+# 編集者が末尾に書いたサイト名（「｜ContentsX」「｜ビズマンガ」など）。サイト名はビルドが付けるので外す
+SITE_NAME_TAIL = re.compile(r"(?:\s*[|｜]\s*(?:コラム|ビズマンガ|BizManga|Contents ?X|イチオシ採用))+\s*$", re.IGNORECASE)
+
+
+def plain_text(value):
+    """WP の入力欄の値を1行の文字列にする（タグを外し、保存時に &lt; などへ変わった文字を戻し、空白をまとめる）。
+    先に1000字で切る（どの欄も検索結果に出るのは百数十字。極端に長い値で正規表現が遅くなりビルドが止まるのを防ぐ）"""
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", "", (value or "")[:1000])).split())
+
+
+def json_text(s):
+    """JSON-LD の文字列の中身（前後の引用符なし）"""
+    return json_for_script(s, indent=None)[1:-1]
+
+
 # WordPress の値は管理画面の乗っ取りで書き換えられうる前提で扱う（docs/operations/SECURITY.md P1）。
 # サムネイルは meta 属性・JSON-LD・CSS url() の3か所にそのまま入るため、エスケープではなく
 # 「許可したホストの https で、引用符・括弧・空白・山かっこ・バックスラッシュを含まない」URLだけを通す。
@@ -206,15 +221,16 @@ def build_one(col, all_cols, template):
     modified_ymd = full.get("modified_ymd", date_ymd)
     date_display = full.get("date", date_ymd).replace("-", ".")
 
-    # タイトルを短縮（SEO用）
-    title_short = title if len(title) <= 60 else title[:58] + "…"
-    # SEO タイトル（末尾にブランド）
-    seo_title = f"{title_short}｜ContentsX"
-    if len(seo_title) > 72:
-        seo_title = f"{title[:50]}…｜ContentsX"
+    def shorten(text):
+        return text if len(text) <= 60 else text[:58] + "…"
 
-    # description: excerpt優先、なければ本文先頭から
-    desc = excerpt or truncate_desc(content_html, 110)
+    # 見出し h1・構造化データの headline・パンくずは記事タイトル
+    title_short = shorten(title)
+    # 検索結果・SNS 向けのタイトルと説明文は、WP の「SEOタイトル」「SEO説明文」を優先する（空なら記事タイトル・抜粋）
+    seo_title = f"{shorten(SITE_NAME_TAIL.sub('', plain_text(full.get('seo_title'))) or title)}｜ContentsX"
+
+    # description: SEO説明文 > 抜粋 > 本文先頭
+    desc = plain_text(full.get("seo_description")) or excerpt or truncate_desc(content_html, 110)
     if len(desc) > 130:
         desc = desc[:128] + "…"
 
@@ -242,11 +258,14 @@ def build_one(col, all_cols, template):
         "{{TOC}}": toc_html,
         "{{CONTENT}}": content_with_ids,
         "{{RELATED_CARDS}}": related_cards,
+        # JSON-LD の中は HTML ではなく JSON の書き方で入れる
+        "{{TITLE_SHORT_JSON}}": json_text(title_short),
+        "{{DESCRIPTION_JSON}}": json_text(desc),
+        "{{CATEGORY_JSON}}": json_text(category),
     }
 
-    output = template
-    for key, value in replacements.items():
-        output = output.replace(key, str(value))
+    # 1回でまとめて置き換える（先に入れた WP の値の中の {{…}} を、後の置き換えで展開しない）
+    output = re.sub(r"\{\{[A-Z_]+\}\}", lambda m: str(replacements.get(m.group(0), m.group(0))), template)
 
     return slug, output
 
