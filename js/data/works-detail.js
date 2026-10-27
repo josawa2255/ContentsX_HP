@@ -133,19 +133,6 @@ const WORKS_DETAIL_DATA = [
     comment: "漫画広告を使った告知で、前回比150%の集客を達成できました。"
   },
   {
-    id: "life-school",
-    title_ja: "バズスクール",
-    title_en: "Buzz School",
-    pages: 26,
-    category: "集客",
-    client: "ライフエンターテイメント",
-    media: ["LP", "SNS投稿"],
-    spec: { pages: "26P", period: "3週間" },
-    point: "スクールの魅力と卒業生の成功体験をストーリーで伝達。入学への不安を解消し、申込みへの心理的ハードルを下げる構成。",
-    comment: "漫画を導入してから、LPからの問い合わせ率が大幅に改善しました。",
-    show_hero_site: "none"
-  },
-  {
     id: "bms-unso",
     title_ja: "BMS運送",
     title_en: "BMS Transport",
@@ -205,19 +192,6 @@ const WORKS_DETAIL_DATA = [
     spec: { pages: "12P", period: "3週間" },
     point: "外国人従業員向けに、言語の壁を超えるビジュアルマニュアルを漫画で実現。文化的配慮も盛り込んだ構成。",
     comment: "言葉が通じない場面でも、漫画なら伝わる。現場の安全意識が向上しました。"
-  },
-  {
-    id: "sixtones",
-    title_ja: "SixTONES風キャラ",
-    title_en: "SixTONES-style Characters",
-    pages: 4,
-    category: "IP",
-    client: "IPキャラクター",
-    media: ["キャラクターデザイン", "SNS"],
-    spec: { pages: "4P", period: "1週間" },
-    point: "著名人をモチーフにしたオリジナルキャラクターデザイン。IP展開を見据えた設計で、グッズ化・メディアミックスに対応。",
-    comment: "キャラクターの完成度が高く、ファンからの反響も大きかったです。",
-    show_hero_site: "none"
   },
   {
     id: "torutoru-kun",

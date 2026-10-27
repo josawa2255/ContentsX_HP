@@ -80,6 +80,7 @@ i18n.js → nav.js の順序が必須。トップを含む全ページで共通�
 ## 制作事例モーダル（旧トップの記録。2026-09-29撤去）
 > ⚠️ 下の `hero-new.js`・`js/data/works-detail.js` はどのページからも読み込まれていない（記録として残すだけ。HERO作業の完了後に削除予定）。
 - データ: `js/data/works-detail.js`（22+作品、WORKS_DETAIL_DATA配列）。⚠️ 2026-10-13 から `wp-api.js` は `/works` を取得しない（戻すなら取得も戻す）
+- 非公開にした作品（2026-04 の `life-school`・`sixtones`）は `works-detail.js` と素材フォルダ（`material/manga/{id}/`）からも消す（2026-10-27 削除。ルート BUGS.md #074）。素材の画像を消す前に BizManga も含めて参照を grep する（BUGS #020）
 - 表示: `hero-new.js` の `openWorkDetail()` でモーダル表示
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替
 - タイトル+カテゴリタグ: `.work-detail-title-row` でflexbox横並び（BizMangaと同仕様）
