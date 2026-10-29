@@ -33,6 +33,8 @@
 | TabLabo 紹介 | `extensions/tablabo/index.html` | i18n.js, nav.js | `/extensions/tablabo/`。機能・画面・料金・法人導入の案内 |
 | TabLabo ポリシー・規約 | `extensions/tablabo/privacy.html`・`extensions/tablabo/terms.html` | i18n.js, nav.js | 拡張子なしURL。本文は日本語の正本を保持し、自動翻訳の対象外 |
 | TabLabo AIアクセス許可 | `extensions/tablabo/oauth/consent/index.html` | 提供HTML内のJS・supabase-js | `/extensions/tablabo/oauth/consent/`。共通UIと計測タグを入れない独立画面。noindex |
+| 営業管理サービス（ビズセールスナビ）紹介 | `crm/index.html` | i18n.js, nav.js | `/crm/`。Google 連携の同意画面に載せるホームページ（§1.3） |
+| 営業管理サービス ポリシー・規約 | `crm/privacy.html`・`crm/terms.html` | i18n.js, nav.js | 拡張子なしURL `/crm/privacy`・`/crm/terms`。本文は日本語の正本を保持し、自動翻訳の対象外（§1.3） |
 
 ### 1.1 Chrome 拡張機能・TabLabo（Issue #69）
 
@@ -45,6 +47,14 @@
 - OAuth許可画面はTabLabo担当のHTMLをバイト単位で変更せず配置。ヘッダー・フッター・計測・共通CSS/JS・`base`・転送処理を追加しない。SupabaseのURLとpublishableキーはブラウザ公開を前提とする値。変更が必要な場合は担当へ依頼し、更新原稿を再配置する。
 - OAuthの公開前検証は `?authorization_id=test` 付きのURLで「TabLabo にログイン」または「この接続の情報を確認できませんでした」の表示を確認する。ローカル検証では認証SDKをスタブ化し、Googleログイン・トークン発行・許可/拒否の本番書き込みを行わない。
 - 再検証用スクリプト: `python3 tests/verify_extensions_layout.py --url http://127.0.0.1:8769` と `python3 tests/verify_tablabo_oauth.py --url http://127.0.0.1:8769`（Python PlaywrightとGoogle Chromeが必要）。先に `python3 tools/preview-extensions.py --port 8769` で、拡張子なしの `.html` 解決に対応したローカルサーバーを起動する。OAuth検証には提供HTMLのSHA-256一致チェックを含むため、原稿を更新した場合は担当から受け取った版との一致を確認してハッシュも更新する。PR確認用の画像は `tests/screenshots/extensions/`。
+
+### 1.3 営業管理サービス（ビズセールスナビ）の紹介・ポリシー・規約（Issue #182）
+
+- 当社の法人向け営業管理サービスの Google 連携（カレンダー・Gmail）の同意画面に載せる3ページ。**URL に製品名を入れない**（`/crm/`）。製品名が変わっても URL を変えない（変えると Google の同意画面の設定と審査をやり直すことになる）。
+- 本文の正本はサービス側の非公開リポジトリの原稿。ここでは文面を直接直さず、原稿を直してから同じ HTML に写す。草案・編集者向けの注記は載せない。
+- 型は TabLabo のポリシー（`extensions/tablabo/privacy.html`）と同じ `css/extensions.css` の `.ext-legal`。共通ヘッダー・フッターを使う。
+- `services/` は `tools/build-services.py` が生成するフォルダなので、これらのページを置かない。
+- 制定日・最終更新日は公開した日。文面を変えたら最終更新日を直す。
 
 ### 1.2 TabLabo規約・ポリシーの原稿更新（Issue #71）
 
